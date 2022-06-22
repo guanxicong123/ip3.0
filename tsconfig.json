@@ -34,8 +34,9 @@
         "src/**/*.tsx",
         "src/**/*.vue",
         "tests/**/*.ts",
-        "tests/**/*.tsx"
-    ],
+        "tests/**/*.tsx",
+        "./auto-imports.d.ts"
+, "src/preload.js"    ],
     "exclude": [
         "node_modules"
     ]

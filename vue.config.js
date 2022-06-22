@@ -1,4 +1,5 @@
 const { defineConfig } = require('@vue/cli-service')
+
 const AutoImport = require('unplugin-auto-import/webpack')
 const Components = require('unplugin-vue-components/webpack')
 const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
@@ -9,31 +10,81 @@ const path = require('path')
 const pathSrc = path.resolve(__dirname, 'src')
 
 module.exports = defineConfig({
+    pluginOptions: {
+        electronBuilder: {
+            preload: "src/preload.js"
+        }
+    },
     transpileDependencies: true,
+    /**
+     * webpack 配置进行更细粒度的修改  https://cli.vuejs.org/zh/config/#chainwebpack
+     */
+    chainWebpack(config) {
+        // 移除 prefetch 插件
+        config.plugins.delete('prefetch')
+    },
     configureWebpack: {
-        resolve: { // 路径别名配置
+        // 路径别名配置
+        resolve: { 
             alias: {
                 '@': pathSrc,
             },
         },
-        plugins: [ // 导入插件
-            AutoImport({
-                imports: ['vue'], // 自动导入 Vue 相关函数，如：ref, reactive, toRef 等
+        /**
+         * 向全局自动导入插件配置，配置详情：
+         * unplugin-auto-import: https://github.com/antfu/unplugin-auto-import
+         * unplugin-vue-components: https://github.com/antfu/unplugin-vue-components
+         */
+        // 
+        plugins: [ 
+            AutoImport({ 
+                // 目标文件
+                include: [
+                    /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
+                    /\.vue$/, /\.vue\?vue/, // .vue
+                    /\.md$/, // .md
+                ],
+                // 全局注册导入，详情看 auto-imports.d.ts 文件
+                imports: [
+                    'vue',
+                    'vuex',
+                    'vue-router',
+                    {
+                        'axios': [
+                            // 默认导入 import { default as axios } from 'axios'
+                            ['default', 'axios'],
+                        ],
+                    }
+                ], 
+                // 声明文件生成位置和文件名称
+                dts: path.resolve(pathSrc, 'auto-imports.d.ts'),
+                // 解析器来进行组件声明
                 resolvers: [
-                    ElementPlusResolver(), // 自动导入 Element Plus 相关函数，如：ElMessage, ElMessageBox... (带样式)
+                    // Element Plus 组件相关函数(带样式)
+                    ElementPlusResolver(),
+                    // 图标组件
                     IconsResolver({
-                        prefix: 'Icon', // 自动导入图标组件
+                        prefix: 'Icon',
                     }),
                 ],
-                dts: path.resolve(pathSrc, 'auto-imports.d.ts'),
+                // eslint报错解决
+                eslintrc: { 
+                    enabled: true, // Default `false`
+                    filepath: './.eslintrc-auto-import.json',
+                    globalsPropValue: true,
+                },
             }),
             Components({
+                // 自定义组件的解析器
                 resolvers: [
-                    ElementPlusResolver(), // 自动导入 Element Plus 组件
+                    // Element Plus 组件
+                    ElementPlusResolver(),
+                    // 图标库组件
                     IconsResolver({
-                        enabledCollections: ['ep'], // 自动注册图标组件
+                        enabledCollections: ['ep'],
                     }),
                 ],
+                // 声明文件生成位置和文件名称
                 dts: path.resolve(pathSrc, 'components.d.ts'),
             }),
             Icons({
@@ -41,6 +92,26 @@ module.exports = defineConfig({
             }),
         ],
     },
+    /**
+     * 向全局sass样式传入共享的全局变量, $src可以配置图片cdn前缀
+     * 配置详情: https://cli.vuejs.org/zh/guide/css.html#%E5%90%91%E9%A2%84%E5%A4%84%E7%90%86%E5%99%A8-loader-%E4%BC%A0%E9%80%92%E9%80%89%E9%A1%B9
+     */
+    css: {
+        loaderOptions: {
+            scss: {
+                additionalData: `
+                    @import "@/assets/css/color.scss";
+                `
+            }
+        }
+    },
+    /**
+     * 如果你不需要生产环境的 source map，可以将其设置为 false 以加速生产环境构建。
+     * 打包之后发现map文件过大，项目文件体积很大，设置为false就可以不输出map文件
+     * map文件的作用在于：项目打包后，代码都是经过压缩加密的，如果运行时报错，输出的错误信息无法准确得知是哪里的代码报错。
+     * 有了map就可以像未加密的代码一样，准确的输出是哪一行哪一列有错。
+     */
+    productionSourceMap: false,
     /**
      * 详情看官网：https://cli.vuejs.org/zh/config/
      * 支持webPack-dev-server的所有选项
@@ -50,7 +121,7 @@ module.exports = defineConfig({
      * proxy: 配置多个代理
      */
     devServer: {
-        host: "172.16.21.9",
+        host: "172.16.21.10",
         port: 8003,
         // open: true,
         // https: true,

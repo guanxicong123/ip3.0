@@ -6,13 +6,18 @@ module.exports = {
   'extends': [
     'plugin:vue/vue3-essential',
     'eslint:recommended',
-    '@vue/typescript/recommended'
+    '@vue/typescript/recommended',
+    './.eslintrc-auto-import.json'
   ],
   parserOptions: {
     ecmaVersion: 2020
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'vue/no-v-model-argument': 'off',
+    'vue/multi-word-component-names': 'off', // 关闭驼峰命名规则检查
+    '@typescript-eslint/no-empty-function': 'off', // 关闭空方法检查
+    '@typescript-eslint/no-explicit-any': 'off', // 关闭any类型的警告
   }
 }
