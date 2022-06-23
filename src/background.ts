@@ -6,7 +6,6 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
     ? 'http://172.16.21.10:8003'
     : `file://${__dirname}/index.html`
-    console.log(isDevelopment)
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
     { scheme: 'app', privileges: { secure: true, standard: true } }
@@ -45,15 +44,17 @@ async function createWindow() {
     // 创建calendar窗口方法
     function openCalendarWindow () {
         calendarWin = new BrowserWindow({
-            width: 400,
-            height: 550,
+            width: 450,
+            height: 260,
             parent: win, // win是主窗口
+            resizable: false, //窗口是否可以由用户手动调整大小的属性
+            autoHideMenuBar: true, //是否隐藏菜单
+            // frame: false, //false为无边框窗口
             webPreferences: {
-            nodeIntegration: true
+                preload: path.join(__dirname, 'preload.js')
             }
         })
-        console.log(isDevelopment)
-        calendarWin.loadURL(isDevelopment + '/play')
+        calendarWin.loadURL(isDevelopment + '/register')
         calendarWin.on('closed', () => { calendarWin = null })
     }
 

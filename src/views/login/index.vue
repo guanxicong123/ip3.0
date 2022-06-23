@@ -61,15 +61,12 @@
         password: '',
         server_ip_address: '',
     })
+    // 记住密码
     const is_checked = ref(false)
-    const data = reactive({
-        isShowMaximize: false
-    })
 
     // mounted 实例挂载完成后被调用
     onMounted(() => {
         ipcRenderer.send('login-window')
-        console.log(data)
     })
 
      // 隐藏
