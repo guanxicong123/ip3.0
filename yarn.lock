@@ -1013,10 +1013,10 @@
   resolved "https://registry.npmmirror.com/@element-plus/icons-vue/-/icons-vue-2.0.4.tgz#98fb9680c814a2a4f231b8bdabc8cd59b1b79d86"
   integrity sha512-UeBVBU3fuBsYa9mzM7DgkRztQ1Aftw3sMTI/1gZsqXq2NWiCOi16ZYXXGIc0jFDIu+k6SojzdlxOjv+rN/Y6FQ==
 
-"@element-plus/icons-vue@^2.0.5":
-  version "2.0.5"
-  resolved "https://registry.npmmirror.com/@element-plus/icons-vue/-/icons-vue-2.0.5.tgz#8eb4143a7b5e4d8468d2e72af99eefee446f5ea0"
-  integrity sha512-jvNWyKcdvPvMDLTWjghrPY+bYHKqh7hbAFIPe+HWR073zilzt33csREzmKx3VwhdlJUW5u0nCqN+0rwI8jlH+w==
+"@element-plus/icons-vue@^2.0.6":
+  version "2.0.6"
+  resolved "https://registry.npmmirror.com/@element-plus/icons-vue/-/icons-vue-2.0.6.tgz#8490e7a3193c17515d10c3be0544d800afe6a228"
+  integrity sha512-lPpG8hYkjL/Z97DH5Ei6w6o22Z4YdNglWCNYOPcB33JCF2A4wye6HFgSI7hEt9zdLyxlSpiqtgf9XcYU+m5mew==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
@@ -1033,17 +1033,17 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@floating-ui/core@^0.7.2":
-  version "0.7.2"
-  resolved "https://registry.npmmirror.com/@floating-ui/core/-/core-0.7.2.tgz#f7af9613d080dc29360e77c970965b79b524d45a"
-  integrity sha512-FRVAkSNU/vGXLIsgbggcs70GkXKEOXgBBbNpYPNHSaKsCAMMd00NrjbtKTesxkdv9xm9N3+XiDlcFGY6WnatBg==
+"@floating-ui/core@^0.7.3":
+  version "0.7.3"
+  resolved "https://registry.npmmirror.com/@floating-ui/core/-/core-0.7.3.tgz#d274116678ffae87f6b60e90f88cc4083eefab86"
+  integrity sha512-buc8BXHmG9l82+OQXOFU3Kr2XQx9ys01U/Q9HMIrZ300iLc8HLMgh7dcCqgYzAzf4BkoQvDcXf5Y+CuEZ5JBYg==
 
-"@floating-ui/dom@^0.5.0":
-  version "0.5.2"
-  resolved "https://registry.npmmirror.com/@floating-ui/dom/-/dom-0.5.2.tgz#908f3febbfc0d6696d70921616ec194fe07af183"
-  integrity sha512-z1DnEa7F3d8Fm/eXSbii8UEGpcjZGkQaYYUI0WpEVgD3vBfebDW8j/3ysusxonuMexoigA+A3b/fYH7sEqiwyg==
+"@floating-ui/dom@^0.5.4":
+  version "0.5.4"
+  resolved "https://registry.npmmirror.com/@floating-ui/dom/-/dom-0.5.4.tgz#4eae73f78bcd4bd553ae2ade30e6f1f9c73fe3f1"
+  integrity sha512-419BMceRLq0RrmTSDxn8hf9R3VCJv2K9PUfugh5JyEFmdjzDo+e8U5EdR8nzKq8Yj1htzLm3b6eQEEam3/rrtg==
   dependencies:
-    "@floating-ui/core" "^0.7.2"
+    "@floating-ui/core" "^0.7.3"
 
 "@hapi/hoek@^9.0.0":
   version "9.3.0"
@@ -1481,6 +1481,11 @@
   version "1.10.5"
   resolved "https://registry.npmmirror.com/@types/verror/-/verror-1.10.5.tgz#2a1413aded46e67a1fe2386800e291123ed75eb1"
   integrity sha512-9UjMCHK5GPgQRoNbqdLIAvAy0EInuiqbW0PBMtVP6B5B2HQJlvoJHM+KodPZMEjOa5VkSc+5LH7xy+cUzQdmHw==
+
+"@types/web-bluetooth@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.npmmirror.com/@types/web-bluetooth/-/web-bluetooth-0.0.14.tgz#94e175b53623384bff1f354cdb3197a8d63cdbe5"
+  integrity sha512-5d2RhCard1nQUC3aHcq/gHzWYO6K0WJmAbjO7mQJgCQKtZpgXxv1rOM6O/dBDhDYYVutk1sciOgNSe+5YyfM8A==
 
 "@types/webpack-env@^1.15.2":
   version "1.17.0"
@@ -1977,24 +1982,25 @@
   resolved "https://registry.npmmirror.com/@vue/web-component-wrapper/-/web-component-wrapper-1.3.0.tgz#b6b40a7625429d2bd7c2281ddba601ed05dc7f1a"
   integrity sha512-Iu8Tbg3f+emIIMmI2ycSI8QcEuAUgPTgHwesDU1eKMLE4YC/c/sFbGc70QgMq31ijRftV0R7vCm9co6rldCeOA==
 
-"@vueuse/core@^8.5.0":
-  version "8.6.0"
-  resolved "https://registry.npmmirror.com/@vueuse/core/-/core-8.6.0.tgz#a8f80363cc63d17382423f16beae57696f376e67"
-  integrity sha512-VirzExCm/N+QdrEWT7J4uSrvJ5hquKIAU9alQ37kUvIJk9XxCLxmfRnmekYc1kz2+6BnoyuKYXVmrMV351CB4w==
+"@vueuse/core@^8.7.5":
+  version "8.9.4"
+  resolved "https://registry.npmmirror.com/@vueuse/core/-/core-8.9.4.tgz#c7db40f19390b3c9f4ff9294a30461497f62ec19"
+  integrity sha512-B/Mdj9TK1peFyWaPof+Zf/mP9XuGAngaJZBwPaXBvU3aCTZlx3ltlrFFFyMV4iGBwsjSCeUCgZrtkEj9dS2Y3Q==
   dependencies:
-    "@vueuse/metadata" "8.6.0"
-    "@vueuse/shared" "8.6.0"
+    "@types/web-bluetooth" "^0.0.14"
+    "@vueuse/metadata" "8.9.4"
+    "@vueuse/shared" "8.9.4"
     vue-demi "*"
 
-"@vueuse/metadata@8.6.0":
-  version "8.6.0"
-  resolved "https://registry.npmmirror.com/@vueuse/metadata/-/metadata-8.6.0.tgz#34771443a72ee891ae001a70aa05dd9a1d799372"
-  integrity sha512-F+CKPvaExsm7QgRr8y+ZNJFwXasn89rs5wth/HeX9lJ1q8XEt+HJ16Q5Sxh4rfG5YSKXrStveVge8TKvPjMjFA==
+"@vueuse/metadata@8.9.4":
+  version "8.9.4"
+  resolved "https://registry.npmmirror.com/@vueuse/metadata/-/metadata-8.9.4.tgz#a4132db33e4c1b1023636acfa20aa7b37ab3d978"
+  integrity sha512-IwSfzH80bnJMzqhaapqJl9JRIiyQU0zsRGEgnxN6jhq7992cPUJIRfV+JHRIZXjYqbwt07E1gTEp0R0zPJ1aqw==
 
-"@vueuse/shared@8.6.0":
-  version "8.6.0"
-  resolved "https://registry.npmmirror.com/@vueuse/shared/-/shared-8.6.0.tgz#63dad9fc4b73a7fccbe5d6b97adeacf73d4fec41"
-  integrity sha512-Y/IVywZo7IfEoSSEtCYpkVEmPV7pU35mEIxV7PbD/D3ly18B3mEsBaPbtDkNM/QP3zAZ5mn4nEkOfddX4uwuIA==
+"@vueuse/shared@8.9.4":
+  version "8.9.4"
+  resolved "https://registry.npmmirror.com/@vueuse/shared/-/shared-8.9.4.tgz#c9741c30ffb666b50d62f0dd80b76119fd47573e"
+  integrity sha512-wt+T30c4K6dGRMVqPddexEVLa28YwxW5OFIPmzUHICjphfAuBFTTdDoyqREZNDOFJZ44ARH1WWQNCUK8koJ+Ag==
   dependencies:
     vue-demi "*"
 
@@ -2367,10 +2373,10 @@ async-exit-hook@^2.0.1:
   resolved "https://registry.npmmirror.com/async-exit-hook/-/async-exit-hook-2.0.1.tgz#8bd8b024b0ec9b1c01cccb9af9db29bd717dfaf3"
   integrity sha512-NW2cX8m1Q7KPA7a5M2ULQeZ2wR5qI5PAbw5L0UOMxdioVk9PMZ0h1TmyZEkPYrCvYjDlFICusOu1dlEKAAeXBw==
 
-async-validator@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.npmmirror.com/async-validator/-/async-validator-4.1.1.tgz#3cd1437faa2de64743f7d56649dd904c946a18fe"
-  integrity sha512-p4DO/JXwjs8klJyJL8Q2oM4ks5fUTze/h5k10oPPKMiLe1fj3G1QMzPHNmN1Py4ycOk7WlO2DcGXv1qiESJCZA==
+async-validator@^4.2.5:
+  version "4.2.5"
+  resolved "https://registry.npmmirror.com/async-validator/-/async-validator-4.2.5.tgz#c96ea3332a521699d0afaaceed510a54656c6339"
+  integrity sha512-7HhHjtERjqlNbZtqNqy2rckN/SpOOlmDliet+lP7k+eKZEjPk3DgyeU9lIXLdeLz0uBbbVp+9Qdow9wJWgwwfg==
 
 async@^2.6.2:
   version "2.6.4"
@@ -3282,10 +3288,10 @@ csstype@^2.6.8:
   resolved "https://registry.npmmirror.com/csstype/-/csstype-2.6.20.tgz#9229c65ea0b260cf4d3d997cb06288e36a8d6dda"
   integrity sha512-/WwNkdXfckNgw6S5R125rrW8ez139lBHWouiBvX8dfMFtcn6V81REDqnH7+CRpRipfYlyU1CmOnOxrmGcFOjeA==
 
-dayjs@^1.11.2:
-  version "1.11.3"
-  resolved "https://registry.npmmirror.com/dayjs/-/dayjs-1.11.3.tgz#4754eb694a624057b9ad2224b67b15d552589258"
-  integrity sha512-xxwlswWOlGhzgQ4TKzASQkUhqERI3egRNqgV4ScR8wlANA/A9tZ7miXa44vTTKEq5l7vWoL5G57bG3zA+Kow0A==
+dayjs@^1.11.3:
+  version "1.11.4"
+  resolved "https://registry.npmmirror.com/dayjs/-/dayjs-1.11.4.tgz#3b3c10ca378140d8917e06ebc13a4922af4f433e"
+  integrity sha512-Zj/lPM5hOvQ1Bf7uAvewDaUcsJoI6JmNqmHhHl3nyumwe0XHwt8sWdOVAPACJzCebL8gQCi+K49w7iKWnGwX9g==
 
 debug@2.6.9, debug@^2.6.8, debug@^2.6.9:
   version "2.6.9"
@@ -3617,20 +3623,20 @@ electron@^17.0.0:
     "@types/node" "^14.6.2"
     extract-zip "^1.0.3"
 
-element-plus@^2.2.4:
-  version "2.2.4"
-  resolved "https://registry.npmmirror.com/element-plus/-/element-plus-2.2.4.tgz#f07f400222a5b0ae93ee9a139155342604746813"
-  integrity sha512-jktZr0o3ARDxWNWPEaJZQm2BN7thTpQl0aIfCUo5eB5m+zEap2DEcojyGKMHSQsCULcPM32NFfu2sHlhbhOiGA==
+element-plus@^2.2.9:
+  version "2.2.9"
+  resolved "https://registry.npmmirror.com/element-plus/-/element-plus-2.2.9.tgz#f0366dfb2048d614813926274cb443f17e5fdef2"
+  integrity sha512-jYbL0JkCdv95rkT6trZJjCAizLPySa0qcd2cgq+57SKQnCZAcNDDq4GbTuFRnNavdoeCJnuM3HIficTIUpsMOQ==
   dependencies:
     "@ctrl/tinycolor" "^3.4.1"
-    "@element-plus/icons-vue" "^2.0.5"
-    "@floating-ui/dom" "^0.5.0"
+    "@element-plus/icons-vue" "^2.0.6"
+    "@floating-ui/dom" "^0.5.4"
     "@popperjs/core" "npm:@sxzz/popperjs-es@^2.11.7"
     "@types/lodash" "^4.14.182"
     "@types/lodash-es" "^4.17.6"
-    "@vueuse/core" "^8.5.0"
-    async-validator "^4.1.1"
-    dayjs "^1.11.2"
+    "@vueuse/core" "^8.7.5"
+    async-validator "^4.2.5"
+    dayjs "^1.11.3"
     escape-html "^1.0.3"
     lodash "^4.17.21"
     lodash-es "^4.17.21"
