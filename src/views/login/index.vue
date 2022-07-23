@@ -16,6 +16,35 @@
         <img class="logo-imag" src="@/assets/images/login-logo.png" />
         <h2>IP广播</h2>
       </div>
+      <svg viewBox="0 0 120 16">
+        <defs>
+          <filter id="goo">
+            <feGaussianBlur
+              in="SourceGraphic"
+              stdDeviation="1"
+              result="blur"
+            ></feGaussianBlur>
+            <feColorMatrix
+              in="blur"
+              mode="matrix"
+              result="goo"
+              values="
+                  1 0 0 0 0
+                  0 1 0 0 0
+                  0 0 1 0 0
+                  0 0 0 13 -9"
+            ></feColorMatrix>
+            <xfeblend in="SourceGraphic" in2="goo"></xfeblend>
+          </filter>
+          <path
+            id="wave"
+            d="M 0,10 C 30,10 30,15 60,15 90,15 90,10 120,10 150,10 150,15 180,15 210,15 210,10 240,10 v 28 h -240 z"
+          ></path>
+        </defs>
+        <use id="wave3" class="wave" xlink:href="#wave" x="0" y="-1"></use>
+        <use id="wave2" class="wave" xlink:href="#wave" x="0" y="0"></use>
+        <use id="wave1" class="wave" xlink:href="#wave" x="0" y="1"></use>
+      </svg>
     </div>
     <div class="broadcast-login-from">
       <div class="login-from-name">
@@ -89,12 +118,49 @@ const submit = () => {
 .broadcast-login {
   width: 320px;
   height: 530px;
-  background-color: #ffffff;
-  border-radius: 9px;
+  background-color: #fff;
+  border-radius: 8px;
   .broadcast-login-header {
+    position: relative;
     -webkit-app-region: drag;
-    height: 230px;
-    background: url("@/assets/images/login-bg.png");
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    overflow: hidden;
+  }
+  svg {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    overflow: visible;
+    bottom: 0;
+  }
+  .wave {
+    animation: wave 4s linear;
+    animation-iteration-count: infinite;
+  }
+  #wave1 {
+    fill: #fff;
+  }
+  #wave2 {
+    animation-duration: 5s;
+    animation-direction: reverse;
+    fill: #7dc3fb;
+    opacity: 0.6;
+  }
+  #wave3 {
+    animation-duration: 6s;
+    fill: #40a3f8;
+    opacity: 0.4;
+  }
+  @keyframes wave {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes ball {
+    to {
+      transform: translateY(20%);
+    }
   }
   .login-header-functron {
     -webkit-app-region: no-drag;
@@ -110,12 +176,13 @@ const submit = () => {
     }
   }
   .login-header-logo {
-    padding-top: 60px;
+    padding: 60px 0;
+    background: linear-gradient(180deg, #2276f3 0%, #2aa0f8 100%);
     h2 {
       font-size: 20px;
       line-height: 40px;
       font-weight: bold;
-      color: #ffffff;
+      color: #fff;
     }
   }
   .broadcast-login-from {
