@@ -1,0 +1,576 @@
+{
+  "id": "3472645",
+  "name": "IP网络广播-客户端v3.0",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "30826483",
+      "name": "语言切换",
+      "font_class": "language",
+      "unicode": "e649",
+      "unicode_decimal": 58953
+    },
+    {
+      "icon_id": "30826484",
+      "name": "终端1",
+      "font_class": "terminals1",
+      "unicode": "e64f",
+      "unicode_decimal": 58959
+    },
+    {
+      "icon_id": "30826485",
+      "name": "文本",
+      "font_class": "text",
+      "unicode": "e651",
+      "unicode_decimal": 58961
+    },
+    {
+      "icon_id": "30825665",
+      "name": "选择",
+      "font_class": "selected",
+      "unicode": "e642",
+      "unicode_decimal": 58946
+    },
+    {
+      "icon_id": "30825666",
+      "name": "勾选",
+      "font_class": "checkboxed",
+      "unicode": "e66d",
+      "unicode_decimal": 58989
+    },
+    {
+      "icon_id": "30824663",
+      "name": "在线",
+      "font_class": "on-line",
+      "unicode": "e66e",
+      "unicode_decimal": 58990
+    },
+    {
+      "icon_id": "30824664",
+      "name": "离线",
+      "font_class": "off-line",
+      "unicode": "e678",
+      "unicode_decimal": 59000
+    },
+    {
+      "icon_id": "30824665",
+      "name": "冻结",
+      "font_class": "freeze",
+      "unicode": "e679",
+      "unicode_decimal": 59001
+    },
+    {
+      "icon_id": "30824666",
+      "name": "远程播放",
+      "font_class": "remote-playback",
+      "unicode": "e67a",
+      "unicode_decimal": 59002
+    },
+    {
+      "icon_id": "30824667",
+      "name": "故障",
+      "font_class": "fault",
+      "unicode": "e67b",
+      "unicode_decimal": 59003
+    },
+    {
+      "icon_id": "30824668",
+      "name": "执行中",
+      "font_class": "executing",
+      "unicode": "e67c",
+      "unicode_decimal": 59004
+    },
+    {
+      "icon_id": "30822485",
+      "name": "刷新",
+      "font_class": "refresh",
+      "unicode": "e658",
+      "unicode_decimal": 58968
+    },
+    {
+      "icon_id": "30821757",
+      "name": "耳机",
+      "font_class": "headset",
+      "unicode": "e62d",
+      "unicode_decimal": 58925
+    },
+    {
+      "icon_id": "30821758",
+      "name": "编辑1",
+      "font_class": "edit1",
+      "unicode": "e630",
+      "unicode_decimal": 58928
+    },
+    {
+      "icon_id": "30821759",
+      "name": "更多",
+      "font_class": "more",
+      "unicode": "e633",
+      "unicode_decimal": 58931
+    },
+    {
+      "icon_id": "30821760",
+      "name": "编辑",
+      "font_class": "edit",
+      "unicode": "e645",
+      "unicode_decimal": 58949
+    },
+    {
+      "icon_id": "30821761",
+      "name": "播放",
+      "font_class": "play",
+      "unicode": "e652",
+      "unicode_decimal": 58962
+    },
+    {
+      "icon_id": "30821762",
+      "name": "耳机-禁用",
+      "font_class": "headphones-disabled",
+      "unicode": "e653",
+      "unicode_decimal": 58963
+    },
+    {
+      "icon_id": "30821763",
+      "name": "保存",
+      "font_class": "save",
+      "unicode": "e654",
+      "unicode_decimal": 58964
+    },
+    {
+      "icon_id": "30821764",
+      "name": "放大",
+      "font_class": "enlarge",
+      "unicode": "e655",
+      "unicode_decimal": 58965
+    },
+    {
+      "icon_id": "30821765",
+      "name": "分级",
+      "font_class": "grade",
+      "unicode": "e656",
+      "unicode_decimal": 58966
+    },
+    {
+      "icon_id": "30821766",
+      "name": "结束",
+      "font_class": "end",
+      "unicode": "e657",
+      "unicode_decimal": 58967
+    },
+    {
+      "icon_id": "30821768",
+      "name": "上移",
+      "font_class": "move-up",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    },
+    {
+      "icon_id": "30821769",
+      "name": "列表",
+      "font_class": "list",
+      "unicode": "e65a",
+      "unicode_decimal": 58970
+    },
+    {
+      "icon_id": "30821770",
+      "name": "提示",
+      "font_class": "tips",
+      "unicode": "e65b",
+      "unicode_decimal": 58971
+    },
+    {
+      "icon_id": "30821771",
+      "name": "顺序播放",
+      "font_class": "order",
+      "unicode": "e65c",
+      "unicode_decimal": 58972
+    },
+    {
+      "icon_id": "30821772",
+      "name": "克隆",
+      "font_class": "clone",
+      "unicode": "e65d",
+      "unicode_decimal": 58973
+    },
+    {
+      "icon_id": "30821773",
+      "name": "媒体文件夹",
+      "font_class": "media-folder",
+      "unicode": "e65e",
+      "unicode_decimal": 58974
+    },
+    {
+      "icon_id": "30821774",
+      "name": "下载",
+      "font_class": "download",
+      "unicode": "e65f",
+      "unicode_decimal": 58975
+    },
+    {
+      "icon_id": "30821775",
+      "name": "上传",
+      "font_class": "upload",
+      "unicode": "e660",
+      "unicode_decimal": 58976
+    },
+    {
+      "icon_id": "30821776",
+      "name": "下移",
+      "font_class": "move-down",
+      "unicode": "e661",
+      "unicode_decimal": 58977
+    },
+    {
+      "icon_id": "30821777",
+      "name": "随机播放",
+      "font_class": "random",
+      "unicode": "e662",
+      "unicode_decimal": 58978
+    },
+    {
+      "icon_id": "30821778",
+      "name": "循环",
+      "font_class": "loop-play",
+      "unicode": "e663",
+      "unicode_decimal": 58979
+    },
+    {
+      "icon_id": "30821779",
+      "name": "删除",
+      "font_class": "delete",
+      "unicode": "e664",
+      "unicode_decimal": 58980
+    },
+    {
+      "icon_id": "30821780",
+      "name": "添加",
+      "font_class": "add",
+      "unicode": "e665",
+      "unicode_decimal": 58981
+    },
+    {
+      "icon_id": "30821782",
+      "name": "缩小",
+      "font_class": "narrow",
+      "unicode": "e667",
+      "unicode_decimal": 58983
+    },
+    {
+      "icon_id": "30821783",
+      "name": "选择文件",
+      "font_class": "select-file",
+      "unicode": "e668",
+      "unicode_decimal": 58984
+    },
+    {
+      "icon_id": "30821784",
+      "name": "排序",
+      "font_class": "sort",
+      "unicode": "e669",
+      "unicode_decimal": 58985
+    },
+    {
+      "icon_id": "30821785",
+      "name": "列表播放",
+      "font_class": "list-play",
+      "unicode": "e66a",
+      "unicode_decimal": 58986
+    },
+    {
+      "icon_id": "30821786",
+      "name": "音乐",
+      "font_class": "music",
+      "unicode": "e66b",
+      "unicode_decimal": 58987
+    },
+    {
+      "icon_id": "30821787",
+      "name": "右移",
+      "font_class": "shift-right",
+      "unicode": "e66c",
+      "unicode_decimal": 58988
+    },
+    {
+      "icon_id": "30821790",
+      "name": "正在播放",
+      "font_class": "playing",
+      "unicode": "e66f",
+      "unicode_decimal": 58991
+    },
+    {
+      "icon_id": "30821792",
+      "name": "左移",
+      "font_class": "shift-left",
+      "unicode": "e671",
+      "unicode_decimal": 58993
+    },
+    {
+      "icon_id": "30821793",
+      "name": "预览",
+      "font_class": "preview",
+      "unicode": "e672",
+      "unicode_decimal": 58994
+    },
+    {
+      "icon_id": "30821794",
+      "name": "音乐播放",
+      "font_class": "music-playback",
+      "unicode": "e673",
+      "unicode_decimal": 58995
+    },
+    {
+      "icon_id": "30821795",
+      "name": "终端",
+      "font_class": "terminals",
+      "unicode": "e674",
+      "unicode_decimal": 58996
+    },
+    {
+      "icon_id": "30821796",
+      "name": "终端_terminal (2)",
+      "font_class": "view-terminlas",
+      "unicode": "e675",
+      "unicode_decimal": 58997
+    },
+    {
+      "icon_id": "30821918",
+      "name": "单选-已选择",
+      "font_class": "radioed",
+      "unicode": "e676",
+      "unicode_decimal": 58998
+    },
+    {
+      "icon_id": "30821936",
+      "name": "单选-未选择",
+      "font_class": "radio",
+      "unicode": "e677",
+      "unicode_decimal": 58999
+    },
+    {
+      "icon_id": "30818419",
+      "name": "4.2_but03_down",
+      "font_class": "prev",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "30818421",
+      "name": "4.2_but07_down",
+      "font_class": "volume2",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "30818422",
+      "name": "4.2_but05_down",
+      "font_class": "next",
+      "unicode": "e627",
+      "unicode_decimal": 58919
+    },
+    {
+      "icon_id": "30818427",
+      "name": "服务器1",
+      "font_class": "the-server",
+      "unicode": "e62c",
+      "unicode_decimal": 58924
+    },
+    {
+      "icon_id": "30818429",
+      "name": "播放中心",
+      "font_class": "playback-center",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    },
+    {
+      "icon_id": "30818430",
+      "name": "窗口",
+      "font_class": "win",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
+      "icon_id": "30818433",
+      "name": "关闭",
+      "font_class": "close",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "30818435",
+      "name": "密码",
+      "font_class": "password",
+      "unicode": "e634",
+      "unicode_decimal": 58932
+    },
+    {
+      "icon_id": "30818436",
+      "name": "会话状态",
+      "font_class": "session-state",
+      "unicode": "e635",
+      "unicode_decimal": 58933
+    },
+    {
+      "icon_id": "30818437",
+      "name": "2.0_but01_down",
+      "font_class": "shrink",
+      "unicode": "e636",
+      "unicode_decimal": 58934
+    },
+    {
+      "icon_id": "30818438",
+      "name": "换肤",
+      "font_class": "skin",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
+      "icon_id": "30818439",
+      "name": "定时任务",
+      "font_class": "task",
+      "unicode": "e638",
+      "unicode_decimal": 58936
+    },
+    {
+      "icon_id": "30818440",
+      "name": "未勾选",
+      "font_class": "checkbox",
+      "unicode": "e639",
+      "unicode_decimal": 58937
+    },
+    {
+      "icon_id": "30818441",
+      "name": "搜索",
+      "font_class": "search2",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "30818442",
+      "name": "媒体库",
+      "font_class": "meitiku",
+      "unicode": "e63b",
+      "unicode_decimal": 58939
+    },
+    {
+      "icon_id": "30818443",
+      "name": "收起",
+      "font_class": "pack-up",
+      "unicode": "e63c",
+      "unicode_decimal": 58940
+    },
+    {
+      "icon_id": "30818444",
+      "name": "清除",
+      "font_class": "clear",
+      "unicode": "e63d",
+      "unicode_decimal": 58941
+    },
+    {
+      "icon_id": "30818445",
+      "name": "设置",
+      "font_class": "set-up",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "30818446",
+      "name": "隐藏",
+      "font_class": "hiddle",
+      "unicode": "e63f",
+      "unicode_decimal": 58943
+    },
+    {
+      "icon_id": "30818447",
+      "name": "下拉1",
+      "font_class": "drop-down",
+      "unicode": "e640",
+      "unicode_decimal": 58944
+    },
+    {
+      "icon_id": "30818448",
+      "name": "下拉",
+      "font_class": "inverted-triangle",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    },
+    {
+      "icon_id": "30818450",
+      "name": "搜索1",
+      "font_class": "search",
+      "unicode": "e643",
+      "unicode_decimal": 58947
+    },
+    {
+      "icon_id": "30818451",
+      "name": "显示",
+      "font_class": "visible",
+      "unicode": "e644",
+      "unicode_decimal": 58948
+    },
+    {
+      "icon_id": "30818453",
+      "name": "暂停-点击",
+      "font_class": "suspend",
+      "unicode": "e646",
+      "unicode_decimal": 58950
+    },
+    {
+      "icon_id": "30818454",
+      "name": "系统",
+      "font_class": "system",
+      "unicode": "e647",
+      "unicode_decimal": 58951
+    },
+    {
+      "icon_id": "30818455",
+      "name": "音量1",
+      "font_class": "volume1",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "30818457",
+      "name": "上拉",
+      "font_class": "regular-triangle",
+      "unicode": "e64a",
+      "unicode_decimal": 58954
+    },
+    {
+      "icon_id": "30818458",
+      "name": "中单状态",
+      "font_class": "terminal-status",
+      "unicode": "e64b",
+      "unicode_decimal": 58955
+    },
+    {
+      "icon_id": "30818459",
+      "name": "账号",
+      "font_class": "user",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
+      "icon_id": "30818460",
+      "name": "最小化1",
+      "font_class": "minimize1",
+      "unicode": "e64d",
+      "unicode_decimal": 58957
+    },
+    {
+      "icon_id": "30818462",
+      "name": "音量",
+      "font_class": "volume",
+      "unicode": "e64e",
+      "unicode_decimal": 58958
+    },
+    {
+      "icon_id": "30818464",
+      "name": "最小化",
+      "font_class": "minimize",
+      "unicode": "e650",
+      "unicode_decimal": 58960
+    }
+  ]
+}

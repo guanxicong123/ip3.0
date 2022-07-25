@@ -8,15 +8,33 @@
   <div class="broadcast-login">
     <div class="broadcast-login-header">
       <div class="login-header-functron">
-        <el-icon @click="handleMinimize"><Minus /></el-icon>
-        <el-icon @click="register"><FullScreen /></el-icon>
-        <el-icon @click="close"><Close /></el-icon>
+        <el-icon @click="handleMinimize">
+          <template #default>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-minimize1"></use>
+            </svg>
+          </template>
+        </el-icon>
+        <el-icon @click="register">
+          <template #default>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-set-up"></use>
+            </svg>
+          </template>
+        </el-icon>
+        <el-icon @click="close">
+          <template #default>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-clear"></use>
+            </svg>
+          </template>
+        </el-icon>
       </div>
       <div class="login-header-logo">
-        <img class="logo-imag" src="@/assets/images/login-logo.png" />
+        <img class="logo-imag" src="@/assets/images/logo.png" />
         <h2>IP广播</h2>
       </div>
-      <svg viewBox="0 0 120 16">
+      <svg viewBox="0 0 120 16" class="svg">
         <defs>
           <filter id="goo">
             <feGaussianBlur
@@ -34,7 +52,6 @@
                   0 0 1 0 0
                   0 0 0 13 -9"
             ></feColorMatrix>
-            <xfeblend in="SourceGraphic" in2="goo"></xfeblend>
           </filter>
           <path
             id="wave"
@@ -49,27 +66,49 @@
     <div class="broadcast-login-from">
       <div class="login-from-name">
         <el-input
-          v-model="modelRef.username"
-          placeholder="账号"
-          :prefix-icon="Avatar"
-        />
+          type="text"
+          auto-complete="off"
+          v-model="modelRef.name"
+          :disabled="modelRef.logining"
+          :maxlength="100"
+          placeholder="请输入账号"
+          clearable
+          suffix-icon=""
+        >
+          <template #prefix>
+            <i class="iconfont icon-user"></i>
+          </template>
+        </el-input>
       </div>
       <div class="login-from-password">
         <el-input
+          type="password"
           v-model="modelRef.password"
-          placeholder="密码"
-          :prefix-icon="Briefcase"
-        />
+          :disabled="modelRef.logining"
+          :maxlength="20"
+          placeholder="请输入密码"
+          clearable
+          show-password
+          suffix-icon=""
+          auto-complete="new-password"
+          oncopy="return false"
+          ondragstart="return false"
+          onselectstart="return false"
+        >
+          <template #prefix>
+            <i class="iconfont icon-password"></i>
+          </template>
+        </el-input>
       </div>
       <div class="login-from-remember_password">
         <el-checkbox v-model="is_checked" label="记住密码" />
       </div>
       <div class="login-from-server">
-        <el-input
-          v-model="modelRef.server_ip_address"
-          placeholder="服务器地址"
-          :prefix-icon="Briefcase"
-        />
+        <el-input v-model="modelRef.server_ip_address" placeholder="服务器地址">
+          <template #prefix>
+            <i class="iconfont icon-the-server"></i>
+          </template>
+        </el-input>
       </div>
     </div>
     <div class="broadcast-login-sign">
@@ -79,24 +118,16 @@
 </template>
 
 <script lang="ts" setup>
-import { Avatar, Briefcase } from "@element-plus/icons-vue";
-
 const $useRouter = useRouter();
-
 // 表单值
 const modelRef = reactive({
-  username: "",
+  name: "",
   password: "",
   server_ip_address: "",
+  logining: false,
 });
 // 记住密码
 const is_checked = ref(false);
-
-// mounted 实例挂载完成后被调用
-onMounted(() => {
-  window.electronAPI.send("login-window");
-});
-
 // 隐藏
 const handleMinimize = () => {
   window.electronAPI.send("minimize");
@@ -112,13 +143,18 @@ const close = () => {
 const submit = () => {
   $useRouter.push("/terminal");
 };
+
+// mounted 实例挂载完成后被调用
+onMounted(() => {
+  window.electronAPI.send("login-window");
+});
 </script>
 
 <style lang="scss">
 .broadcast-login {
   width: 320px;
   height: 530px;
-  background-color: #fff;
+  background-color: $c-fff;
   border-radius: 8px;
   .broadcast-login-header {
     position: relative;
@@ -127,7 +163,7 @@ const submit = () => {
     border-top-right-radius: 8px;
     overflow: hidden;
   }
-  svg {
+  .svg {
     position: absolute;
     left: 0;
     width: 100%;
@@ -139,7 +175,7 @@ const submit = () => {
     animation-iteration-count: infinite;
   }
   #wave1 {
-    fill: #fff;
+    fill: $c-fff;
   }
   #wave2 {
     animation-duration: 5s;
@@ -163,26 +199,33 @@ const submit = () => {
     }
   }
   .login-header-functron {
+    position: absolute;
+    top: 0;
+    right: 10px;
     -webkit-app-region: no-drag;
-    width: 80px;
-    height: 44px;
     display: flex;
     align-items: center;
-    float: right;
+    width: 80px;
+    height: 44px;
     font-size: 16px;
-    color: #fff;
+    color: $c-fff;
     i {
       flex: 1;
     }
   }
   .login-header-logo {
+    text-align: center;
     padding: 60px 0;
     background: linear-gradient(180deg, #2276f3 0%, #2aa0f8 100%);
+    .logo-imag {
+      width: 70px;
+      height: 70px;
+    }
     h2 {
       font-size: 20px;
       line-height: 40px;
       font-weight: bold;
-      color: #fff;
+      color: $c-fff;
     }
   }
   .broadcast-login-from {
@@ -193,7 +236,8 @@ const submit = () => {
       width: 240px;
       .el-input__wrapper {
         height: 36px;
-        border-bottom: 1px solid #dddddd;
+        border-bottom: 1px solid #ddd;
+        border-radius: 0;
         box-shadow: 0 0 0 0 var(--el-input-border-color, var(--el-border-color))
           inset;
       }
@@ -203,8 +247,15 @@ const submit = () => {
       width: 240px;
       text-align: right;
     }
+    .iconfont {
+      color: #9dc7f3;
+    }
+    .icon-the-server {
+      font-size: 12px;
+    }
   }
   .broadcast-login-sign {
+    text-align: center;
     padding-top: 26px;
     .el-button {
       width: 240px;

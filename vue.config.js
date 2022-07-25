@@ -111,9 +111,18 @@ module.exports = defineConfig({
         // 全局注册导入，详情看 auto-imports.d.ts 文件
         imports: [
           'vue',
-          'vuex',
+          'pinia',
           'vue-router',
           {
+            '@/utils/storage': [
+              // 命名导入 import { localStorage } from '@/utils/storage'
+              'localStorage',
+            ],
+            '@/store/app': [
+              ['default', 'useAppStore'],
+              // 别名 import { useFetch as useMyFetch } from '@/store'
+              // ['useFetch', 'useMyFetch'],
+            ],
             'axios': [
               // 默认导入 import { default as axios } from 'axios'
               ['default', 'axios'],

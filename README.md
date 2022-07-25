@@ -4,7 +4,7 @@
     <img src="https://img.shields.io/badge/Electron-17.4.7-brightgreen.svg"/>
     <img src="https://img.shields.io/badge/TypeScript-4.5.5-blue.svg"/>
     <img src="https://img.shields.io/badge/Webpack-5.54.0-green.svg"/>
-    <img src="https://img.shields.io/badge/Element Plus-2.2.9-blue.svg"/>
+    <img src="https://img.shields.io/badge/Element Plus-2.2.10-blue.svg"/>
     <img src="https://img.shields.io/badge/Author-HuangMaoFeng-purple.svg"/>
     <img src="https://img.shields.io/badge/Organization-保伦-red.svg"/>
 </p>

@@ -26,7 +26,13 @@
       </div>
       <div class="broadcast-header-function-window">
         <el-dropdown @command="handleCommand">
-          <el-icon><Tools /></el-icon>
+          <el-icon>
+            <template #default>
+              <svg class="icon" aria-hidden="true">
+                <use xlink:href="#icon-language"></use>
+              </svg>
+            </template>
+          </el-icon>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item command="simplified">中文简体</el-dropdown-item>
@@ -35,10 +41,34 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-icon><Stamp /></el-icon>
-        <el-icon @click="handleMinimize"><Minus /></el-icon>
-        <el-icon @click="handleMaxMin"><FullScreen /></el-icon>
-        <el-icon @click="close"><Close /></el-icon>
+        <el-icon>
+          <template #default>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-skin"></use>
+            </svg>
+          </template>
+        </el-icon>
+        <el-icon @click="handleMinimize">
+          <template #default>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-minimize"></use>
+            </svg>
+          </template>
+        </el-icon>
+        <el-icon @click="handleMaxMin">
+          <template #default>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-win"></use>
+            </svg>
+          </template>
+        </el-icon>
+        <el-icon @click="close">
+          <template #default>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-close"></use>
+            </svg>
+          </template>
+        </el-icon>
       </div>
     </div>
   </div>
@@ -90,7 +120,7 @@ const close = () => {
   -webkit-app-region: drag;
   h2 {
     float: left;
-    color: #666666;
+    color: $c-666;
     font-size: 18px;
     line-height: 44px;
     font-weight: bold;
@@ -105,19 +135,21 @@ const close = () => {
       height: 100%;
       display: flex;
       align-items: center;
-      border-left: 2px solid #666666;
+      border-left: 2px solid $c-999;
       > div {
         flex: 1;
       }
       i {
         flex: 1;
+        margin-left: 15px;
         font-size: 16px;
-        color: #666666;
+        color: $c-666;
+        cursor: pointer;
       }
     }
     .broadcast-header-function-user {
       display: inline-block;
-      margin-right: 8px;
+      margin-right: 15px;
       .el-dropdown-link {
         line-height: 44px;
         font-size: 12px;

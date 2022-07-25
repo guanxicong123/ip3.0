@@ -24,7 +24,7 @@ onMounted(() => {
 <style lang="scss">
 .broadcast-home-container {
   height: 100%;
-  background-color: #fff;
+  background-color: $c-fff;
   .broadcast-home-aside {
     background-color: #0070ee;
     border-radius: 0px 16px 16px 0px;

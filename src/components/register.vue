@@ -41,20 +41,20 @@ const close = () => {
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.5),
     0px 2px 14px 0px rgba(120, 120, 120, 0.5);
   border-radius: 4px;
-  background-color: #ffffff;
+  background-color: $c-fff;
   text-align: center;
   .el-icon {
     position: absolute;
     top: 12px;
     right: 20px;
     font-size: 20px;
-    color: #000000;
+    color: $c-000;
   }
   .logo-imag {
     padding-top: 10px;
   }
   p {
-    color: #000000;
+    color: $c-000;
     font-size: 16px;
   }
 }
