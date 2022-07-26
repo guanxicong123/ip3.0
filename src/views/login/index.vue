@@ -31,7 +31,7 @@
         </el-icon>
       </div>
       <div class="login-header-logo">
-        <img class="logo-imag" src="@/assets/images/logo.png" />
+        <img class="logo-imag" src="@/assets/images/logo.png" alt="logo" />
         <h2>IP广播</h2>
       </div>
       <svg viewBox="0 0 120 16" class="svg">
