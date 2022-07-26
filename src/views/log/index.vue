@@ -7,18 +7,6 @@
 <template>
   <div class="com-index">
     <div class="com-head">
-      <div class="com-head-content">
-        <div class="com-breadcrumb">
-          <el-breadcrumb :separator-icon="ArrowRight">
-            <el-breadcrumb-item>系统</el-breadcrumb-item>
-            <el-breadcrumb-item>日志管理</el-breadcrumb-item>
-          </el-breadcrumb>
-        </div>
-        <div class="com-button">
-          <i class="iconfont icon-refresh" title="刷新"></i>
-          <i class="iconfont icon-delete" title="批量删除"></i>
-        </div>
-      </div>
       <div class="com-head-content com-hc-bg">
         <div class="com-breadcrumb">
           <el-date-picker
@@ -46,12 +34,14 @@
           </el-button>
         </div>
         <div class="com-button">
-          <el-button type="primary">清空日志</el-button>
-          <el-button type="primary">导出日志</el-button>
+          <i class="iconfont icon-refresh" title="刷新"></i>
+          <i class="iconfont icon-delete" title="批量删除"></i>
+          <!-- <el-button type="primary">清空日志</el-button>
+          <el-button type="primary">导出日志</el-button> -->
         </div>
       </div>
       <template v-if="form.isAdvancedSearch">
-        <div class="com-head-content com-hc-bg no-flex">
+        <div class="com-head-content no-flex">
           <div class="com-breadcrumb">
             <el-select v-model="form.selectLogType">
               <el-option
@@ -176,7 +166,7 @@
             </template>
           </div>
         </div>
-        <div class="com-head-content com-hc-bg">
+        <div class="com-head-content">
           <el-button @click="form.isAdvancedSearch = !form.isAdvancedSearch">
             关闭
           </el-button>

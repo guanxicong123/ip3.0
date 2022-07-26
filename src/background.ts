@@ -122,21 +122,11 @@ async function createWindow() {
     // 渲染进程传值，设置记住的宽高
     const isTrue = value && (value.width || value.height);
     const width = isTrue ? Number(value.width) : 1280;
-    const height = isTrue ? Number(value.height) : 768;
+    const height = isTrue ? Number(value.height) : 720;
     win.setSize(width, height);
     win.center();
     win.setResizable(true);
-    win.setMinimumSize(1280, 720);
-  });
-  ipcMain.on("main-window", (e, value) => {
-    // 渲染进程传值，设置记住的宽高
-    const isTrue = value && (value.width || value.height);
-    const width = isTrue ? Number(value.width) : 1280;
-    const height = isTrue ? Number(value.height) : 768;
-    win.setSize(width, height);
-    win.center();
-    win.setResizable(true);
-    win.setMinimumSize(1024, 600);
+    win.setMinimumSize(1280, 600);
   });
   // 窗口移动的监听事件
   win.on("resize", () => {

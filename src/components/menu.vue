@@ -137,13 +137,13 @@ const handleMouseleave = (item: { hover: boolean; }) => {
     height: 100%;
     text-align: center;
     .sidebar-scrollbar-list {
-      -webkit-app-region: no-drag;
       display: flex;
       flex: 1;
       overflow: hidden;
       ul {
         margin-bottom: 10px;
         > li {
+          -webkit-app-region: no-drag;
           .sidebar-router-child {
             width: 128px;
             height: 94px;

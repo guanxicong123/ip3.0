@@ -36,5 +36,9 @@ onMounted(() => {
     padding: 0 12px;
     box-shadow: inset 0px -1px 0px 0px #f5f5f5;
   }
+  .el-container {
+    border: 1px solid #f5f5f5;
+    border-left: none;
+  }
 }
 </style>

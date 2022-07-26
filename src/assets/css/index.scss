@@ -29,6 +29,7 @@
 }
 .com-head {
   padding: 0 10px;
+  margin-top: 10px;
   .com-head-content {
     display: flex;
     flex-direction: row;
@@ -102,6 +103,18 @@
     height: 100%;
     padding: 10px 10px 20px;
     box-sizing: border-box;
+  }
+}
+.com-card {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  .el-card {
+    margin: 10px;
+    background: #f6faff;
+  }
+  .el-card__body {
+    padding: 10px;
   }
 }
 .com-form {
@@ -185,6 +198,7 @@
     th.el-table__cell.is-leaf,
     .el-table--border .el-table__cell {
       border: 1px dotted $c-fff;
+      border-bottom-color: #eee;
     }
   }
   .cell {
@@ -210,4 +224,16 @@
 }
 .icon-delete {
   color: #ec6656;
+}
+// 自定义默认select样式
+.custom-select {
+  width: 100%;
+  height: 25px;
+  padding: 5px 20px 5px 5px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  cursor: pointer;
+  // -webkit-appearance: none;
+  // -moz-appearance: none;
+  outline: none;
 }
