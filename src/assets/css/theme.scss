@@ -1,2 +1,16 @@
 @import '../font/iconfont.css';
 @import 'index.scss';
+
+.theme {
+  color: $c-theme !important;
+}
+//滚动条
+::-webkit-scrollbar-thumb {
+  background-color: $c-theme;
+}
+//icom
+.icon-add,
+.icon-refresh,
+.icon-clone {
+  color: $c-theme;
+}

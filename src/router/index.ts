@@ -63,16 +63,16 @@ const routes: Array<RouteRecordRaw> = [
         path: "system/configure",
         name: "system_configure",
         component: () =>
-          import(/* webpackChunkName: "medium" */ "../views/system/index.vue"),
-      },
-      // 终端日志
-      {
-        path: "system/journal",
-        name: "system_journal",
-        component: () =>
           import(
-            /* webpackChunkName: "terminal" */ "../views/journal/index.vue"
+            /* webpackChunkName: "configure" */ "../views/system/index.vue"
           ),
+      },
+      // 日志管理
+      {
+        path: "system/log",
+        name: "system_log",
+        component: () =>
+          import(/* webpackChunkName: "log" */ "../views/log/index.vue"),
       },
     ],
   },

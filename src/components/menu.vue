@@ -65,11 +65,11 @@ const sidebarData: any = [
   { name: "媒体库", path: "/medium", icon: "icon-meitiku", children: [] },
   {
     name: "系统",
-    path: "/system/configure",
+    path: "/system",
     icon: "icon-system",
     children: [
       { name: "系统配置", path: "/system/configure" },
-      { name: "终端日志", path: "/system/journal" },
+      { name: "日志管理", path: "/system/log" },
     ],
   },
 ];
@@ -79,7 +79,7 @@ const $useRoute = useRoute();
 
 // 处理点击路由跳转
 const handleClickRouter = (item: { path: string }) => {
-  $useRouter.push(item.path);
+  $useRouter.push(item.path == "/system" ? item.path + "/configure" : item.path);
 };
 </script>
 
@@ -124,12 +124,15 @@ const handleClickRouter = (item: { path: string }) => {
         }
         &:hover {
           .sidebar-scrollbar-children {
-            display: block;
+            visibility: visible;
+          }
+          .sidebar-router-child {
+            background: url("@/assets/images/nav-bg.svg");
           }
         }
       }
       .sidebar-scrollbar-children {
-        display: none;
+        visibility: hidden;
         z-index: 3001;
         position: absolute;
         right: -220px;
