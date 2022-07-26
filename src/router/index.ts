@@ -5,7 +5,7 @@ import Register from "../components/register.vue";
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "Login",
+    name: "login",
     component: Login,
   },
   {
@@ -15,48 +15,46 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/",
-    name: "home",
+    name: "container",
     component: () =>
-      import(/* webpackChunkName: "home" */ "../views/home/index.vue"),
+      import(/* webpackChunkName: "container" */ "@/components/container.vue"),
     children: [
       // 终端状态
       {
-        path: "/terminal",
+        path: "terminal",
         name: "terminal",
         component: () =>
           import(
-            /* webpackChunkName: "terminal" */ "../views/terminal/index.vue"
+            /* webpackChunkName: "terminal" */ "@/views/terminal/index.vue"
           ),
       },
       // 播放中心
       {
-        path: "/play",
+        path: "play",
         name: "play",
         component: () =>
-          import(/* webpackChunkName: "play" */ "../views/play/index.vue"),
+          import(/* webpackChunkName: "play" */ "@/views/play/index.vue"),
       },
       // 会话状态
       {
-        path: "/session",
+        path: "session",
         name: "session",
         component: () =>
-          import(
-            /* webpackChunkName: "session" */ "../views/session/index.vue"
-          ),
+          import(/* webpackChunkName: "session" */ "@/views/session/index.vue"),
       },
       // 定时任务
       {
-        path: "/timing",
+        path: "timing",
         name: "timing",
         component: () =>
-          import(/* webpackChunkName: "timing" */ "../views/timing/index.vue"),
+          import(/* webpackChunkName: "timing" */ "@/views/timing/index.vue"),
       },
       // 媒体库
       {
-        path: "/medium",
-        name: "medium",
+        path: "media/:id?",
+        name: "media",
         component: () =>
-          import(/* webpackChunkName: "medium" */ "../views/medium/index.vue"),
+          import(/* webpackChunkName: "media" */ "@/views/media/index.vue"),
       },
       // 系统配置
       {
@@ -64,7 +62,7 @@ const routes: Array<RouteRecordRaw> = [
         name: "system_configure",
         component: () =>
           import(
-            /* webpackChunkName: "configure" */ "../views/system/index.vue"
+            /* webpackChunkName: "configure" */ "@/views/system/index.vue"
           ),
       },
       // 日志管理
@@ -72,7 +70,7 @@ const routes: Array<RouteRecordRaw> = [
         path: "system/log",
         name: "system_log",
         component: () =>
-          import(/* webpackChunkName: "log" */ "../views/log/index.vue"),
+          import(/* webpackChunkName: "log" */ "@/views/log/index.vue"),
       },
     ],
   },

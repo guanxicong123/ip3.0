@@ -205,7 +205,7 @@
 
 <script lang="ts" setup>
 import { ElTable } from "element-plus";
-import { ArrowRight, Search } from "@element-plus/icons-vue";
+import { Search } from "@element-plus/icons-vue";
 
 interface User {
   date: string;

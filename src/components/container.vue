@@ -1,3 +1,9 @@
+<!-- 
+  @Author: hmf
+  @CreateDate: 2022-07-26
+  @FilePath: src\components\container.vue
+  @Describe: 主体容器
+-->
 <template>
   <el-container class="broadcast-home-container">
     <div class="broadcast-home-aside">

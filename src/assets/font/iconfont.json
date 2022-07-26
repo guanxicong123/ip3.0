@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "25081157",
+      "name": "close-folder",
+      "font_class": "close-folder",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "25081220",
+      "name": "media-private-folder",
+      "font_class": "media-private-folder",
+      "unicode": "e650",
+      "unicode_decimal": 58960
+    },
+    {
+      "icon_id": "25081230",
+      "name": "media-public-folder",
+      "font_class": "media-public-folder",
+      "unicode": "e666",
+      "unicode_decimal": 58982
+    },
+    {
       "icon_id": "30826483",
       "name": "语言切换",
       "font_class": "language",
@@ -552,25 +573,11 @@
       "unicode_decimal": 58956
     },
     {
-      "icon_id": "30818460",
-      "name": "最小化1",
-      "font_class": "minimize1",
-      "unicode": "e64d",
-      "unicode_decimal": 58957
-    },
-    {
       "icon_id": "30818462",
       "name": "音量",
       "font_class": "volume",
       "unicode": "e64e",
       "unicode_decimal": 58958
-    },
-    {
-      "icon_id": "30818464",
-      "name": "最小化",
-      "font_class": "minimize",
-      "unicode": "e650",
-      "unicode_decimal": 58960
     }
   ]
 }

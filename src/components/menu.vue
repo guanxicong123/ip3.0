@@ -1,3 +1,9 @@
+<!-- 
+  @Author: hmf
+  @CreateDate: 2022-07-26
+  @FilePath: src\components\menu.vue
+  @Describe: 导航菜单
+-->
 <template>
   <div class="broadcast-sidebar">
     <div class="broadcast-sidebar-ul">
@@ -92,7 +98,7 @@ const sidebarData = ref([
   },
   {
     name: "媒体库",
-    path: "/medium",
+    path: "/media",
     icon: "icon-meitiku",
     hover: false,
     children: [],

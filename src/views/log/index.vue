@@ -204,7 +204,7 @@
 
 <script lang="ts" setup>
 import type { TabsPaneContext } from "element-plus";
-import { ArrowRight, Search } from "@element-plus/icons-vue";
+import { Search } from "@element-plus/icons-vue";
 
 // defineAsyncComponent 异步组件-懒加载子组件
 const systemLog = defineAsyncComponent(() => import("./system/index.vue"));
