@@ -44,6 +44,106 @@
 
 项目原型地址：https://lanhuapp.com/url/gI3FJ
 
+## <span id="top">项目配置</span>
+* [Element Plus 按需引入组件](#element)
+* [Sass 全局变量](#sass)
+
+### <span id="element">✅ Element Plus 按需引入组件 </span>
+
+- [unplugin-auto-import](https://github.com/antfu/unplugin-auto-import#install) 自动导入 Vite、Webpack、Rollup 和 esbuild 的 API。
+- [unplugin-vue-components](https://github.com/antfu/unplugin-vue-components#installation) Vue 的组件自动按需导入
+
+#### 安装插件
+
+```
+yarn add unplugin-vue-components unplugin-auto-import -D
+```
+
+#### 配置
+
+```
+// vue.config.js
+const Components = require('unplugin-vue-components/webpack')
+const AutoImport = require('unplugin-auto-import/webpack')
+const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
+
+const path = require('path')
+const pathSrc = path.resolve(__dirname, 'src')
+
+configureWebpack: {
+    plugins: [
+        AutoImport({ 
+            // 目标文件
+            include: [
+                /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
+                /\.vue$/, /\.vue\?vue/, // .vue
+                /\.md$/, // .md
+            ],
+            // 全局注册导入，详情看 auto-imports.d.ts 文件
+            imports: [
+                'vue', 
+                'vue-router',
+                'pinia',
+                 {
+                    '@/utils/storage': [
+                        // 命名导入 import { localStorage } from '@/utils/storage'
+                        'localStorage',
+                    ],
+                    '@/store/app': [
+                        ['default', 'useAppStore'],
+                        // 别名 import { useFetch as useMyFetch } from '@/store'
+                        // ['useFetch', 'useMyFetch'],
+                    ],
+                    '@/global/config': [
+                        ['default', 'useConfig'],
+                    ],
+                    'axios': [
+                        // 默认导入 import { default as axios } from 'axios'
+                        ['default', 'axios'],
+                    ],
+                }
+            ], 
+            // 解析器来进行组件声明
+            resolvers: [
+                // Vant 组件相关函数(带样式)
+                VantResolver(),
+            ],
+            // 声明文件生成位置和文件名称
+            dts: path.resolve(pathSrc, 'auto-imports.d.ts'),
+        }),
+        Components({
+            resolvers: [VantResolver()],
+            // 声明文件生成位置和文件名称
+            dts: path.resolve(pathSrc, 'components.d.ts'),
+        }),
+    ],
+}
+```
+
+
+更多详细信息： [Element Plus](https://element-plus.gitee.io/zh-CN/guide/quickstart.html#%E6%8C%89%E9%9C%80%E5%AF%BC%E5%85%A5)
+
+[▲ 回顶部](#top)
+
+### <span id="sass">✅ Sass 全局变量 </span>
+
+```
+// vue.config.js
+css: {
+    loaderOptions: {
+        scss: {
+            additionalData: `
+                @import "@/assets/css/color.scss";
+            `
+        }
+    },
+},
+```
+
+[▲ 回顶部](#top)
+
+**更多详细配置请看 vue.config.js、tsconfig.json、.eslintrc.js**
+
 ## 启动部署
 
 #### 环境准备
@@ -109,8 +209,8 @@ git commit -m "style: 规范Eslint"
 # 修改依赖项
 git commit -m "chore: 修改依赖项"
 
-# 修复Bug, 描述清晰, 日后方便查找, #520 是修复某个id的编号
-git commit -m "fix: 干掉了你(#520)"
+# 修复Bug, 描述清晰, 日后方便查找, #250 是修复某个id的编号
+git commit -m "fix: 修复你了(#250)"
 
 # 删除文件
 git commit -m "remove: 删除文件"
