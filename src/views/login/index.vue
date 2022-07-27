@@ -11,7 +11,7 @@
         <el-icon @click="handleMinimize">
           <template #default>
             <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-minimize1"></use>
+              <use xlink:href="#icon-minimize"></use>
             </svg>
           </template>
         </el-icon>

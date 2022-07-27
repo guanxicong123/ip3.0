@@ -11,23 +11,17 @@
         <div class="com-head">
           <div class="com-head-content">
             <div class="com-breadcrumb">
-              <el-breadcrumb :separator-icon="ArrowRight">
-                <el-breadcrumb-item>媒体库</el-breadcrumb-item>
-              </el-breadcrumb>
+              <el-input
+                v-model="form.search"
+                placeholder="文件夹名称"
+                clearable
+              />
+              <el-button :icon="Search"></el-button>
             </div>
             <div class="com-button">
               <i class="iconfont icon-refresh theme" title="刷新"></i>
               <i class="iconfont icon-add" title="新建"></i>
             </div>
-          </div>
-          <div class="com-head-content">
-            <el-input
-              v-model="form.search"
-              placeholder="文件夹名称"
-              clearable
-            />
-            <el-button :icon="Search"></el-button>
-            <el-button>重置</el-button>
           </div>
         </div>
         <div class="com-main">
@@ -41,7 +35,11 @@
                   :class="$useRoute.params.id == item.id ? 'theme' : ''"
                 >
                   <div class="nav-one">
-                    <i class="iconfont icon-close-folder"></i>
+                    <i class="iconfont">
+                      <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-folder"></use>
+                      </svg>
+                    </i>
                     <i
                       class="iconfont"
                       :class="
@@ -70,7 +68,7 @@
                     </span>
                   </div>
                   <el-tag v-if="item.id > 2">
-                    <i title="创建用户" class="iconfont icon-gray-user"></i>
+                    <i title="创建用户" class="iconfont icon-user"></i>
                     {{ item.user?.name }}
                   </el-tag>
                 </li>
@@ -318,13 +316,14 @@ onMounted(() => {
       }
       .el-tag {
         margin-left: 10px;
+        margin-bottom: 5px;
         i {
           margin-left: 0;
           margin-right: 5px;
         }
       }
       &:hover {
-        background-color: $c-f2;
+        background-color: #bbe0ff;
         .icon-btn {
           display: block;
         }
@@ -334,7 +333,7 @@ onMounted(() => {
       }
     }
     .theme {
-      background-color: $c-f2;
+      background-color: #bbe0ff;
     }
   }
 }
