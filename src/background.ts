@@ -126,7 +126,7 @@ async function createWindow() {
     win.setSize(width, height);
     win.center();
     win.setResizable(true);
-    win.setMinimumSize(1280, 600);
+    win.setMinimumSize(1280, 620);
   });
   // 窗口移动的监听事件
   win.on("resize", () => {
