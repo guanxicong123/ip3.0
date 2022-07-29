@@ -82,7 +82,9 @@
           <div class="com-head">
             <div class="com-head-content">
               <div class="com-breadcrumb">
-                <div class="play-table-title theme">任务列表</div>
+                <div class="play-table-title theme">
+                  <span>任务列表</span>
+                </div>
                 <el-input v-model="form.search" placeholder="任务名称" />
                 <el-button :icon="Search"></el-button>
               </div>
@@ -194,9 +196,9 @@ const handleSelectionChange = (val: User[]) => {
   multipleSelection.value = val;
 };
 // 序号
-const typeIndex = (index: number) => {
-  return index + (form.currentPage - 1) * form.pageSize + 1;
-};
+// const typeIndex = (index: number) => {
+//   return index + (form.currentPage - 1) * form.pageSize + 1;
+// };
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
@@ -374,7 +376,6 @@ onMounted(() => {
       height: 50%;
     }
     .com-breadcrumb {
-      width: 80%;
       .el-input {
         width: 200px;
       }

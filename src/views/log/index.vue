@@ -6,8 +6,8 @@
 -->
 <template>
   <div class="com-index">
-    <div class="com-head">
-      <div class="com-head-content com-hc-bg">
+    <div class="com-head set-padding">
+      <div class="com-head-content set-height">
         <div class="com-breadcrumb">
           <el-date-picker
             v-model="form.searchDate"
@@ -41,7 +41,7 @@
         </div>
       </div>
       <template v-if="form.isAdvancedSearch">
-        <div class="com-head-content no-flex">
+        <div class="com-head-content no-flex com-hc-bg">
           <div class="com-breadcrumb">
             <el-select v-model="form.selectLogType">
               <el-option
@@ -166,7 +166,7 @@
             </template>
           </div>
         </div>
-        <div class="com-head-content">
+        <div class="com-head-content com-hc-bg">
           <el-button @click="form.isAdvancedSearch = !form.isAdvancedSearch">
             关闭
           </el-button>
@@ -175,7 +175,7 @@
         </div>
       </template>
     </div>
-    <div class="com-main">
+    <div class="com-main set-padding">
       <div class="com-table">
         <el-tabs v-model="form.activeName" @tab-click="handleClick">
           <el-tab-pane label="系统日志" name="1" lazy>
@@ -349,6 +349,9 @@ onMounted(() => {});
 </script>
 
 <style lang="scss" scoped>
+.set-height {
+  height: 76px;
+}
 .no-flex {
   display: block;
   height: auto;
@@ -356,7 +359,7 @@ onMounted(() => {});
     display: block;
     > div,
     :deep(.el-date-editor) {
-      margin: 6px 0;
+      margin: 10px 0;
       vertical-align: middle;
     }
     .el-input {

@@ -6,7 +6,7 @@
 -->
 <template>
   <div class="com-index">
-    <div class="com-main">
+    <div class="com-main set-padding">
       <div class="com-table">
         <el-scrollbar>
           <div class="com-head">

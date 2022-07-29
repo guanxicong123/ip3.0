@@ -29,20 +29,17 @@
 }
 .com-two-index {
   .com-two-main {
-    width: calc(100% - 20px);
-    margin: 0 10px 10px;
-    border: 1px solid #eee;
+    width: 100%;
+    margin-bottom: 10px;
   }
 }
 .com-head {
-  padding: 0 10px;
-  margin-top: 10px;
   .com-head-content {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    height: 45px;
+    height: 50px;
     .com-breadcrumb {
       display: flex;
       align-items: center;
@@ -165,6 +162,10 @@
     display: inline-flex;
   }
 }
+.set-padding {
+  padding: 0 30px;
+  box-sizing: border-box;
+}
 // Element plus 样式修改
 .el-popper {
   width: auto !important;
@@ -224,6 +225,15 @@
 // 背景色、字体颜色
 .com-hc-bg {
   background-color: #eaf4ff;
+}
+.com-m-bg {
+  background-color: #EBF5FF;
+}
+.com-il-bg {
+  background-color: #E7F1FB;
+}
+.com-ir-bg {
+  background-color: #F3F9FF;
 }
 // 字体图标固定颜色
 .red {

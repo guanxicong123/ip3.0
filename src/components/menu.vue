@@ -195,8 +195,8 @@ const handleMouseleave = (item: { hover: boolean; }) => {
     padding: 20px;
     li {
       min-width: 160px;
-      padding: 12px 10px;
-      margin-bottom: 20px;
+      padding: 6px 10px;
+      margin-bottom: 16px;
       color: $c-fff;
       text-align: center;
       cursor: pointer;

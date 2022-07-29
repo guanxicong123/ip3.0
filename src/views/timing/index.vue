@@ -6,8 +6,8 @@
 -->
 <template>
   <div class="com-index">
-    <div class="com-head">
-      <div class="com-head-content com-hc-bg">
+    <div class="com-head set-padding">
+      <div class="com-head-content">
         <div class="com-breadcrumb">
           <el-select v-model="form.selectType">
             <el-option
@@ -30,7 +30,7 @@
         </div>
       </div>
     </div>
-    <div class="com-main">
+    <div class="com-main com-m-bg">
       <div class="com-table">
         <el-table
           ref="multipleTableRef"
@@ -189,7 +189,7 @@
         </el-table>
       </div>
     </div>
-    <div class="com-footer" v-if="form.data.length > 0">
+    <div class="com-footer com-m-bg" v-if="form.data.length > 0">
       <el-pagination
         v-model:currentPage="form.currentPage"
         v-model:page-size="form.pageSize"

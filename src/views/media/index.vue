@@ -6,7 +6,7 @@
 -->
 <template>
   <div class="com-index tree-index">
-    <div class="com-index-left">
+    <div class="com-index-left com-il-bg">
       <div class="com-two-index">
         <div class="com-head">
           <div class="com-head-content">
@@ -78,20 +78,16 @@
         </div>
       </div>
     </div>
-    <div class="com-index-right">
+    <div class="com-index-right com-ir-bg">
       <div class="com-index">
         <div class="com-head">
           <div class="com-head-content">
             <div class="com-breadcrumb">
-              <el-breadcrumb :separator-icon="ArrowRight">
-                <el-breadcrumb-item>
-                  {{ form.currentFolderTitle }}
-                </el-breadcrumb-item>
-              </el-breadcrumb>
+              <span class="title">{{ form.currentFolderTitle }}</span>
             </div>
             <div class="com-button"></div>
           </div>
-          <div class="com-head-content com-hc-bg">
+          <div class="com-head-content">
             <div class="com-breadcrumb">
               <el-input
                 v-model="form.search"
@@ -175,7 +171,7 @@
 
 <script lang="ts" setup>
 import { ElTable } from "element-plus";
-import { ArrowRight, Search } from "@element-plus/icons-vue";
+import { Search } from "@element-plus/icons-vue";
 
 interface User {
   date: string;
@@ -279,11 +275,20 @@ onMounted(() => {
 .tree-index {
   flex-direction: row;
 }
+.com-index-right {
+  .title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #6f95c1;
+  }
+}
 .com-two-main {
   .folder-ul {
-    padding: 10px 8px;
+    padding: 10px 0;
     li {
       width: 100%;
+      padding: 0 8px;
+      box-sizing: border-box;
       cursor: pointer;
       .nav-one {
         display: flex;
