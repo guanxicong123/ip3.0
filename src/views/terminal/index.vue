@@ -11,9 +11,19 @@
         <div class="com-breadcrumb">
           <i class="iconfont icon-set-up"></i>
           <div class="play-table-title">
-            <span class="theme">全部终端</span>
+            <span
+              :class="{ theme: $useRoute.name != 'group' }"
+              @click="$useRouter.push('/terminal/terminal_list')"
+            >
+              全部终端
+            </span>
             <span class="line"> | </span>
-            <span>分组</span>
+            <span
+              :class="{ theme: $useRoute.name == 'group' }"
+              @click="$useRouter.push('/terminal/group')"
+            >
+              分组
+            </span>
           </div>
           <el-select v-model="form.terminal_status" style="margin-left: 10px">
             <el-option
@@ -42,14 +52,28 @@
         </div>
       </div>
     </div>
-    <div class="com-main com-m-bg"></div>
+    <div class="com-main com-m-bg">
+      <router-view />
+    </div>
     <div class="com-footer">
       <div class="footer-button">
-        <el-checkbox v-model="form.checked_all" label="全选" />
+        <el-checkbox v-model="checked_all" label="全选" />
         <el-button type="primary" color="#4900EE"> 全区广播 </el-button>
         <el-button type="primary" color="#467CF7">广播</el-button>
-        <el-button type="primary" color="#00A1CC">对讲</el-button>
-        <el-button type="primary" color="#06BA7D">监听</el-button>
+        <el-button
+          type="primary"
+          color="#00A1CC"
+          v-if="$useRoute.name != 'group'"
+        >
+          对讲
+        </el-button>
+        <el-button
+          type="primary"
+          color="#06BA7D"
+          v-if="$useRoute.name != 'group'"
+        >
+          监听
+        </el-button>
         <el-button type="danger" color="#D34500">报警</el-button>
       </div>
       <div class="footer-volume">
@@ -79,14 +103,29 @@ const form = reactive<any>({
     { value: 1, label: "空闲" },
     { value: 2, label: "忙碌" },
     { value: 3, label: "冻结" },
+    { value: 4, label: "故障" },
     { value: 0, label: "离线" },
   ],
-  checked_all: false, // 全选
   volume: 0, // 音量
 });
-
+// 路由
+const $useRouter = useRouter();
+const $useRoute = useRoute();
+// 全选
+const checked_all = ref(false);
+// 处理更新全选
+const handleUpdateCheckedAll = (value: boolean) => {
+  checked_all.value = value;
+};
+provide("checkedAll", {
+  checked_all,
+  handleUpdateCheckedAll,
+});
 // mounted 实例挂载完成后被调用
-onMounted(() => {});
+onMounted(() => {
+  console.log($useRoute);
+  $useRouter.push("/terminal/terminal_list");
+});
 </script>
 
 <style lang="scss" scoped>
@@ -98,13 +137,18 @@ onMounted(() => {});
   .icon-set-up {
     margin-left: 10px;
     margin-right: 20px;
+    cursor: pointer;
   }
   .play-table-title {
     margin-left: 10px;
     margin-right: 14px;
+    span {
+      cursor: pointer;
+    }
     .line {
       margin: 0 15px;
       color: $c-999;
+      cursor: default;
     }
     .theme {
       font-weight: bold;

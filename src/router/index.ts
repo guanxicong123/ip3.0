@@ -27,6 +27,35 @@ const routes: Array<RouteRecordRaw> = [
           import(
             /* webpackChunkName: "terminal" */ "@/views/terminal/index.vue"
           ),
+        children: [
+          // 终端-列表
+          {
+            path: "terminal_list/:id?",
+            name: "terminal_list",
+            component: () =>
+              import(
+                /* webpackChunkName: "terminal_list" */ "@/views/terminal/child_nav/terminal_list_index.vue"
+              ),
+          },
+          // 终端-方块
+          {
+            path: "terminal_block",
+            name: "terminal_block",
+            component: () =>
+              import(
+                /* webpackChunkName: "terminal_block" */ "@/views/terminal/child_nav/terminal_block_index.vue"
+              ),
+          },
+          // 分组
+          {
+            path: "group",
+            name: "group",
+            component: () =>
+              import(
+                /* webpackChunkName: "group" */ "@/views/terminal/child_nav/group_index.vue"
+              ),
+          },
+        ],
       },
       // 播放中心
       {
