@@ -236,10 +236,7 @@
   background-color: #F3F9FF;
 }
 // 字体图标固定颜色
-.red {
-  color: red;
-}
-.icon-media-private-folder {
+.red, .icon-media-private-folder {
   color: #ff0000;
 }
 .icon-delete {
@@ -247,6 +244,21 @@
 }
 .icon-media-public-folder {
   color: #0fb905;
+}
+.on-line {
+  background-color: #74C300;
+}
+.off-line {
+  background-color: $c-999;
+}
+.be-busy {
+  background-color: #E29341;
+}
+.fault {
+  background-color: #F7403A;
+}
+.frozen {
+  background-color: #2F91FF;
 }
 // 自定义默认select样式
 .custom-select {

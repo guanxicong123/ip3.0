@@ -9,7 +9,10 @@
     <div class="com-head">
       <div class="com-head-content">
         <div class="com-breadcrumb">
-          <i class="iconfont icon-set-up"></i>
+          <i
+            class="iconfont icon-set-up"
+            @click="$useRouter.push('/terminal/terminal_block')"
+          ></i>
           <div class="play-table-title">
             <span
               :class="{ theme: $useRoute.name != 'group' }"
@@ -57,7 +60,12 @@
     </div>
     <div class="com-footer">
       <div class="footer-button">
-        <el-checkbox v-model="checked_all" label="全选" />
+        <el-checkbox
+          v-model="checked_all"
+          label="全选"
+          @change="handleCheckedAll"
+          v-if="$useRoute.name != 'terminal_list'"
+        />
         <el-button type="primary" color="#4900EE"> 全区广播 </el-button>
         <el-button type="primary" color="#467CF7">广播</el-button>
         <el-button
@@ -79,6 +87,7 @@
       <div class="footer-volume">
         <i class="iconfont icon-volume1 theme"></i>
         <el-slider v-model="form.volume" />
+        <span>{{ form.volume }}</span>
       </div>
     </div>
   </div>
@@ -113,17 +122,30 @@ const $useRouter = useRouter();
 const $useRoute = useRoute();
 // 全选
 const checked_all = ref(false);
+// 是否点击了全选按钮-给子组件做判断处理事件
+const is_checked_all = ref(false);
+// 处理全选
+const handleCheckedAll = () => {
+  is_checked_all.value = true;
+};
+// 处理是否全选
+const handleIsCheckedAll = (value: boolean) => {
+  is_checked_all.value = value;
+};
 // 处理更新全选
 const handleUpdateCheckedAll = (value: boolean) => {
   checked_all.value = value;
 };
+// 供给数据
 provide("checkedAll", {
   checked_all,
+  is_checked_all,
   handleUpdateCheckedAll,
+  handleIsCheckedAll,
 });
+
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  console.log($useRoute);
   $useRouter.push("/terminal/terminal_list");
 });
 </script>
@@ -179,6 +201,7 @@ onMounted(() => {
     .el-slider {
       width: 140px;
       margin-left: 20px;
+      margin-right: 12px;
     }
   }
 }

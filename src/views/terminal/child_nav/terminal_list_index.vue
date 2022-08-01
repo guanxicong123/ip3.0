@@ -166,7 +166,6 @@ const terminalsStatusMap = new Map([
 // 路由
 let $useRouter = useRouter();
 let $useRoute = useRoute();
-const { checked_all }: any = inject("checkedAll");
 // 处理点击切换分组
 const handleClickGroup = (val: any) => {
   form.currentGroupTitle = val.name;
@@ -191,31 +190,6 @@ const handleSizeChange = (val: number) => {
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
 };
-// 处理全选
-const handleCheckedAll = () => {
-  multipleSelection.value = [];
-  multipleTableRef.value?.toggleAllSelection();
-  for (let i = 0; i < form.data.length; i++) {
-    multipleSelection.value.push(form.data[i]);
-  }
-};
-// 处理取消全选
-const handleCancelCheckedAll = () => {
-  multipleSelection.value = [];
-  multipleTableRef.value?.clearSelection();
-};
-
-watch(
-  checked_all,
-  (value) => {
-    value ? handleCheckedAll() : handleCancelCheckedAll();
-  },
-  {
-    // 初始化立即执行
-    immediate: true,
-    deep: true,
-  }
-);
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {

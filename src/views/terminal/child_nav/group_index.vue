@@ -49,6 +49,8 @@
 </template>
 
 <script lang="ts" setup>
+import { onBeforeRouteLeave } from "vue-router";
+
 const form = reactive<any>({
   data: [],
   currentPage: 1,
@@ -63,7 +65,13 @@ const terminalsStatusMap = new Map([
   [3, { class: "#icon-freeze", name: "冻结" }],
   [4, { class: "#icon-fault", name: "故障" }],
 ]);
-const { checked_all, handleUpdateCheckedAll }: any = inject("checkedAll");
+// 注入祖先组件供给的数据
+const {
+  checked_all,
+  is_checked_all,
+  handleUpdateCheckedAll,
+  handleIsCheckedAll,
+}: any = inject("checkedAll");
 // 处理点击选择分组
 const handleSelected = (item: { id: number }) => {
   if (form.multipleSelection.includes(item.id)) {
@@ -75,6 +83,7 @@ const handleSelected = (item: { id: number }) => {
   }
   // 设置全选 - 使用provide/inject
   handleUpdateCheckedAll(form.multipleSelection.length == form.data.length);
+  handleIsCheckedAll(false);
 };
 // 处理全选
 const handleCheckedAll = () => {
@@ -93,10 +102,21 @@ const handleCurrentChange = (val: number) => {
   form.currentPage = val;
 };
 
+// 监听路由
+onBeforeRouteLeave((to, from) => {
+  handleIsCheckedAll(false);
+  handleUpdateCheckedAll(false);
+});
+
+// 监听
 watch(
   checked_all,
   (value) => {
-    value ? handleCheckedAll() : (form.multipleSelection = []);
+    value
+      ? handleCheckedAll()
+      : setTimeout(() => {
+          is_checked_all.value ? (form.multipleSelection = []) : "";
+        }, 200);
   },
   {
     // 初始化立即执行
