@@ -3623,7 +3623,7 @@ electron@^17.0.0:
     "@types/node" "^14.6.2"
     extract-zip "^1.0.3"
 
-element-plus@^2.2.11:
+element-plus@^2.2.12:
   version "2.2.12"
   resolved "https://registry.npmmirror.com/element-plus/-/element-plus-2.2.12.tgz#b6c4e298e02ba9b904d70daa54def27b2de8c43c"
   integrity sha512-g/hIHj3b+dND2R3YRvyvCJtJhQvR7lWvXqhJaoxaQmajjNWedoe4rttxG26fOSv9YCC2wN4iFDcJHs70YFNgrA==
