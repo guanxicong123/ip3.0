@@ -1,9 +1,10 @@
 
-// import store from '@/store';
 // import { message } from '@/utils/resetMessage'
-const router = useRouter()
+// import useAppStore from '../store/app'
+import router from '../router'
+import { ElMessage } from 'element-plus'
 
-let loginData: any = '';
+let loginData: any = ''; //用于储存登录时请求信息
 let socket: any;
 let reloadInterval : any;
 let connected: boolean = false;
@@ -16,24 +17,22 @@ let baseParams: any = {
 }
 const registerWebSocket = async () => {
     const socketStatus = !socket || socket.readyState !== 1
+    console.log(socketStatus, connected, connecting)
     if (socketStatus && !connected && !connecting) {
         connected = false
         connecting = true
-        console.log('初始化')
         let WbakUrl = sessionStorage.getItem('websocketUrl') || ''
         socket = new WebSocket(WbakUrl)
         //WebSocket连接成功
         socket.onopen = () => {
-            console.log('成功了')
             connecting = false
             connected = true
-            // store.commit('CHANGE_WEBSCOET', true)
+            useAppStore().changeWsStatus(true)
             //初始化　请求数据
-            if (isLogin) {
-                console.log(loginData)
+            if (useAppStore().is_login) {
                 send(loginData)
+                useAppStore().changeLoginStatus(false)
             }
-            initRequest()
         }
         //WebSocket通知
         socket.onmessage = ({data}: any)=>{
@@ -46,34 +45,38 @@ const registerWebSocket = async () => {
         }
         //WebSocket异常
         socket.onerror = ()=>{
-            console.log('失败了')
-            if (isLogin) {
-                return
-            }
+            if (useAppStore().is_login) return
             clearInterval(reloadInterval)
             reload()
             connecting = false
             connected = false
-            // store.commit('CHANGE_WEBSCOET', false)
+            useAppStore().changeWsStatus(false)
         }
         //WebSocket关闭
         socket.onclose = ()=>{
-            console.log('失败了')
-            if (isLogin) {
+            console.log('关闭了')
+            console.log(useAppStore().is_login)
+            if (useAppStore().is_login) {
+                connecting = false
+                connected = false
+                useAppStore().changeWsStatus(false)
+                useAppStore().changeLoginStatus(false)
+                ElMessage.error('服务连接失败')
                 return
             }
             clearInterval(reloadInterval)
-            reload()
             connecting = false
             connected = false
-            // store.commit('CHANGE_WEBSCOET', false)
+            useAppStore().changeWsStatus(false)
+            if (router.currentRoute.value.fullPath !=='/') { //登陆页面主动断开不重连
+                reload()
+            }
         }
     }
 }
+// 登录协议
 const socketLogin = (data: any) => {
-    console.log(data)
     sessionStorage.setItem('websocketUrl', 'ws://' + data.data.HostIP + ':51330/ws')
-    isLogin = true
     
     let myDate = new Date();
     let a = myDate.getFullYear()
@@ -83,6 +86,7 @@ const socketLogin = (data: any) => {
     let e = myDate.getMinutes()
     let f = myDate.getSeconds()
     data.data.LoginTime = a + '-' + b + '-' + c + ' ' + d + ':' + e + ':' + f
+
     loginData = data
     // return
     registerWebSocket()
@@ -94,16 +98,6 @@ const send  = (data: any) => {
     }
 }
 
-// 心跳
-const heartbeat = () => {
-    let data = {
-        "company":"BL",//公司缩写，固定不变
-        "actioncode":"w2d_heartbeat",//关键字
-        "data":{},//具体信息，json，内容不能为空
-        "token": sessionStorage.getItem('userToken') || ''
-    }
-    send(data)
-}
 const reload = () => {
     reloadInterval = setTimeout(() => {
         let socketStatus = !socket || socket.readyState !== 1
@@ -112,52 +106,23 @@ const reload = () => {
     }, 3000)
 }
 
-// 获取故障信息
-const requestFaultStatus = () => {
-    baseParams.actioncode = "w2d_status_fault_data"
-    let data = baseParams
-    send(data)
-    return this
-}
-// 获取所有终端状态
-const requestTerminalStatus = () => {
-    baseParams.actioncode = "w2d_web_all_terminal_status"
-    let data = baseParams
-    send(data)
-    return this
-}
-// 获取站点数据
-const requestSizeStatus = () => {
-    baseParams.actioncode = "w2d_status_area_data"
-    let data = baseParams
-    send(data)
-    return this
-}
-// 获取分区数据
-const requestAreaStatus = () => {
-    baseParams.actioncode = "w2d_status_node_data"
-    let data = baseParams
-    send(data)
-    return this
-}
-
-const initRequest = ()=> {
-    // heartbeat()
-    // requestFaultStatus()
-    // requestTerminalStatus()
-    // requestSizeStatus()
-    // requestAreaStatus()
-}
-
-const  handlerMsg = (msg:any) => {
-    // switch(msg.actioncode) {
-    //     case 'd2w_status_task_data': //会话状态
-    //         return store.commit('ROUTER_TASK', msg.data)
-    // }
+const handlerMsg = (msg:any) => {
+    if (msg.result !== 200) {
+        if (msg.actioncode === 'ls2c_user_login') { //登录失败
+            useAppStore().changeLoginStatus(false)
+            socket.close()
+        }
+        return ElMessage.error(msg.return_message)
+    }
+    switch(msg.actioncode) {
+        case 'ls2c_user_login': //登录返回信息
+            return useAppStore().loginSuccessData(msg.data)
+    }
 }
 
 export {
     // 暴露出去,方便调用
+    socket,
     socketLogin,
     registerWebSocket,
     send

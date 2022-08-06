@@ -21,10 +21,13 @@
 </template>
 
 <script lang="ts" setup>
-// mounted 实例挂载完成后被调用
-onMounted(() => {
-    window.electronAPI.send("main-window", "");
-});
+    // mounted 实例挂载完成后被调用
+    onMounted(() => {
+        window.electronAPI.send("main-window", "");
+    });
+    onBeforeUnmount(()=> {
+        
+    })
 </script>
 
 <style lang="scss">

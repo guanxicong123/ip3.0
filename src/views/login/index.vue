@@ -69,22 +69,22 @@
                 type="text"
                 auto-complete="off"
                 v-model="modelRef.name"
-                :disabled="modelRef.logining"
+                :disabled="isLogin"
                 :maxlength="100"
                 placeholder="请输入账号"
                 clearable
                 suffix-icon=""
             >
-            <template #prefix>
-                <i class="iconfont icon-user"></i>
-            </template>
+                <template #prefix>
+                    <i class="iconfont icon-user"></i>
+                </template>
             </el-input>
         </div>
         <div class="login-from-password">
             <el-input
                 type="password"
                 v-model="modelRef.password"
-                :disabled="modelRef.logining"
+                :disabled="isLogin"
                 :maxlength="20"
                 placeholder="请输入密码"
                 clearable
@@ -95,38 +95,47 @@
                 ondragstart="return false"
                 onselectstart="return false"
             >
-            <template #prefix>
-                <i class="iconfont icon-password"></i>
-            </template>
+                <template #prefix>
+                    <i class="iconfont icon-password"></i>
+                </template>
             </el-input>
         </div>
         <div class="login-from-remember_password">
             <el-checkbox v-model="is_checked" label="记住密码" />
         </div>
         <div class="login-from-server">
-            <el-input v-model="modelRef.server_ip_address" placeholder="服务器地址">
-            <template #prefix>
-                <i class="iconfont icon-the-server"></i>
-            </template>
+            <el-input v-model="modelRef.server_ip_address" placeholder="服务器地址" :disabled="isLogin">
+                <template #prefix>
+                    <i class="iconfont icon-the-server"></i>
+                </template>
             </el-input>
         </div>
         </div>
         <div class="broadcast-login-sign">
-            <el-button type="primary" @click="submit">登录</el-button>
+            <el-button type="primary" @click="submit" :loading="isLogin">登录</el-button>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-    import { socketLogin } from '@/utils/socket'
+    import { socketLogin, socket } from '@/utils/socket'
     const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
+
+    const store = useAppStore();
     const $useRouter = useRouter();
+
+    const isWebsocekt = computed(() => {
+        return store.is_websocekt
+    }); //ws连接状态
+    const isLogin = computed(() => {
+        return store.is_login
+    }); //是否登录
+
     // 表单值
     const modelRef = reactive({
         name: "",
         password: "",
         server_ip_address: "",
-        logining: false,
     });
     // 记住密码
     const is_checked = ref(false);
@@ -157,14 +166,37 @@
             result: 0,
             return_message: ""
         }
+        store.changeLoginStatus(true)
         socketLogin(data)
-        // $useRouter.push("/terminal");
     };
 
     // mounted 实例挂载完成后被调用
     onMounted(() => {
+        console.log(socket)
+        if (socket) {
+            socket.close()
+        }
         window.electronAPI.send("login-window");
+        if (localStorage.get("username")) {
+            modelRef.name = localStorage.get("username")
+            modelRef.server_ip_address = localStorage.get("serverIp")
+        }
+        if (localStorage.get("password")) {
+            modelRef.password = localStorage.get("password")
+            is_checked.value = true
+        }
     });
+    onBeforeUnmount(()=> {
+        if (isWebsocekt) {
+            localStorage.set("username", modelRef.name)
+            localStorage.set("serverIp", modelRef.server_ip_address)
+        }
+        if (is_checked.value) {
+            localStorage.set("password", modelRef.password)
+        }else {
+            localStorage.removeItem("password")
+        }
+    })
 </script>
 
 <style lang="scss">
