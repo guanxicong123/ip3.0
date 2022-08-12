@@ -122,7 +122,6 @@
     const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
 
     const store = useAppStore();
-    const $useRouter = useRouter();
 
     const isWebsocekt = computed(() => {
         return store.is_websocekt
@@ -172,7 +171,6 @@
 
     // mounted 实例挂载完成后被调用
     onMounted(() => {
-        console.log(socket)
         if (socket) {
             socket.close()
         }
@@ -194,7 +192,7 @@
         if (is_checked.value) {
             localStorage.set("password", modelRef.password)
         }else {
-            localStorage.removeItem("password")
+            localStorage.remove("password")
         }
     })
 </script>

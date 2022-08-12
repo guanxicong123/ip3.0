@@ -38,7 +38,7 @@ const useAppStore = defineStore({
         // 登录成功返回信息
         loginSuccessData(data: any) {
             this.is_login = false
-            localStorage.set("token", data.Token)
+            localStorage.set("userToken", data.Token)
             router.push("/terminal")
         }
     },

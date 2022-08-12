@@ -200,12 +200,12 @@ module.exports = defineConfig({
         // open: true,
         // https: true,
         proxy: {
-            '/api/v2': {
-                target: 'http://172.16.21.36:81',
+            '/api/v29+': {
+                target: 'http://172.16.21.126:81',
                 changeOrigin: true
             },
             '/uploads': {
-                target: 'http://172.16.21.36:81',
+                target: 'http://172.16.21.126:81',
                 changeOrigin: true
             }
         }
