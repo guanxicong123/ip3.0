@@ -124,6 +124,11 @@ module.exports = defineConfig({
                             // 别名 import { useFetch as useMyFetch } from '@/store'
                             // ['useFetch', 'useMyFetch'],
                         ],
+                        '@/store/terminal': [
+                            ['default', 'useTerminalStore'],
+                            // 别名 import { useFetch as useMyFetch } from '@/store'
+                            // ['useFetch', 'useMyFetch'],
+                        ],
                         'axios': [
                             // 默认导入 import { default as axios } from 'axios'
                             ['default', 'axios'],
@@ -195,7 +200,7 @@ module.exports = defineConfig({
      * proxy: 配置多个代理
      */
     devServer: {
-        host: "172.16.21.10",
+        host: "172.16.21.14",
         port: 8003,
         // open: true,
         // https: true,

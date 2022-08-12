@@ -14,11 +14,11 @@
               <ul class="folder-ul">
                 <li
                   v-for="item in form.groupData"
-                  :key="item.id"
+                  :key="item.GroupID"
                   @click="handleClickGroup(item)"
-                  :class="$useRoute.params.id == item.id ? 'theme' : ''"
+                  :class="form.current_group === item.GroupID ? 'theme' : ''"
                 >
-                  <span :title="item.name">{{ item.name }}</span>
+                  <span :title="item.GroupName">{{ item.GroupName }}</span>
                 </li>
               </ul>
             </el-scrollbar>
@@ -131,30 +131,14 @@ interface User {
 }
 const form = reactive<any>({
   search: "",
-  groupData: [
-    {
-      id: 0,
-      name: "所有终端",
-    },
-    {
-      id: 1,
-      name: "分组1",
-    },
-    {
-      id: 2,
-      name: "分组2",
-    },
-    {
-      id: 9,
-      name: "分组3",
-    },
-  ],
+  groupData: [],
   data: [],
   currentPage: 1,
   pageSize: 20,
   total: 0,
-  currentGroupTitle: "全部",
+  currentGroupTitle: "所有终端",
   isShowNavBar: true, // 是否显示左侧导航栏
+  current_group: 0
 });
 const terminalsStatusMap = new Map([
   [0, { class: "#icon-off-line", name: "离线" }],
@@ -163,50 +147,85 @@ const terminalsStatusMap = new Map([
   [3, { class: "#icon-freeze", name: "冻结" }],
   [4, { class: "#icon-fault", name: "故障" }],
 ]);
+
+const storage_terminal_data = ref()
+
+const store = useTerminalStore()
+
+const terminal_data = computed(() => {
+  return store.terminal_data
+})
+
+const terminal_group = computed(() => {
+  return store.terminal_group
+})
+
+watch(()=> terminal_data.value, (newVal)=> {
+  // form.data = newVal
+  // storage_terminal_data.value = newVal
+  getGroupList()
+})
+
+watch(()=> terminal_group.value, (newVal)=> {
+  // form.groupData = newVal
+  // console.log('watch form.groupData', form.groupData)
+  getGroupList()
+})
+
 // 路由
 let $useRouter = useRouter();
 let $useRoute = useRoute();
+
 // 处理点击切换分组
 const handleClickGroup = (val: any) => {
-  form.currentGroupTitle = val.name;
-  $useRouter.push("/terminal/terminal_list/" + val.id);
+  console.log('val', val)
+  form.currentGroupTitle = val.GroupName;
+  form.current_group = val.GroupID
+  storage_terminal_data.value = store.cleanseGroupData(form.current_group)
+  form.data = storage_terminal_data.value
+  form.total = form.data.length
 };
+
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
+
 const multipleSelection = ref<User[]>([]);
+
 // 当前已选择表格数据
 const handleSelectionChange = (val: User[]) => {
   multipleSelection.value = val;
 };
+
 // 序号
 const typeIndex = (index: number) => {
   return index + (form.currentPage - 1) * form.pageSize + 1;
 };
+
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
   form.currentPage = 1;
+  form.data = storage_terminal_data.value.slice(0, form.pageSize * form.currentPage)
 };
+
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
+  form.data = storage_terminal_data.value.slice(form.pageSize * (form.currentPage - 1), form.pageSize * form.currentPage)
 };
+
+const getGroupList = () => {
+  form.groupData = terminal_group.value
+  storage_terminal_data.value = store.cleanseGroupData(form.current_group)
+  form.data = storage_terminal_data.value
+  form.total = form.data.length
+  console.log('getGroupList', storage_terminal_data)
+}
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  for (let i = 0; i < 20; i++) {
-    form.data.push({
-      status: i < 5 ? i : 0,
-      name: "终端" + i,
-      volume: i,
-      task: {
-        type: i,
-        name: "Tom",
-      },
-      ip_address: "No. 189, Grove St, Los Angeles",
-    });
-  }
-  form.total = form.data.length;
+  getGroupList()
 });
+
 </script>
 
 <style lang="scss" scoped>

@@ -15,6 +15,7 @@ let baseParams: any = {
     actioncode: "action_code",
     data: {},
 }
+
 const registerWebSocket = async () => {
     const socketStatus = !socket || socket.readyState !== 1
     console.log(socketStatus, connected, connecting)
@@ -107,6 +108,18 @@ const reload = () => {
 }
 
 const handlerMsg = (msg:any) => {
+    let msgMap = new Map([
+        ['terminal_status', () => {
+            useTerminalStore().getTerminalData(msg.data)
+        }],
+        ['refresh_endpoint_status', () => {
+            
+        }],
+        ['terminals_group_info', () => {
+            useTerminalStore().updateTerminalGroup(msg.data)
+        }]
+    ])
+    // console.log('msg', msg)
     if (msg.result !== 200) {
         if (msg.actioncode === 'ls2c_user_login') { //登录失败
             useAppStore().changeLoginStatus(false)
@@ -117,6 +130,10 @@ const handlerMsg = (msg:any) => {
     switch(msg.actioncode) {
         case 'ls2c_user_login': //登录返回信息
             return useAppStore().loginSuccessData(msg.data)
+        case 'ls2c_push_msg': 
+            [...msgMap].forEach(([key, value]) => {
+                msg.data.EventID === key ? value.call(msg.data) : ''
+            })
     }
 }
 

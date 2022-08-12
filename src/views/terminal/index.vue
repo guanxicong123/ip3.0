@@ -11,7 +11,7 @@
         <div class="com-breadcrumb">
           <i
             class="iconfont icon-set-up"
-            @click="$useRouter.push('/terminal/terminal_block')"
+            @click="setUp"
           ></i>
           <div class="play-table-title">
             <span
@@ -90,11 +90,48 @@
         <span>{{ form.volume }}</span>
       </div>
     </div>
+    <el-dialog
+      v-model="set_dialog"
+      title="终端状态配置"
+      width="450px"
+      custom-class="set-dialog"
+    >
+      <!-- template -->
+      <div class="terminal-config-items">
+        <el-radio-group v-model="form.view_value" class="view-config">
+          <el-radio label="list" size="large">列表视图</el-radio>
+          <el-radio label="square" size="large">方块视图</el-radio>
+        </el-radio-group>
+        <span class="view-number-config">
+          <span>每屏终端数量</span>
+          <el-select v-model="form.select_terminal" :disabled="form.view_value === 'list'">
+            <el-option
+              v-for="item in terminal_view_options"
+              :key="item.value"
+              :label="item.value"
+              :value="item.value"
+            />
+          </el-select>
+        </span>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="confirmTerminalSet">
+            确认
+          </el-button>
+          <el-button @click="set_dialog = false">
+            取消
+          </el-button
+          >
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Search } from "@element-plus/icons-vue";
+import { onBeforeRouteLeave } from "vue-router";
 
 const form = reactive<any>({
   terminal_status: -1, // 终端状态
@@ -116,10 +153,42 @@ const form = reactive<any>({
     { value: 0, label: "离线" },
   ],
   volume: 0, // 音量
+  view_value: 'list',
+  select_terminal: '3x6'
+  
 });
+
+const terminal_view_options = [
+  {
+    value: '4x6'
+  },
+  {
+    value: '3x6'
+  },
+  {
+    value: '3x5'
+  }
+]
+
+// const storage_terminal_data = ref()
+
+// const store = useAppStore()
+
+// const terminal_data = computed(() => {
+//   return store.terminal_data
+// })
+
+// watch(()=> terminal_data.value, (newVal)=> {
+//   storage_terminal_data.value = newVal
+//   console.log('watch storage_terminal_data', storage_terminal_data)
+// })
+
 // 路由
 const $useRouter = useRouter();
 const $useRoute = useRoute();
+const set_dialog = ref(false)
+
+const select_terminal = ref('3x6')
 // 全选
 const checked_all = ref(false);
 // 是否点击了全选按钮-给子组件做判断处理事件
@@ -136,6 +205,28 @@ const handleIsCheckedAll = (value: boolean) => {
 const handleUpdateCheckedAll = (value: boolean) => {
   checked_all.value = value;
 };
+
+const setUp = () => {
+  console.log('set up')
+  set_dialog.value = true
+  // $useRouter.push('/terminal/terminal_block')
+}
+
+const confirmTerminalSet = () => {
+  select_terminal.value = form.select_terminal
+  if (form.view_value === 'list') {
+    $useRouter.push('/terminal/terminal_list')
+  } else {
+    $useRouter.push({
+      path: '/terminal/terminal_block',
+      query: {
+        layoutArrange: select_terminal.value
+      }
+    })
+  }
+  console.log('select_terminal', select_terminal)
+  set_dialog.value = false
+}
 // 供给数据
 provide("checkedAll", {
   checked_all,
@@ -143,6 +234,10 @@ provide("checkedAll", {
   handleUpdateCheckedAll,
   handleIsCheckedAll,
 });
+
+provide('select_terminal', {
+  select_terminal
+})
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
@@ -203,6 +298,75 @@ onMounted(() => {
       margin-left: 20px;
       margin-right: 12px;
     }
+  }
+}
+
+.set-dialog {
+  .view-number-config {
+    span {
+      margin-right: 30px;
+    }
+  }
+}
+
+:deep(.set-dialog) {
+  .el-dialog__header {
+    height: 40px;
+    padding: 10px 20px;
+    margin: 0;
+    background: #0070EE;
+    box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.5000);
+    box-sizing: border-box;
+
+    .el-dialog__title {
+      color: #FFFFFF;
+      font-size: 14px;
+    }
+
+    .el-dialog__headerbtn {
+      height: 40px;
+      line-height: 40px;
+
+      .el-dialog__close {
+        color: #FFFFFF;
+      }
+    }
+  }
+
+  .el-dialog__body {
+    padding: 21px 40px 14px;
+
+    .el-radio-group {
+      display: flex;
+      justify-content: flex-start;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .el-radio__inner {
+        width: 16px;
+        height: 16px;
+        background: #FFFFFF;
+        border: 1px solid #C1C1C1;
+      }
+
+      .el-radio__inner::after {
+        width: 12px;
+        height: 12px;
+        background: #0070EE;
+        // box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.5000)
+      }
+
+      .el-radio__label {
+        font-size: 14px;
+        font-family: MicrosoftYaHei;
+        color: #000000;
+      }
+    }
+  }
+
+  .el-dialog__footer {
+    padding-bottom: 40px;
+    text-align: center;
   }
 }
 </style>
