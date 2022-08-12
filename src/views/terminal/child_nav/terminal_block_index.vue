@@ -14,8 +14,9 @@
             :key="item.id"
             :class="{
               selected: form.multipleSelection.includes(item.id),
-              'four-six': form.layoutArrange == '4*6',
-              'three-five': form.layoutArrange == '3*5',
+              'four-six': form.layoutArrange == '4x6',
+              'three-five': form.layoutArrange == '3x5',
+              'three-six': form.layoutArrange == '3x6',
             }"
             @click="handleSelected(item)"
           >
@@ -72,7 +73,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeRouteLeave } from "vue-router";
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 
 const form = reactive<any>({
   data: [],
@@ -81,7 +82,7 @@ const form = reactive<any>({
   pageSize: 20,
   total: 0,
   multipleSelection: [], // 已选择的分组
-  layoutArrange: "4*6", // 布局排列
+  layoutArrange: "3*6", // 布局排列
 });
 const terminalsStatusMap = new Map([
   [0, { icon: "#icon-off-line", name: "离线", class: "off-line" }],
@@ -97,6 +98,24 @@ const {
   handleUpdateCheckedAll,
   handleIsCheckedAll,
 }: any = inject("checkedAll");
+
+const storage_terminal_data = ref()
+
+const store = useTerminalStore()
+
+const terminal_data = computed(() => {
+  return store.terminal_data
+})
+
+watch(()=> terminal_data.value, (newVal)=> {
+  storage_terminal_data.value = newVal
+  // console.log('watch storage_terminal_data', storage_terminal_data)
+})
+
+const {
+  select_terminal,
+}:any = inject('select_terminal')
+
 // 处理点击选择分组
 const handleSelected = (item: { id: number }) => {
   if (form.multipleSelection.includes(item.id)) {
@@ -121,11 +140,16 @@ const handleCheckedAll = () => {
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
   form.currentPage = 1;
+  form.data = storage_terminal_data.value.slice(0, form.pageSize * form.currentPage)
 };
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
+  form.data = storage_terminal_data.value.slice(form.pageSize * (form.currentPage - 1), form.pageSize * form.currentPage)
 };
+
+const $useRoute = useRoute();
+const $useRouter = useRouter();
 
 // 监听路由
 onBeforeRouteLeave((to, from) => {
@@ -150,20 +174,22 @@ watch(
   }
 );
 
+watch(select_terminal, (value) => {
+  form.pageSize = value.split('x')[0] * value.split('x')[1]
+  // console.log('pageSize', form.pageSize)
+  handleSizeChange(form.pageSize)
+})
+
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  for (let i = 0; i < 24; i++) {
-    form.data.push({
-      id: i,
-      status: i < 5 ? i : 0,
-      volume: i,
-      name: "终端 + 终端" + i,
-      ip_address: "172.161.121." + i,
-      code: "172" + i,
-      sound_source_type: "音乐播放",
-    });
-  }
-  form.total = form.data.length;
+  // form.layoutArrange = $useRoute.query.layoutArrange
+  // console.log('layoutArrange', $useRoute.query.layoutArrange, form.layoutArrange)
+  form.layoutArrange = select_terminal
+  form.pageSizes = [form.layoutArrange.split('x')[0] * form.layoutArrange.split('x')[1]]
+  form.pageSize = form.pageSizes[0]
+  storage_terminal_data.value = terminal_data.value
+  form.data = storage_terminal_data.value.slice(0, form.pageSize)
+  form.total = storage_terminal_data.value.length;
 });
 </script>
 
@@ -173,9 +199,10 @@ onMounted(() => {
 }
 .group-ul {
   height: 100%;
-  margin-top: 10px;
+  // margin-top: 10px;
   box-sizing: border-box;
   border-radius: 6px;
+  overflow: hidden;
   li {
     display: inline-block;
     width: calc(100% / 6);
@@ -256,6 +283,7 @@ onMounted(() => {
     height: calc(100% / 4);
   }
   .three-five {
+    height: calc(100% / 3);
     width: calc(100% / 5);
   }
   .selected {

@@ -15,6 +15,7 @@
               :key="item.id"
               :class="{ selected: form.multipleSelection.includes(item.id) }"
               @click="handleSelected(item)"
+              @dblclick="viewGroupInfo(item)"
             >
               <span
                 class="li-span"
@@ -45,11 +46,43 @@
         @current-change="handleCurrentChange"
       />
     </div>
+    <el-dialog
+      v-model="show_group_info"
+      :title="group_title"
+      custom-class="group-info-class"
+    >
+      <el-table
+        ref="multipleTableRef"
+        :data="form.table_data"
+        style="width: 100%"
+        height="195px"
+      >
+        <el-table-column
+          type="index"
+          label="序号"
+          show-overflow-tooltip
+          width="50"
+          :index="typeIndex"
+        />
+        <el-table-column
+          prop="name"
+          label="终端名称"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="ip_address"
+          label="终端IP"
+          show-overflow-tooltip
+        />
+        <el-table-column prop="code" label="呼叫编码" />
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { onBeforeRouteLeave } from "vue-router";
+import { ElTable } from "element-plus";
 
 const form = reactive<any>({
   data: [],
@@ -57,7 +90,13 @@ const form = reactive<any>({
   pageSize: 20,
   total: 0,
   multipleSelection: [], // 已选择的分组
+  table_data: []
 });
+
+const show_group_info = ref(false)
+
+const group_title = ref('')
+
 const terminalsStatusMap = new Map([
   [0, { class: "#icon-off-line", name: "离线" }],
   [1, { class: "#icon-on-line", name: "空闲" }],
@@ -72,6 +111,9 @@ const {
   handleUpdateCheckedAll,
   handleIsCheckedAll,
 }: any = inject("checkedAll");
+
+const multipleTableRef = ref<InstanceType<typeof ElTable>>()
+
 // 处理点击选择分组
 const handleSelected = (item: { id: number }) => {
   if (form.multipleSelection.includes(item.id)) {
@@ -85,6 +127,17 @@ const handleSelected = (item: { id: number }) => {
   handleUpdateCheckedAll(form.multipleSelection.length == form.data.length);
   handleIsCheckedAll(false);
 };
+
+const viewGroupInfo = ((item: { name: string }) => {
+  show_group_info.value = true
+  group_title.value = item.name
+  console.log('item', item)
+})
+
+const typeIndex = (index: number) => {
+  return index + 1
+}
+
 // 处理全选
 const handleCheckedAll = () => {
   form.multipleSelection = [];
@@ -165,6 +218,23 @@ onMounted(() => {
   .selected {
     background: url("@/assets/images/fileed.png") no-repeat;
     background-size: contain;
+  }
+}
+
+:deep(.group-info-class) {
+  .el-dialog__header {
+    padding: 15px 0;
+    margin: 0 20px;
+    font-size: 14px;
+    border-bottom: 1px solid #F0F1F2;
+    
+    .el-dialog__headerbtn {
+      top: 0;
+    }
+  }
+
+  .el-dialog__body {
+    padding: 0 20px 16px;
   }
 }
 </style>

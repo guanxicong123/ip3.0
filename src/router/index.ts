@@ -39,7 +39,7 @@ const routes: Array<RouteRecordRaw> = [
                     },
                     // 终端-方块
                     {
-                        path: "terminal_block",
+                        path: "terminal_block/:id?",
                         name: "terminal_block",
                         component: () =>
                         import(
