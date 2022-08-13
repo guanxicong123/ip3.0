@@ -47,7 +47,6 @@
             <el-table
               ref="multipleTableRef"
               :data="form.data"
-              border
               style="width: 100%"
               height="100%"
               @selection-change="handleSelectionChange"
@@ -58,7 +57,7 @@
                 type="index"
                 label="No."
                 show-overflow-tooltip
-                width="50"
+                width="60"
                 :index="typeIndex"
               />
               <el-table-column
@@ -148,6 +147,10 @@ const terminalsStatusMap = new Map([
   [4, { class: "#icon-fault", name: "故障" }],
 ]);
 
+const {
+  terminal_group_data,
+}:any = inject('terminal_group')
+
 const storage_terminal_data = ref()
 
 const store = useTerminalStore()
@@ -156,20 +159,45 @@ const terminal_data = computed(() => {
   return store.terminal_data
 })
 
-const terminal_group = computed(() => {
-  return store.terminal_group
+const terminal_status = computed(() => {
+  return store.terminal_status
 })
 
-watch(()=> terminal_data.value, (newVal)=> {
-  // form.data = newVal
-  // storage_terminal_data.value = newVal
-  getGroupList()
+const search_value = computed(() => {
+  return store.search_value
 })
 
-watch(()=> terminal_group.value, (newVal)=> {
-  // form.groupData = newVal
-  // console.log('watch form.groupData', form.groupData)
-  getGroupList()
+// const terminal_group = computed(() => {
+//   return store.terminal_group
+// })
+
+// watch(()=> terminal_data.value, (newVal)=> {
+//   // form.data = newVal
+//   // storage_terminal_data.value = newVal
+//   console.log('终端状态更新了 child')
+//   getGroupList()
+// }, {
+//   deep: true
+// })
+
+watch(()=> terminal_group_data.value, (newVal)=> {
+  // getGroupList()
+  console.log('newVal', newVal)
+  getCurGroupData()
+},{
+  deep: true
+})
+
+watch(() => terminal_status.value, () => {
+  // store.filterGroupData(form.data)
+  form.data = store.filterGroupData(storage_terminal_data.value)
+  form.total = form.data.length
+})
+
+watch(() => search_value.value, () => {
+  // store.filterGroupData(form.data)
+  form.data = store.filterGroupData(storage_terminal_data.value)
+  form.total = form.data.length
 })
 
 // 路由
@@ -181,9 +209,7 @@ const handleClickGroup = (val: any) => {
   console.log('val', val)
   form.currentGroupTitle = val.GroupName;
   form.current_group = val.GroupID
-  storage_terminal_data.value = store.cleanseGroupData(form.current_group)
-  form.data = storage_terminal_data.value
-  form.total = form.data.length
+  getCurGroupData()
 };
 
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
@@ -204,20 +230,32 @@ const typeIndex = (index: number) => {
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
   form.currentPage = 1;
-  form.data = storage_terminal_data.value.slice(0, form.pageSize * form.currentPage)
+  form.data = store.filterGroupData(storage_terminal_data.value).slice(0, form.pageSize * form.currentPage)
 };
 
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
-  form.data = storage_terminal_data.value.slice(form.pageSize * (form.currentPage - 1), form.pageSize * form.currentPage)
+  form.data = store.filterGroupData(storage_terminal_data.value).slice(form.pageSize * (form.currentPage - 1), form.pageSize * form.currentPage)
 };
 
-const getGroupList = () => {
-  form.groupData = terminal_group.value
-  storage_terminal_data.value = store.cleanseGroupData(form.current_group)
-  form.data = storage_terminal_data.value
+const getCurGroupData = () => {
+  form.groupData = terminal_group_data.value
+  let index = terminal_group_data.value.findIndex((item: any) => item.GroupID === form.current_group)
+  storage_terminal_data.value = terminal_group_data.value[index].terminals
+  console.log('store.filterGroupData(storage_terminal_data.value)', store.filterGroupData(storage_terminal_data.value))
+  form.data = store.filterGroupData(storage_terminal_data.value)
   form.total = form.data.length
+}
+
+const getGroupList = () => {
+  // form.groupData = terminal_group_data.value
+  // storage_terminal_data.value = store.cleanseGroupData(form.current_group)
+  // let index = terminal_group_data.value.findIndex((item: any) => item.GroupID === form.current_group)
+  // storage_terminal_data.value = terminal_group_data.value[index].terminals
+  // form.data = storage_terminal_data.value
+  // form.total = form.data.length
+  getCurGroupData()
   console.log('getGroupList', storage_terminal_data)
 }
 

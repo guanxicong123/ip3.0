@@ -12,8 +12,8 @@
           <ul class="group-ul">
             <li
               v-for="item in form.data"
-              :key="item.id"
-              :class="{ selected: form.multipleSelection.includes(item.id) }"
+              :key="item.GroupID"
+              :class="{ selected: form.multipleSelection.includes(item.GroupID) }"
               @click="handleSelected(item)"
               @dblclick="viewGroupInfo(item)"
             >
@@ -28,7 +28,7 @@
                 </svg>
               </span>
               <div class="li-text">
-                <span :title="item.name">{{ item.name }}</span>
+                <span :title="item.GroupName">{{ item.GroupName }}</span>
               </div>
             </li>
           </ul>
@@ -61,7 +61,7 @@
           type="index"
           label="序号"
           show-overflow-tooltip
-          width="50"
+          width="60"
           :index="typeIndex"
         />
         <el-table-column
@@ -112,26 +112,37 @@ const {
   handleIsCheckedAll,
 }: any = inject("checkedAll");
 
+const {
+  terminal_group_data,
+}:any = inject('terminal_group')
+
+const store = useTerminalStore()
+
+const search_value = computed(() => {
+  return store.search_value
+})
+
 const multipleTableRef = ref<InstanceType<typeof ElTable>>()
 
 // 处理点击选择分组
-const handleSelected = (item: { id: number }) => {
-  if (form.multipleSelection.includes(item.id)) {
+const handleSelected = (item: { GroupID: number }) => {
+  if (form.multipleSelection.includes(item.GroupID)) {
     form.multipleSelection = form.multipleSelection.filter(
-      (row: number) => row != item.id
+      (row: number) => row != item.GroupID
     );
   } else {
-    form.multipleSelection.push(item.id);
+    form.multipleSelection.push(item.GroupID);
   }
   // 设置全选 - 使用provide/inject
   handleUpdateCheckedAll(form.multipleSelection.length == form.data.length);
   handleIsCheckedAll(false);
 };
 
-const viewGroupInfo = ((item: { name: string }) => {
+const viewGroupInfo = ((item: { GroupName: string, terminals: Object }) => {
   show_group_info.value = true
-  group_title.value = item.name
+  group_title.value = item.GroupName
   console.log('item', item)
+  form.table_data = item.terminals
 })
 
 const typeIndex = (index: number) => {
@@ -145,11 +156,13 @@ const handleCheckedAll = () => {
     form.multipleSelection.push(form.data[i].id);
   }
 };
+
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
   form.currentPage = 1;
 };
+
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
@@ -178,16 +191,34 @@ watch(
   }
 );
 
+watch(() => search_value.value, () => {
+  getGroupList()
+})
+
+const getGroupList = () => {
+  // console.log('terminal_group_data', terminal_group_data)
+  form.data = store.filterGroupData(terminal_group_data.value).filter((item: any) => {
+    return item.GroupID !== 0
+  })
+  form.total = form.data.length
+  // 给分组手动添加状态，等后续增加分组状态字段再去除
+  form.data.map((item: any) => {
+    item.status = 1
+  })
+  // console.log('form.total 分组路由数据', form.data)
+}
+
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  for (let i = 0; i < 20; i++) {
-    form.data.push({
-      id: i,
-      status: i < 5 ? i : 0,
-      name: "分组" + i,
-    });
-  }
-  form.total = form.data.length;
+  // for (let i = 0; i < 20; i++) {
+  //   form.data.push({
+  //     id: i,
+  //     status: i < 5 ? i : 0,
+  //     name: "分组" + i,
+  //   });
+  // }
+  // form.total = form.data.length;
+  getGroupList()
 });
 </script>
 
