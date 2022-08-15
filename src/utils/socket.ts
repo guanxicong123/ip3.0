@@ -161,7 +161,7 @@ const handlerMsg = (msg:any) => {
             
         }],
         ['terminals_group_info', () => {
-            useTerminalStore().updateTerminalGroup(msg.data)
+            useTerminalStore().getTerminalGroup(msg.data)
         }]
     ])
     // console.log('msg', msg)

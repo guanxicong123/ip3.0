@@ -11,9 +11,9 @@
         <ul class="group-ul">
           <li
             v-for="item in form.data"
-            :key="item.id"
+            :key="item.EndpointID"
             :class="{
-              selected: form.multipleSelection.includes(item.id),
+              selected: form.multipleSelection.includes(item.EndpointID),
               'four-six': form.layoutArrange == '4x6',
               'three-five': form.layoutArrange == '3x5',
               'three-six': form.layoutArrange == '3x6',
@@ -84,6 +84,10 @@ const form = reactive<any>({
   multipleSelection: [], // 已选择的分组
   layoutArrange: "3*6", // 布局排列
 });
+
+// const terminalDataAll: any = ref([])
+// const terminalData: any = ref([])
+
 const terminalsStatusMap = new Map([
   [0, { icon: "#icon-off-line", name: "离线", class: "off-line" }],
   [1, { icon: "#icon-on-line", name: "空闲", class: "on-line" }],
@@ -107,24 +111,54 @@ const terminal_data = computed(() => {
   return store.terminal_data
 })
 
+const terminal_status = computed(() => {
+  return store.terminal_status
+})
+
+const search_value = computed(() => {
+  return store.search_value
+})
+
 watch(()=> terminal_data.value, (newVal)=> {
   storage_terminal_data.value = newVal
   // console.log('watch storage_terminal_data', storage_terminal_data)
 })
 
+watch(() => terminal_status.value, () => {
+  form.data = store.filterGroupData(storage_terminal_data.value)
+  form.total = form.data.length
+})
+
+watch(() => search_value.value, () => {
+  form.data = store.filterGroupData(storage_terminal_data.value)
+  form.total = form.data.length
+})
+
 const {
   select_terminal,
 }:any = inject('select_terminal')
-
-// 处理点击选择分组
-const handleSelected = (item: { id: number }) => {
-  if (form.multipleSelection.includes(item.id)) {
+// 过滤数组
+// const filTerterminalData = (type: number, name: string) => {
+//   let row = type === 0 && name === ''
+//   if (row) {
+//     terminalData.value = terminalDataAll.value.slice(1, 20)
+//   }else {
+//     terminalData.value = terminalDataAll.value.filter(item=> {
+//       return item.type === type
+//     }).slice(1, 20)
+//   }
+// }
+// 处理点击选择终端
+const handleSelected = (item: { EndpointID: number }) => {
+  console.log('handle select terminal', item, form.multipleSelection.includes(item.EndpointID))
+  if (form.multipleSelection.includes(item.EndpointID)) {
     form.multipleSelection = form.multipleSelection.filter(
-      (row: number) => row != item.id
+      (row: number) => row !== item.EndpointID
     );
   } else {
-    form.multipleSelection.push(item.id);
+    form.multipleSelection.push(item.EndpointID);
   }
+  console.log('form.multipleSelection', form.multipleSelection, form.data)
   // 设置全选 - 使用provide/inject
   handleUpdateCheckedAll(form.multipleSelection.length == form.data.length);
   handleIsCheckedAll(false);
@@ -133,19 +167,19 @@ const handleSelected = (item: { id: number }) => {
 const handleCheckedAll = () => {
   form.multipleSelection = [];
   for (let i = 0; i < form.data.length; i++) {
-    form.multipleSelection.push(form.data[i].id);
+    form.multipleSelection.push(form.data[i].EndpointID);
   }
 };
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
   form.currentPage = 1;
-  form.data = storage_terminal_data.value.slice(0, form.pageSize * form.currentPage)
+  form.data = store.filterGroupData(storage_terminal_data.value).slice(0, form.pageSize * form.currentPage)
 };
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
-  form.data = storage_terminal_data.value.slice(form.pageSize * (form.currentPage - 1), form.pageSize * form.currentPage)
+  form.data = store.filterGroupData(storage_terminal_data.value).slice(form.pageSize * (form.currentPage - 1), form.pageSize * form.currentPage)
 };
 
 const $useRoute = useRoute();
@@ -188,8 +222,8 @@ onMounted(() => {
   form.pageSizes = [form.layoutArrange.split('x')[0] * form.layoutArrange.split('x')[1]]
   form.pageSize = form.pageSizes[0]
   storage_terminal_data.value = terminal_data.value
-  form.data = storage_terminal_data.value.slice(0, form.pageSize)
-  form.total = storage_terminal_data.value.length;
+  form.data = store.filterGroupData(storage_terminal_data.value).slice(0, form.pageSize)
+  form.total = form.data.length;
 });
 </script>
 

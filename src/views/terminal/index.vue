@@ -16,19 +16,24 @@
           <div class="play-table-title">
             <span
               :class="{ theme: $useRoute.name != 'group' }"
-              @click="$useRouter.push('/terminal/terminal_list')"
+              @click="changeRouter('终端')"
             >
               全部终端
             </span>
             <span class="line"> | </span>
             <span
               :class="{ theme: $useRoute.name == 'group' }"
-              @click="$useRouter.push('/terminal/group')"
+              @click="changeRouter('分组')"
             >
               分组
             </span>
           </div>
-          <el-select v-model="form.terminal_status" style="margin-left: 10px">
+          <el-select 
+            v-show="$useRoute.name != 'group'" 
+            v-model="form.terminal_status" 
+            style="margin-left: 10px"
+            @change="handleFilter()"
+          >
             <el-option
               v-for="(item, keys) in form.terminalStatusOptions"
               :key="keys"
@@ -40,7 +45,7 @@
             v-model="form.search"
             :placeholder="form.search_placeholder"
           />
-          <el-button :icon="Search"></el-button>
+          <el-button :icon="Search" @click="handleFilter"></el-button>
         </div>
         <div class="com-button">
           <span>主讲终端</span>
@@ -136,7 +141,7 @@ import { onBeforeRouteLeave } from "vue-router";
 const form = reactive<any>({
   terminal_status: -1, // 终端状态
   search: "", // 搜索
-  search_placeholder: "终端名称", // 搜索 placeholder
+  search_placeholder: "", // 搜索 placeholder
   speaker_terminal: 1, // 主讲终端
   speakerTerminalOptions: [
     {
@@ -170,18 +175,27 @@ const terminal_view_options = [
   }
 ]
 
-// const storage_terminal_data = ref()
+const terminal_group_data = ref()
 
-// const store = useAppStore()
+const store = useTerminalStore()
 
-// const terminal_data = computed(() => {
-//   return store.terminal_data
-// })
+const terminal_data = computed(() => {
+  return store.terminal_data
+})
 
-// watch(()=> terminal_data.value, (newVal)=> {
-//   storage_terminal_data.value = newVal
-//   console.log('watch storage_terminal_data', storage_terminal_data)
-// })
+const terminal_group = computed(() => {
+  return store.terminal_group
+})
+
+watch(()=> terminal_data.value, (newVal)=> {
+  getGroupList()
+},{
+  deep: true
+})
+
+watch(()=> terminal_group.value, (newVal)=> {
+  getGroupList()
+})
 
 // 路由
 const $useRouter = useRouter();
@@ -212,6 +226,38 @@ const setUp = () => {
   // $useRouter.push('/terminal/terminal_block')
 }
 
+// 终端 <-> 分组切换
+const changeRouter = (name: string) => {
+  if (name === '分组') {
+    $useRouter.push('/terminal/group')
+    form.search_placeholder = '分组名称'
+    store.changeFilterStatus(false)
+  } else {
+    $useRouter.push('/terminal/terminal_list')
+    form.search_placeholder = '终端名称'
+    store.changeFilterStatus(true)
+  }
+}
+
+// 切换终端状态或者点击搜索
+const handleFilter = () => {
+  let conditions = {
+    status: form.terminal_status,
+    search: form.search
+  }
+  store.updateFiltrateCondition(conditions)
+}
+
+// const handleSearch = () => {
+//   console.log('搜索操作')
+//   let conditions = {
+//     status: form.terminal_status,
+//     search: form.search
+//   }
+//   store.updateFiltrateCondition(conditions)
+// }
+
+// 确认终端视图模式
 const confirmTerminalSet = () => {
   select_terminal.value = form.select_terminal
   if (form.view_value === 'list') {
@@ -226,7 +272,15 @@ const confirmTerminalSet = () => {
   }
   console.log('select_terminal', select_terminal)
   set_dialog.value = false
+  store.changeFilterStatus(true)
 }
+
+const getGroupList = () => {
+  store.updateTerminalGroup()
+  terminal_group_data.value = terminal_group.value
+  console.log('getGroupList father', terminal_group_data)
+}
+
 // 供给数据
 provide("checkedAll", {
   checked_all,
@@ -235,13 +289,21 @@ provide("checkedAll", {
   handleIsCheckedAll,
 });
 
+// 传给方块视图页面
 provide('select_terminal', {
   select_terminal
 })
 
+// 终端分组数据
+provide('terminal_group', {
+  terminal_group_data
+})
+
 // mounted 实例挂载完成后被调用
 onMounted(() => {
+  getGroupList()
   $useRouter.push("/terminal/terminal_list");
+  form.search_placeholder = '终端名称'
 });
 </script>
 
