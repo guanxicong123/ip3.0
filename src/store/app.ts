@@ -39,7 +39,9 @@ const useAppStore = defineStore({
         loginSuccessData(data: any) {
             this.is_login = false
             localStorage.set("userToken", data.Token)
-            router.push("/terminal")
+            if (router.options.history.location === '/') {
+                router.push("/terminal")
+            }
         }
     },
 });

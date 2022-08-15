@@ -21,9 +21,18 @@
 </template>
 
 <script lang="ts" setup>
+    import { registerWebSocket } from '@/utils/socket'
+    const store = useAppStore()
+
+    const isWebsocekt = computed(()=> {
+        return store.is_websocekt
+    })
     // mounted 实例挂载完成后被调用
     onMounted(() => {
-        window.electronAPI.send("main-window", "");
+        window.electronAPI.send("main-window", "")
+        if (!isWebsocekt.value) {
+            registerWebSocket()
+        }
     });
     onBeforeUnmount(()=> {
         

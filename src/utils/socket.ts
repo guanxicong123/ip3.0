@@ -3,6 +3,7 @@
 // import useAppStore from '../store/app'
 import router from '../router'
 import { ElMessage } from 'element-plus'
+import { Md5 } from 'ts-md5'
 
 let loginData: any = ''; //用于储存登录时请求信息
 let socket: any;
@@ -18,7 +19,6 @@ let baseParams: any = {
 
 const registerWebSocket = async () => {
     const socketStatus = !socket || socket.readyState !== 1
-    console.log(socketStatus, connected, connecting)
     if (socketStatus && !connected && !connecting) {
         connected = false
         connecting = true
@@ -33,6 +33,9 @@ const registerWebSocket = async () => {
             if (useAppStore().is_login) {
                 send(loginData)
                 useAppStore().changeLoginStatus(false)
+            }else {
+                console.log(666)
+                initRequest()
             }
         }
         //WebSocket通知
@@ -55,8 +58,6 @@ const registerWebSocket = async () => {
         }
         //WebSocket关闭
         socket.onclose = ()=>{
-            console.log('关闭了')
-            console.log(useAppStore().is_login)
             if (useAppStore().is_login) {
                 connecting = false
                 connected = false
@@ -75,6 +76,21 @@ const registerWebSocket = async () => {
         }
     }
 }
+const send  = (data: any) => {
+    let connected = socket && socket.readyState === 1
+    if (connected) {
+        data['token'] = localStorage.get("userToken")
+        socket.send(JSON.stringify(data))
+    }
+}
+
+const reload = () => {
+    reloadInterval = setTimeout(() => {
+        let socketStatus = !socket || socket.readyState !== 1
+        socketStatus && registerWebSocket()
+        // message.error("服务器连接断开")
+    }, 3000)
+}
 // 登录协议
 const socketLogin = (data: any) => {
     sessionStorage.setItem('websocketUrl', 'ws://' + data.data.HostIP + ':51330/ws')
@@ -92,21 +108,50 @@ const socketLogin = (data: any) => {
     // return
     registerWebSocket()
 }
-const send  = (data: any) => {
-    let connected = socket && socket.readyState === 1
-    if (connected) {
-        socket.send(JSON.stringify(data))
+//获取站点数据
+const initRequest = () => {
+    login()
+}
+// 获取所有终端状态
+const requestTaskInfo = () => {
+    let data = {
+        company: "BL",
+        actioncode: "c2ms_get_server_terminals_status",
+        token: "",
+        data: {},
+        result: 0,
+        return_message: ""
     }
+    send(data)
 }
+// 登录
+const login = () => {
+    let data = {
+        company: "BL",
+        actioncode: "c2ls_user_login",
+        token: "",
+        data: {
+            "UserName": localStorage.get("username"),
+            "Password": Md5.hashStr(localStorage.get("password")),
+            "Platform": "PC",
+            "HostIP": localStorage.get("serverIp"),
+            "ForceLogin": false,
+            "LoginTime": ''
+        },
+        result: 0,
+        return_message: ""
+    }
+    let myDate = new Date();
+    let a = myDate.getFullYear()
+    let b = myDate.getMonth() + 1
+    let c = myDate.getDate()
+    let d = myDate.getHours()
+    let e = myDate.getMinutes()
+    let f = myDate.getSeconds()
+    data.data.LoginTime = a + '-' + b + '-' + c + ' ' + d + ':' + e + ':' + f
 
-const reload = () => {
-    reloadInterval = setTimeout(() => {
-        let socketStatus = !socket || socket.readyState !== 1
-        socketStatus && registerWebSocket()
-        // message.error("服务器连接断开")
-    }, 3000)
-}
-
+    send(data)
+};
 const handlerMsg = (msg:any) => {
     let msgMap = new Map([
         ['terminal_status', () => {

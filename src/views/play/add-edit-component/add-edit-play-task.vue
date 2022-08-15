@@ -116,6 +116,10 @@
     const handleClick = (tab: TabsPaneContext, event: Event) => {
 
     }
+    // 获取所有终端
+    const getTerminalsAll = () => {
+        
+    }
     // mounted 实例挂载完成后被调用
     onMounted(() => {
         console.log(data)
