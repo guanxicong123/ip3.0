@@ -99,6 +99,12 @@ const sidebarData = ref([
 const $useRouter = useRouter();
 const $useRoute = useRoute();
 
+const systemStore = useSystemStore()
+
+const router_data = computed(() => {
+  return systemStore.router_data
+})
+
 // 处理点击路由跳转
 const handleClickRouter = (item: { path: string }) => {
     $useRouter.push(
@@ -109,6 +115,13 @@ const handleClickRouter = (item: { path: string }) => {
 const handleMouseleave = (item: { hover: boolean; }) => {
     setTimeout(() => { item.hover = false }, 300)
 }
+
+onMounted(() => {
+    sidebarData.value = router_data.value.filter((item: any) => {
+        return item.permission !== false
+    })
+    console.log('change menu sidebarData', sidebarData)
+})
 </script>
 
 <style lang="scss">

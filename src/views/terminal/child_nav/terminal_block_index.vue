@@ -31,10 +31,21 @@
                   ></use>
                 </svg>
               </span>
-              <div class="i-volume">
-                <span class="iconfont icon-volume"></span>
-                <span>{{ item.volume }}</span>
-              </div>
+              <el-popover
+                placement="left-start"
+                trigger="click"
+                :offset="-90"
+                popper-class="terminal-volume-popper"
+                :disabled='item.status !== 1 && item.status !== 2'
+              >
+                <el-slider v-model="item.volume" @change="changeVolume(item)" />
+                <template #reference >
+                  <div class="i-volume" @click.stop>
+                    <span class="iconfont icon-volume"></span>
+                    <span>{{ item.volume }}</span>
+                  </div>
+                </template>
+              </el-popover>
             </div>
             <div class="li-center">
               <p class="name" :title="item.name">{{ item.name }}</p>
@@ -73,7 +84,9 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
+import { onBeforeRouteLeave, onBeforeRouteUpdate, stringifyQuery } from "vue-router";
+import { send } from '@/utils/socket'
+import { ElMessage } from "element-plus";
 
 const form = reactive<any>({
   data: [],
@@ -137,6 +150,10 @@ watch(() => search_value.value, () => {
 const {
   select_terminal,
 }:any = inject('select_terminal')
+
+const {
+  updateCheckedTerminals
+}: any = inject("checkedAll")
 // 过滤数组
 // const filTerterminalData = (type: number, name: string) => {
 //   let row = type === 0 && name === ''
@@ -150,7 +167,7 @@ const {
 // }
 // 处理点击选择终端
 const handleSelected = (item: { EndpointID: number }) => {
-  console.log('handle select terminal', item, form.multipleSelection.includes(item.EndpointID))
+  // console.log('handle select terminal', item, form.multipleSelection.includes(item.EndpointID))
   if (form.multipleSelection.includes(item.EndpointID)) {
     form.multipleSelection = form.multipleSelection.filter(
       (row: number) => row !== item.EndpointID
@@ -158,10 +175,11 @@ const handleSelected = (item: { EndpointID: number }) => {
   } else {
     form.multipleSelection.push(item.EndpointID);
   }
-  console.log('form.multipleSelection', form.multipleSelection, form.data)
+  // console.log('form.multipleSelection', form.multipleSelection, form.data)
   // 设置全选 - 使用provide/inject
-  handleUpdateCheckedAll(form.multipleSelection.length == form.data.length);
+  handleUpdateCheckedAll(form.multipleSelection.length === form.data.length);
   handleIsCheckedAll(false);
+  updateCheckedTerminals(form.multipleSelection)
 };
 // 处理全选
 const handleCheckedAll = () => {
@@ -169,6 +187,7 @@ const handleCheckedAll = () => {
   for (let i = 0; i < form.data.length; i++) {
     form.multipleSelection.push(form.data[i].EndpointID);
   }
+  updateCheckedTerminals(form.multipleSelection)
 };
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
@@ -181,6 +200,23 @@ const handleCurrentChange = (val: number) => {
   form.currentPage = val;
   form.data = store.filterGroupData(storage_terminal_data.value).slice(form.pageSize * (form.currentPage - 1), form.pageSize * form.currentPage)
 };
+
+// 修改终端音量
+const changeVolume = (data: any) => {
+  let send_data = {
+    company: "BL",
+    actioncode: "c2ls_set_terminal_volume",
+    token: "",
+    data: {
+      TerminalID: String(data.EndpointID),
+      Volume: String(data.volume)
+    },
+    result: 0,
+    return_message: ""
+  }
+  console.log('send_data', send_data)
+  send(send_data)
+}
 
 const $useRoute = useRoute();
 const $useRouter = useRouter();
