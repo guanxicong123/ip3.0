@@ -129,6 +129,9 @@ module.exports = defineConfig({
                             // 别名 import { useFetch as useMyFetch } from '@/store'
                             // ['useFetch', 'useMyFetch'],
                         ],
+                        '@/store/system_config': [
+                            ['default', 'useSystemStore']
+                        ],
                         'axios': [
                             // 默认导入 import { default as axios } from 'axios'
                             ['default', 'axios'],

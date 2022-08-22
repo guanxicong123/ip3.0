@@ -172,6 +172,9 @@ const handlerMsg = (msg:any) => {
         }
         return ElMessage.error(msg.return_message)
     }
+    if (msg.actioncode === 'ls2c_set_terminal_volume') {
+        useTerminalStore().setTerminalVolume(msg.data)
+    }
     switch(msg.actioncode) {
         case 'ls2c_user_login': //登录返回信息
             return useAppStore().loginSuccessData(msg.data)

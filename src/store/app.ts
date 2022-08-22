@@ -1,4 +1,5 @@
 import router from '../router'
+import useSystemStore from './system_config'
 
 export interface AppState {
     language: string;
@@ -39,10 +40,13 @@ const useAppStore = defineStore({
         loginSuccessData(data: any) {
             this.is_login = false
             localStorage.set("userToken", data.Token)
-            if (router.options.history.location === '/') {
-                router.push("/terminal")
-            }
-        }
+            // if (router.options.history.location === '/') {
+            //     router.push("/terminal")
+            // }
+            // 登录成功获取路由权限数据
+            // router.push("/terminal")
+            useSystemStore().getConfigInfo()
+        },
     },
 });
 

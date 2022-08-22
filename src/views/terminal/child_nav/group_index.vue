@@ -110,6 +110,7 @@ const {
   is_checked_all,
   handleUpdateCheckedAll,
   handleIsCheckedAll,
+  updateCheckedTerminals
 }: any = inject("checkedAll");
 
 const {
@@ -128,15 +129,37 @@ const multipleTableRef = ref<InstanceType<typeof ElTable>>()
 const handleSelected = (item: { GroupID: number }) => {
   if (form.multipleSelection.includes(item.GroupID)) {
     form.multipleSelection = form.multipleSelection.filter(
-      (row: number) => row != item.GroupID
+      (row: number) => row !== item.GroupID
     );
   } else {
     form.multipleSelection.push(item.GroupID);
   }
+  console.log('multipleSelection', form.multipleSelection)
+  cleanCheckedTerminalIds()
   // 设置全选 - 使用provide/inject
-  handleUpdateCheckedAll(form.multipleSelection.length == form.data.length);
+  handleUpdateCheckedAll(form.multipleSelection.length === form.data.length);
   handleIsCheckedAll(false);
 };
+
+const cleanCheckedTerminalIds = () => {
+  let terminals_arr: any = []
+  let checked_terminals_ids: any = []
+  form.multipleSelection.forEach((item: any) => {
+    let index = form.data.findIndex((add: { GroupID: number}) => {
+      return add.GroupID === item
+    })
+    // console.log('index', index)
+    if (index > -1) {
+      terminals_arr = terminals_arr.concat(form.data[index].terminals)
+      // console.log('form.data[index].terminals', form.data[index].terminals, terminals_arr)
+    }
+  })
+  terminals_arr.map((item: any) => {
+    checked_terminals_ids.push(item.EndpointID)
+  })
+  // console.log('checked_terminals_ids', checked_terminals_ids)
+  updateCheckedTerminals(checked_terminals_ids)
+}
 
 const viewGroupInfo = ((item: { GroupName: string, terminals: Object }) => {
   show_group_info.value = true
@@ -153,8 +176,9 @@ const typeIndex = (index: number) => {
 const handleCheckedAll = () => {
   form.multipleSelection = [];
   for (let i = 0; i < form.data.length; i++) {
-    form.multipleSelection.push(form.data[i].id);
+    form.multipleSelection.push(form.data[i].GroupID);
   }
+  cleanCheckedTerminalIds()
 };
 
 // 处理XXX条/页更改
