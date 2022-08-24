@@ -123,6 +123,8 @@
 
     const store = useAppStore();
 
+    const systemStore = useSystemStore()
+
     const isWebsocekt = computed(() => {
         return store.is_websocekt
     }); //ws连接状态
@@ -183,6 +185,8 @@
             modelRef.password = localStorage.get("password")
             is_checked.value = true
         }
+        // 获取机器码
+        systemStore.getProductKey()
     });
     onBeforeUnmount(()=> {
         if (isWebsocekt) {

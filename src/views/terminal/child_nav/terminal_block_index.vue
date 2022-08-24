@@ -132,18 +132,24 @@ const search_value = computed(() => {
   return store.search_value
 })
 
+const cacheTerminalData: any = []
+
 watch(()=> terminal_data.value, (newVal)=> {
   storage_terminal_data.value = newVal
-  // console.log('watch storage_terminal_data', storage_terminal_data)
+  cacheTerminalData.value = store.defaultTerminalSort(store.filterGroupData(storage_terminal_data.value))
+  form.data = cacheTerminalData.value
+  form.total = form.data.length
 })
 
 watch(() => terminal_status.value, () => {
-  form.data = store.filterGroupData(storage_terminal_data.value)
+  cacheTerminalData.value = store.defaultTerminalSort(store.filterGroupData(storage_terminal_data.value))
+  form.data = cacheTerminalData.value
   form.total = form.data.length
 })
 
 watch(() => search_value.value, () => {
-  form.data = store.filterGroupData(storage_terminal_data.value)
+  cacheTerminalData.value = store.defaultTerminalSort(store.filterGroupData(storage_terminal_data.value))
+  form.data = cacheTerminalData.value
   form.total = form.data.length
 })
 
@@ -154,20 +160,9 @@ const {
 const {
   updateCheckedTerminals
 }: any = inject("checkedAll")
-// 过滤数组
-// const filTerterminalData = (type: number, name: string) => {
-//   let row = type === 0 && name === ''
-//   if (row) {
-//     terminalData.value = terminalDataAll.value.slice(1, 20)
-//   }else {
-//     terminalData.value = terminalDataAll.value.filter(item=> {
-//       return item.type === type
-//     }).slice(1, 20)
-//   }
-// }
+
 // 处理点击选择终端
 const handleSelected = (item: { EndpointID: number }) => {
-  // console.log('handle select terminal', item, form.multipleSelection.includes(item.EndpointID))
   if (form.multipleSelection.includes(item.EndpointID)) {
     form.multipleSelection = form.multipleSelection.filter(
       (row: number) => row !== item.EndpointID
@@ -175,7 +170,6 @@ const handleSelected = (item: { EndpointID: number }) => {
   } else {
     form.multipleSelection.push(item.EndpointID);
   }
-  // console.log('form.multipleSelection', form.multipleSelection, form.data)
   // 设置全选 - 使用provide/inject
   handleUpdateCheckedAll(form.multipleSelection.length === form.data.length);
   handleIsCheckedAll(false);
@@ -193,12 +187,12 @@ const handleCheckedAll = () => {
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
   form.currentPage = 1;
-  form.data = store.filterGroupData(storage_terminal_data.value).slice(0, form.pageSize * form.currentPage)
+  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage)
 };
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
-  form.data = store.filterGroupData(storage_terminal_data.value).slice(form.pageSize * (form.currentPage - 1), form.pageSize * form.currentPage)
+  form.data = cacheTerminalData.value.slice(form.pageSize * (form.currentPage - 1), form.pageSize * form.currentPage)
 };
 
 // 修改终端音量
@@ -246,21 +240,19 @@ watch(
 
 watch(select_terminal, (value) => {
   form.pageSize = value.split('x')[0] * value.split('x')[1]
-  // console.log('pageSize', form.pageSize)
   handleSizeChange(form.pageSize)
 })
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  // form.layoutArrange = $useRoute.query.layoutArrange
-  // console.log('layoutArrange', $useRoute.query.layoutArrange, form.layoutArrange)
   form.layoutArrange = select_terminal
   form.pageSizes = [form.layoutArrange.split('x')[0] * form.layoutArrange.split('x')[1]]
   form.pageSize = form.pageSizes[0]
   storage_terminal_data.value = terminal_data.value
-  form.data = store.filterGroupData(storage_terminal_data.value).slice(0, form.pageSize)
-  form.total = form.data.length;
-});
+  cacheTerminalData.value = store.defaultTerminalSort(store.filterGroupData(storage_terminal_data.value))
+  form.data = cacheTerminalData.value
+  form.total = form.data.length
+})
 </script>
 
 <style lang="scss" scoped>

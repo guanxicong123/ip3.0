@@ -134,13 +134,13 @@ const handleSelected = (item: { GroupID: number }) => {
   } else {
     form.multipleSelection.push(item.GroupID);
   }
-  console.log('multipleSelection', form.multipleSelection)
   cleanCheckedTerminalIds()
   // 设置全选 - 使用provide/inject
   handleUpdateCheckedAll(form.multipleSelection.length === form.data.length);
   handleIsCheckedAll(false);
 };
 
+// 处理勾选分组数据
 const cleanCheckedTerminalIds = () => {
   let terminals_arr: any = []
   let checked_terminals_ids: any = []
@@ -148,23 +148,20 @@ const cleanCheckedTerminalIds = () => {
     let index = form.data.findIndex((add: { GroupID: number}) => {
       return add.GroupID === item
     })
-    // console.log('index', index)
     if (index > -1) {
       terminals_arr = terminals_arr.concat(form.data[index].terminals)
-      // console.log('form.data[index].terminals', form.data[index].terminals, terminals_arr)
     }
   })
   terminals_arr.map((item: any) => {
     checked_terminals_ids.push(item.EndpointID)
   })
-  // console.log('checked_terminals_ids', checked_terminals_ids)
   updateCheckedTerminals(checked_terminals_ids)
 }
 
+// 分组终端详情显示
 const viewGroupInfo = ((item: { GroupName: string, terminals: Object }) => {
   show_group_info.value = true
   group_title.value = item.GroupName
-  console.log('item', item)
   form.table_data = item.terminals
 })
 
@@ -220,7 +217,6 @@ watch(() => search_value.value, () => {
 })
 
 const getGroupList = () => {
-  // console.log('terminal_group_data', terminal_group_data)
   form.data = store.filterGroupData(terminal_group_data.value).filter((item: any) => {
     return item.GroupID !== 0
   })
@@ -229,19 +225,10 @@ const getGroupList = () => {
   form.data.map((item: any) => {
     item.status = 1
   })
-  // console.log('form.total 分组路由数据', form.data)
 }
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  // for (let i = 0; i < 20; i++) {
-  //   form.data.push({
-  //     id: i,
-  //     status: i < 5 ? i : 0,
-  //     name: "分组" + i,
-  //   });
-  // }
-  // form.total = form.data.length;
   getGroupList()
 });
 </script>

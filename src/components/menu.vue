@@ -120,7 +120,6 @@ onMounted(() => {
     sidebarData.value = router_data.value.filter((item: any) => {
         return item.permission !== false
     })
-    console.log('change menu sidebarData', sidebarData)
 })
 </script>
 
