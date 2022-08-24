@@ -105,6 +105,14 @@ const router_data = computed(() => {
   return systemStore.router_data
 })
 
+watch(() => router_data.value, (value) => {
+    sidebarData.value = value.filter((item: any) => {
+        return item.permission !== false
+    })
+}, {
+    deep: true
+})
+
 // 处理点击路由跳转
 const handleClickRouter = (item: { path: string }) => {
     $useRouter.push(

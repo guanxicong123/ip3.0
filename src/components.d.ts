@@ -44,7 +44,6 @@ declare module '@vue/runtime-core' {
     ElTimePicker: typeof import('element-plus/es')['ElTimePicker']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     Header: typeof import('./components/header.vue')['default']
-    InfiniteScroll: typeof import('element-plus/es')['ElInfiniteScroll']
     Menu: typeof import('./components/menu.vue')['default']
     QuickMusicDialog: typeof import('./components/quick-music-dialog.vue')['default']
     QuickTerminalDialog: typeof import('./components/quick-terminal-dialog.vue')['default']

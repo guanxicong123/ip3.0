@@ -433,7 +433,7 @@ provide('terminal_group', {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   getGroupList()
-  $useRouter.push("/terminal/terminal_list");
+  $useRouter.push("/terminal/terminal_list")
   form.search_placeholder = '终端名称'
   cleanOnLineTerminal()
   form.select_terminal = basic_configs.value.ListDisplaySize === 0 ? '3x5' : basic_configs.value.ListDisplaySize === 1 ? '3x6' : '4x6'
