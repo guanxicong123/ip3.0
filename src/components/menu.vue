@@ -115,6 +115,7 @@ watch(() => router_data.value, (value) => {
 
 // 处理点击路由跳转
 const handleClickRouter = (item: { path: string }) => {
+    if ($useRoute.fullPath.indexOf(item.path) !== -1) return
     $useRouter.push(
         item.path == "/system" ? item.path + "/configure" : item.path
     );
