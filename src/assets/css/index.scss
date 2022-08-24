@@ -272,3 +272,24 @@
   // -moz-appearance: none;
   outline: none;
 }
+// 默认弹框dialog样式
+.com-default-dialog {
+  .el-dialog__header {
+    padding: 0 20px;
+    margin-right: 0;
+    background-color: #0070EE;
+    .el-dialog__title {
+        color: #FFFFFF;
+        font-size: 14px;
+        line-height: 40px;
+    }
+    .el-dialog__headerbtn {
+        top: 0;
+        height: 40px;
+        width: 40px;
+        .el-dialog__close {
+            color: #fff;
+        }
+    }
+  }
+}

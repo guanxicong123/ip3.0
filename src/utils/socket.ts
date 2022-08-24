@@ -79,7 +79,9 @@ const registerWebSocket = async () => {
 const send  = (data: any) => {
     let connected = socket && socket.readyState === 1
     if (connected) {
-        data['token'] = localStorage.get("userToken")
+        if (data.actioncode !== 'c2ls_user_login') {
+            data['token'] = localStorage.get("userToken")
+        }
         socket.send(JSON.stringify(data))
     }
 }

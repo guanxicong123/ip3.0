@@ -15,72 +15,72 @@
             @tab-click="handleTabClick"
         >
             <el-tab-pane name="first" v-if="config.isSelectTerminals">
-            <template #label>
-                <div class="custom-tabs-label">
-                <el-popover
-                    :visible="form.searchTerminalsVisible"
-                    placement="top-start"
-                >
-                    <template #reference>
-                    <el-icon @click="handleClickTerminalsVisible">
-                        <Search />
-                    </el-icon>
-                    </template>
-                    <div class="custom-popover">
-                    <el-input
-                        v-model="form.searchTerminals"
-                        placeholder="终端名称/终端IP"
-                        maxlength="100"
-                        clearable
-                        @input="handleTerminalsSearch"
-                    />
-                    <i
-                        class="iconfont icon-execution-failed"
-                        @click="handleClickClosePopover"
-                    ></i>
-                    </div>
-                </el-popover>
-                <span>{{ config.terminalsTitle }}</span>
-                </div>
-            </template>
-            <div class="custom-scroll-bar">
-                <div class="scroll-select">
-                <el-select v-model="form.currentGroupsID">
-                    <el-option :key="0" label="所有分组" :value="0" />
-                    <el-option
-                    v-for="item in form.allGroupsOptions"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                    />
-                </el-select>
-                </div>
-                <div class="scroll-bar">
-                <el-scrollbar>
-                    <ul class="scroll-ul">
-                    <template
-                        v-for="item in form.allTerminalsData"
-                        :key="item.id"
+                <template #label>
+                    <div class="custom-tabs-label">
+                    <el-popover
+                        :visible="form.searchTerminalsVisible"
+                        placement="top-start"
                     >
-                        <li
-                        @click="selectTerminal(item)"
-                        v-show="
-                            !form.searchTerminalsVisible ||
-                            item[config.searchColumnName].match(
-                            form.searchTerminalsReg
-                            ) ||
-                            item[config.searchColumnIP].match(
-                            form.searchTerminalsReg
-                            )
-                        "
+                        <template #reference>
+                        <el-icon @click="handleClickTerminalsVisible">
+                            <Search />
+                        </el-icon>
+                        </template>
+                        <div class="custom-popover">
+                        <el-input
+                            v-model="form.searchTerminals"
+                            placeholder="终端名称/终端IP"
+                            maxlength="100"
+                            clearable
+                            @input="handleTerminalsSearch"
+                        />
+                        <i
+                            class="iconfont icon-execution-failed"
+                            @click="handleClickClosePopover"
+                        ></i>
+                        </div>
+                    </el-popover>
+                    <span>{{ config.terminalsTitle }}</span>
+                    </div>
+                </template>
+                <div class="custom-scroll-bar">
+                    <div class="scroll-select">
+                    <el-select v-model="form.currentGroupsID">
+                        <el-option :key="0" label="所有分组" :value="0" />
+                        <el-option
+                        v-for="item in form.allGroupsOptions"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                        />
+                    </el-select>
+                    </div>
+                    <div class="scroll-bar">
+                    <el-scrollbar>
+                        <ul class="scroll-ul">
+                        <template
+                            v-for="item in form.allTerminalsData"
+                            :key="item.id"
                         >
-                        {{ item.name }}
-                        </li>
-                    </template>
-                    </ul>
-                </el-scrollbar>
+                            <li
+                            @click="selectTerminal(item)"
+                            v-show="
+                                !form.searchTerminalsVisible ||
+                                item[config.searchColumnName].match(
+                                form.searchTerminalsReg
+                                ) ||
+                                item[config.searchColumnIP].match(
+                                form.searchTerminalsReg
+                                )
+                            "
+                            >
+                            {{ item.name }}
+                            </li>
+                        </template>
+                        </ul>
+                    </el-scrollbar>
+                    </div>
                 </div>
-            </div>
             </el-tab-pane>
             <el-tab-pane name="second" v-if="config.isSelectGroups">
             <template #label>
@@ -131,12 +131,10 @@
         </el-tabs>
         </div>
         <div class="com-select-center">
-        <span title="全部右移" @click="selectAll">
-            <el-icon><ArrowRight /></el-icon>
-        </span>
-        <span title="全部左移" @click="deselectAll">
-            <el-icon><ArrowLeft /></el-icon>
-        </span>
+            <span title="全部右移" @click="selectAll" class="iconfont icon-shift-right">
+            </span>
+            <span title="全部左移" @click="deselectAll" class="iconfont icon-shift-left">
+            </span>
         </div>
         <!-- 已选终端 -->
         <div
@@ -171,16 +169,16 @@
                     </template>
                     <span v-else>
                         <el-input
-                        class="title-search-input"
-                        v-model="form.selectedSearchTerminals"
-                        placeholder="终端名称/终端IP"
-                        maxlength="100"
-                        clearable
-                        @input="handleSelectedTerminalsSearch"
+                            class="title-search-input"
+                            v-model="form.selectedSearchTerminals"
+                            placeholder="终端名称/终端IP"
+                            maxlength="100"
+                            clearable
+                            @input="handleSelectedTerminalsSearch"
                         />
                         <i
-                        class="iconfont icon-execution-failed delete"
-                        @click="handleClickCloSesearchInput"
+                            class="iconfont icon-execution-failed delete"
+                            @click="handleClickCloSesearchInput"
                         ></i>
                     </span>
                 </div>
@@ -224,8 +222,8 @@
                                     </div>
                                     <div class="icon-font-delete">
                                         <i
-                                        class="iconfont icon-execution-failed delete"
-                                        @click="deleteTerminal(item)"
+                                            class="iconfont icon-clear delete"
+                                            @click="deleteTerminal(item)"
                                         ></i>
                                     </div>
                                 </div>
@@ -281,28 +279,28 @@
                 "
             >
                 <el-icon
-                @click="
-                    form.selectedSearchGroupsVisible =
-                    !form.selectedSearchGroupsVisible
-                "
-                v-if="item.column === config.searchColumnName"
-                >
+                    @click="
+                        form.selectedSearchGroupsVisible =
+                        !form.selectedSearchGroupsVisible
+                    "
+                    v-if="item.column === config.searchColumnName"
+                    >
                 <Search />
                 </el-icon>
                 <span>{{ item.text }}</span>
             </template>
             <span v-else>
                 <el-input
-                class="title-search-input"
-                v-model="form.selectedSearchGroups"
-                placeholder="分组名称"
-                maxlength="100"
-                clearable
-                @input="handleSelectedGroupsSearch"
+                    class="title-search-input"
+                    v-model="form.selectedSearchGroups"
+                    placeholder="分组名称"
+                    maxlength="100"
+                    clearable
+                    @input="handleSelectedGroupsSearch"
                 />
                 <i
-                class="iconfont icon-execution-failed delete"
-                @click="handleClickCloSesearchInput"
+                    class="iconfont icon-clear delete"
+                    @click="handleClickCloSesearchInput"
                 ></i>
             </span>
             </div>
@@ -329,19 +327,29 @@
                         :style="row.style"
                         :title="item[row.column]"
                     >
-                        <span
-                        :class="{
-                            'iconfont icon-view-terminal': row.column === 'list',
-                        }"
-                        :title="row.column === 'list' ? '点击查看' : ''"
-                        >
-                        {{ row.column === "key" ? index + 1 : item[row.column] }}
-                        </span>
+                        <el-popover placement="bottom" width="448px" trigger="click">
+                            <template #reference>
+                                <span
+                                    :class="{
+                                        'iconfont icon-view-terminlas': row.column === 'list'
+                                    }"
+                                    :title="row.column === 'list' ? '点击查看' : ''"
+                                >
+                                    {{ row.column === "key" ? index + 1 : item[row.column] }}
+                                </span>
+                            </template>
+                            <el-table :data="item.terminals" style="width: 448px">
+                                <el-table-column type="index" label="序号" width="50" />
+                                <el-table-column property="name" label="终端名称" />
+                                <el-table-column property="ip_address" label="终端IP" />
+                                <el-table-column property="call_code" label="呼叫编码" />
+                            </el-table>
+                        </el-popover>
                     </div>
                     <div class="icon-font-delete">
                         <i
-                        class="iconfont icon-execution-failed delete"
-                        @click="deleteGroup(item)"
+                            class="iconfont icon-execution-failed delete"
+                            @click="deleteGroup(item)"
                         ></i>
                     </div>
                     </div>
