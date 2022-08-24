@@ -8,9 +8,11 @@ import "element-plus/dist/index.css"
 import "@/assets/css/theme.scss"
 import "@/assets/font/iconfont.js"
 import terminalsSelectComponents  from '@/components/terminals-select-components.vue'
+import quickMusicDialog  from '@/components/quick-music-dialog.vue'
 const app = createApp(App)
 
 app.component('terminals-select-components', terminalsSelectComponents)
+app.component('quick-music-dialog', quickMusicDialog)
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
