@@ -78,19 +78,19 @@
                                     :title="item[row.column]">
                                     <span 
                                         :class="{
-                                            'iconfont icon-view-terminal':
+                                            'iconfont icon-view-terminlas':
                                                 row.column === 'list' &&
                                                 !item.hasOwnProperty('medias_id'),
                                         }" 
                                         :title="row.column === 'list' && !item.hasOwnProperty('medias_id') ? '点击查看' : ''"
                                     >
                                         {{
-                                                row.column === "key"
-                                                    ? index + 1
-                                                    : row.column === "list" &&
-                                                        item.hasOwnProperty("medias_id")
-                                                        ? "-"
-                                                        : item[row.column]
+                                            row.column === "key"
+                                                ? index + 1
+                                                : row.column === "list" &&
+                                                    item.hasOwnProperty("medias_id")
+                                                    ? "-"
+                                                    : item[row.column]
                                         }}
                                     </span>
                                 </div>
@@ -100,14 +100,18 @@
                 </el-scrollbar>
             </div>
         </div>
-        <div class="com-select-right" v-show="form.selectedConfigureData.type !== 1">
+        <div class="com-select-right" v-show="[2,3].includes(form.selectedConfigureData.type)">
             <div class="custom-title">
-                {{ config.soundSourceTitle }}
+                {{ form.selectedConfigureData.type === 2 ? '音源采集' : '终端采集' }}
             </div>
             <div class="custom-content">
-                <el-form-item label="选择音源">
+                <el-form-item :label="form.selectedConfigureData.type === 2 ? '选择音源' : '选择终端'">
                     <div class="fast-source">
-                        {{ form.selectedConfigureData?.fast_source?.terminals_name }}
+                        {{ 
+                            form.selectedConfigureData.type === 2 
+                                ? form.selectedConfigureData?.fast_source?.sound_card
+                                : form.selectedConfigureData?.fast_source?.terminals_name
+                        }}
                     </div>
                 </el-form-item>
             </div>
@@ -149,7 +153,7 @@ let config = reactive<any>({
         // 要显示的列(媒体/媒体文件夹) column 列名 text 列的别名 style 列的样式
         {
             column: "key",
-            text: "No.",
+            text: "序号",
             style: { width: "15%" },
         },
         {
@@ -165,7 +169,6 @@ let config = reactive<any>({
     ],
     searchColumnName: "name", // 搜索的列名
     musicTitle: "音乐播放", // 标题名
-    soundSourceTitle: "音源采集", // 标题名
 });
 // 处理已选择的配置数据
 const handleSelectedConfigure = (item: any) => {
@@ -209,7 +212,11 @@ const getSoundSource = () => {
             }
         }).then((result: any)=> {
             if (result.result === 200) {
-                form.allConfigureData = result.data
+                form.allConfigureData = result.data.map((item: any)=> {
+                    item.all_data = item.type != 2 && item.type != 3 ? [...item.medias, ...item.medias_groups] : []
+                    return item
+                })
+                console.log(form.allConfigureData)
                 resolve()
             }
         })
@@ -236,7 +243,7 @@ onMounted(() => {
     height: 100%; //高度由引入组件模块设置
     
     .com-select-left {
-        width: 300px;
+        width: 260px;
         height: 100%;
         border-radius: 2px;
         border: 1px solid #E7E7E7;

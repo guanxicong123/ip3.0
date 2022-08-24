@@ -93,6 +93,8 @@
                     </select-media-group>
                     <text-play-component v-if="ruleForm.type === 4">
                     </text-play-component>
+                    <select-sound-source-collection-radio v-if="ruleForm.type === 3">
+                    </select-sound-source-collection-radio>
                 </div>
             </div>
             <div class="play-task-region configure-level">
@@ -120,6 +122,13 @@
                 </div>
             </div>
         </el-scrollbar>
+        <div class="add-edit-bottom-button">
+            <div class="button button-cancel">返回</div>
+            <div class="button button-submit">保存</div>
+            <div class="button button-submit">保存并播放</div>
+        </div>
+        <quick-terminal-dialog v-model:dialogVisible="dialogVisible">
+        </quick-terminal-dialog>
     </div>
 </template>
 
@@ -129,16 +138,17 @@
     import musicPlayComponent from '../components/music-play-component.vue'
     import textPlayComponent from '../components/text-play-component.vue'
     import selectMediaGroup from '@/components/select_media_group.vue'
+    import quickTerminalDialog from '@/components/quick-terminal-dialog.vue'
 
     const uploadRef = ref<UploadInstance>()
     const fileList = ref<UploadUserFile[]>()
     const activeName = ref('first')
     const musicSelect = ref([]) //播放配置选中的音频文件
     const ruleForm = reactive({
+        type: 1,
         taskname: '',
         volume: '',
         priority: '',
-        type: 1,
         playmodel: 1,
         AudioQuality: 0
     })
@@ -208,7 +218,7 @@
 
 <style lang="scss">
     .com-add-edit-play-task {
-        padding: 0 40px;
+        height: calc(100% - 68px);
         .from-alert {
             padding: 14px 0;
             border-bottom: 1px solid #E0E2E3;
@@ -220,8 +230,7 @@
             }
         }
         .configure-level {
-            padding-top: 8px;
-            padding-bottom: 20px;
+            padding: 8px 40px 20px 40px;
             .configure-level-content {
                 padding-top: 22px;
             }
@@ -286,6 +295,36 @@
             }
             .upload-demo {
                 display: inline-block;
+            }
+        }
+        .add-edit-bottom-button {
+            position: fixed;
+            bottom: 0;
+            left: 136px;
+            width: calc(100% - 136px);
+            height: 68px;
+            border-top: 1px solid #E0E2E3;
+            text-align: right;
+            .button {
+                display: inline-block;
+                margin-top: 20px;
+                padding: 6px 20px;
+                border-radius: 4px;
+                margin-right: 10px;
+                color: #FFFFFF;
+                font-size: 14px;
+                font-family: MicrosoftYaHei;
+                cursor: pointer;
+                &:last-child {
+                    margin-right: 40px;
+                }
+            }
+            .button-cancel {
+                color: #7992D5;
+                background-color: #E1EAFD;
+            }
+            .button-submit {
+                background-color: #0070EE;
             }
         }
     }
