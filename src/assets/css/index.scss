@@ -80,12 +80,14 @@
     }
   }
   .com-alert-bg {
-    background-color: #f4f4f4;
+    // background-color: #f4f4f4;
+    border-bottom: 1px solid #E0E2E3;
     .strong {
       margin: 0 8px;
       font-size: 16px;
       font-weight: bold;
-      color: $c-333;
+      // color: $c-333;
+      color: #6F95C1;
     }
   }
 }
@@ -125,7 +127,7 @@
   padding: 22px 40px;
   .el-input-number,
   .el-select {
-    width: 220px;
+    width: 274px;
   }
   .icon-gray-item {
     position: absolute;
@@ -134,8 +136,8 @@
   }
 }
 .com-form-item-custom {
-  min-width: 220px;
-  margin-right: 32px;
+  min-width: 274px;
+  margin-right: 80.5px;
   margin-bottom: 18px;
   .el-checkbox {
     height: 30px;
@@ -271,4 +273,14 @@
   // -webkit-appearance: none;
   // -moz-appearance: none;
   outline: none;
+}
+
+// 终端音量 popover
+.el-popover.el-popper.terminal-volume-popper {
+  min-width: 105px;
+  margin: 20px 0 0 0 !important;
+  padding: 5px 10px;
+  .el-slider {
+    height: 10px;
+  }
 }

@@ -53,8 +53,8 @@
             <el-option
               v-for="(item, keys) in form.speakerTerminalOptions"
               :key="keys"
-              :label="item.label"
-              :value="item.value"
+              :label="item.EndpointName"
+              :value="item.EndpointID"
             />
           </el-select>
         </div>
@@ -72,7 +72,7 @@
           v-if="$useRoute.name != 'terminal_list'"
         />
         <el-button type="primary" color="#4900EE"> 全区广播 </el-button>
-        <el-button type="primary" color="#467CF7">广播</el-button>
+        <el-button type="primary" color="#467CF7" @click="originateBroadcast">广播</el-button>
         <el-button
           type="primary"
           color="#00A1CC"
@@ -137,18 +137,16 @@
 <script lang="ts" setup>
 import { Search } from "@element-plus/icons-vue";
 import { onBeforeRouteLeave } from "vue-router";
+import { ElMessage } from 'element-plus'
+// const { appContext: { config: { globalProperties: global }}} = getCurrentInstance()
+import axios from 'axios'
 
 const form = reactive<any>({
   terminal_status: -1, // 终端状态
   search: "", // 搜索
   search_placeholder: "", // 搜索 placeholder
-  speaker_terminal: 1, // 主讲终端
-  speakerTerminalOptions: [
-    {
-      value: 1,
-      label: "终端1",
-    },
-  ],
+  speaker_terminal: '', // 主讲终端
+  speakerTerminalOptions: [],
   terminalStatusOptions: [
     { value: -1, label: "全部状态" },
     { value: 1, label: "空闲" },
@@ -175,9 +173,17 @@ const terminal_view_options = [
   }
 ]
 
+// const response_id = ref(0)
+
 const terminal_group_data = ref()
 
 const store = useTerminalStore()
+
+const systemStore = useSystemStore()
+
+const basic_configs = computed(() => {
+  return systemStore.basic_configs
+})
 
 const terminal_data = computed(() => {
   return store.terminal_data
@@ -189,6 +195,7 @@ const terminal_group = computed(() => {
 
 watch(()=> terminal_data.value, (newVal)=> {
   getGroupList()
+  cleanOnLineTerminal()
 },{
   deep: true
 })
@@ -196,6 +203,25 @@ watch(()=> terminal_data.value, (newVal)=> {
 watch(()=> terminal_group.value, (newVal)=> {
   getGroupList()
 })
+
+watch(()=> basic_configs.value, (newVal)=> {
+  form.select_terminal = basic_configs.value.ListDisplaySize === 0 ? '3x5' : basic_configs.value.ListDisplaySize === 1 ? '3x6' : '4x6'
+  form.view_value = basic_configs.value.DisplayType === 1 ? 'list' : 'square'
+},{
+  deep: true
+})
+
+// 生成随机字符串
+const dec2hex = (dec: any) => {
+    return dec.toString(16).padStart(2, "0")
+}
+  
+const generateId = (len: any) => {
+    var arr = new Uint8Array((len || 40) / 2)
+    window.crypto.getRandomValues(arr)
+    console.log('arr', arr, window.crypto.getRandomValues(arr))
+    return Array.from(arr, dec2hex).join('')
+}
 
 // 路由
 const $useRouter = useRouter();
@@ -208,7 +234,8 @@ const checked_all = ref(false);
 // 是否点击了全选按钮-给子组件做判断处理事件
 const is_checked_all = ref(false);
 // 处理全选
-const handleCheckedAll = () => {
+const handleCheckedAll = (value: any) => {
+  console.log('click checked all button', value)
   is_checked_all.value = true;
 };
 // 处理是否全选
@@ -220,6 +247,15 @@ const handleUpdateCheckedAll = (value: boolean) => {
   checked_all.value = value;
 };
 
+//定义已勾选的终端数据
+const checked_terminals = ref([])
+
+// 更新已勾选终端数据
+const updateCheckedTerminals = (data: any) => {
+  console.log('update checked terminals', data)
+  checked_terminals.value = data
+}
+
 const setUp = () => {
   console.log('set up')
   set_dialog.value = true
@@ -228,6 +264,9 @@ const setUp = () => {
 
 // 终端 <-> 分组切换
 const changeRouter = (name: string) => {
+  console.log('change router', name)
+  // checked_terminals.value = []
+  // console.log('checked_terminals', checked_terminals.value)
   if (name === '分组') {
     $useRouter.push('/terminal/group')
     form.search_placeholder = '分组名称'
@@ -257,29 +296,132 @@ const handleFilter = () => {
 //   store.updateFiltrateCondition(conditions)
 // }
 
+// 过滤在线设备组成主讲终端可选项
+const cleanOnLineTerminal = () => {
+  form.speakerTerminalOptions = terminal_data.value.filter((item: { status: number}) => {
+    return item.status === 1 || item.status === 2
+  })
+  console.log('form.speakerTerOps', form.speakerTerminalOptions)
+  // 设置默认主讲终端
+  let online_ids = form.speakerTerminalOptions.map((item: any) => {
+    return item.EndpointID
+  })
+  if (online_ids.includes(basic_configs.value.MainEndpointID)) {
+    form.speaker_terminal = basic_configs.value.MainEndpointID
+  } else {
+    form.speaker_terminal = form.speakerTerminalOptions.length > 0 ? form.speakerTerminalOptions[0].EndpointID : ''
+  }
+}
+
 // 确认终端视图模式
 const confirmTerminalSet = () => {
-  select_terminal.value = form.select_terminal
-  if (form.view_value === 'list') {
-    $useRouter.push('/terminal/terminal_list')
-  } else {
-    $useRouter.push({
-      path: '/terminal/terminal_block',
-      query: {
-        layoutArrange: select_terminal.value
+  axios.put(
+    'http://172.16.21.25:9999/api/v1/config/' + basic_configs.value.ID,
+    {
+      DisplayType: form.view_value === 'list' ? 1 : 0,
+      ListDisplaySize: form.select_terminal === '3x5' ? 0 : form.select_terminal === '3x6' ? 1 : 2
+    }
+  ).then((result: any) => {
+    console.log('put data', result)
+    if (result.status === 200) {
+      select_terminal.value = form.select_terminal
+      let data = {
+        DisplayType: form.view_value === 'list' ? 1 : 0,
+        ListDisplaySize: form.select_terminal === '3x5' ? 0 : form.select_terminal === '3x6' ? 1 : 2
       }
+      systemStore.updateTerminalStatusConfig(data)
+      if (form.view_value === 'list') {
+        $useRouter.push('/terminal/terminal_list')
+      } else {
+        $useRouter.push({
+          path: '/terminal/terminal_block',
+          query: {
+            layoutArrange: select_terminal.value
+          }
+        })
+      }
+      console.log('select_terminal', select_terminal)
+      set_dialog.value = false
+      store.changeFilterStatus(true)
+    }
+  })
+}
+
+// 已勾选终端筛选出在线终端数据
+const filterCheckedTerminals = () => {
+  let checked_online_terminals: any = []
+  checked_terminals.value.forEach((item: any) => {
+    let index = form.speakerTerminalOptions.findIndex((add: any) => {
+      return add.EndpointID === item
     })
+    if (index > -1) {
+      checked_online_terminals.push(item)
+    }
+  })
+  return checked_online_terminals
+}
+
+// 发起广播任务
+const originateBroadcast = () => {
+  // if (!form.speaker_terminal) {
+  //   return ElMessage.error('未选择主讲终端或主讲终端未在线')
+  // }
+  // let filter_initiator_terminals = filterCheckedTerminals().filter((item: number) => {
+  //   return item !== form.speaker_terminal
+  // })
+  // if (filter_initiator_terminals.length < 1) {
+  //   return ElMessage.error('请选择执行接收终端')
+  // }
+  // console.log('filter_initiator_terminals', filter_initiator_terminals)
+  let send_data = {
+    company: "BL",
+    actioncode: "c2ls_broadcast_task",
+    token: "",
+    data: {
+      EndPointsAdditionalProp: {},
+      InitiatorEndPointID: form.speaker_terminal,
+      ReceiverList: "17",
+      TaskID: generateId(30),
+      TaskPriority: 80,
+      Volume: form.volume
+    },
+    result: 0,
+    return_message: ""
   }
-  console.log('select_terminal', select_terminal)
-  set_dialog.value = false
-  store.changeFilterStatus(true)
+  console.log('发起广播任务需要的数据', send_data)
 }
 
 const getGroupList = () => {
   store.updateTerminalGroup()
   terminal_group_data.value = terminal_group.value
-  console.log('getGroupList father', terminal_group_data)
+  // console.log('getGroupList father', terminal_group_data)
 }
+
+// const getConfigInfo = () => {
+//   // console.log('user_info', localStorage.get("serverIp"))
+//   axios.get('http://172.16.21.25:9999/api/v1/config', {
+//     params: {
+//       username: localStorage.get("username"),
+//       serverip: localStorage.get("serverIp")
+//     }
+//   }).then((result: any) => {
+//     console.log('配置协议请求成功', result)
+//     if (result.status === 200) {
+//       form.view_value = result.data.DisplayType === 1 ? 'list' : 'square'
+//       form.select_terminal = result.data.ListDisplaySize === 0 ? '3x5' : result.data.ListDisplaySize === 1 ? '3x6' : '4x6'
+//       response_id.value = result.data.ID
+//       cleanOnLineTerminal()
+//       let online_ids = form.speakerTerminalOptions.map((item: any) => {
+//         return item.EndpointID
+//       })
+//       if (online_ids.includes(result.data.MainEndpointID)) {
+//         form.speaker_terminal = result.data.MainEndpointID
+//       } else {
+//         form.speaker_terminal = form.speakerTerminalOptions.length > 0 ? form.speakerTerminalOptions[0].EndpointID : ''
+//       }
+//     }
+//   })
+// }
 
 // 供给数据
 provide("checkedAll", {
@@ -287,6 +429,8 @@ provide("checkedAll", {
   is_checked_all,
   handleUpdateCheckedAll,
   handleIsCheckedAll,
+  checked_terminals,
+  updateCheckedTerminals
 });
 
 // 传给方块视图页面
@@ -302,8 +446,14 @@ provide('terminal_group', {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   getGroupList()
+  // 路由进入终端状态时，默认显示终端列表页面，后续有需求再改
   $useRouter.push("/terminal/terminal_list");
   form.search_placeholder = '终端名称'
+  // getConfigInfo()
+  cleanOnLineTerminal()
+  console.log('basic_configs', basic_configs.value)
+  form.select_terminal = basic_configs.value.ListDisplaySize === 0 ? '3x5' : basic_configs.value.ListDisplaySize === 1 ? '3x6' : '4x6'
+  form.view_value = basic_configs.value.DisplayType === 1 ? 'list' : 'square'
 });
 </script>
 

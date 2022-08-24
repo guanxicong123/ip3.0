@@ -53,6 +53,9 @@ const useTerminalStore = defineStore({
 
         // 终端数据、分组数据更新时清洗数据
         updateTerminalGroup() {
+            console.log('updateTerminalGroup')
+            if (this.terminal_data.length < 1 || this.terminal_group.length < 1) return
+            console.log('拿到终端状态和分组数据数据了')
             // 给分组添加属于它的终端数据
             this.terminal_group.forEach((item: any) => {
                 item.GroupID === 0 ? item.terminals = this.terminal_data : item.terminals = []
@@ -94,7 +97,7 @@ const useTerminalStore = defineStore({
 
         // 更新过滤条件
         updateFiltrateCondition(data: {status: number, search: string}) {
-            console.log('filter data', data)
+            // console.log('filter data', data)
             this.terminal_status = data.status
             this.search_value = data.search
         },
@@ -112,18 +115,18 @@ const useTerminalStore = defineStore({
 
         // 筛选分组数据
         filterGroupData(data: any) {
-            console.log('filter group data', data)
+            // console.log('filter group data', data)
             let filter_data = JSON.parse(JSON.stringify(data))
             let search = new RegExp(this.search_value, "gmi")
             // 需要过滤终端状态
             if (this.filter_status) {
                 if (this.terminal_status !== -1) {
-                    console.log('filter data 非-1', filter_data, this.terminal_status)
+                    // console.log('filter data 非-1', filter_data, this.terminal_status)
                     filter_data = filter_data.filter((item: any) => {
-                        console.log('filter loop', item.status)
+                        // console.log('filter loop', item.status)
                         return item.status === this.terminal_status
                     })
-                    console.log('filter data 非-1 after', filter_data)
+                    // console.log('filter data 非-1 after', filter_data)
                 }
                 if (search) {
                     filter_data = filter_data.filter((item: { name: string}) => {
@@ -137,11 +140,18 @@ const useTerminalStore = defineStore({
                         return item.GroupName.match(search)
                     })
                 }
-                console.log('搜索分组名称匹配项', filter_data)
+                // console.log('搜索分组名称匹配项', filter_data)
                 // return filter_data
             }
-            console.log('loop end data', filter_data)
+            // console.log('loop end data', filter_data)
             return filter_data
+        },
+
+        // 按默认字段排序
+        
+
+        setTerminalVolume(data: any) {
+            console.log('set terminal volume', data)
         }
     },
 });

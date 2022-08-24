@@ -50,7 +50,8 @@
               style="width: 100%"
               height="100%"
               @selection-change="handleSelectionChange"
-              :default-sort="{ prop: 'status', order: 'ascending' }"
+              :default-sort="sort_condition"
+              @sort-change="sortChange"
             >
               <el-table-column type="selection" width="44" />
               <el-table-column
@@ -81,13 +82,14 @@
               <el-table-column
                 prop="name"
                 label="终端名称"
+                sortable="custom"
                 show-overflow-tooltip
               />
               <el-table-column prop="volume" label="音量" />
               <el-table-column
                 prop="ip_address"
                 label="终端IP"
-                sortable="custom"
+                sortable
                 show-overflow-tooltip
               />
               <el-table-column prop="code" label="呼叫编码" sortable="custom" />
@@ -151,9 +153,19 @@ const {
   terminal_group_data,
 }:any = inject('terminal_group')
 
+const {
+  updateCheckedTerminals
+}: any = inject("checkedAll")
+
 const storage_terminal_data = ref()
 
 const store = useTerminalStore()
+
+const systemStore = useSystemStore()
+
+const system_configs = computed(() => {
+  return systemStore.system_configs
+})
 
 const terminal_data = computed(() => {
   return store.terminal_data
@@ -165,6 +177,11 @@ const terminal_status = computed(() => {
 
 const search_value = computed(() => {
   return store.search_value
+})
+
+const sort_condition = ref({
+  prop: 'ip_address',
+  order: 'descending'
 })
 
 // const terminal_group = computed(() => {
@@ -182,8 +199,14 @@ const search_value = computed(() => {
 
 watch(()=> terminal_group_data.value, (newVal)=> {
   // getGroupList()
-  console.log('newVal', newVal)
+  // console.log('newVal', newVal)
   getCurGroupData()
+},{
+  deep: true
+})
+
+watch(()=> sort_condition.value, (newVal)=> {
+  console.log('sort_condition value', newVal)
 },{
   deep: true
 })
@@ -204,12 +227,20 @@ watch(() => search_value.value, () => {
 let $useRouter = useRouter();
 let $useRoute = useRoute();
 
+const sort_map = new Map([
+  [0, 'status'],
+  [1, 'ip_address'],
+  [2, 'name'],
+  [3, 'code']
+])
+
 // 处理点击切换分组
 const handleClickGroup = (val: any) => {
-  console.log('val', val)
+  // console.log('val', val)
   form.currentGroupTitle = val.GroupName;
   form.current_group = val.GroupID
   getCurGroupData()
+  console.log('multipleSelection switch group', multipleSelection.value)
 };
 
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
@@ -219,7 +250,100 @@ const multipleSelection = ref<User[]>([]);
 // 当前已选择表格数据
 const handleSelectionChange = (val: User[]) => {
   multipleSelection.value = val;
+  console.log('multipleSelection check', multipleSelection.value)
+  let terminal_ids = multipleSelection.value.map((item: any) => {
+    return item.EndpointID
+  })
+  console.log('terminal_ids', terminal_ids)
+  updateCheckedTerminals(terminal_ids)
 };
+
+const sortByIPDesc = (obj1: any, obj2: any) => {
+  if (
+    obj1.ip !== "" &&
+    obj1.ip !== undefined &&
+    obj2.ip !== "" &&
+    obj2.ip !== undefined
+  ) {
+    let array1 = obj2.ip.split(".")
+    let array2 = obj1.ip.split(".")
+    if (array1[0] === array2[0]) {
+      if (array1[1] === array2[1]) {
+        if (array1[2] === array2[2]) {
+          return array1[3] - array2[3]
+        } else {
+          return array1[2] - array2[2]
+        }
+      } else {
+        return array1[1] - array2[1]
+      }
+    } else {
+      return array1[0] - array2[0]
+    }
+  }
+}
+
+const sortChange = (column: any, prop: any, order: any) => {
+  console.log('column', column, prop)
+  sort_condition.value = {
+    prop: column.prop,
+    order: column.order
+  }
+  if (column.prop == "status") {
+    if (column.order === "descending") {
+      form.data.sort((a: any, b: any) =>
+        b.status - a.status
+      )
+    } else if (column.order === "ascending") {
+      form.data.sort((a: any, b: any) =>
+        a.status - b.status
+      )
+    }
+  } else if (column.prop == "name") {
+    if (column.order === "descending") {
+      form.data.sort((a: any, b: any) =>
+        b.name.localeCompare(a.name, "zh")
+      )
+    } else if (column.order === "ascending") {
+      form.data.sort((a: any, b: any) =>
+        a.name.localeCompare(b.name, "zh")
+      )
+    }
+  } else if (column.prop == "ip_address") {
+    if (column.order === "descending") {
+      console.log('form.data', form.data)
+      // form.data = form.data.sort((a: any, b: any) => {
+      //   console.log('a b', a, b)
+      //   return sortByIPDesc(a, b)
+      // })
+      form.data.sort((a: any, b: any) => {
+        let ip1 = a.ip_address.split('.').map((e: any) => e.padStart(3, '0')).join('')
+        let ip2 = b.ip_address.split('.').map((e: any) => e.padStart(3, '0')).join('')
+        console.log('descending', a, b, ip1, ip2)
+        return ip2 - ip1
+      })
+      console.log('form.data after', form.data)
+    } else if (column.order === "ascending") {
+      form.data.sort((a: any, b: any) => {
+        let ip1 = a.ip_address.split('.').map((e: any) => e.padStart(3, '0')).join('')
+        let ip2 = b.ip_address.split('.').map((e: any) => e.padStart(3, '0')).join('')
+        console.log('ascending', ip1, ip2)
+        return ip1 - ip2
+      })
+    }
+  } else {
+    console.log('prop is code')
+    if (column.order === "descending") {
+      form.data.sort((a: any, b: any) =>
+        b.code - a.code
+      )
+    } else if (column.order === "ascending") {
+      form.data.sort((a: any, b: any) =>
+        a.code - b.code
+      )
+    }
+  }
+}
 
 // 序号
 const typeIndex = (index: number) => {
@@ -240,11 +364,14 @@ const handleCurrentChange = (val: number) => {
 };
 
 const getCurGroupData = () => {
+  console.log('terminal_group_data', terminal_group_data.value)
   form.groupData = terminal_group_data.value
   let index = terminal_group_data.value.findIndex((item: any) => item.GroupID === form.current_group)
   storage_terminal_data.value = terminal_group_data.value[index].terminals
-  console.log('store.filterGroupData(storage_terminal_data.value)', store.filterGroupData(storage_terminal_data.value))
+  // console.log('store.filterGroupData(storage_terminal_data.value)', store.filterGroupData(storage_terminal_data.value))
+  console.log(`${terminal_group_data.value[index].GroupName} group terminals`, storage_terminal_data.value)
   form.data = store.filterGroupData(storage_terminal_data.value)
+  sortChange(sort_condition.value, sort_condition.value.prop, sort_condition.value.order)
   form.total = form.data.length
 }
 
@@ -256,12 +383,15 @@ const getGroupList = () => {
   // form.data = storage_terminal_data.value
   // form.total = form.data.length
   getCurGroupData()
-  console.log('getGroupList', storage_terminal_data)
 }
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   getGroupList()
+  sort_condition.value = {
+    prop: String(sort_map.get(system_configs.value.TerminalOrderbyType)),
+    order: 'descending'
+  }
 });
 
 </script>
