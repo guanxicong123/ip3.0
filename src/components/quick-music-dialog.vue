@@ -9,7 +9,7 @@
         v-model="parentData.isShow"
         width="700px" 
         destroy-on-close
-        @close="emit('update:isShow', false)"
+        @close="emit('isShow', false)"
         custom-class="com-default-dialog"
     >
         <template #header="{ close, titleId, titleClass }">
@@ -18,7 +18,7 @@
             </div>
         </template>
         <div>
-            <el-form ref="ruleFormRef" label-position="top" :model="form" :rules="rules" status-icon scroll-to-error>
+            <el-form ref="ruleFormRef" label-position="top" :model="form" status-icon scroll-to-error>
                 <div class="com-dialog-components">
                     <select-shortcut-sound-source
                     @requestConfigure="handleRequestTerminals"/>
@@ -27,7 +27,7 @@
         </div>
         <template #footer>
             <div class="com-dialog-footer">
-                <el-button type="primary" @click="form.dialogVisible = false">
+                <el-button type="primary" @click="emit('isShow', false)">
                     保存
                 </el-button>
             </div>
@@ -40,14 +40,13 @@ import type { FormInstance } from "element-plus";
 import selectShortcutSoundSource from './select_shortcut_sound_source.vue'
 
 // 声明触发事件
-const emit = defineEmits(["update:isShow"]);
+const emit = defineEmits(["isShow"]);
 // 声明父组件传值
 const parentData = defineProps(["isShow"]);
 
 const form = reactive({
-    title: "选择快捷终端",
+    title: "选择快捷音源",
     dialogVisible: false,
-    name: "", // 配置名称
 });
 // 表单ref
 const ruleFormRef = ref<FormInstance>();

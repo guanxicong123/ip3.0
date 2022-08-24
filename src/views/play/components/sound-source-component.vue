@@ -30,12 +30,7 @@
                 </el-col>
             </el-row>
         </el-form>
-        <quick-music-dialog v-model:isShow="dialogVisible"/>
-        <!-- <quick-terminal-dialog
-            v-if="dialogVisible"
-            v-model:dialogVisible="dialogVisible"
-        >
-        </quick-terminal-dialog> -->
+        <quick-music-dialog v-model:isShow="isShow"/>
   </div>
 </template>
 
@@ -52,7 +47,7 @@
         { label: '初级', value: 0 },
         { label: '中级', value: 1 },
     ]
-    const dialogVisible = ref(false)
+    const isShow = ref(false)
 
   // mounted 实例挂载完成后被调用
   onMounted(() => {
