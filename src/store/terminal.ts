@@ -1,3 +1,4 @@
+import useSystemStore from './system_config'
 export interface terminalState {
     terminal_data: any
     terminal_group: Array<any>
@@ -29,7 +30,6 @@ const useTerminalStore = defineStore({
     actions: {
         // 获取终端信息
         getTerminalData(data: any) {
-            console.log('terminal_data start', data)
             data.EndPointsArray.forEach((item: any) => {
                 item.status = item.Status
                 item.name = item.EndpointName
@@ -48,19 +48,15 @@ const useTerminalStore = defineStore({
                     this.terminal_data[index] = item
                 }
             })
-            console.log('this.terminal_data', this.terminal_data)
         },
 
         // 终端数据、分组数据更新时清洗数据
         updateTerminalGroup() {
-            console.log('updateTerminalGroup')
             if (this.terminal_data.length < 1 || this.terminal_group.length < 1) return
-            console.log('拿到终端状态和分组数据数据了')
             // 给分组添加属于它的终端数据
             this.terminal_group.forEach((item: any) => {
                 item.GroupID === 0 ? item.terminals = this.terminal_data : item.terminals = []
             })
-            // console.log('terminal_group', this.terminal_group)
             //遍历分组终端数组 EndpointArray，根据该终端所在的分组添加到 single_group_data 变量中
             this.group_terminal.map((add: {GroupID: number, EndpointID: number} )=> {
                 let group_id = add.GroupID
@@ -73,31 +69,15 @@ const useTerminalStore = defineStore({
         
         // 获取终端分组信息
         getTerminalGroup(data: any) {
-            console.log('terminal_group start', data)
             this.terminal_group = [{
                 GroupID: 0,
                 GroupName: "所有终端",
             }].concat(data.GroupInfo.GroupArray)
             this.group_terminal = data.GroupInfo.EndpointArray
-            // this.updateTerminalGroup()
-            // // 给分组添加属于它的终端数据
-            // this.terminal_group.forEach((item: any) => {
-            //     item.GroupID === 0 ? item.terminals = this.terminal_data : item.terminals = []
-            // })
-            // // console.log('terminal_group', this.terminal_group)
-            // //遍历分组终端数组 EndpointArray，根据该终端所在的分组添加到 single_group_data 变量中
-            // this.group_terminal.map((add: {GroupID: number, EndpointID: number} )=> {
-            //     let group_id = add.GroupID
-            //     let point_id = add.EndpointID
-            //     let terminal = this.terminal_data.findIndex((cdd: any) => cdd.EndpointID === point_id)
-            //     let index = this.terminal_group.findIndex(bdd => bdd.GroupID === group_id)
-            //     this.terminal_group[index].terminals.push(this.terminal_data[terminal])
-            // })
         },
 
         // 更新过滤条件
         updateFiltrateCondition(data: {status: number, search: string}) {
-            // console.log('filter data', data)
             this.terminal_status = data.status
             this.search_value = data.search
         },
@@ -106,52 +86,66 @@ const useTerminalStore = defineStore({
             this.filter_status = data
         },
 
-        // 清洗数据逻辑放在更新分组函数中，过滤某个分组数据
-        // cleanseGroupData(id: any) {
-        //     this.updateTerminalGroup()
-        //     let index = this.terminal_group.findIndex(item => item.GroupID === id)
-        //     return this.single_group_data = this.terminal_group[index].terminals
-        // },
-
         // 筛选分组数据
         filterGroupData(data: any) {
-            // console.log('filter group data', data)
             let filter_data = JSON.parse(JSON.stringify(data))
             let search = new RegExp(this.search_value, "gmi")
             // 需要过滤终端状态
             if (this.filter_status) {
                 if (this.terminal_status !== -1) {
-                    // console.log('filter data 非-1', filter_data, this.terminal_status)
                     filter_data = filter_data.filter((item: any) => {
-                        // console.log('filter loop', item.status)
                         return item.status === this.terminal_status
                     })
-                    // console.log('filter data 非-1 after', filter_data)
                 }
                 if (search) {
                     filter_data = filter_data.filter((item: { name: string}) => {
                         return item.name.match(search)
                     })
                 }
-                // return filter_data
             } else {
                 if (search) {
                     filter_data = filter_data.filter((item: { GroupName: string}) => {
                         return item.GroupName.match(search)
                     })
                 }
-                // console.log('搜索分组名称匹配项', filter_data)
-                // return filter_data
             }
-            // console.log('loop end data', filter_data)
             return filter_data
         },
 
-        // 按默认字段排序
-        
+        // 排序函数
+        sortChangeData(prop: any, data: any) {
+            let init_data = JSON.parse(JSON.stringify(data))
+            if (prop === 1) {
+                init_data.sort((a: any, b: any) => {
+                    let ip1 = a.ip_address.split('.').map((e: any) => e.padStart(3, '0')).join('')
+                    let ip2 = b.ip_address.split('.').map((e: any) => e.padStart(3, '0')).join('')
+                    return ip2 - ip1
+                })
+            } else if (prop === 0) {
+                init_data.sort((a: any, b: any) =>
+                    b.status - a.status
+                )
+            } else if (prop === 2) {
+                init_data.sort((a: any, b: any) =>
+                    b.name.localeCompare(a.name, "zh")
+                )
+            } else {
+                init_data.sort((a: any, b: any) =>
+                    b.code - a.code
+                )
+            }
+            return init_data
+        },
+
+        // 终端状态按默认字段排序
+        defaultTerminalSort(data: any) {
+            let init_data = JSON.parse(JSON.stringify(data))
+            let sort_prop = useSystemStore().system_configs.TerminalOrderbyType
+            return init_data = this.sortChangeData(sort_prop, init_data)
+        },
 
         setTerminalVolume(data: any) {
-            console.log('set terminal volume', data)
+            // console.log('set terminal volume', data)
         }
     },
 });

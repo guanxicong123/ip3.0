@@ -140,6 +140,7 @@ import { onBeforeRouteLeave } from "vue-router";
 import { ElMessage } from 'element-plus'
 // const { appContext: { config: { globalProperties: global }}} = getCurrentInstance()
 import axios from 'axios'
+import { send } from '@/utils/socket'
 
 const form = reactive<any>({
   terminal_status: -1, // 终端状态
@@ -219,7 +220,6 @@ const dec2hex = (dec: any) => {
 const generateId = (len: any) => {
     var arr = new Uint8Array((len || 40) / 2)
     window.crypto.getRandomValues(arr)
-    console.log('arr', arr, window.crypto.getRandomValues(arr))
     return Array.from(arr, dec2hex).join('')
 }
 
@@ -235,7 +235,6 @@ const checked_all = ref(false);
 const is_checked_all = ref(false);
 // 处理全选
 const handleCheckedAll = (value: any) => {
-  console.log('click checked all button', value)
   is_checked_all.value = true;
 };
 // 处理是否全选
@@ -252,21 +251,15 @@ const checked_terminals = ref([])
 
 // 更新已勾选终端数据
 const updateCheckedTerminals = (data: any) => {
-  console.log('update checked terminals', data)
   checked_terminals.value = data
 }
 
 const setUp = () => {
-  console.log('set up')
   set_dialog.value = true
-  // $useRouter.push('/terminal/terminal_block')
 }
 
 // 终端 <-> 分组切换
 const changeRouter = (name: string) => {
-  console.log('change router', name)
-  // checked_terminals.value = []
-  // console.log('checked_terminals', checked_terminals.value)
   if (name === '分组') {
     $useRouter.push('/terminal/group')
     form.search_placeholder = '分组名称'
@@ -287,21 +280,11 @@ const handleFilter = () => {
   store.updateFiltrateCondition(conditions)
 }
 
-// const handleSearch = () => {
-//   console.log('搜索操作')
-//   let conditions = {
-//     status: form.terminal_status,
-//     search: form.search
-//   }
-//   store.updateFiltrateCondition(conditions)
-// }
-
 // 过滤在线设备组成主讲终端可选项
 const cleanOnLineTerminal = () => {
   form.speakerTerminalOptions = terminal_data.value.filter((item: { status: number}) => {
     return item.status === 1 || item.status === 2
   })
-  console.log('form.speakerTerOps', form.speakerTerminalOptions)
   // 设置默认主讲终端
   let online_ids = form.speakerTerminalOptions.map((item: any) => {
     return item.EndpointID
@@ -322,7 +305,6 @@ const confirmTerminalSet = () => {
       ListDisplaySize: form.select_terminal === '3x5' ? 0 : form.select_terminal === '3x6' ? 1 : 2
     }
   ).then((result: any) => {
-    console.log('put data', result)
     if (result.status === 200) {
       select_terminal.value = form.select_terminal
       let data = {
@@ -340,7 +322,6 @@ const confirmTerminalSet = () => {
           }
         })
       }
-      console.log('select_terminal', select_terminal)
       set_dialog.value = false
       store.changeFilterStatus(true)
     }
@@ -363,24 +344,23 @@ const filterCheckedTerminals = () => {
 
 // 发起广播任务
 const originateBroadcast = () => {
-  // if (!form.speaker_terminal) {
-  //   return ElMessage.error('未选择主讲终端或主讲终端未在线')
-  // }
-  // let filter_initiator_terminals = filterCheckedTerminals().filter((item: number) => {
-  //   return item !== form.speaker_terminal
-  // })
-  // if (filter_initiator_terminals.length < 1) {
-  //   return ElMessage.error('请选择执行接收终端')
-  // }
-  // console.log('filter_initiator_terminals', filter_initiator_terminals)
+  if (!form.speaker_terminal) {
+    return ElMessage.error('未选择主讲终端或主讲终端未在线')
+  }
+  let filter_initiator_terminals = filterCheckedTerminals().filter((item: number) => {
+    return item !== form.speaker_terminal
+  })
+  if (filter_initiator_terminals.length < 1) {
+    return ElMessage.error('请选择接收终端')
+  }
   let send_data = {
     company: "BL",
-    actioncode: "c2ls_broadcast_task",
+    actioncode: "c2ms_broadcast_task",
     token: "",
     data: {
       EndPointsAdditionalProp: {},
-      InitiatorEndPointID: form.speaker_terminal,
-      ReceiverList: "17",
+      IniatorID: form.speaker_terminal,
+      EndPointList: filter_initiator_terminals,
       TaskID: generateId(30),
       TaskPriority: 80,
       Volume: form.volume
@@ -388,40 +368,47 @@ const originateBroadcast = () => {
     result: 0,
     return_message: ""
   }
-  console.log('发起广播任务需要的数据', send_data)
+  console.log('发起广播任务数据', send_data)
+  send(send_data)
+}
+
+// 发起对讲
+const initiatedTalkTask = () => {
+  if (!form.speaker_terminal) {
+    return ElMessage.error('未选择主讲终端或主讲终端未在线')
+  }
+  let filter_initiator_terminals = filterCheckedTerminals().filter((item: number) => {
+    return item !== form.speaker_terminal
+  })
+  if (filter_initiator_terminals.length < 1) {
+    return ElMessage.error('请选择接收终端')
+  }
+  if (filter_initiator_terminals.length > 1) {
+    return ElMessage.error('对讲接收终端只能选一个')
+  }
+  let send_data = {
+    company: "BL",
+    actioncode: "c2ms_talk_task",
+    token: "",
+    data: {
+      EndPointsAdditionalProp: {},
+      IniatorID: form.speaker_terminal,
+      EndPointList: filter_initiator_terminals,
+      TaskID: generateId(30),
+      TaskPriority: 80,
+      Volume: form.volume
+    },
+    result: 0,
+    return_message: ""
+  }
+  console.log('发起对讲任务数据', send_data)
+  send(send_data)
 }
 
 const getGroupList = () => {
   store.updateTerminalGroup()
   terminal_group_data.value = terminal_group.value
-  // console.log('getGroupList father', terminal_group_data)
 }
-
-// const getConfigInfo = () => {
-//   // console.log('user_info', localStorage.get("serverIp"))
-//   axios.get('http://172.16.21.25:9999/api/v1/config', {
-//     params: {
-//       username: localStorage.get("username"),
-//       serverip: localStorage.get("serverIp")
-//     }
-//   }).then((result: any) => {
-//     console.log('配置协议请求成功', result)
-//     if (result.status === 200) {
-//       form.view_value = result.data.DisplayType === 1 ? 'list' : 'square'
-//       form.select_terminal = result.data.ListDisplaySize === 0 ? '3x5' : result.data.ListDisplaySize === 1 ? '3x6' : '4x6'
-//       response_id.value = result.data.ID
-//       cleanOnLineTerminal()
-//       let online_ids = form.speakerTerminalOptions.map((item: any) => {
-//         return item.EndpointID
-//       })
-//       if (online_ids.includes(result.data.MainEndpointID)) {
-//         form.speaker_terminal = result.data.MainEndpointID
-//       } else {
-//         form.speaker_terminal = form.speakerTerminalOptions.length > 0 ? form.speakerTerminalOptions[0].EndpointID : ''
-//       }
-//     }
-//   })
-// }
 
 // 供给数据
 provide("checkedAll", {
@@ -446,12 +433,9 @@ provide('terminal_group', {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   getGroupList()
-  // 路由进入终端状态时，默认显示终端列表页面，后续有需求再改
   $useRouter.push("/terminal/terminal_list");
   form.search_placeholder = '终端名称'
-  // getConfigInfo()
   cleanOnLineTerminal()
-  console.log('basic_configs', basic_configs.value)
   form.select_terminal = basic_configs.value.ListDisplaySize === 0 ? '3x5' : basic_configs.value.ListDisplaySize === 1 ? '3x6' : '4x6'
   form.view_value = basic_configs.value.DisplayType === 1 ? 'list' : 'square'
 });

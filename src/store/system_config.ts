@@ -12,6 +12,7 @@ export interface systemState {
     system_configs: any,
     basic_configs: any,
     router_data: any
+    opcodes: string
 }
 
 const sidebarData = [
@@ -116,26 +117,20 @@ const useSystemStore = defineStore({
         basic_configs: {
 
         },
-        router_data: []
+        router_data: [],
+        opcodes: ''
     }),
 
     actions: {
         // 获取所有的系统配置数据
-        getAllSystemConfig(data: any) {
-            console.log('getAllSystemConfig', data)
-        },
-
         getConfigInfo() {
-            // console.log('user_info', localStorage.get("serverIp"))
             axios.get('http://172.16.21.25:9999/api/v1/config', {
                 params: {
                     username: localStorage.get("username"),
                     serverip: localStorage.get("serverIp")
                 }
             }).then((result: any) => {
-                console.log('配置协议请求成功', result)
                 if (result.status === 200) {
-                    console.log('router', router)
                     // 功能管理相关数据
                     let { FolderDisplay, GroupDisplay, remoteTaskDisplay, 
                         TerminalStateEnabled, PlayCenterEnabled, SessionEnabled, TimingEnabled, MediasEnabled } = result.data
@@ -159,7 +154,17 @@ const useSystemStore = defineStore({
 
                 }
             }).catch((error) => {
-                console.log('error', error)
+                // console.log('error', error)
+            })
+        },
+
+        // 获取机器码
+        getProductKey() {
+            axios.get('http://172.16.21.25:9999/api/v1/register').then((res) => {
+                if (res.status === 200) {
+                    this.opcodes = res.data.ProductKey
+                    this.opcodes = '14827-67853-39229-50676-09802-52491-53438'
+                }
             })
         },
 
@@ -182,15 +187,12 @@ const useSystemStore = defineStore({
                 }
                 this.router_data.push(item)
             })
-            console.log('sidebarData', sidebarData, this.router_data)
             let default_view = permission_map.get(this.system_configs.DefaultDisplayView)
-            console.log('default_view', default_view)
             let index = this.router_data.findIndex((item: any) => {
                 return item.name === default_view
             })
             let next_path = this.router_data[index].permission ? this.router_data[index].path : this.router_data[0].path
             let time_id = setInterval(() => {
-                console.log('useTerminalStore model data', useTerminalStore().terminal_data, useTerminalStore().terminal_group)
                 if (useTerminalStore().terminal_data.length > 0 && useTerminalStore().terminal_group.length > 0) {
                     router.push(next_path)
                     clearInterval(time_id)

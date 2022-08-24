@@ -175,6 +175,9 @@ const handlerMsg = (msg:any) => {
     if (msg.actioncode === 'ls2c_set_terminal_volume') {
         useTerminalStore().setTerminalVolume(msg.data)
     }
+    if (msg.actioncode === 'ls2c_broadcast_task') {
+
+    }
     switch(msg.actioncode) {
         case 'ls2c_user_login': //登录返回信息
             return useAppStore().loginSuccessData(msg.data)
