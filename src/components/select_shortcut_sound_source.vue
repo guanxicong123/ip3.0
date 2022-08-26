@@ -108,9 +108,9 @@
                 <el-form-item :label="form.selectedConfigureData.type === 2 ? '选择音源' : '选择终端'">
                     <div class="fast-source">
                         {{ 
-                            form.selectedConfigureData.type === 2 
-                                ? form.selectedConfigureData?.fast_source?.sound_card
-                                : form.selectedConfigureData?.fast_source?.terminals_name
+                            form.selectedConfigureData.type === 2 ? 
+                            form.selectedConfigureData?.fast_source?.sound_card :
+                            form.selectedConfigureData?.fast_source?.terminals_name
                         }}
                     </div>
                 </el-form-item>
@@ -216,7 +216,6 @@ const getSoundSource = () => {
                     item.all_data = item.type != 2 && item.type != 3 ? [...item.medias, ...item.medias_groups] : []
                     return item
                 })
-                console.log(form.allConfigureData)
                 resolve()
             }
         })

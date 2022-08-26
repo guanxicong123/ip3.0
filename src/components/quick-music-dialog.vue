@@ -9,7 +9,7 @@
         v-model="parentData.isShow"
         width="700px" 
         destroy-on-close
-        @close="emit('isShow', false)"
+        @close="emit('update:isShow', false)"
         custom-class="com-default-dialog"
     >
         <template #header="{ close, titleId, titleClass }">
@@ -21,13 +21,14 @@
             <el-form ref="ruleFormRef" label-position="top" :model="form" status-icon scroll-to-error>
                 <div class="com-dialog-components">
                     <select-shortcut-sound-source
-                    @requestConfigure="handleRequestTerminals"/>
+                        @requestConfigure="handleRequestTerminals"
+                        :responseConfigure="parentData.seleQuickMusic"/>
                 </div>
             </el-form>
         </div>
         <template #footer>
             <div class="com-dialog-footer">
-                <el-button type="primary" @click="emit('isShow', false)">
+                <el-button type="primary" @click="submit">
                     保存
                 </el-button>
             </div>
@@ -40,10 +41,14 @@ import type { FormInstance } from "element-plus";
 import selectShortcutSoundSource from './select_shortcut_sound_source.vue'
 
 // 声明触发事件
-const emit = defineEmits(["isShow"]);
+const emit = defineEmits(["update:isShow", "handleSelectedConfigure"]);
 // 声明父组件传值
-const parentData = defineProps(["isShow"]);
+const parentData = defineProps([
+    "isShow", //对话框显示隐藏
+    "seleQuickMusic" //选中的快捷音源
+]);
 
+const selectConfigure: any = ref({}) //用于接收选中配置
 const form = reactive({
     title: "选择快捷音源",
     dialogVisible: false,
@@ -53,11 +58,13 @@ const ruleFormRef = ref<FormInstance>();
 
 // 处理选择终端/分组组件的数据
 const handleRequestTerminals = (data: any) => {
-    console.log(data);
+    selectConfigure.value = data
 };
-const handleRequestGroups = (data: any) => {
-    console.log(data);
-};
+// 保存
+const submit = () => {
+    emit('update:isShow', false)
+    emit('handleSelectedConfigure', selectConfigure.value)
+}
 
 
 // mounted 实例挂载完成后被调用

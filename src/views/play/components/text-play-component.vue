@@ -11,13 +11,13 @@
                 <el-row :gutter="80">
                     <el-col :xs="80" :sm="80" :md="80" :lg="80" :xl="80">
                         <el-form-item label="文本类型">
-                            <el-radio-group v-model="textType">
-                                <el-radio :label="0">文件</el-radio>
-                                <el-radio :label="1">内容</el-radio>
+                            <el-radio-group v-model="ruleForm.is_txt">
+                                <el-radio :label="false">文件</el-radio>
+                                <el-radio :label="true">内容</el-radio>
                             </el-radio-group>
                         </el-form-item>
                     </el-col>
-                    <el-col :xs="12" :sm="80" :md="80" :lg="80" :xl="80" v-show="textType === 0">
+                    <el-col :xs="12" :sm="80" :md="80" :lg="80" :xl="80" v-show="ruleForm.is_txt">
                         <el-form-item label="文本路径">
                              <el-upload
                                 ref="uploadRef"
@@ -34,10 +34,10 @@
                             </el-upload>
                         </el-form-item>
                     </el-col>
-                    <el-col :xs="80" :sm="80" :md="80" :lg="80" :xl="80" v-show="textType === 1">
+                    <el-col :xs="80" :sm="80" :md="80" :lg="80" :xl="80" v-show="ruleForm.is_txt">
                         <el-form-item label="文本内容">
                             <el-input
-                                v-model="ruleForm.textarea"
+                                v-model="ruleForm.ttscontent"
                                 :rows="5"
                                 type="textarea"
                                 placeholder="请输入内容（不超过1000字）"
@@ -46,12 +46,12 @@
                             />
                         </el-form-item>
                     </el-col>
-                     <el-col :xs="80" :sm="80" :md="80" :lg="80" :xl="80" v-show="textType === 1">
+                     <el-col :xs="80" :sm="80" :md="80" :lg="80" :xl="80" v-show="ruleForm.is_txt">
                         <el-form-item>
                             <el-checkbox v-model="ruleForm.checked1" label="开启播放功能(未启用时，终端默认静音)"/>
                         </el-form-item>
                     </el-col>
-                    <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-show="textType === 1">
+                    <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-show="ruleForm.is_txt">
                         <el-form-item label="显示属性">
                            <el-select v-model="ruleForm.EngineIndex">
                                 <el-option
@@ -81,7 +81,7 @@
                     </el-col>
                     <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                         <el-form-item label="播放语速">
-                            <el-select v-model="ruleForm.play_speed" class="custom-el-select">
+                            <el-select v-model="ruleForm.ttsspeed" class="custom-el-select">
                                 <el-option
                                     v-for="item in playSpeedOption"
                                     :key="item"
@@ -94,7 +94,7 @@
                         <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                         <el-form-item label="播报次数">
                              <el-input-number
-                                v-model="ruleForm.num"
+                                v-model="ruleForm.repeattime"
                                 :min="1"
                                 controls-position="right"
                             />
@@ -112,11 +112,12 @@
     import type { TabsPaneContext, UploadInstance, UploadUserFile, UploadProps } from 'element-plus'
 
     const ruleForm: any = reactive({
+        is_txt: false, //是否是文本
         playmodel: 1,
-        num: 1,
+        repeattime: 1, //播放次数
         EngineIndex: 0,
-        play_speed: 5, // 播放语速
-        textarea: '',
+        ttsspeed: 5, // 播放语速
+        ttscontent: '', //文本内容
         checked1: false,
     })
     const textType = ref(0)

@@ -562,7 +562,6 @@ const handleUpdateSelectedTerminals = () => {
             requestTerminals.push(request);
         }
     );
-
     emit("selectedTerminalsName", selectedName);
     emit("requestTerminals", requestTerminals);
 };

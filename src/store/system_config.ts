@@ -124,7 +124,7 @@ const useSystemStore = defineStore({
     actions: {
         // 获取所有的系统配置数据
         getConfigInfo() {
-            axios.get('http://172.16.21.25:9999/api/v1/config', {
+            axios.get('http://172.16.21.124:9999/api/v1/config', {
                 params: {
                     username: localStorage.get("username"),
                     serverip: localStorage.get("serverIp")

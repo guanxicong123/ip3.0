@@ -35,7 +35,7 @@ global.$http1 = axios.create({
     },
 })
 //请求拦截器
-global.$http.interceptors.request.use((config: { headers: { Authorization: string } }) => {
+global.$http1.interceptors.request.use((config: { headers: { Authorization: string } }) => {
     // 在发送请求之前做些什么
     const token = localStorage.get('userToken')
     if (token) {
@@ -57,16 +57,15 @@ global.$http1.interceptors.response.use((response: { data: { result: any; return
     if (response.data.result !== 200 && response.data.result !== undefined) {
         global.$message.error(response.data.return_message)
     }
-    if (response.data.result === 400) {
-        global.$message.error(response.data.return_message)
-        return response.data
-    } else if (response.data.result === 500) {
-        global.$message.error('服务器连接超时')
-        return response.data
-    }
+    // if (response.data.result === 400) {
+    //     global.$message.error(response.data.return_message)
+    // } else if (response.data.result === 500) {
+    //     global.$message.error('服务器连接超时')
+    // }
     // 对响应数据做点什么
     return response.data
 }, (error: { response: { data: { return_message: any } } }) => {
+    console.log(error, error.response)
     // 对响应错误做点什么
     if (error.response.data && error.response.data.return_message) {
         global.$message.error(error.response.data.return_message)

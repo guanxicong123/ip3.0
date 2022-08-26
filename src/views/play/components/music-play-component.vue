@@ -6,21 +6,30 @@
 -->
 <template>
     <div class="com-music-play-component">
-        <el-table
-            :data="tableData"
-            style="width: 100%"
-            @selection-change="handleSelectionChange"
-        >
-            <el-table-column type="index" width="50"/>
-            <el-table-column prop="name" label="文件名称"/>
-            <el-table-column prop="time" label="时长">
-            </el-table-column>
-            <el-table-column type="selection" width="55"/>
-        </el-table>
+        <div class="com-main">
+            <div class="com-table">
+                <el-table
+                    :data="tableData"
+                    style="width: 100%"
+                    height="100%"
+                    ref="multipleTableRef"
+                    @selection-change="handleSelectionChange"
+                >
+                    <el-table-column type="index" width="50"/>
+                    <el-table-column prop="name" label="文件名称"/>
+                    <el-table-column prop="time" label="时长">
+                    </el-table-column>
+                    <el-table-column type="selection" width="55"/>
+                </el-table>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts" setup>
+    import { ElTable } from 'element-plus';
+
+    const multipleTableRef = ref<InstanceType<typeof ElTable>>();
     const props = defineProps({
         fileList: Array
     })
@@ -33,40 +42,18 @@
     const tableData = computed(()=> {
         return props.fileList
     })
-    watch(()=> props.fileList, (newVal)=> {
+
+    watch(tableData, (newVal)=> {
         console.log(newVal)
     })
 
-    // 
     const handleSelectionChange = (val: any) => {
         val.forEach((item: { name: any; })=> {
             return item.name
         })
         emit('update:musicSelect', val)
     }
-    // 获取文件时长
-    const getTimes = (file: any) => {
-        var content = file
-        //获取录音时长
-        var url = URL.createObjectURL(content);
-            //经测试，发现audio也可获取视频的时长
-        var audioElement = new Audio(url);
-
-        let duration = audioElement.addEventListener("loadedmetadata", () => {
-            let data = audioElement.duration;
-            return formatSecondNo(data)
-        })
-        return duration
-    }
-    // 时长转换
-    const formatSecondNo = (seconds: any) => {
-        let hour: any = Math.floor(seconds / 3600) >= 10 ? Math.floor(seconds / 3600) : '0' + Math.floor(seconds / 3600);
-        seconds -= 3600 * hour;
-        let min: any = Math.floor(seconds / 60) >= 10 ? Math.floor(seconds / 60) : '0' + Math.floor(seconds / 60);
-        seconds -= 60 * min;
-        let sec = seconds >= 10 ? Math.trunc(seconds) : '0' +  Math.trunc(seconds);
-        return  hour  + ':' + min + ':' +  sec;
-    }
+    
     // mounted 实例挂载完成后被调用
     onMounted(() => {
         console.log(data)

@@ -203,7 +203,7 @@ module.exports = defineConfig({
      * proxy: 配置多个代理
      */
     devServer: {
-        host: "172.16.21.14",
+        host: "172.16.21.10",
         port: 8003,
         // open: true,
         // https: true,
@@ -213,7 +213,7 @@ module.exports = defineConfig({
                 changeOrigin: true
             },
             '/api/v1/': {
-                target: 'http://172.16.21.25:9999',
+                target: 'http://172.16.21.124:9999',
                 changeOrigin: true
             }
         }

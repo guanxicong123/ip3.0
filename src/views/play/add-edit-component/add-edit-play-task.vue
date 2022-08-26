@@ -41,7 +41,7 @@
                                     </el-select>
                                 </el-form-item>
                             </el-col>
-                             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.type === 2">
+                            <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.type === 2">
                                 <el-form-item label="播放模式">
                                     <el-select v-model="ruleForm.playmodel">
                                         <el-option
@@ -60,7 +60,7 @@
             <div class="play-task-configure configure-level">
                 <div class="from-alert">
                     <span>播放配置</span>
-                    <div class="play-task-configure-music" v-if="ruleForm.type === 2">
+                    <div class="play-task-configure-music" v-if="ruleForm.type === 1">
                         <span class="iconfont icon-delete" @click="deteleSelectMusic"></span>
                          <el-upload
                             v-model:file-list="fileList"
@@ -81,19 +81,25 @@
                 </div>
                 <div class="play-task-configure-content configure-level-content">
                     <sound-source-component
-                        v-if="ruleForm.type === 1"
-                        v-model:ruleForm="ruleForm">
+                        v-if="ruleForm.type === 0"
+                        v-model:ruleForm="ruleForm"
+                        @requestSoundSource="requestSoundSource">
                     </sound-source-component>
                     <music-play-component
-                        v-if="ruleForm.type === 2"
-                        v-model:fileList="fileList"
+                        v-if="ruleForm.type === 1"
+                        v-model:fileList="ruleForm.content"
                         v-model:musicSelect="musicSelect">
                     </music-play-component>
-                    <select-media-group v-if="ruleForm.type === 5">
+                    <select-media-group
+                        v-if="ruleForm.type === 2"
+                        :responseMedia="responseMedia"
+                        :responseGroups="responseeMediaGroups"
+                        @requestMedia="requestMedia"
+                        @requestGroups="requestMediaGroups">
                     </select-media-group>
-                    <text-play-component v-if="ruleForm.type === 4">
+                    <text-play-component v-if="ruleForm.type === 3">
                     </text-play-component>
-                    <select-sound-source-collection-radio v-if="ruleForm.type === 3">
+                    <select-sound-source-collection-radio v-if="ruleForm.type === 4">
                     </select-sound-source-collection-radio>
                 </div>
             </div>
@@ -102,8 +108,8 @@
                     <span>执行区域</span>
                 </div>
                 <div class="play-task-region-content configure-level-content">
-                    <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-                        <el-tab-pane label="快捷终端" name="first">
+                    <el-tabs v-model="ruleForm.executionregiontype" class="demo-tabs">
+                        <el-tab-pane label="快捷终端" :name="0">
                             <el-row :gutter="80">
                                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                                     <p class="selection-title">快捷终端</p>
@@ -114,8 +120,12 @@
                                 </el-col>
                             </el-row>
                         </el-tab-pane>
-                        <el-tab-pane label="终端选择" name="second">
-                            <terminals-select-components>
+                        <el-tab-pane label="终端选择" :name="1">
+                            <terminals-select-components
+                                :responseTerminals="responseTerminals"
+                                :responseGroups="responseGroups"
+                                @requestTerminals="requestTerminals"
+                                @requestGroups="requestGroups">
                             </terminals-select-components>
                         </el-tab-pane>
                     </el-tabs>
@@ -124,7 +134,7 @@
         </el-scrollbar>
         <div class="add-edit-bottom-button">
             <div class="button button-cancel">返回</div>
-            <div class="button button-submit">保存</div>
+            <div class="button button-submit" @click="submitTask">保存</div>
             <div class="button button-submit">保存并播放</div>
         </div>
         <quick-terminal-dialog v-model:dialogVisible="dialogVisible">
@@ -140,39 +150,59 @@
     import selectMediaGroup from '@/components/select_media_group.vue'
     import quickTerminalDialog from '@/components/quick-terminal-dialog.vue'
 
+    const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
+
     const uploadRef = ref<UploadInstance>()
     const fileList = ref<UploadUserFile[]>()
     const activeName = ref('first')
     const musicSelect = ref([]) //播放配置选中的音频文件
     const ruleForm = reactive({
-        type: 1,
-        taskname: '',
-        volume: '',
-        priority: '',
-        playmodel: 1,
-        AudioQuality: 0
+        type: 0, //任务类型
+        taskname: '', //任务名称
+        serverIP: localStorage.get("serverIP"), //服务器IP
+        userID: localStorage.get("LoginUserID"), //用户ID
+        priority: '', //任务优先级
+        volume: '', //任务音量
+        playmodel: 1, //1:顺序播放 2:列表循环: 3:随机播放: 4:单曲循环
+        executionregiontype: 0, //执行区域类型 0：快捷终端 1：普通终端
+        quickterminalid: -1, //快捷终端id
+        quickaudiosourceid: -1, //快捷音源id
+        content: [], //音乐路径集合
+        terminals: [], //终端id集合
+        terminals_groups: [], //终端分组id集合
     })
+    const content = ref({}) //接收不同任务类型的字段数据
+    const soundSourceForm = ref({}) //快捷音源表单数据
+    const responseTerminals = ref([]) //已选择的终端数据
+    const responseGroups = ref([])  //已选择的终端数组
+    const responseMedia = ref([]) //已选择的媒体文件
+    const responseeMediaGroups = ref([]) //已选择的媒体媒体文件夹
+    const quickMusicData = ref({}) //快捷音源配置
     const dialogVisible = ref(false)
     const typeOptions = [
-        { label: '快捷音源', value: 1 },
-        { label: '音乐播放', value: 2 },
-        { label: '音源采集', value: 3 },
-        { label: '文本播放', value: 4 },
-        { label: '远程播放', value: 5 }
+        { label: '快捷音源', value: 0 },
+        { label: '音乐播放', value: 1 },
+        { label: '远程播放', value: 2 },
+        { label: '文本播放', value: 3 },
+        { label: '音源采集', value: 4 }
     ]
     const playmodelOptions = [
-        { label: '顺序播放', value: 1 },
-        { label: '列表循环', value: 2 },
+        { label: '列表播放', value: 1 },
+        { label: '循环播放', value: 2 },
         { label: '随机播放', value: 3 },
     ]
 
-    const handleClick = (tab: TabsPaneContext, event: Event) => {
-
-    }
-    // 获取所有终端
-    const getTerminalsAll = () => {
-        
-    }
+    watch(()=> fileList.value, (newVal: any)=> {
+        setTimeout(()=> {
+            ruleForm.content = newVal.map((item: any)=> {
+                return {
+                    name: item.name,
+                    path: item.raw.path,
+                    time: item.time
+                }
+            })
+        }, 300)
+    })
     // 删除选中音频
     const deteleSelectMusic = () => {
         console.log(uploadRef.value)
@@ -186,7 +216,6 @@
     // 选中文件时触发
     const uploadChange: UploadProps['onChange'] = (uploadFile: any, uploadFiles) => {
         getTimes(uploadFile)
-        console.log(uploadFile, fileList.value)
     }
     // 获取文件时长
     const getTimes = (file: any) => {
@@ -195,8 +224,8 @@
         var url = URL.createObjectURL(content);
             //经测试，发现audio也可获取视频的时长
         var audioElement = new Audio(url);
-
-        let duration = audioElement.addEventListener("loadedmetadata", () => {
+        file['time'] = ''
+        audioElement.addEventListener("loadedmetadata", () => {
             let data = audioElement.duration;
             file['time'] = formatSecondNo(data)
         })
@@ -209,6 +238,46 @@
         seconds -= 60 * min;
         let sec = seconds >= 10 ? Math.trunc(seconds) : '0' +  Math.trunc(seconds);
         return  hour  + ':' + min + ':' +  sec;
+    }
+    // 选择的快捷音源配置
+    const requestSoundSource = (data: any) => {
+        console.log(data)
+        soundSourceForm.value = data
+    }
+    // 选择的媒体文件
+    const requestMedia = (data: any) => {
+        console.log(data)
+    }
+    // 选择的媒体文件夹
+    const requestMediaGroups = (data: any) => {
+        console.log(data)
+    }
+    // 选择的终端
+    const requestTerminals = (data: any) => {
+        ruleForm.terminals = data.map((item: { terminals_id: Number })=> {
+            return item.terminals_id
+        })
+    }
+    // 选择的终端分组
+    const requestGroups = (data: any) => {
+        console.log(data)
+        ruleForm.terminals_groups = data.map((item: { terminals_groups_id: Number })=> {
+            return item.terminals_groups_id
+        })
+    }
+    // 提交任务
+    const submitTask = () => {
+        console.log(ruleForm)
+        if (ruleForm.type === 1) {
+            createLocalAudio()
+        }
+    }
+    const createLocalAudio = () => {
+        console.log(ruleForm)
+        global.$http1.post('/task', ruleForm).then((result: any) => {
+            if (result)
+            console.log(result)
+        })
     }
     // mounted 实例挂载完成后被调用
     onMounted(() => {

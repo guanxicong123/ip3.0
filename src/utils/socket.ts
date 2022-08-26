@@ -34,7 +34,6 @@ const registerWebSocket = async () => {
                 send(loginData)
                 useAppStore().changeLoginStatus(false)
             }else {
-                console.log(666)
                 initRequest()
             }
         }
@@ -95,7 +94,7 @@ const reload = () => {
 }
 // 登录协议
 const socketLogin = (data: any) => {
-    sessionStorage.setItem('websocketUrl', 'ws://' + data.data.HostIP + ':51330/ws')
+    sessionStorage.setItem('websocketUrl', 'ws://' + '172.16.21.126' + ':51330/socket')
     
     let myDate = new Date();
     let a = myDate.getFullYear()
@@ -166,7 +165,6 @@ const handlerMsg = (msg:any) => {
             useTerminalStore().getTerminalGroup(msg.data)
         }]
     ])
-    // console.log('msg', msg)
     if (msg.result !== 200) {
         if (msg.actioncode === 'ls2c_user_login') { //登录失败
             useAppStore().changeLoginStatus(false)

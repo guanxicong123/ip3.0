@@ -11,12 +11,12 @@
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                     <el-form-item label="快捷音源">
                         <div class="fast-sound-source">
-                            <el-input v-model="ruleForm.taskname" disabled/>
-                            <span class="iconfont icon-select-file" @click="dialogVisible = true"></span>
+                            <el-input v-model="seleQuickMusic.name" disabled/>
+                            <span class="iconfont icon-select-file" @click="isShow = true"></span>
                         </div>
                     </el-form-item>
                 </el-col>
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="!isMusicPlay">
                     <el-form-item label="采集音质">
                         <el-select v-model="ruleForm.AudioQuality">
                             <el-option
@@ -28,9 +28,42 @@
                         </el-select>
                     </el-form-item>
                 </el-col>
+                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay">
+                    <el-form-item label="播放模式">
+                        <el-select v-model="ruleForm.playmodel">
+                            <el-option
+                                v-for="item in playmodelOptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value"
+                            />
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay && ruleForm.playmodel === 1">
+                    <el-form-item label="持续时间">
+                        {{ formatSecondNo(duration) }}
+                    </el-form-item>
+                </el-col>
+                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay && ruleForm.playmodel === 2">
+                    <el-form-item>
+                        <el-radio v-model="ruleForm.radioVal" :label="1" style="height: 22px; margin-bottom: 8px;">持续时间</el-radio>
+                        <el-time-picker v-model="ruleForm.value1" :disabled="ruleForm.radioVal !== 1"/>
+                    </el-form-item>
+                </el-col>
+                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay && ruleForm.playmodel === 2">
+                    <el-form-item>
+                        <el-radio v-model="ruleForm.radioVal" :label="2" style="height: 22px; margin-bottom: 8px;">播放曲目</el-radio>
+                        <el-input v-model="ruleForm.number" :disabled="ruleForm.radioVal !== 2"/>
+                    </el-form-item>
+                </el-col>
             </el-row>
         </el-form>
-        <quick-music-dialog v-model:isShow="isShow"/>
+        <quick-music-dialog
+            v-model:isShow="isShow"
+            @handleSelectedConfigure="handleSelectedConfigure"
+            :seleQuickMusic="seleQuickMusic"
+        />
   </div>
 </template>
 
@@ -39,16 +72,60 @@
     const props = defineProps({
         ruleForm: Object
     })
+    const emit = defineEmits([
+        'requestSoundSource' // 更新传递已选择的快捷音源，用于父组件进行数据交互
+    ])
     const ruleForm = reactive({
-        taskname: '',
-        AudioQuality: 0
+        id: -1, //快捷音源配置id
+        AudioQuality: 0, //采集音质
+        playmodel: 1, //播放模式
+        value1: '', //持续时间
+        number: 1, //播放曲目
+        radioVal: 1,
     })
     const audioQualityOptions = [
         { label: '初级', value: 0 },
         { label: '中级', value: 1 },
     ]
+    const playmodelOptions = [
+        { label: '列表播放', value: 1 },
+        { label: '循环播放', value: 2 },
+        { label: '随机播放', value: 3 }
+    ]
+    const duration = ref(0) //持续时间
     const isShow = ref(false)
-
+    const seleQuickMusic: any = ref({
+        id: -1,
+        name: '',
+    }) //选中的快捷音源
+    const isMusicPlay = computed(()=> {
+        return seleQuickMusic.value.type === 1
+    })
+    watch(seleQuickMusic, (newVal)=> {
+        ruleForm.id = newVal.id
+    })
+    watch(ruleForm, (newVal)=> {
+        emit('requestSoundSource', newVal)
+    })
+    // 处理选中配置
+    const handleSelectedConfigure = (item: any) => {
+        if (item.type === 1 && item.all_data.length > 0) {
+            duration.value = 0
+            item.all_data.forEach((item: string | any[])=> {
+                duration.value += Number(item.length)
+            })
+        }
+        seleQuickMusic.value = item
+    }
+    // 时长转换
+    const formatSecondNo = (seconds: any) => {
+        let hour: any = Math.floor(seconds / 3600) >= 10 ? Math.floor(seconds / 3600) : '0' + Math.floor(seconds / 3600);
+        seconds -= 3600 * hour;
+        let min: any = Math.floor(seconds / 60) >= 10 ? Math.floor(seconds / 60) : '0' + Math.floor(seconds / 60);
+        seconds -= 60 * min;
+        let sec = seconds >= 10 ? Math.trunc(seconds) : '0' +  Math.trunc(seconds);
+        return  hour  + ':' + min + ':' +  sec;
+    }
   // mounted 实例挂载完成后被调用
   onMounted(() => {
   })
@@ -56,5 +133,11 @@
 </script>
 
 <style lang="scss" scoped>
-    
+    .com-sound-source-component {
+        .el-input.is-disabled{
+            .el-input__inner {
+                color: #333;
+            }
+        }
+    }
 </style>

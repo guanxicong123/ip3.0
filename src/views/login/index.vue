@@ -119,6 +119,8 @@
 
 <script lang="ts" setup>
     import { socketLogin, socket } from '@/utils/socket'
+import { Http2ServerRequest } from 'http2';
+import { result } from 'lodash';
     const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
 
     const store = useAppStore();
@@ -153,22 +155,30 @@
     };
     // 提交
     const submit = () => {
-        let data = {
-            company: "BL",
-            actioncode: "c2ls_user_login",
-            token: "",
-            data: {
-                "UserName": modelRef.name,
-                "Password": global.$md5.hashStr(modelRef.password),
-                "Platform": "PC",
-                "HostIP": modelRef.server_ip_address,
-                "ForceLogin": false
-            },
-            result: 0,
-            return_message: ""
-        }
-        store.changeLoginStatus(true)
-        socketLogin(data)
+        global.$http1.get('/login', {
+            params: {
+                server: modelRef.server_ip_address + ':51330'
+            }
+        }).then((result: any)=> {
+            if (!result) return
+            let data = {
+                company: "BL",
+                actioncode: "c2ls_user_login",
+                token: "",
+                data: {
+                    "UserName": modelRef.name,
+                    "Password": global.$md5.hashStr(modelRef.password),
+                    "Platform": "PC",
+                    "HostIP": modelRef.server_ip_address,
+                    "ForceLogin": false
+                },
+                result: 0,
+                return_message: ""
+            }
+            store.changeLoginStatus(true)
+            socketLogin(data)
+            localStorage.set("serverIP", modelRef.server_ip_address)
+        })
     };
 
     // mounted 实例挂载完成后被调用
