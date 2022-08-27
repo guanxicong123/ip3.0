@@ -228,16 +228,6 @@ const getSoundAll = () => {
 onMounted(() => {
     getTerminalsAll()
     getSoundAll()
-    // config = Object.assign(
-    //     config,
-    //     parentData.myConfig ? parentData.myConfig : {}
-    // );
-    // for (let i = 1; i < 50; i++) {
-    //     form.allSoundCardData.push({
-    //         id: i,
-    //         name: "Microsoft 声音映射器" + i,
-    //     });
-    // }
     setCurrentTabSelectStatus();
 });
 </script>

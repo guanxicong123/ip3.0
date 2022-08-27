@@ -17,14 +17,10 @@
                 <span :id="titleId" :class="titleClass">{{ form.title }}</span>
             </div>
         </template>
-        <div>
-            <el-form ref="ruleFormRef" label-position="top" :model="form" status-icon scroll-to-error>
-                <div class="com-dialog-components">
-                    <select-shortcut-sound-source
-                        @requestConfigure="handleRequestTerminals"
-                        :responseConfigure="parentData.seleQuickMusic"/>
-                </div>
-            </el-form>
+        <div class="com-dialog-components">
+            <select-shortcut-sound-source
+                @requestConfigure="handleRequestTerminals"
+                :responseConfigure="parentData.seleQuickMusic"/>
         </div>
         <template #footer>
             <div class="com-dialog-footer">

@@ -130,23 +130,24 @@ const useSystemStore = defineStore({
                     serverip: localStorage.get("serverIp")
                 }
             }).then((result: any) => {
-                if (result.status === 200) {
+                console.log(result)
+                if (result.data.result === 200) {
                     // 功能管理相关数据
                     let { FolderDisplay, GroupDisplay, remoteTaskDisplay, 
-                        TerminalStateEnabled, PlayCenterEnabled, SessionEnabled, TimingEnabled, MediasEnabled } = result.data
+                        TerminalStateEnabled, PlayCenterEnabled, SessionEnabled, TimingEnabled, MediasEnabled } = result.data.data
                     this.functional_configs = {
                         FolderDisplay, GroupDisplay, remoteTaskDisplay, 
                         TerminalStateEnabled, PlayCenterEnabled, SessionEnabled, TimingEnabled, MediasEnabled
                     }
                     // 系统配置数据
                     let { EnabledAlarm, AlarmID, TerminalOrderbyType, TerminalStateDefaultType, DefaultDisplayView, 
-                        EnabledFireAlert, EnabledPersonAlert, EnabledTerminalOffAlert, EnabledTerminalOffRingfAlert } = result.data
+                        EnabledFireAlert, EnabledPersonAlert, EnabledTerminalOffAlert, EnabledTerminalOffRingfAlert } = result.data.data
                     this.system_configs = {
                         EnabledAlarm, AlarmID, TerminalOrderbyType, TerminalStateDefaultType, DefaultDisplayView,
                         EnabledFireAlert, EnabledPersonAlert, EnabledTerminalOffAlert, EnabledTerminalOffRingfAlert
                     }
                     // 基本配置：如主讲终端、主题等
-                    let { MainEndpointID, Theme, Language, DisplayType, ListDisplaySize, ID } = result.data
+                    let { MainEndpointID, Theme, Language, DisplayType, ListDisplaySize, ID } = result.data.data
                     this.basic_configs = {
                         MainEndpointID, Theme, Language, DisplayType, ListDisplaySize, ID
                     }
@@ -160,9 +161,9 @@ const useSystemStore = defineStore({
 
         // 获取机器码
         getProductKey() {
-            axios.get('http://172.16.21.25:9999/api/v1/register').then((res) => {
-                if (res.status === 200) {
-                    this.opcodes = res.data.ProductKey
+            axios.get('http://172.16.21.25:9999/api/v1/register').then((result: any) => {
+                if (result.data.result === 200) {
+                    this.opcodes = result.data.data.ProductKey
                     this.opcodes = '14827-67853-39229-50676-09802-52491-53438'
                 }
             })

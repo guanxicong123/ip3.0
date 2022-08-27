@@ -587,7 +587,6 @@ const handleMediasDragEnter = (e: any, item: any) => {
 };
 // 时长转换
 const formatSecondNo = (seconds: any) => {
-    console.log(seconds)
     let hour: any = Math.floor(seconds / 3600) >= 10 ? Math.floor(seconds / 3600) : '0' + Math.floor(seconds / 3600);
     seconds -= 3600 * hour;
     let min: any = Math.floor(seconds / 60) >= 10 ? Math.floor(seconds / 60) : '0' + Math.floor(seconds / 60);

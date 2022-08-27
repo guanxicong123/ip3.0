@@ -10,12 +10,13 @@ import "@/assets/font/iconfont.js"
 import terminalsSelectComponents  from '@/components/terminals-select-components.vue'
 import quickMusicDialog  from '@/components/quick-music-dialog.vue'
 import selectSoundSourceCollectionRadio  from '@/components/select_sound_source_collection_radio.vue'
+import selectShortcutTerminalRadio  from '@/components/select_shortcut_terminal_radio.vue'
 const app = createApp(App)
 
 app.component('terminals-select-components', terminalsSelectComponents)
 app.component('quick-music-dialog', quickMusicDialog)
 app.component('select-sound-source-collection-radio', selectSoundSourceCollectionRadio)
-
+app.component('select-shortcut-terminal-radio', selectShortcutTerminalRadio)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
