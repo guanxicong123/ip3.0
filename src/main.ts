@@ -11,6 +11,7 @@ import terminalsSelectComponents  from '@/components/terminals-select-components
 import quickMusicDialog  from '@/components/quick-music-dialog.vue'
 import selectSoundSourceCollectionRadio  from '@/components/select_sound_source_collection_radio.vue'
 import selectShortcutTerminalRadio  from '@/components/select_shortcut_terminal_radio.vue'
+import { ElMessage } from 'element-plus'
 const app = createApp(App)
 
 app.component('terminals-select-components', terminalsSelectComponents)
@@ -23,6 +24,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 const global = app.config.globalProperties //原型链
 global.$md5 = Md5
+global.$message = ElMessage
 global.$http = axios.create({
     baseURL: '/api/v29+',
     headers: {

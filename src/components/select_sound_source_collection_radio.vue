@@ -34,16 +34,16 @@
                             <li
                                 @click="handleSelectedSoundSource(item)"
                                 :class="{
-                                    selected: form.selectedSoundSourceData?.name === item.name,
+                                    selected: form.selectedSoundSourceData === item,
                                 }"
                             >
-                                <div class="icon-font-select" v-if="form.selectedSoundSourceData?.name === item.name">
+                                <div class="icon-font-select" v-if="form.selectedSoundSourceData === item">
                                     <el-icon class="theme"><Select /></el-icon>
                                 </div>
                                 <div v-for="(row, key) in config.showSoundCardColumn" :key="key" :style="row.style"
                                     :title="item[row.column]">
                                     <span>
-                                        {{ row.column === "key" ? index + 1 : item[row.column] }}
+                                        {{ row.column === "key" ? index + 1 : item }}
                                     </span>
                                 </div>
                             </li>
@@ -171,6 +171,10 @@ let config = reactive<any>({
     searchColumnName: "name", // 搜索的列名
     searchColumnIP: "ip_address", // 搜索的列名
 });
+// 处理当前已选择的类型
+const handleSelectedTaskType = () => {
+    
+}
 // 处理当前点击选择声卡
 const handleCurrentClickGroups = (item: { id: number; }) => {
     form.currentGroupsID = item.id

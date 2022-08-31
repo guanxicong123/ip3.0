@@ -5,27 +5,14 @@
   @Describe: 音乐播放组件（选择本地音频）
 -->
 <template>
-    <div class="com-music-play-component">
-        <div class="com-main">
-            <div class="com-table">
-                <el-table
-                    :data="tableData"
-                    style="width: 100%"
-                    height="100%"
-                    ref="multipleTableRef"
-                    @selection-change="handleSelectionChange"
-                >
-                    <el-table-column type="index" width="50"/>
-                    <el-table-column prop="name" label="文件名称"/>
-                    <el-table-column prop="time" label="时长">
-                        <template #default="scope">
-                            {{ formatSecondNo(scope.row.time) }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column type="selection" width="55"/>
-                </el-table>
-            </div>
-        </div>
+    <div class="com-remote-play-component">
+        <select-media-group
+            :responseMedia="props.responseMedia"
+            :responseGroups="props.responseeMediaGroups"
+            @requestMedia="requestMedia"
+            @requestGroups="requestMediaGroups"
+            @totalSecond="totalSecond">
+        </select-media-group>
         <el-form :model="ruleForm" label-position="top" class="play-task-form-inline">
             <el-row :gutter="80">
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
@@ -67,15 +54,16 @@
 </template>
 
 <script lang="ts" setup>
-    import { ElTable } from 'element-plus';
+    import selectMediaGroup from '@/components/select_media_group.vue'
 
-    const multipleTableRef = ref<InstanceType<typeof ElTable>>();
     const props = defineProps({
-        fileList: Array
+        responseMedia: Array,
+        responseeMediaGroups: Array,
     })
     const emit = defineEmits([
-        'update:musicSelect',
-        'requestDispose'
+        'requestDispose',
+        'update:medias',
+        'update:medias_groups',
     ])
     const ruleForm = reactive({
         play_model: 0, //播放模式
@@ -83,48 +71,45 @@
         play_number: 1, //播放曲目
         radioVal: 1,
     })
-    
-    const data = reactive({
-        tableData: []
-    })
+    const responseMedia = ref([]) //已选择的媒体文件
+    const responseeMediaGroups = ref([]) //已选择的媒体媒体文件夹
+
     const duration = ref(0) //持续时间
     const playmodelOptions = [
         { label: '列表播放', value: 0 },
         { label: '循环播放', value: 1 },
         { label: '随机播放', value: 2 },
     ]
-    const tableData = computed(()=> {
-        return props.fileList
-    })
 
-    watch(tableData, (newVal)=> {
-        duration.value = 0
-        newVal?.forEach((item: any)=> {
-            duration.value += Number(item.time)
-        })
-    })
     watch([ruleForm, duration], ()=> {
-        let data;
-        if (ruleForm.play_model !== 0 && ruleForm.radioVal !== 1) {
-            data = {
-                play_model: ruleForm.play_model,
-                play_number: ruleForm.play_number
-            }
-        }else {
-            data = {
-                play_model: ruleForm.play_model,
-                life_time: ruleForm.play_model === 0 ? formatSecondNo(duration.value) : ruleForm.life_time,
-            }
+        let data: any = {
+            play_model: ruleForm.play_model,
         }
-        console.log(data)
+        if (ruleForm.play_model !== 0 && ruleForm.radioVal !== 1) {
+            data['play_number'] = ruleForm.play_number
+        }else {
+            data['life_time'] = ruleForm.play_model === 0 ? formatSecondNo(duration.value) : ruleForm.life_time
+        }
         emit('requestDispose', data)
     })
 
-    const handleSelectionChange = (val: any) => {
-        val.forEach((item: { name: any; })=> {
-            return item.name
+        
+    // 选择的媒体文件
+    const requestMedia = (data: any) => {
+        let ids = data.map((item:any) => {
+            return item.medias_id
         })
-        emit('update:musicSelect', val)
+        emit('update:medias', ids)
+    }
+    // 选择的媒体文件夹
+    const requestMediaGroups = (data: any) => {
+        let ids = data.map((item:any) => {
+            return item.medias_groups_id
+        })
+        emit('update:medias_groups', ids)
+    }
+    const totalSecond = (length: number) => {
+        duration.value = length
     }
     // 时长转换
     const formatSecondNo = (seconds: any) => {
@@ -156,8 +141,9 @@
 </script>
 
 <style lang="scss" scoped>
-    .com-music-play-component {
-        // max-height: 260px;
-        // overflow: hidden;
+    .com-remote-play-component {
+        .play-task-form-inline {
+            padding-top: 10px;
+        }
     }
 </style>

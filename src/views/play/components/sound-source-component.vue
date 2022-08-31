@@ -18,7 +18,7 @@
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="!isMusicPlay">
                     <el-form-item label="采集音质">
-                        <el-select v-model="ruleForm.AudioQuality">
+                        <el-select v-model="ruleForm.sound_quality">
                             <el-option
                                 v-for="item in audioQualityOptions"
                                 :key="item.value"
@@ -30,7 +30,7 @@
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay">
                     <el-form-item label="播放模式">
-                        <el-select v-model="ruleForm.playmodel">
+                        <el-select v-model="ruleForm.play_model">
                             <el-option
                                 v-for="item in playmodelOptions"
                                 :key="item.value"
@@ -40,21 +40,25 @@
                         </el-select>
                     </el-form-item>
                 </el-col>
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay && ruleForm.playmodel === 1">
+                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay && ruleForm.play_model === 0">
                     <el-form-item label="持续时间">
                         {{ formatSecondNo(duration) }}
                     </el-form-item>
                 </el-col>
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay && ruleForm.playmodel === 2">
+                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay && ruleForm.play_model !== 0">
                     <el-form-item>
                         <el-radio v-model="ruleForm.radioVal" :label="1" style="height: 22px; margin-bottom: 8px;">持续时间</el-radio>
-                        <el-time-picker v-model="ruleForm.value1" :disabled="ruleForm.radioVal !== 1"/>
+                        <el-time-picker
+                            v-model="ruleForm.life_time"
+                            format="HH:mm:ss"
+                            value-format="HH:mm:ss"
+                            :disabled="ruleForm.radioVal !== 1"/>
                     </el-form-item>
                 </el-col>
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay && ruleForm.playmodel === 2">
+                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay && ruleForm.play_model !== 0">
                     <el-form-item>
                         <el-radio v-model="ruleForm.radioVal" :label="2" style="height: 22px; margin-bottom: 8px;">播放曲目</el-radio>
-                        <el-input v-model="ruleForm.number" :disabled="ruleForm.radioVal !== 2"/>
+                        <el-input v-model="ruleForm.play_number" :disabled="ruleForm.radioVal !== 2"/>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -68,7 +72,6 @@
 </template>
 
 <script lang="ts" setup>
-    import quickTerminalDialog from '../../../components/quick-terminal-dialog.vue'
     const props = defineProps({
         ruleForm: Object
     })
@@ -77,20 +80,22 @@
     ])
     const ruleForm = reactive({
         id: -1, //快捷音源配置id
-        AudioQuality: 0, //采集音质
-        playmodel: 1, //播放模式
-        value1: '', //持续时间
-        number: 1, //播放曲目
+        type: 0, //选择的快捷音源类型
+        sound_quality: 1, //采集音质
+        play_model: 0, //播放模式
+        life_time: '00:00:00', //持续时间
+        play_number: 1, //播放曲目
         radioVal: 1,
     })
     const audioQualityOptions = [
-        { label: '初级', value: 0 },
-        { label: '中级', value: 1 },
+        { label: '初级', value: 1 },
+        { label: '中级', value: 2 },
+        { label: '高级', value: 3 },
     ]
     const playmodelOptions = [
-        { label: '列表播放', value: 1 },
-        { label: '循环播放', value: 2 },
-        { label: '随机播放', value: 3 }
+        { label: '列表播放', value: 0 },
+        { label: '循环播放', value: 1 },
+        { label: '随机播放', value: 2 }
     ]
     const duration = ref(0) //持续时间
     const isShow = ref(false)
@@ -105,7 +110,18 @@
         ruleForm.id = newVal.id
     })
     watch(ruleForm, (newVal)=> {
-        emit('requestSoundSource', newVal)
+        let data: any = {
+            id: newVal.id,
+            type: newVal.type,
+            sound_quality: newVal.sound_quality,
+            play_model: newVal.play_model
+        }
+        if (newVal.play_model !== 0 && ruleForm.radioVal !== 1) {
+            data['play_number'] = newVal.play_number
+        }else {
+            data['life_time'] = newVal.life_time
+        }
+        emit('requestSoundSource', data)
     })
     // 处理选中配置
     const handleSelectedConfigure = (item: any) => {
@@ -114,7 +130,9 @@
             item.all_data.forEach((item: string | any[])=> {
                 duration.value += Number(item.length)
             })
+            ruleForm.life_time = formatSecondNo(duration.value)
         }
+        ruleForm.type = item.type
         seleQuickMusic.value = item
     }
     // 时长转换
