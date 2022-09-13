@@ -2,7 +2,7 @@
   @Author: yangyq
   @CreateDate: 2022-08-30
   @FilePath: src\views\play\components\source-acquisition-component.vue
-  @Describe: 音乐播放组件（选择本地音频）
+  @Describe: 音源采集组件
 -->
 <template>
     <div class="com-source-acquisition-component">
@@ -14,7 +14,7 @@
             <el-row :gutter="80">
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                     <el-form-item label="采集音质">
-                        <el-select v-model="ruleForm.sound_quality">
+                        <el-select v-model="ruleForm.audioQuality">
                             <el-option
                                 v-for="item in audioQualityOptions"
                                 :key="item.value"
@@ -24,21 +24,64 @@
                         </el-select>
                     </el-form-item>
                 </el-col>
-                <!-- <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.play_model !== 0">
-                    <el-form-item>
-                        <el-radio v-model="ruleForm.radioVal" :label="2" style="height: 22px; margin-bottom: 8px;">播放曲目</el-radio>
-                        <el-input v-model="ruleForm.play_number" :disabled="ruleForm.radioVal !== 2"/>
+                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-show="ruleForm.type === 1">
+                    <el-form-item label="录音开关">
+                        <el-switch v-model="ruleForm.record" />
                     </el-form-item>
-                </el-col> -->
+                </el-col>
+                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-show="ruleForm.type === 1 && ruleForm.record">
+                    <el-form-item label="录音路径">
+                        <div class="recording-evt">
+                            <div @click="folderDialogVisible = true" class="recording-evt-select">浏览</div>
+                            <p class="recording-evt-path" :title="ruleForm.recordpath">{{ruleForm.recordpath}}</p>
+                        </div>
+                        <!-- <el-select v-model="ruleForm.audioQuality">
+                            <el-option
+                                v-for="item in audioQualityOptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value"
+                            />
+                        </el-select> -->
+                    </el-form-item>
+                </el-col>
             </el-row>
         </el-form>
+        <!-- 选择文件夹路径 -->
+        <el-dialog
+            v-model="folderDialogVisible"
+            width="800px"
+            destroy-on-close
+            draggable
+            append-to-body
+            :show-close="false"
+            @close="folderDialogVisible = false"
+        >
+            <template #header="{ close, titleId, titleClass }">
+                <div class="com-dialog-header">
+                    <span :id="titleId" :class="titleClass">选择文件夹</span>
+                    <span class="dialog-icon">
+                        <el-icon @click="close"><Close /></el-icon>
+                    </span>
+                </div>
+                </template>
+                <select-folder @selectedPath="handleSelectedPath" />
+                <template #footer>
+                <div class="com-dialog-footer">
+                    <el-button plain @click="folderDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="handleConfirm">确认</el-button>
+                </div>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
 <script lang="ts" setup>
-    import { ElTable } from 'element-plus';
+    // defineAsyncComponent 异步组件-懒加载子组件
+    const selectFolder = defineAsyncComponent(() => import("./select_folder.vue"))
 
-    const multipleTableRef = ref<InstanceType<typeof ElTable>>();
+    const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
+
     const props = defineProps({
         fileList: Array
     })
@@ -46,32 +89,43 @@
         'update:musicSelect',
         'requestDispose'
     ])
+
+    const folderDialogVisible = ref(false)
     const ruleForm = reactive({
-        play_model: 0, //播放模式
-        life_time: '00:00:00', //持续时间
-        play_number: 1, //播放曲目
-        radioVal: 1,
-        sound_quality: 1, //采集音质
-    })
-    
-    const data = reactive({
-        tableData: []
+        type: 1, //1:声卡、2：采集终端
+        audioQuality: 1, //采集音质
+        selectVal: '', //终端ID
+        record: false, //是否录音
+        recordpath: '', //录音文件存放地址
     })
     const audioQualityOptions = [
         { label: '初级', value: 1 },
         { label: '中级', value: 2 },
         { label: '高级', value: 3 },
     ]
-    const tableData = computed(()=> {
-        return props.fileList
+    const selectPath = ref('')
+
+    watch(ruleForm, ()=> {
+        emit('requestDispose', ruleForm)
     })
-
-    // 采集终端
+    // 选中的采集终端/声卡
     const requestAcquisitionTerminal = (data: any) => {
-
+        console.log(typeof(data))
+        ruleForm.selectVal = data
     }
-    // 选中的声卡
+    // 选中的音源类型
     const requestType = (data: any) => {
+        ruleForm.type = data
+    }
+    const handleSelectedPath = (data: any) => {
+        selectPath.value = data
+        console.log(selectPath.value)
+    }
+    const handleConfirm = () => {
+        if (selectPath.value === '') return global.$message.warning('请选择路径')
+        ruleForm.recordpath = selectPath.value
+        folderDialogVisible.value = false
+        console.log(ruleForm.recordpath)
 
     }
     // mounted 实例挂载完成后被调用
@@ -81,8 +135,31 @@
 </script>
 
 <style lang="scss" scoped>
-    .com-music-play-component {
-        // max-height: 260px;
-        // overflow: hidden;
+    .com-source-acquisition-component {
+        .play-task-form-inline {
+            margin-top: 10px;
+        }
+        .recording-evt {
+            display: flex;
+            height: 30px;
+            overflow: hidden;
+            .recording-evt-select {
+                font-size: 14px;
+                color: #FFFFFF;
+                padding: 0px 16px;
+                background-color: #0070EE;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            .recording-evt-path {
+                flex: 1;
+                padding: 0 10px;
+                margin-left: 14px;
+                border: 1px solid #DDDDDD;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+        }
     }
 </style>

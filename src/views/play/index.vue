@@ -73,14 +73,16 @@
                             </div>
                             <div class="com-button">
                                 <i class="iconfont icon-add" title="添加" @click="addPlayTask"></i>
-                                <i class="iconfont icon-delete" title="批量删除"></i>
+                                <i class="iconfont icon-delete" @click="handleDeleteAll" title="批量删除"></i>
                             </div>
                         </div>
                     </div>
                     <div class="com-main">
                         <div class="com-table">
-                            <el-table ref="multipleTableRef" :data="form.data" border style="width: 100%" height="100%"
-                                @selection-change="handleSelectionChange">
+                            <el-table ref="multipleTableRef" :data="form.data" style="width: 100%" height="100%"
+                                highlight-current-row
+                                @selection-change="handleSelectionChange"
+                                @cell-click="handleSelectionClick">
                                 <el-table-column prop="name" label="任务" show-overflow-tooltip min-width="280">
                                     <template #default="scope">
                                         <svg class="icon" aria-hidden="true">
@@ -91,12 +93,12 @@
                                 </el-table-column>
                                 <el-table-column prop="priority" label="优先级">
                                     <template #default="scope">
-                                        <span class="red">[{{ scope.row.default_priority }}]</span>{{ scope.row.priority
+                                        <span class="red">[{{ priorityData.get(scope.row.type) }}]</span>{{ scope.row.priority
                                         }}
                                     </template>
                                 </el-table-column>
                                 <el-table-column label="操作" width="120">
-                                    <template #default>
+                                    <template #default="scope">
                                         <el-button link type="primary">
                                             <template #icon>
                                                 <i class="iconfont icon-play" title="播放"></i>
@@ -107,7 +109,7 @@
                                                 <i class="iconfont icon-edit" title="编辑"></i>
                                             </template>
                                         </el-button>
-                                        <el-button link type="primary">
+                                        <el-button link type="primary" @click.stop="handleDelete(scope.row)">
                                             <template #icon>
                                                 <i class="iconfont icon-delete" title="删除"></i>
                                             </template>
@@ -120,7 +122,37 @@
                     </div>
                 </div>
             </div>
-            <div class="right-bottom"></div>
+            <div class="right-bottom">
+                <div class="com-index">
+                    <div class="com-head">
+                        <div class="com-head-content">
+                            <div class="com-tabs">
+                                <div
+                                    :class="{'select': activeName === 'configure' }"
+                                    @click="activeName = 'configure'"
+                                >
+                                    播放配置（4）
+                                </div>
+                                <div
+                                    :class="{'select': activeName === 'region' }"
+                                    @click="activeName = 'region'"
+                                >
+                                    播放区域（4）
+                                </div>
+                            </div>
+                            <div class="com-button" @click="handleEditButton">
+                                <i class="iconfont icon-edit1"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="com-main">
+                        <play-config-component
+                            ref="playConfig"
+                            :selectTaskData="selectTaskData">
+                        </play-config-component>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -128,6 +160,8 @@
 <script lang="ts" setup>
 import { ElTable } from "element-plus"
 import { Search } from "@element-plus/icons-vue"
+const playConfigComponent = defineAsyncComponent(() => import("./add-edit-component/play-config-component.vue"))
+const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
 // 路由
 const $useRouter = useRouter();
 const $useRoute = useRoute();
@@ -148,7 +182,7 @@ const form = reactive<any>({
     playlist_status: false, // 播放列表状态
     play_list_data: [], // 播放列表数据
     search: "", // 任务搜索
-    data: [],
+    data: [], // 任务数据
     currentPage: 1,
     pageSize: 20,
     total: 0,
@@ -160,19 +194,110 @@ const handleFullscreenStatus = () => {
 };
 const taskTypeMap = new Map([
     [1, "#icon-remote-playback"],
-    [2, "#icon-text"],
-    [3, "#icon-terminals"],
-    [4, "#icon-music-playback"],
+    [11, "#icon-text"],
+    [13, "#icon-terminals"],
+    [10, "#icon-music-playback"],
 ]);
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
+const selectTaskData: any = ref({}); //选中的任务数据
+const priorityData = new Map()
+const activeName = ref('configure')
+const playConfig = ref()
+
+// 添加播放任务
+const addPlayTask = () => {
+    $useRouter.push('/play-task/' + 0)
+}
 // 当前已选择表格数据
 const handleSelectionChange = (val: User[]) => {
     multipleSelection.value = val;
 };
-// 添加播放任务
-const addPlayTask = () => {
-    $useRouter.push('/play-task/' + 0)
+const handleDeleteAll = () => {
+
+}
+// 编辑
+const handleEditButton = () => {
+    playConfig.value.handleEditButton()
+}
+// 获取选中任务详情信息
+const handleSelectionClick = (row: any) => {
+    selectTaskData.value = row
+    // if (row.type < 10) {
+    //     global.$http.get('/broadcasting/' + row.id, {
+    //         params: {
+    //             withMedias: true,
+    //             withGroups: true,
+    //             withFastSound: true,
+    //             withFastTerminal: true
+    //         }
+    //     }).then((restlu: any)=> {
+    //         selectTaskData.value = restlu.data
+    //     })
+    // }else {
+    //     global.$http1.get('/task/' + row.id).then((restlu: any)=> {
+    //         selectTaskData.value = restlu.data
+    //     })
+    // }
+    console.log(row)
+}
+// 删除播放任务
+const handleDelete = (row: any) => {
+    if (row.type < 10) {
+        global.$http.delete('/broadcasting/' + row.id).then((result: any)=> {
+            if (result.result === 200) {
+                Promise.all([
+                    getBroadcastingAll(),
+                    getTaskAll()
+                ]).then((data: any) => {
+                    form.data = [...data[0], ...data[1]]
+                })
+            }
+        })
+    }else {
+        global.$http1.delete('/task/' + row.id).then((result: any)=> {
+            if (result.result === 200) {
+                Promise.all([
+                    getBroadcastingAll(),
+                    getTaskAll()
+                ]).then((data: any) => {
+                    form.data = [...data[0], ...data[1]]
+                })
+            }
+        })
+    }
+}
+// 获取所有播放任务
+const getBroadcastingAll = () => {
+    return new Promise((resolve, reject) => {
+        global.$http.get('/broadcasting/all').then((restlu: any)=> {
+            let data = restlu.data.filter((item: { type: number; })=> {
+                return item.type === 1 || item.type === 4
+            })
+            resolve(data)
+        })
+    })
+}
+// 获取所有任务
+const getTaskAll = () => {
+    return new Promise((resolve, reject) => {
+        global.$http1.get('/task', {
+            params: {
+                userID: localStorage.get("LoginUserID"),
+                serverIP: localStorage.get("serverIP")
+            }
+        }).then((restlu: any)=> {
+            resolve(restlu.data)
+        })
+    })
+}
+// 获取所有系统优先级
+const getPrioritySetting = () => {
+    global.$http.get('/priority-setting').then((restlu: any)=> {
+        restlu.data.forEach((item: { task_type: any; priority: any; })=> {
+            priorityData.set(item.task_type, item.priority)
+        })
+    })
 }
 // 序号
 // const typeIndex = (index: number) => {
@@ -181,21 +306,15 @@ const addPlayTask = () => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-    for (let index = 0; index < 50; index++) {
-        form.play_list_data.push({
-            id: index + 1,
-            name: "音乐播放" + index + ".mp3",
-        });
-    }
-    for (let index = 0; index < 50; index++) {
-        form.data.push({
-            id: index + 1,
-            type: index + 1 < 5 ? index + 1 : 4,
-            name: "音乐播放" + index + ".mp3",
-            priority: index + 1,
-            default_priority: 70,
-        });
-    }
+    getPrioritySetting()
+    Promise.all([
+        getBroadcastingAll(),
+        getTaskAll()
+    ]).then((data: any) => {
+        form.data = [...data[0], ...data[1]]
+        handleSelectionClick(form.data[0])
+        multipleTableRef.value!.setCurrentRow(form.data[0])
+    })
 });
 </script>
 
@@ -389,6 +508,26 @@ onMounted(() => {
         .com-breadcrumb {
             .el-input {
                 width: 200px;
+            }
+        }
+        .com-tabs {
+            margin-left: 10px;
+            >div {
+                width: 110px;
+                font-size: 12px;
+                font-family: MicrosoftYaHei;
+                color: #84A2C4;
+                display: inline-block;
+                cursor: pointer;
+                &:last-child {
+                    border-left: 1px solid #C5D6E8;
+                    padding-left: 18px;
+                }
+            }
+            .select {
+                font-size: 14px;
+                font-weight: bold;
+                color: #6F95C1;
             }
         }
 

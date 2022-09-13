@@ -130,7 +130,6 @@ const useSystemStore = defineStore({
                     serverip: localStorage.get("serverIp")
                 }
             }).then((result: any) => {
-                console.log(result)
                 if (result.data.result === 200) {
                     // 功能管理相关数据
                     let { FolderDisplay, GroupDisplay, remoteTaskDisplay, 
@@ -193,11 +192,12 @@ const useSystemStore = defineStore({
                 return item.name === default_view
             })
             let next_path = this.router_data[index].permission ? this.router_data[index].path : this.router_data[0].path
+            console.log(next_path)
             let time_id = setInterval(() => {
-                if (useTerminalStore().terminal_data.length > 0 && useTerminalStore().terminal_group.length > 0) {
-                    router.push(next_path)
+                // if (useTerminalStore().terminal_data.length > 0 && useTerminalStore().terminal_group.length > 0) {
+                    router.push('/play')
                     clearInterval(time_id)
-                }
+                // }
             }, 100)
         },
 

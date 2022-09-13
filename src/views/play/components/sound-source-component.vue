@@ -6,9 +6,13 @@
 -->
 <template>
     <div class="com-sound-source-component">
-        <el-form :model="ruleForm" label-position="top" class="play-task-form-inline com-sound-source-component">
+        <el-form :model="ruleForm" :label-position="props.labelPosition" class="play-task-form-inline com-sound-source-component">
             <el-row :gutter="80">
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <el-col
+                    :xs="props.adaption.xs" :sm="props.adaption.sm"
+                    :md="props.adaption.md" :lg="props.adaption.lg"
+                    :xl="props.adaption.xl"
+                >
                     <el-form-item label="快捷音源">
                         <div class="fast-sound-source">
                             <el-input v-model="seleQuickMusic.name" disabled/>
@@ -16,7 +20,11 @@
                         </div>
                     </el-form-item>
                 </el-col>
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="!isMusicPlay">
+                <el-col
+                    :xs="props.adaption.xs" :sm="props.adaption.sm"
+                    :md="props.adaption.md" :lg="props.adaption.lg"
+                    :xl="props.adaption.xl" v-if="!isMusicPlay"
+                >
                     <el-form-item label="采集音质">
                         <el-select v-model="ruleForm.sound_quality">
                             <el-option
@@ -28,7 +36,11 @@
                         </el-select>
                     </el-form-item>
                 </el-col>
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay">
+                <el-col
+                    :xs="props.adaption.xs" :sm="props.adaption.sm"
+                    :md="props.adaption.md" :lg="props.adaption.lg"
+                    :xl="props.adaption.xl" v-if="isMusicPlay"
+                >
                     <el-form-item label="播放模式">
                         <el-select v-model="ruleForm.play_model">
                             <el-option
@@ -40,12 +52,20 @@
                         </el-select>
                     </el-form-item>
                 </el-col>
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay && ruleForm.play_model === 0">
+                <el-col
+                    :xs="props.adaption.xs" :sm="props.adaption.sm"
+                    :md="props.adaption.md" :lg="props.adaption.lg"
+                    :xl="props.adaption.xl" v-if="isMusicPlay && ruleForm.play_model === 0"
+                >
                     <el-form-item label="持续时间">
                         {{ formatSecondNo(duration) }}
                     </el-form-item>
                 </el-col>
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay && ruleForm.play_model !== 0">
+                <el-col
+                    :xs="props.adaption.xs" :sm="props.adaption.sm"
+                    :md="props.adaption.md" :lg="props.adaption.lg"
+                    :xl="props.adaption.xl" v-if="isMusicPlay && ruleForm.play_model !== 0"
+                >
                     <el-form-item>
                         <el-radio v-model="ruleForm.radioVal" :label="1" style="height: 22px; margin-bottom: 8px;">持续时间</el-radio>
                         <el-time-picker
@@ -55,7 +75,11 @@
                             :disabled="ruleForm.radioVal !== 1"/>
                     </el-form-item>
                 </el-col>
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="isMusicPlay && ruleForm.play_model !== 0">
+                <el-col
+                    :xs="props.adaption.xs" :sm="props.adaption.sm"
+                    :md="props.adaption.md" :lg="props.adaption.lg"
+                    :xl="props.adaption.xl" v-if="isMusicPlay && ruleForm.play_model !== 0"
+                >
                     <el-form-item>
                         <el-radio v-model="ruleForm.radioVal" :label="2" style="height: 22px; margin-bottom: 8px;">播放曲目</el-radio>
                         <el-input v-model="ruleForm.play_number" :disabled="ruleForm.radioVal !== 2"/>
@@ -73,7 +97,21 @@
 
 <script lang="ts" setup>
     const props = defineProps({
-        ruleForm: Object
+        selectTaskData: Object,
+        labelPosition: {
+            type: String,
+            default: 'top'
+        },
+        adaption: {
+            type: Object,
+            default: {
+                xs: 12,
+                sm: 8,
+                md: 8,
+                lg: 8,
+                xl: 6
+            }
+        }
     })
     const emit = defineEmits([
         'requestSoundSource' // 更新传递已选择的快捷音源，用于父组件进行数据交互
@@ -105,6 +143,13 @@
     }) //选中的快捷音源
     const isMusicPlay = computed(()=> {
         return seleQuickMusic.value.type === 1
+    })
+    watch(()=> props.selectTaskData, (newVal: any)=> {
+        console.log(newVal)
+        Object.assign(ruleForm, newVal.sound_source, {
+            id: newVal.sound_source
+        })
+        seleQuickMusic.value = newVal.fast_sound
     })
     watch(seleQuickMusic, (newVal)=> {
         ruleForm.id = newVal.id

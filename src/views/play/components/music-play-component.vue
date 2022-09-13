@@ -11,7 +11,7 @@
                 <el-table
                     :data="tableData"
                     style="width: 100%"
-                    height="100%"
+                    height="250"
                     ref="multipleTableRef"
                     @selection-change="handleSelectionChange"
                 >
@@ -98,6 +98,7 @@
     })
 
     watch(tableData, (newVal)=> {
+        console.log(newVal)
         duration.value = 0
         newVal?.forEach((item: any)=> {
             duration.value += Number(item.time)
@@ -116,7 +117,6 @@
                 life_time: ruleForm.play_model === 0 ? formatSecondNo(duration.value) : ruleForm.life_time,
             }
         }
-        console.log(data)
         emit('requestDispose', data)
     })
 

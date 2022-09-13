@@ -189,11 +189,10 @@ const handleClickCloSelectedSesearch = () => {
 const setCurrentTabSelectStatus = () => {
     if (!parentData.responseConfigure) {
         form.selectedConfigureData = form.allConfigureData?.[0];
-        console.log(form.allConfigureData, form.selectedConfigureData)
+        emit("requestConfigure", form.selectedConfigureData);
         return;
     }
     form.selectedConfigureData = parentData.responseConfigure;
-    console.log(form.selectedConfigureData)
 };
 // 获取快捷终端
 const getFastTerminals = (current: number, page: number) => {

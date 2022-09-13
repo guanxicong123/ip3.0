@@ -202,6 +202,9 @@ const setCurrentTabSelectStatus = () => {
         return;
     }
     form.selectedConfigureData = parentData.responseConfigure;
+    form.selectedConfigureData.all_data =
+        form.selectedConfigureData.type != 2 && form.selectedConfigureData.type != 3 
+        ? [...form.selectedConfigureData.medias, ...form.selectedConfigureData.medias_groups] : []
 };
 const getSoundSource = () => {
     return new Promise<void>((resolve, reject)=> {

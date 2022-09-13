@@ -42,9 +42,9 @@ declare module '@vue/runtime-core' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTimePicker: typeof import('element-plus/es')['ElTimePicker']
+    ElTree: typeof import('element-plus/es')['ElTree']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     Header: typeof import('./components/header.vue')['default']
-    InfiniteScroll: typeof import('element-plus/es')['ElInfiniteScroll']
     Menu: typeof import('./components/menu.vue')['default']
     QuickMusicDialog: typeof import('./components/quick-music-dialog.vue')['default']
     QuickTerminalDialog: typeof import('./components/quick-terminal-dialog.vue')['default']
@@ -53,6 +53,7 @@ declare module '@vue/runtime-core' {
     RouterView: typeof import('vue-router')['RouterView']
     Select_media_group: typeof import('./components/select_media_group.vue')['default']
     Select_shortcut_sound_source: typeof import('./components/select_shortcut_sound_source.vue')['default']
+    Select_shortcut_terminal_radio: typeof import('./components/select_shortcut_terminal_radio.vue')['default']
     Select_sound_source_collection_radio: typeof import('./components/select_sound_source_collection_radio.vue')['default']
     TerminalsSelectComponents: typeof import('./components/terminals-select-components.vue')['default']
   }

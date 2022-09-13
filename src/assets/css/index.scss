@@ -193,9 +193,9 @@
       tr:nth-of-type(odd) {
         background: $c-fff;
       }
-      tr:nth-of-type(even) {
-        background: #f6faff;
-      }
+      // tr:nth-of-type(even) {
+      //   background: #f6faff;
+      // }
     }
     .el-table__empty-block {
       display: flex;

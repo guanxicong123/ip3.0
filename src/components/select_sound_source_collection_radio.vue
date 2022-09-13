@@ -141,7 +141,7 @@ let config = reactive<any>({
         // 要显示的列(声卡） column列名 text列的别名 style 列的样式
         {
             column: "key",
-            text: "No.",
+            text: "序号",
             style: { width: "15%" },
         },
         {
@@ -172,15 +172,11 @@ let config = reactive<any>({
     searchColumnIP: "ip_address", // 搜索的列名
 });
 // 处理当前已选择的类型
-const handleSelectedTaskType = () => {
-    
-}
-// 处理当前点击选择声卡
 const handleCurrentClickGroups = (item: { id: number; }) => {
     form.currentGroupsID = item.id
     emit("requestType", item.id);
 }
-// 处理已选择的采集终端
+// 处理已选择的采集终端/声卡
 const handleSelectedSoundSource = (item: any) => {
     form.selectedSoundSourceData = item;
     emit("requestSoundSource", item);

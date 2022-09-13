@@ -25,7 +25,6 @@ const useTerminalStore = defineStore({
         search_value: '',
         // 是否过滤终端状态
         filter_status: true
-        
     }),
     actions: {
         // 获取终端信息

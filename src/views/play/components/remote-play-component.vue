@@ -96,17 +96,11 @@
         
     // 选择的媒体文件
     const requestMedia = (data: any) => {
-        let ids = data.map((item:any) => {
-            return item.medias_id
-        })
-        emit('update:medias', ids)
+        emit('update:medias', data)
     }
     // 选择的媒体文件夹
     const requestMediaGroups = (data: any) => {
-        let ids = data.map((item:any) => {
-            return item.medias_groups_id
-        })
-        emit('update:medias_groups', ids)
+        emit('update:medias_groups', data)
     }
     const totalSecond = (length: number) => {
         duration.value = length
