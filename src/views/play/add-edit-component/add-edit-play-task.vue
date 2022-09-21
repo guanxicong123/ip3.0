@@ -282,7 +282,8 @@
 
         let data = Object.assign(ruleForm, {
             fast_terminals_id: !executionregiontype ? '' : fast_terminals_id.value,
-            terminals: executionregiontype ?  terminals.value : []
+            terminals: executionregiontype ?  terminals.value : [],
+            terminals_groups: executionregiontype ?  terminals_groups.value : []
         })
 
         if (ruleForm.type === 10) {

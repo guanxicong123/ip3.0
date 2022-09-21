@@ -616,7 +616,6 @@ const getMediasGroupAll = () => {
             check: true
         }
     }).then((result: any)=> {
-        console.log(result)
         form.allGroupsData = result.data
     })
 }

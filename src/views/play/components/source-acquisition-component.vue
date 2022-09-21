@@ -32,17 +32,9 @@
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-show="ruleForm.type === 1 && ruleForm.record">
                     <el-form-item label="录音路径">
                         <div class="recording-evt">
-                            <div @click="folderDialogVisible = true" class="recording-evt-select">浏览</div>
+                            <div @click="handleSelectedfolder" class="recording-evt-select">浏览</div>
                             <p class="recording-evt-path" :title="ruleForm.recordpath">{{ruleForm.recordpath}}</p>
                         </div>
-                        <!-- <el-select v-model="ruleForm.audioQuality">
-                            <el-option
-                                v-for="item in audioQualityOptions"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value"
-                            />
-                        </el-select> -->
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -108,9 +100,13 @@
     watch(ruleForm, ()=> {
         emit('requestDispose', ruleForm)
     })
+
+    // 选择文本路径
+    const handleSelectedfolder = () => {
+        folderDialogVisible.value = true
+    }
     // 选中的采集终端/声卡
     const requestAcquisitionTerminal = (data: any) => {
-        console.log(typeof(data))
         ruleForm.selectVal = data
     }
     // 选中的音源类型
@@ -119,14 +115,11 @@
     }
     const handleSelectedPath = (data: any) => {
         selectPath.value = data
-        console.log(selectPath.value)
     }
     const handleConfirm = () => {
         if (selectPath.value === '') return global.$message.warning('请选择路径')
         ruleForm.recordpath = selectPath.value
         folderDialogVisible.value = false
-        console.log(ruleForm.recordpath)
-
     }
     // mounted 实例挂载完成后被调用
     onMounted(() => {

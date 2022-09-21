@@ -135,6 +135,19 @@ const form = reactive<any>({
     allAcquisitionTerminalData: [], // 所有采集终端数据
     selectedSoundSourceData: {}, // 已选择的音源数据
 });
+
+watch(()=> parentData.responseSoundSource, ()=> {
+    console.log(parentData.responseSoundSource)
+    if (!parentData.responseSoundSource) {
+        return;
+    }
+    const isHasID = Object.prototype.hasOwnProperty.call(
+        parentData.responseSoundSource,
+        "id"
+    );
+    form.currentGroupsID = isHasID ? 2 : 1;
+    form.selectedSoundSourceData = parentData.responseSoundSource;
+})
 // 插件配置
 let config = reactive<any>({
     showSoundCardColumn: [
@@ -202,6 +215,7 @@ const setCurrentTabSelectStatus = () => {
     );
     form.currentGroupsID = isHasID ? 2 : 1;
     form.selectedSoundSourceData = parentData.responseSoundSource;
+    emit("requestSoundSource", form.selectedSoundSourceData);
 };
 // 获取所有终端(采集终端)
 const getTerminalsAll = () => {

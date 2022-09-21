@@ -123,35 +123,9 @@
                 </div>
             </div>
             <div class="right-bottom">
-                <div class="com-index">
-                    <div class="com-head">
-                        <div class="com-head-content">
-                            <div class="com-tabs">
-                                <div
-                                    :class="{'select': activeName === 'configure' }"
-                                    @click="activeName = 'configure'"
-                                >
-                                    播放配置（4）
-                                </div>
-                                <div
-                                    :class="{'select': activeName === 'region' }"
-                                    @click="activeName = 'region'"
-                                >
-                                    播放区域（4）
-                                </div>
-                            </div>
-                            <div class="com-button" @click="handleEditButton">
-                                <i class="iconfont icon-edit1"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="com-main">
-                        <play-config-component
-                            ref="playConfig"
-                            :selectTaskData="selectTaskData">
-                        </play-config-component>
-                    </div>
-                </div>
+                <task-details-config
+                    :selectTaskData="selectTaskData">
+                </task-details-config>
             </div>
         </div>
     </div>
@@ -160,7 +134,7 @@
 <script lang="ts" setup>
 import { ElTable } from "element-plus"
 import { Search } from "@element-plus/icons-vue"
-const playConfigComponent = defineAsyncComponent(() => import("./add-edit-component/play-config-component.vue"))
+const taskDetailsConfig = defineAsyncComponent(() => import("./add-edit-component/task-details-config.vue"))
 const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
 // 路由
 const $useRouter = useRouter();
@@ -223,23 +197,6 @@ const handleEditButton = () => {
 // 获取选中任务详情信息
 const handleSelectionClick = (row: any) => {
     selectTaskData.value = row
-    // if (row.type < 10) {
-    //     global.$http.get('/broadcasting/' + row.id, {
-    //         params: {
-    //             withMedias: true,
-    //             withGroups: true,
-    //             withFastSound: true,
-    //             withFastTerminal: true
-    //         }
-    //     }).then((restlu: any)=> {
-    //         selectTaskData.value = restlu.data
-    //     })
-    // }else {
-    //     global.$http1.get('/task/' + row.id).then((restlu: any)=> {
-    //         selectTaskData.value = restlu.data
-    //     })
-    // }
-    console.log(row)
 }
 // 删除播放任务
 const handleDelete = (row: any) => {
@@ -255,7 +212,11 @@ const handleDelete = (row: any) => {
             }
         })
     }else {
-        global.$http1.delete('/task/' + row.id).then((result: any)=> {
+        global.$http1.delete('/task', {
+            data: {
+                ids: [row.id]
+            }
+        }).then((result: any)=> {
             if (result.result === 200) {
                 Promise.all([
                     getBroadcastingAll(),
@@ -503,31 +464,12 @@ onMounted(() => {
         .right-top,
         .right-bottom {
             height: 50%;
+            overflow: hidden;
         }
 
         .com-breadcrumb {
             .el-input {
                 width: 200px;
-            }
-        }
-        .com-tabs {
-            margin-left: 10px;
-            >div {
-                width: 110px;
-                font-size: 12px;
-                font-family: MicrosoftYaHei;
-                color: #84A2C4;
-                display: inline-block;
-                cursor: pointer;
-                &:last-child {
-                    border-left: 1px solid #C5D6E8;
-                    padding-left: 18px;
-                }
-            }
-            .select {
-                font-size: 14px;
-                font-weight: bold;
-                color: #6F95C1;
             }
         }
 

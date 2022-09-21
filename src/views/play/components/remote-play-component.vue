@@ -1,8 +1,8 @@
 <!-- 
   @Author: yangyq
   @CreateDate: 2022-08-15
-  @FilePath: src\views\play\components\music-play-component.vue
-  @Describe: 音乐播放组件（选择本地音频）
+  @FilePath: src\views\play\components\remote-play-component.vue
+  @Describe: 媒体选择
 -->
 <template>
     <div class="com-remote-play-component">
