@@ -45,6 +45,7 @@ declare module '@vue/runtime-core' {
     ElTree: typeof import('element-plus/es')['ElTree']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     Header: typeof import('./components/header.vue')['default']
+    Loading: typeof import('element-plus/es')['ElLoadingDirective']
     Menu: typeof import('./components/menu.vue')['default']
     QuickMusicDialog: typeof import('./components/quick-music-dialog.vue')['default']
     QuickTerminalDialog: typeof import('./components/quick-terminal-dialog.vue')['default']
