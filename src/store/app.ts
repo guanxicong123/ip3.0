@@ -7,9 +7,10 @@ export interface AppState {
     is_websocekt: boolean;
     is_login: boolean;
     is_login_status: Number;
+    sessionsFilterArray: Array<[]>;
 }
 
-const useAppStore = defineStore({
+const useAppStore: any = defineStore({
     id: "app",
     state: (): AppState => ({
         // language: getLanguage(),
@@ -18,6 +19,7 @@ const useAppStore = defineStore({
         is_websocekt: false, //是否连接
         is_login: false, //是否登录中
         is_login_status: 0,
+        sessionsFilterArray: []
     }),
     actions: {
         setSize(size: string) {

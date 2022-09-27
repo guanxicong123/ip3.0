@@ -11,7 +11,7 @@
             <div class="broadcast-header-function-user">
                 <el-dropdown @command="handleCommandUser">
                     <span class="el-dropdown-link">
-                        admin
+                        {{username}}
                         <el-icon>
                             <ArrowDownBold />
                         </el-icon>
@@ -220,6 +220,7 @@ const $useRouter = useRouter();
 const data = reactive({
     isShowMaximize: false,
 });
+const username = localStorage.get('username')
 const name = ref('')
 const dialogUserName = ref(false) //修改用户弹框
 const dialogUserPass = ref(false) //修改密码弹框

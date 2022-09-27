@@ -17,7 +17,9 @@
                     <el-button :icon="Search"></el-button>
                     <el-button>重置</el-button>
                 </div>
-                <div class="com-button"></div>
+                <div class="com-button">
+                    <span>监听音响</span>
+                </div>
             </div>
         </div>
         <div class="com-main com-m-bg">
@@ -25,13 +27,31 @@
                 <el-table ref="multipleTableRef" :data="form.data" border style="width: 100%" height="100%"
                     @selection-change="handleSelectionChange"
                     :default-sort="{ prop: 'TaskBeginTime', order: 'descending' }">
-                    <el-table-column type="index" label="No." show-overflow-tooltip width="50" :index="typeIndex" />
+                    <el-table-column type="index" label="序号" show-overflow-tooltip width="60" :index="typeIndex" />
                     <el-table-column prop="TaskName" label="任务名称" show-overflow-tooltip />
                     <el-table-column prop="TaskType" label="会话类型" />
                     <el-table-column prop="TaskIniator" label="发起方" />
                     <el-table-column prop="EndpointIpListArray" label="响应方">
                         <template #default="scope">
-                            {{ scope.row.EndpointIpListArray }}
+                            <!-- {{ scope.row.EndpointIpListArray }} -->
+                            <el-dropdown v-if="scope.row.EndpointIpListArray.length" placement="bottom-start">
+                                <span class="el-dropdown-link">
+                                    <i class="el-icon-arrow-down el-icon--right"></i>
+                                    {{scope.row.EndpointIpListArray[0].EndPointPrimaryKey}}
+                                </span>
+                                <el-dropdown-menu class="EndpointIpListArray"  slot="dropdown">
+                                    <template
+                                        v-for="item in scope.row.EndpointIpListArray"
+                                    >
+                                        <el-dropdown-item>
+                                            {{item.EndPointPrimaryKey}}
+                                        </el-dropdown-item>
+                                    </template>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                            <span v-else>
+                                {{ scope.row.EndpointIpListArray }}
+                            </span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="TaskVolume" label="任务音量" />
@@ -44,16 +64,16 @@
                                     <i class="iconfont icon-end" title="结束任务"></i>
                                 </template>
                             </el-button>
-                            <el-button link type="primary">
+                            <el-button link type="primary" @click="setMonitorTerminal">
                                 <template #icon>
                                     <i class="iconfont icon-headset" title="点击监听"></i>
                                 </template>
                             </el-button>
                             <!-- <el-button link type="danger">
-                <template #icon>
-                  <i class="iconfont icon-headphones-disabled" title="取消监听"></i>
-                </template>
-              </el-button> -->
+                                <template #icon>
+                                <i class="iconfont icon-headphones-disabled" title="取消监听"></i>
+                                </template>
+                            </el-button> -->
                         </template>
                     </el-table-column>
                 </el-table>
@@ -76,6 +96,10 @@ interface User {
     name: string;
     address: string;
 }
+
+const store = useAppStore();
+const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
+
 const form = reactive({
     search: "",
     selectType: 0,
@@ -84,6 +108,9 @@ const form = reactive({
     pageSize: 20,
     total: 0,
 });
+const loading = ref(false)
+const monitorTerminal: any = ref({})
+const tableDataAll = ref([]) //过滤后的数据
 const sessionOptions = [
     { value: 0, label: "全部类型" },
     { value: 21, label: "火警" },
@@ -106,6 +133,98 @@ const sessionOptions = [
 ];
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
+
+const total = computed(()=> {
+    return store.sessionsFilterArray.length
+})
+const sessions = computed(()=> {
+    return store.sessionsFilterArray
+})
+
+watch(() => sessions.value, ()=> {
+    tableDataAll.value = filterData()
+    form.data = tableDataAll.value.slice(
+        form.pageSize * (form.currentPage-1),
+        form.pageSize * form.currentPage
+    )
+})
+// 搜索名称
+const searchName = () => {
+    form.currentPage = 1
+    tableDataAll.value = filterData()
+    form.data = tableDataAll.value.slice(0,  Number(sessionStorage.getItem('ibPageSize')))
+}
+// 重置搜索
+const resetSearch = () => {
+    form.search = ''
+    form.selectType = 0
+    form.currentPage = 1
+    tableDataAll.value = sessions.value
+    form.data = tableDataAll.value.slice(0, Number(sessionStorage.getItem('ibPageSize')))
+}
+// 获取触发选项
+const getTriggerOptions = () => {
+    form.currentPage = 1
+    tableDataAll.value = filterData()
+    form.data = tableDataAll.value.slice(0,  Number(sessionStorage.getItem('ibPageSize')))
+}
+// 开启监听
+const setMonitorTerminal = (row: { TaskID: any; }) => {
+    // if (loading.value)return
+    // loading.value = true
+
+    // let terminal = store.terminals.terminalsObjects[monitorTerminal.EndpointID]
+    // if (terminal && terminal.Status !== 1) {
+    //     loading.value = false
+    //     return global.$message.warning()
+    // }
+
+    // if (monitorTerminal.EndpointID) {
+    //     let data = global.$socket.baseParams
+    //     data.actioncode = global.AppConfig.webSocketIdMap.requestSetSessionMonitorTerminal
+    //     data.data =  {
+    //         ReceiverEndPointID: monitorTerminal.EndpointID,
+    //         TaskID : '',
+    //         MonitorTaskID : row.TaskID,
+    //     }
+
+    //     let i = setTimeout(()=>{
+    //         loading.value = false
+    //     }, 5000)
+
+
+    //     global.$socket.send(data, ()=>{
+    //         global.$message.info()
+    //     }).onmessage = (msg: any)=>{
+    //         if (msg.actioncode === AppConfig.webSocketIdMap.responseMsg
+    //             && msg.data !== null
+    //             && msg.data.EventID === AppConfig.webSocketIdMap.responseTerminals) {
+    //             clearTimeout(i)
+    //             loading.value = false
+    //         }
+    //     }
+    // } else {
+    //     loading.value = false
+    //     global.$message.warning()
+    // }
+}
+const filterData = () => {
+    let data = sessions.value.filter((item: any)=> {
+        if (form.selectType === 0 && form.search !== '') {
+            return (item.TaskName.toLowerCase().indexOf(form.search.toLowerCase()) !== -1
+            || item.UserName.toLowerCase().indexOf(form.search.toLowerCase()) !== -1)
+        }else if (form.selectType !== 0 && form.search !== '') {
+            return form.selectType === item.TaskType && 
+            (item.TaskName.toLowerCase().indexOf(form.search.toLowerCase()) !== -1
+            || item.UserName.toLowerCase().indexOf(form.search.toLowerCase()) !== -1)
+        }else if (form.selectType !== 0 && form.search === '') {
+            return form.selectType === item.TaskType
+        } else {
+            return item
+        }
+    })
+    return data
+}
 // 当前已选择表格数据
 const handleSelectionChange = (val: User[]) => {
     multipleSelection.value = val;
@@ -118,26 +237,32 @@ const typeIndex = (index: number) => {
 const handleSizeChange = (val: number) => {
     form.pageSize = val;
     form.currentPage = 1;
+    form.data = tableDataAll.value.slice((form.currentPage - 1) * form.pageSize,  form.currentPage * form.pageSize)
 };
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
     form.currentPage = val;
+    form.data = tableDataAll.value.slice((form.currentPage - 1) * form.pageSize,  form.currentPage * form.pageSize)
 };
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
     form.data = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 80; i++) {
         form.data.push({
             TaskVolume: i,
             TaskType: i,
-            TaskName: "Tom",
-            TaskIniator: "Grove St",
+            TaskName: "定时任务" + i,
+            TaskIniator: "Grove St" + i,
+            EndpointIpListArray: []
         });
+    }
+    if (sessions.value.length > 0) {
+        tableDataAll.value = sessions.value
+        form.data = tableDataAll.value.slice(0,  Number(sessionStorage.getItem('ibPageSize')))
     }
 });
 </script>
 
 <style lang="scss" scoped>
-
 </style>

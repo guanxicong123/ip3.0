@@ -13,7 +13,7 @@
                         :class="{'select': activeName === 'configure' }"
                         @click="activeName = 'configure'"
                     >
-                        播放配置（4）
+                        播放配置
                     </div>
                     <div
                         :class="{'select': activeName === 'region' }"
@@ -28,7 +28,7 @@
                 </div>
             </div>
         </div>
-        <div class="com-main">
+        <div class="com-main" v-if="isConfigure">
             <sound-source-component
                 v-if="ruleForm.type === 4"
                 v-model:ruleForm="ruleForm"
@@ -133,6 +133,7 @@
             </template>
         </el-upload>
         <select-media-dialog
+            v-if="mediaDialogVisible"
             v-model:dialogVisible="mediaDialogVisible"
             :responseMedia="responseMedia"
             :responseeMediaGroups="responseeMediaGroups"
@@ -174,6 +175,9 @@ const taskDataDetailed: any = ref({}) //任务详情数据
 const mediaDialogVisible = ref(false) //选择媒体对话框
 const acquisitionTerminalMap = ref(new Map()) //采集终端
 
+const isConfigure = computed(()=> {
+    return activeName.value === 'configure'
+})
 watch(()=> props.selectTaskData, (newVal: any)=> {
     handleSelectionData(newVal)
 }, {

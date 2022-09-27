@@ -239,7 +239,7 @@ const getBroadcastingAll = () => {
         })
     })
 }
-// 获取所有任务
+// 获取所有任务(本地)
 const getTaskAll = () => {
     return new Promise((resolve, reject) => {
         global.$http1.get('/task', {
@@ -248,7 +248,11 @@ const getTaskAll = () => {
                 serverIP: localStorage.get("serverIP")
             }
         }).then((restlu: any)=> {
-            resolve(restlu.data)
+            if (Array.isArray(restlu.data)) {
+                resolve(restlu.data)
+            }else {
+                resolve([])
+            }
         })
     })
 }
@@ -272,6 +276,7 @@ onMounted(() => {
         getBroadcastingAll(),
         getTaskAll()
     ]).then((data: any) => {
+        console.log(data)
         form.data = [...data[0], ...data[1]]
         handleSelectionClick(form.data[0])
         multipleTableRef.value!.setCurrentRow(form.data[0])

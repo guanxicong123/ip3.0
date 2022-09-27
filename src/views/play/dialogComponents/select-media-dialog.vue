@@ -61,7 +61,6 @@ const handleSubmit = () => {
 }
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-    console.log(data)
 })
 
 </script>

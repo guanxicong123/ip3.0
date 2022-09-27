@@ -594,13 +594,12 @@ const formatSecondNo = (seconds: any) => {
     let sec = seconds >= 10 ? Math.trunc(seconds) : '0' +  Math.trunc(seconds);
     return  hour  + ':' + min + ':' +  sec;
 }
-const getMediasAll = () => {
+const handleGetAllMeida = () => {
     global.$http.get('/medias/all', {
         params: {
             check: true
         }
     }).then((result: any)=> {
-        console.log(result)
         form.allMediaData = result.data.map((item: any)=> {
             item.isShowAmplifier = false
             item.checkAll_amplifier = false
@@ -608,26 +607,90 @@ const getMediasAll = () => {
             item.amplifier =  []
             return item
         })
+        handleEditTerminalsData()
     })
 }
-const getMediasGroupAll = () => {
+const handleGetAllGroups = () => {
     global.$http.get('/medias-groups/all', {
         params: {
             check: true
         }
     }).then((result: any)=> {
         form.allGroupsData = result.data
+        handleEditGroupsData()
     })
 }
+// 设置编辑界面传递回来的ids
+const setEditDataIDS = (data: any[]) => {
+    let ids = [];
+    if (data?.length > 0) {
+        for (let index = 0; index < data.length; index++) {
+            const item = data[index];
+            ids.push(item.id);
+        }
+    }
+    return ids;
+};
+// 处理编辑界面传递回来的已选择媒体数据
+const handleEditTerminalsData = () => {
+    form.selectedMediaID = setEditDataIDS(parentData.responseMedia);
+    console.log(form.allMediaData)
+    let allData = [];
+    let selectedData = [];
+    for (let index = 0; index < form.allMediaData.length; index++) {
+        const item = form.allMediaData[index];
+        // 根据编辑界面返回的媒体ids，直接做对应处理
+        if (form.selectedMediaID.includes(item.id)) {
+            selectedData.push(item);
+        } else {
+            allData.push(item);
+        }
+    }
+    form.allMediaData = allData;
+    form.selectedMediaData = selectedData;
+    handleUpdateSelectedMedia();
+};
+// 处理编辑界面传递回来的已选择分组数据
+const handleEditGroupsData = () => {
+    form.selectedGroupsID = setEditDataIDS(parentData.responseGroups);
+    let allData = [];
+    let selectedData = [];
+    for (let index = 0; index < form.allGroupsData.length; index++) {
+        const item = form.allGroupsData[index];
+        // 根据编辑界面返回的分组ids，直接做对应处理
+        if (form.selectedGroupsID.includes(item.id)) {
+        selectedData.push(item);
+        } else {
+        allData.push(item);
+        }
+    }
+    form.allGroupsData = allData;
+    form.selectedGroupsData = selectedData;
+    handleUpdateSelectedGroups();
+};
+// 监听变化
+watch(() => parentData, (newData) => {
+        if (config.isSelectMedia && newData.responseMedia.length > 0) {
+            handleEditTerminalsData();
+        }
+        if (config.isSelectGroups && newData.responseGroups.length > 0) {
+            handleEditGroupsData();
+        }
+    },
+    {
+        // 设置首次进入执行方法 immediate
+        // immediate: true,
+        deep: true,
+    }
+);
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-    getMediasAll()
-    getMediasGroupAll()
     config = Object.assign(
         config,
         parentData.myConfig ? parentData.myConfig : {}
     );
-    setCurrentTabSelectStatus();
+    config.isSelectMedia && handleGetAllMeida();
+    config.isSelectGroups && handleGetAllGroups();
 });
 </script>
 
