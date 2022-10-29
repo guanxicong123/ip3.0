@@ -7,6 +7,7 @@
 <template>
     <div class="com-source-acquisition-component">
         <select-sound-source-collection-radio
+            :responseSoundSource="responseSoundSource"
             @requestSoundSource="requestAcquisitionTerminal"
             @requestType="requestType">
         </select-sound-source-collection-radio>
@@ -74,14 +75,20 @@
 
     const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
 
-    const props = defineProps({
-        fileList: Array
+    const props: any = defineProps({
+        fileList: Array,
+        selectTaskData: Object
     })
     const emit = defineEmits([
         'update:musicSelect',
         'requestDispose'
     ])
 
+    watch(()=> props.selectTaskData, (newVal)=> {
+        console.log(newVal)
+    })
+
+    const responseSoundSource: any = ref({})
     const folderDialogVisible = ref(false)
     const ruleForm = reactive({
         type: 1, //1:声卡、2：采集终端
@@ -121,8 +128,34 @@
         ruleForm.recordpath = selectPath.value
         folderDialogVisible.value = false
     }
+    // 获取所有终端(采集终端)
+    const getTerminalsAll = () => {
+        global.$http.get('/terminals/all', {
+            params: {
+                terminals_type: 3
+            }
+        }).then((result: { result: number; data: any[]; }) => {
+            if (result.result === 200) {
+                let data = result.data.filter((item: any)=> {
+                    return item.id === props.selectTaskData.content.terminalID
+                })
+                if (data.length > 0) {
+                    responseSoundSource.value = data[0]
+                }
+                console.log(data)
+            }
+        })
+    }
     // mounted 实例挂载完成后被调用
     onMounted(() => {
+        console.log(props.selectTaskData)
+        if (props.selectTaskData.hasOwnProperty('type')) {
+            ruleForm.type = props.selectTaskData.type === 12 ? 1 : 2
+            ruleForm.audioQuality = props.selectTaskData.content.audioQuality
+            if (props.selectTaskData.content.hasOwnProperty('terminalID')) {
+                getTerminalsAll()
+            }
+        }
     })
 
 </script>

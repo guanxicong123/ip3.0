@@ -230,6 +230,9 @@
     onMounted(() => {
         getTtsEngine()
         getLedDisplay()
+        if (props.selectTaskData) {
+            Object.assign(ruleForm, props.selectTaskData.content)
+        }
         for (let i = 1; i < 9; i++) {
             playSpeedOption.value.push(i);
         }

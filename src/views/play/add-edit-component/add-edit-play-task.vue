@@ -77,6 +77,7 @@
                         v-if="ruleForm.type === 10"
                         v-model:fileList="ruleForm.content"
                         v-model:musicSelect="musicSelect"
+                        :requestConfig="requestMusicConfig"
                         @requestDispose="requestDispose">
                     </music-play-component>
                     <remote-play-component
@@ -89,11 +90,13 @@
                     </remote-play-component>
                     <text-play-component
                         v-if="ruleForm.type === 11"
-                        v-model:tsctFormData="tsctFormData">
+                        v-model:tsctFormData="tsctFormData"
+                        :selectTaskData="requestTaskConfig">
                     </text-play-component>
                     <source-acquisition-component
                         v-if="ruleForm.type === 12"
-                        @requestDispose="requestSourceAcquisition">
+                        @requestDispose="requestSourceAcquisition"
+                        :selectTaskData="requestTaskConfig">
                     </source-acquisition-component>
                 </div>
             </div>
@@ -146,10 +149,12 @@
     import textPlayComponent from '../components/text-play-component.vue'
     import sourceAcquisitionComponent from '../components/source-acquisition-component.vue'
     import quickTerminalDialog from '@/components/quick-terminal-dialog.vue'
+import { reject } from 'lodash'
     
 
     const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
     const $useRouter = useRouter();
+    const $useRoute: any = useRoute();
 
     const uploadRef = ref<UploadInstance>()
     const fileList = ref<UploadUserFile[]>()
@@ -180,7 +185,7 @@
         ttsspeed: 5,
         txtpath: "",
     }) //文本播放表单数据
-    const quickTerminaName = ref('')
+    const quickTerminaName = ref('请选择快捷终端')
     const soundSourceForm = ref({}) //快捷音源表单数据
     const musicPlayForm = ref({}) //音乐播放表单数据
     const remotePlayForm = ref({}) //远程播放表单数据
@@ -189,9 +194,9 @@
     const responseGroups = ref([])  //已选择的终端数组
     const responseMedia = ref([]) //已选择的媒体文件
     const responseeMediaGroups = ref([]) //已选择的媒体媒体文件夹
+    const requestMusicConfig = ref({}) //音乐播放配置
+    const requestTaskConfig = ref({}) //文本播放配置
     const dialogVisible = ref(false)
-    // 4 快捷音源
-    // 1 远程播放
     const typeOptions = [
         { label: '快捷音源', value: 4 },
         { label: '音乐播放', value: 10 },
@@ -216,7 +221,9 @@
         let dataPatch: any[] = musicSelect.value.map((item: any)=> {
             return item.path
         })
-        console.log(dataPatch, fileList.value)
+        ruleForm.content = ruleForm.content.filter((item: any) => {
+            return dataPatch.includes(item.path) === false
+        })
         fileList.value = fileList.value?.filter((item: any)=> {
             return dataPatch.includes(item.raw.path) === false
         })
@@ -263,15 +270,11 @@
     }
     // 选择的终端
     const requestTerminals = (data: any) => {
-        terminals.value = data.map((item: { terminals_id: Number })=> {
-            return item.terminals_id
-        })
+        terminals.value = data
     }
     // 选择的终端分组
     const requestGroups = (data: any) => {
-        terminals_groups.value = data.map((item: { terminals_groups_id: Number })=> {
-            return item.terminals_groups_id
-        })
+        terminals_groups.value = data
     }
     // 提交任务
     const submitTask = () => {
@@ -345,14 +348,26 @@
         if (!tsctFormData.value.is_txt && tsctFormData.value.ttscontent === '')
             return global.$message.warning('请输入文本内容')
             
-        global.$http1.post('/task', Object.assign(data, {
-            content: tsctFormData.value
-        })).then((result: any) => {
-            if (result.result === 200) {
-                $useRouter.push('/play')
-            }
-            console.log(result)
-        })
+        if ($useRoute.query.id && $useRoute.query.id !== '0') {
+            global.$http1.put('/task', Object.assign(data, {
+                content: tsctFormData.value,
+                id: Number($useRoute.query.id)
+            })).then((result: any) => {
+                if (result.result === 200) {
+                    $useRouter.push('/play')
+                }
+                console.log(result)
+            })
+        }else {
+            global.$http1.post('/task', Object.assign(data, {
+                content: tsctFormData.value
+            })).then((result: any) => {
+                if (result.result === 200) {
+                    $useRouter.push('/play')
+                }
+                console.log(result)
+            })
+        }
     }
     // 音源采集
     const createSoundSourceCollection = (data: any) => {
@@ -387,8 +402,109 @@
             console.log(result)
         })
     }
+    // 请求本地任务
+    const getLocalTask = (row: any) => {
+        global.$http1.get('/task/' + row).then((result: any)=> {
+            console.log(result)
+            requestTaskConfig.value = result.data
+            ruleForm.type = result.data.type
+            ruleForm.name = result.data.name
+            ruleForm.volume = result.data.volume
+            ruleForm.priority = result.data.priority
+            if (ruleForm.type === 13) {
+                ruleForm.type = 12
+            }
+            if (ruleForm.type === 10) {
+                ruleForm.content = result.data.content
+                requestMusicConfig.value = {
+                    life_time: result.data.life_time,
+                    play_model: result.data.play_model,
+                }
+            }
+            if (result.data.fast_terminals_id === 0) {
+                executionregiontype.value = 1
+            }
+            if (result.data.terminals) {
+                getTerminalsAll().then((data: any) => {
+                    responseTerminals.value = data.filter((item: { id: Number })=> {
+                        return result.data.terminals.includes(item.id)
+                    })
+                })
+            }
+            if (result.data.terminals_groups) {
+                getGroupsAll().then((data: any) => {
+                    responseGroups.value = data.filter((item: { id: Number })=> {
+                        return result.data.terminals_groups.includes(item.id)
+                    })
+                })
+            }
+        })
+    }
+    // 请求服务器任务
+    const getServeTask = (row: any) => {
+        global.$http.get('/broadcasting/' + row, {
+            params: {
+                withMedias: true,
+                withGroups: true,
+                withFastSound: true,
+                withTerminals: true,
+                withFastTerminal: true
+            }
+        }).then((result: any)=> {
+            ruleForm.type = result.data.type
+            ruleForm.name = result.data.name
+            ruleForm.volume = result.data.volume
+            ruleForm.priority = result.data.priority
+            console.log(result)
+            if (result.data.fast_terminals_id === 0) {
+                executionregiontype.value = 1
+            }else {
+                quickTerminaName.value = result.data.fast_terminals.name
+            }
+            if (ruleForm.type === 1) {
+                responseMedia.value = result.data.medias
+                responseeMediaGroups.value = result.data.medias_groups
+            }
+        })
+    }
+    // 获取所有分组
+    const getGroupsAll = () => {
+        return new Promise((resolve, reject)=> {
+            global.$http.get('terminals-groups/all', {
+                params: {
+                    withTerminals: true
+                }
+            }).then((result: { result: number; data: any[]; }) => {
+                if (result.result === 200) {
+                    resolve(result.data)
+                }
+            })
+        })
+    }
+    // 获取所有终端
+    const getTerminalsAll = () => {
+        return new Promise((resolve, reject)=> {
+            global.$http.get('/terminals/all', {
+                params: {
+                    withGroups: true
+                }
+            }).then((result: { result: number; data: any[]; }) => {
+                if (result.result === 200) {
+                    resolve(result.data)
+                }
+            })
+        })
+    }
     // mounted 实例挂载完成后被调用
     onMounted(() => {
+        if ($useRoute.query.id && $useRoute.query.id !== '0') {
+            console.log('编辑任务')
+            if ($useRoute.query.type < 10) {
+                getServeTask($useRoute.query.id)
+            }else {
+                getLocalTask($useRoute.query.id)
+            }
+        }
     })
 
 </script>

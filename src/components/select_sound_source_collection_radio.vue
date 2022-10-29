@@ -187,10 +187,12 @@ let config = reactive<any>({
 // 处理当前已选择的类型
 const handleCurrentClickGroups = (item: { id: number; }) => {
     form.currentGroupsID = item.id
+    console.log(item.id)
     emit("requestType", item.id);
 }
 // 处理已选择的采集终端/声卡
 const handleSelectedSoundSource = (item: any) => {
+    console.log(item)
     form.selectedSoundSourceData = item;
     emit("requestSoundSource", item);
 };

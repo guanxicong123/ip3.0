@@ -31,16 +31,18 @@ const useTerminalStore = defineStore({
         getTerminalData(data: any) {
             data.EndPointsArray.forEach((item: any) => {
                 item.status = item.Status
-                item.name = item.EndpointName
+                item.name = item.EndPointName
                 item.volume = item.Volume
-                item.ip_address = item.EndpointIP
+                item.ip_address = item.EndPointIP
                 item.code = item.CallCode
-                item.type = item.EndpointType
+                item.type = item.EndPointType
                 item.task = {
                     name: item.TaskName,
                     type: item.TaskType
                 }
-                let index = this.terminal_data.findIndex((idd: any) => idd.EndpointID === item.EndpointID)
+                let index = this.terminal_data.findIndex((idd: any) => {
+                    return idd.EndPointID === item.EndPointID
+                })
                 if (index < 0) {
                     this.terminal_data.push(item)
                 } else {

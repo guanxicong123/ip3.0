@@ -42,23 +42,23 @@
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.play_model === 0">
                     <el-form-item label="持续时间">
-                        {{ formatSecondNo(duration) }}
+                        {{ duration }}
                     </el-form-item>
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.play_model !== 0">
                     <el-form-item>
-                        <el-radio v-model="ruleForm.radioVal" :label="1" style="height: 22px; margin-bottom: 8px;">持续时间</el-radio>
+                        <el-radio v-model="ruleForm.type" :label="1" style="height: 22px; margin-bottom: 8px;">持续时间</el-radio>
                         <el-time-picker
                             v-model="ruleForm.life_time"
                             format="HH:mm:ss"
                             value-format="HH:mm:ss"
-                            :disabled="ruleForm.radioVal !== 1"/>
+                            :disabled="ruleForm.type !== 1"/>
                     </el-form-item>
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.play_model !== 0">
                     <el-form-item>
-                        <el-radio v-model="ruleForm.radioVal" :label="2" style="height: 22px; margin-bottom: 8px;">播放曲目</el-radio>
-                        <el-input v-model="ruleForm.play_number" :disabled="ruleForm.radioVal !== 2"/>
+                        <el-radio v-model="ruleForm.type" :label="2" style="height: 22px; margin-bottom: 8px;">播放曲目</el-radio>
+                        <el-input v-model="ruleForm.play_number" :disabled="ruleForm.type !== 2"/>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -71,23 +71,21 @@
 
     const multipleTableRef = ref<InstanceType<typeof ElTable>>();
     const props = defineProps({
-        fileList: Array
+        fileList: Array,
+        requestConfig: Object
     })
     const emit = defineEmits([
         'update:musicSelect',
-        'requestDispose'
+        'requestDispose',
     ])
     const ruleForm = reactive({
         play_model: 0, //播放模式
         life_time: '00:00:00', //持续时间
         play_number: 1, //播放曲目
-        radioVal: 1,
+        type: 1, //选中类型（次数或时间）
     })
     
-    const data = reactive({
-        tableData: []
-    })
-    const duration = ref(0) //持续时间
+    const duration = ref('') //持续时间
     const playmodelOptions = [
         { label: '列表播放', value: 0 },
         { label: '循环播放', value: 1 },
@@ -98,15 +96,15 @@
     })
 
     watch(tableData, (newVal)=> {
-        console.log(newVal)
-        duration.value = 0
+        let timeDuration = 0
         newVal?.forEach((item: any)=> {
-            duration.value += Number(item.time)
+            timeDuration += Number(item.time)
         })
+        duration.value = formatSecondNo(timeDuration)
     })
     watch([ruleForm, duration], ()=> {
         let data;
-        if (ruleForm.play_model !== 0 && ruleForm.radioVal !== 1) {
+        if (ruleForm.play_model !== 0 && ruleForm.type !== 1) {
             data = {
                 play_model: ruleForm.play_model,
                 play_number: ruleForm.play_number
@@ -114,10 +112,17 @@
         }else {
             data = {
                 play_model: ruleForm.play_model,
-                life_time: ruleForm.play_model === 0 ? formatSecondNo(duration.value) : ruleForm.life_time,
+                life_time: ruleForm.play_model === 0 ? duration.value : ruleForm.life_time,
             }
         }
         emit('requestDispose', data)
+    })
+    watch(()=>props.requestConfig, (newVal)=> {
+        console.log(newVal)
+    })
+
+    watch(()=>ruleForm.life_time, (newVal)=> {
+        console.log(newVal)
     })
 
     const handleSelectionChange = (val: any) => {
@@ -138,26 +143,34 @@
     
     // mounted 实例挂载完成后被调用
     onMounted(() => {
-        let data;
-        if (ruleForm.play_model !== 0 && ruleForm.radioVal !== 1) {
-            data = {
-                play_model: ruleForm.play_model,
-                play_number: ruleForm.play_number
+        console.log(props.requestConfig)
+        if (props.requestConfig) {
+            ruleForm.play_model = props.requestConfig.play_model
+            ruleForm.life_time = props.requestConfig.hasOwnProperty('life_time') ? props.requestConfig.life_time : '00:00:00'
+            ruleForm.play_number = props.requestConfig.hasOwnProperty('play_number') ? props.requestConfig.play_number : 1
+            duration.value = props.requestConfig.hasOwnProperty('life_time') ? props.requestConfig.life_time : '00:00:00'
+            if (ruleForm.play_model > 0) {
+                ruleForm.type = props.requestConfig.hasOwnProperty('life_time') ? 1 : 2
             }
-        }else {
-            data = {
-                play_model: ruleForm.play_model,
-                life_time: ruleForm.play_model === 0 ? formatSecondNo(duration.value) : ruleForm.life_time,
-            }
+            console.log(ruleForm)
         }
-        emit('requestDispose', data)
+        emit('requestDispose', ruleForm)
+        // if (requestMusicConfig)
+        // let data;
+        // if (ruleForm.play_model !== 0 && ruleForm.type !== 1) {
+        //     data = {
+        //         play_model: ruleForm.play_model,
+        //         play_number: ruleForm.play_number
+        //     }
+        // }else {
+        //     data = {
+        //         play_model: ruleForm.play_model,
+        //         life_time: ruleForm.play_model === 0 ? formatSecondNo(duration.value) : ruleForm.life_time,
+        //     }
+        // }
     })
 
 </script>
 
 <style lang="scss" scoped>
-    .com-music-play-component {
-        // max-height: 260px;
-        // overflow: hidden;
-    }
 </style>

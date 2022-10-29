@@ -6,11 +6,18 @@
   "description": "",
   "glyphs": [
     {
-      "icon_id": "30879486",
-      "name": "最小化",
+      "icon_id": "30888911",
+      "name": "最小化1",
       "font_class": "minimize",
-      "unicode": "e601",
-      "unicode_decimal": 58881
+      "unicode": "e64d",
+      "unicode_decimal": 58957
+    },
+    {
+      "icon_id": "30888913",
+      "name": "最小化",
+      "font_class": "minimize1",
+      "unicode": "e670",
+      "unicode_decimal": 58992
     },
     {
       "icon_id": "30876757",

@@ -104,12 +104,12 @@
                                                 <i class="iconfont icon-play" title="播放"></i>
                                             </template>
                                         </el-button>
-                                        <el-button link type="danger">
+                                        <el-button link type="danger" @click.stop="handleEditTask(scope.row)">
                                             <template #icon>
                                                 <i class="iconfont icon-edit" title="编辑"></i>
                                             </template>
                                         </el-button>
-                                        <el-button link type="primary" @click.stop="handleDelete(scope.row)">
+                                        <el-button link type="primary" @click.stop="handleDeleteTask(scope.row)">
                                             <template #icon>
                                                 <i class="iconfont icon-delete" title="删除"></i>
                                             </template>
@@ -198,8 +198,18 @@ const handleEditButton = () => {
 const handleSelectionClick = (row: any) => {
     selectTaskData.value = row
 }
+// 编辑播放任务
+const handleEditTask = (row:any) => {
+    $useRouter.push({
+        path: '/play-task/' + row.id,
+        query: {
+            id: row.id,
+            type: row.type
+        }
+    })
+}
 // 删除播放任务
-const handleDelete = (row: any) => {
+const handleDeleteTask = (row: any) => {
     if (row.type < 10) {
         global.$http.delete('/broadcasting/' + row.id).then((result: any)=> {
             if (result.result === 200) {

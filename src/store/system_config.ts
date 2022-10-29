@@ -124,7 +124,7 @@ const useSystemStore = defineStore({
     actions: {
         // 获取所有的系统配置数据
         getConfigInfo() {
-            axios.get('http://172.16.21.124:9999/api/v1/config', {
+            axios.get('/api/v1/config', {
                 params: {
                     username: localStorage.get("username"),
                     serverip: localStorage.get("serverIp")
@@ -160,7 +160,7 @@ const useSystemStore = defineStore({
 
         // 获取机器码
         getProductKey() {
-            axios.get('http://172.16.21.25:9999/api/v1/register').then((result: any) => {
+            axios.get('http://172.16.21.119:9999/api/v1/register').then((result: any) => {
                 if (result.data.result === 200) {
                     this.opcodes = result.data.data.ProductKey
                     this.opcodes = '14827-67853-39229-50676-09802-52491-53438'

@@ -364,7 +364,6 @@
 
 <script lang="ts" setup>
 import { TabsPaneContext } from "element-plus";
-import { result } from "lodash";
 const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
 // 声明触发事件
 const emit = defineEmits([
@@ -462,6 +461,34 @@ let config = reactive<any>({
     isSelectGroups: true, // 是否可以选择分组
     selectAmplifier: true, // 是否可以选择功率分区
 });
+// 监听变化
+watch(
+    () => [parentData],
+    ([newData]) => {
+        // 开启终端音量
+        // config = Object.assign(
+        //     config,
+        //     newData.openTerminalsVolume ? changeTerminalsVolumeConfig : defaultConfig
+        // );
+        // 开启并修改终端音量
+        // if (parentData.openTerminalsVolume && newData.changeTerminalsVolume) {
+        //     setChangeTerminalsVolume(newData.changeTerminalsVolume);
+        // }
+        console.log(666)
+        if (config.isSelectTerminals && newData.responseTerminals.length > 0) {
+            handleEditTerminalsData();
+        }
+        if (config.isSelectGroups && newData.responseGroups.length > 0) {
+            handleEditGroupsData();
+        }
+    },
+    {
+        // 设置首次进入执行方法 immediate
+        // immediate: true,
+        deep: true,
+    }
+);
+
 // 处理tab点击
 const handleTabClick = (tab: TabsPaneContext) => {
     if (
@@ -731,6 +758,7 @@ const getGroupsAll = () => {
                     terminals: item.terminals
                 }
             })
+            handleEditGroupsData()
         }
     })
 }
@@ -749,9 +777,57 @@ const getTerminalsAll = () => {
                 item.amplifier =  []
                 return item
             })
+            handleEditTerminalsData()
         }
     })
 }
+// 设置编辑界面传递回来的ids
+const setEditDataIDS = (data: any[]) => {
+  let ids = [];
+  if (data?.length > 0) {
+    for (let index = 0; index < data.length; index++) {
+      const item = data[index];
+      ids.push(item.id);
+    }
+  }
+  return ids;
+};
+// 处理编辑界面传递回来的已选择终端数据
+const handleEditTerminalsData = () => {
+    form.selectedTerminalsID = setEditDataIDS(parentData.responseTerminals);
+    let allData = [];
+    let selectedData = [];
+    for (let index = 0; index < form.allTerminalsData.length; index++) {
+        const item = form.allTerminalsData[index];
+        // 根据编辑界面返回的终端ids，直接做对应处理
+        if (form.selectedTerminalsID.includes(item.id)) {
+        selectedData.push(item);
+        } else {
+        allData.push(item);
+        }
+    }
+    form.allTerminalsData = allData;
+    form.selectedTerminalsData = selectedData;
+    handleUpdateSelectedTerminals();
+};
+// 处理编辑界面传递回来的已选择分组数据
+const handleEditGroupsData = () => {
+    form.selectedGroupsID = setEditDataIDS(parentData.responseGroups);
+    let allData = [];
+    let selectedData = [];
+    for (let index = 0; index < form.allGroupsData.length; index++) {
+        const item = form.allGroupsData[index];
+        // 根据编辑界面返回的分组ids，直接做对应处理
+        if (form.selectedGroupsID.includes(item.id)) {
+            selectedData.push(item);
+        } else {
+            allData.push(item);
+        }
+    }
+    form.allGroupsData = allData;
+    form.selectedGroupsData = selectedData;
+    handleUpdateSelectedGroups();
+};
 // mounted 实例挂载完成后被调用
 onMounted(() => {
     getTerminalsAll()

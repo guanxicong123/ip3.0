@@ -33,8 +33,12 @@ const registerWebSocket = async () => {
             if (useAppStore().is_login) {
                 send(loginData)
                 useAppStore().changeLoginStatus(false)
+                requestTaskInfo()
+                requestTerminalInfo()
             }else {
                 initRequest()
+                requestTaskInfo()
+                requestTerminalInfo()
             }
         }
         //WebSocket通知
@@ -78,7 +82,8 @@ const registerWebSocket = async () => {
 const send  = (data: any) => {
     let connected = socket && socket.readyState === 1
     if (connected) {
-        if (data.actioncode !== 'c2ls_user_login') {
+        console.log(data)
+        if (data.actioncode !== 'c2ms_user_login') {
             data['token'] = localStorage.get("userToken")
         }
         socket.send(JSON.stringify(data))
@@ -94,7 +99,7 @@ const reload = () => {
 }
 // 登录协议
 const socketLogin = (data: any) => {
-    sessionStorage.setItem('websocketUrl', 'ws://' + '172.16.21.126' + ':51330/socket')
+    sessionStorage.setItem('websocketUrl', 'ws://' + '172.16.21.119' + ':51330/socket')
     
     let myDate = new Date();
     let a = myDate.getFullYear()
@@ -114,10 +119,22 @@ const initRequest = () => {
     login()
 }
 // 获取所有终端状态
-const requestTaskInfo = () => {
+const requestTerminalInfo = () => {
     let data = {
         company: "BL",
         actioncode: "c2ms_get_server_terminals_status",
+        token: "",
+        data: {},
+        result: 0,
+        return_message: ""
+    }
+    send(data)
+}
+// 获取所有任务信息
+const requestTaskInfo = () => {
+    let data = {
+        company: "BL",
+        actioncode: "c2ms_get_task_status",
         token: "",
         data: {},
         result: 0,
@@ -129,7 +146,7 @@ const requestTaskInfo = () => {
 const login = () => {
     let data = {
         company: "BL",
-        actioncode: "c2ls_user_login",
+        actioncode: "c2ms_user_login",
         token: "",
         data: {
             "UserName": localStorage.get("username"),
@@ -155,9 +172,9 @@ const login = () => {
 };
 const handlerMsg = (msg:any) => {
     let msgMap = new Map([
-        ['terminal_status', () => {
-            useTerminalStore().getTerminalData(msg.data)
-        }],
+        // ['terminal_status', () => {
+        //     useTerminalStore().getTerminalData(msg.data)
+        // }],
         ['refresh_endpoint_status', () => {
             
         }],
@@ -179,12 +196,22 @@ const handlerMsg = (msg:any) => {
 
     }
     switch(msg.actioncode) {
-        case 'ls2c_user_login': //登录返回信息
-            return useAppStore().loginSuccessData(msg.data)
-        case 'ls2c_push_msg': 
+        case 'ms2c_user_login': //登录返回信息
+            return useAppStore().loginSuccessData(msg)
+        case 'ms2c_push_msg': 
             [...msgMap].forEach(([key, value]) => {
                 msg.data.EventID === key ? value.call(msg.data) : ''
             })
+            return
+        case 'ms2c_get_task_status': //返回执行中的任务
+            useAppStore().ROUTER_TASK(msg.data.TaskInfoArray)
+            return
+        case 'task_status': //任务数据推送
+            useAppStore().taskDataPush(msg.data.TaskInfoArray)
+        case 'task_stop': //任务数据推送
+            useAppStore().taskPushStop(msg.data.TaskID)
+        case 'ms2c_get_server_terminals_status': //所有终端状态
+            useTerminalStore().getTerminalData(msg.data)
     }
 }
 

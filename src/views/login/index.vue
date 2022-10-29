@@ -118,97 +118,99 @@
 </template>
 
 <script lang="ts" setup>
-    import { socketLogin, socket } from '@/utils/socket'
+import { socketLogin, socket } from '@/utils/socket'
 import { Http2ServerRequest } from 'http2';
 import { result } from 'lodash';
-    const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
+const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
 
-    const store = useAppStore();
+const store = useAppStore();
 
-    const systemStore = useSystemStore()
+const systemStore = useSystemStore()
 
-    const isWebsocekt = computed(() => {
-        return store.is_websocekt
-    }); //ws连接状态
-    const isLogin = computed(() => {
-        return store.is_login
-    }); //是否登录
+const isWebsocekt = computed(() => {
+    return store.is_websocekt
+}); //ws连接状态
+const isLogin = computed(() => {
+    return store.is_login
+}); //是否登录
 
-    // 表单值
-    const modelRef = reactive({
-        name: "",
-        password: "",
-        server_ip_address: "",
-    });
-    // 记住密码
-    const is_checked = ref(false);
-    // 隐藏
-    const handleMinimize = () => {
-        window.electronAPI.send("minimize");
-    };
-    const register = () => {
-        window.electronAPI.send("register-window");
-    };
-    // 关闭
-    const close = () => {
-        window.electronAPI.send("close");
-    };
-    // 提交
-    const submit = () => {
-        global.$http1.get('/login', {
-            params: {
-                server: modelRef.server_ip_address + ':51330'
-            }
-        }).then((result: any)=> {
-            if (!result) return
-            let data = {
-                company: "BL",
-                actioncode: "c2ls_user_login",
-                token: "",
-                data: {
-                    "UserName": modelRef.name,
-                    "Password": global.$md5.hashStr(modelRef.password),
-                    "Platform": "PC",
-                    "HostIP": modelRef.server_ip_address,
-                    "ForceLogin": false
-                },
-                result: 0,
-                return_message: ""
-            }
-            store.changeLoginStatus(true)
-            socketLogin(data)
-            localStorage.set("serverIP", modelRef.server_ip_address)
-        })
-    };
-
-    // mounted 实例挂载完成后被调用
-    onMounted(() => {
-        if (socket) {
-            socket.close()
+// 表单值
+const modelRef = reactive({
+    name: "",
+    password: "",
+    server_ip_address: "",
+});
+// 记住密码
+const is_checked = ref(false);
+// 隐藏
+const handleMinimize = () => {
+    window.electronAPI.send("minimize");
+};
+const register = () => {
+    window.electronAPI.send("register-window");
+};
+// 关闭
+const close = () => {
+    window.electronAPI.send("close");
+};
+// 提交
+const submit = () => {
+    global.$http1.get('/login', {
+        params: {
+            server: modelRef.server_ip_address + ':51330'
         }
-        window.electronAPI.send("login-window");
-        if (localStorage.get("username")) {
-            modelRef.name = localStorage.get("username")
-            modelRef.server_ip_address = localStorage.get("serverIp")
+    }).then((result: any)=> {
+        localStorage.set("serverIp", modelRef.server_ip_address)
+        // global.$md5.hashStr(modelRef.password)
+        if (!result) return
+        let data = {
+            company: "BL",
+            actioncode: "c2ms_user_login",
+            token: "",
+            data: {
+                "UserName": modelRef.name,
+                "Password": '123456',
+                "Platform": "PC",
+                "HostIP": modelRef.server_ip_address,
+                "ForceLogin": false
+            },
+            result: 0,
+            return_message: ""
         }
-        if (localStorage.get("password")) {
-            modelRef.password = localStorage.get("password")
-            is_checked.value = true
-        }
-        // 获取机器码
-        systemStore.getProductKey()
-    });
-    onBeforeUnmount(()=> {
-        if (isWebsocekt) {
-            localStorage.set("username", modelRef.name)
-            localStorage.set("serverIp", modelRef.server_ip_address)
-        }
-        if (is_checked.value) {
-            localStorage.set("password", modelRef.password)
-        }else {
-            localStorage.remove("password")
-        }
+        store.changeLoginStatus(true)
+        socketLogin(data)
+        localStorage.set("serverIP", modelRef.server_ip_address)
     })
+};
+
+// mounted 实例挂载完成后被调用
+onMounted(() => {
+    if (socket) {
+        socket.close()
+    }
+    window.electronAPI.send("login-window");
+    if (localStorage.get("username")) {
+        modelRef.name = localStorage.get("username")
+        modelRef.server_ip_address = localStorage.get("serverIp")
+    }
+    if (localStorage.get("password")) {
+        modelRef.password = localStorage.get("password")
+        is_checked.value = true
+    }
+    // 获取机器码
+    // systemStore.getProductKey()
+});
+onBeforeUnmount(()=> {
+    if (isWebsocekt) {
+        localStorage.set("username", modelRef.name)
+        localStorage.set("serverIp", modelRef.server_ip_address)
+    }
+    if (is_checked.value) {
+        localStorage.set("password", modelRef.password)
+    }else {
+        localStorage.remove("password")
+    }
+})
 </script>
 
 <style lang="scss">

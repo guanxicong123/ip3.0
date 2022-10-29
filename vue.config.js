@@ -209,7 +209,7 @@ module.exports = defineConfig({
         // https: true,
         proxy: {
             '/api/v29+': {
-                target: 'http://172.16.21.126:81',
+                target: 'http://172.16.21.123:81',
                 changeOrigin: true
             },
             '/api/v1/': {

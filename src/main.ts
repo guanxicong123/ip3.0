@@ -38,11 +38,14 @@ global.$http1 = axios.create({
     },
 })
 //请求拦截器
-global.$http1.interceptors.request.use((config: { headers: { Authorization: string } }) => {
+global.$http1.interceptors.request.use((config: any ) => {
     // 在发送请求之前做些什么
-    const token = localStorage.get('userToken')
-    if (token) {
-        config.headers.Authorization = token
+    console.log(config)
+    if (config.url !== '/login') {
+        const token = localStorage.get('userToken')
+        if (token) {
+            config.headers.Authorization = token
+        }
     }
     return config
 }, (error: any) => {
@@ -78,6 +81,7 @@ global.$http1.interceptors.response.use((response: { data: { result: any; return
 //请求拦截器
 global.$http.interceptors.request.use((config: { headers: { Authorization: string } }) => {
     // 在发送请求之前做些什么
+    console.log(config)
     const token = localStorage.get('userToken')
     if (token) {
         config.headers.Authorization = token

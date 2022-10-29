@@ -11,13 +11,13 @@
                 <div class="com-tabs">
                     <div
                         :class="{'select': activeName === 'configure' }"
-                        @click="activeName = 'configure'"
+                        @click="handleSwitchTabs('configure')"
                     >
-                        播放配置
+                        播放配置（4）
                     </div>
                     <div
                         :class="{'select': activeName === 'region' }"
-                        @click="activeName = 'region'"
+                        @click="handleSwitchTabs('region')"
                     >
                         播放区域（4）
                     </div>
@@ -63,7 +63,6 @@
                 v-model:sourAcquisiFrom="sourAcquisiFrom"
                 :isEdit="editStatus"
                 :selectTaskData="taskDataDetailed"
-
             >
             </acquisition-device-component>
             <div class="com-table" v-if="ruleForm.type === 10">
@@ -117,6 +116,49 @@
                 </el-table>
             </div>
         </div>
+        <div class="com-main" v-else>
+            <div class="com-table" v-if="taskDataDetailed.fast_terminals_id === 0">
+                <el-table :data="taskTerminalAll"  height="100%">
+                    <el-table-column type="index" label="序号" width="80"/>
+                    <el-table-column prop="name" label="名称" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="ip_address" label="IP地址" show-overflow-tooltip>
+                        <template #default="scope">
+                            {{scope.row.hasOwnProperty('ip_address') ? scope.row.ip_address : '-'}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="volume" label="音量" show-overflow-tooltip>
+                        <template #default="scope">
+                            {{scope.row.hasOwnProperty('terminals_id') ? scope.row.volume : '-'}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="type" label="类型" width="100">
+                        <template #default="scope">
+                            {{scope.row.hasOwnProperty('terminals_id') ? scope.row.type : '分组'}}
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <div v-else>
+                <el-form
+                    :model="ruleForm"
+                    :label-position="props.labelPosition"
+                    class="play-task-form-inline com-sound-source-component"
+                >
+                    <el-row :gutter="80">
+                        <el-col>
+                            <el-form-item label="快捷终端">
+                                <div class="fast-sound-source">
+                                    <div class="fast-sound-source-name">
+                                        {{taskDataDetailed.fast_terminal ? taskDataDetailed.fast_terminal.name : '' }}
+                                    </div>
+                                    <span v-if="editStatus" class="iconfont icon-select-file" @click="handleShowDialog"></span>
+                                </div>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+        </div>
         <el-upload
             v-model:file-list="fileList"
             ref="uploadRef"
@@ -139,13 +181,25 @@
             :responseeMediaGroups="responseeMediaGroups"
             @uploadMedia="uploadMedia">
         </select-media-dialog>
+        <quick-terminal-dialog
+            v-model:dialogVisible="terminaDialogVisible"
+            @handleSelectedConfigure="handleSelectedConfigure">
+        </quick-terminal-dialog>
+        <terminals-select-dialog
+            v-if="terminaSelectVisible"
+            v-model:dialogVisible="terminaSelectVisible"
+            :taskDataDetailed="taskDataDetailed"
+            @handleSelectedTerminals="handleSelectedTerminals">
+        </terminals-select-dialog>
     </div>
 </template>
 
 <script lang="ts" setup>
+import quickTerminalDialog from '@/components/quick-terminal-dialog.vue'
 import soundSourceComponent from '../components/sound-source-component.vue'
 import textPlayComponent from '../components/text-play-component.vue'
 import selectMediaDialog from '../dialogComponents/select-media-dialog.vue'
+import terminalsSelectDialog from '../dialogComponents/terminals-select-dialog.vue'
 import { UploadProps } from 'element-plus'
 const acquisitionDeviceComponent = defineAsyncComponent(() => import("../components/acquisition-device-component.vue"))
 
@@ -173,7 +227,9 @@ const sourAcquisiFrom: any = ref({}) //音源采集配置
 const tsctFormData = ref({})
 const taskDataDetailed: any = ref({}) //任务详情数据
 const mediaDialogVisible = ref(false) //选择媒体对话框
-const acquisitionTerminalMap = ref(new Map()) //采集终端
+const taskTerminalAll: any = ref([]) //任务终端
+const terminaDialogVisible = ref(false) //快捷终端弹框
+const terminaSelectVisible = ref(false) //终端选择弹框
 
 const isConfigure = computed(()=> {
     return activeName.value === 'configure'
@@ -206,14 +262,68 @@ watch(fileList, (newVal: any)=> {
     }, 300)
 })
 
+// 切换tabs
+const handleSwitchTabs = (tabsName: string) => {
+    if (editStatus.value) return 
+    activeName.value = tabsName
+}
 // 选择的快捷音源配置
 const requestSoundSource = (data: any) => {
     soundSourceForm.value = data
     ruleForm.fast_sound_id = data.id
     delete soundSourceForm.value.id
 }
+// 选择快捷终端配置
+const handleSelectedConfigure = (data: any) => {
+    taskDataDetailed.value.fast_terminals_id = data.id
+    taskDataDetailed.value.fast_terminal = data
+}
+//  选择的终端/终端分组
+const handleSelectedTerminals = (data: any) => {
+    if (ruleForm.type >= 10) {
+        if (activeName.value === 'region' && taskDataDetailed.value.fast_terminals_id !== 0) {
+            global.$http1.put('/task/terminal/' + props.selectTaskData.id, {
+                terminals: data.terminals,
+                terminals_groups: data.terminals_groups
+            }).then((result: any) => {
+                if (result.result === 200) {
+                    handleSelectionData(props.selectTaskData)
+                }
+            })
+            return
+        }
+    }else {
+        global.$http.put('/broadcasting/' + taskDataDetailed.value.id, {
+            name: taskDataDetailed.value.name,
+            priority: taskDataDetailed.value.priority,
+            volume: taskDataDetailed.value.volume,
+            play_model: taskDataDetailed.value.play_model,
+            type: taskDataDetailed.value.type,
+            fast_sound_id: taskDataDetailed.value.fast_sound_id,
+            fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
+            terminals: data.terminals,
+            terminals_groups: data.terminals_groups,
+            sound_source: taskDataDetailed.value.sound_source,
+            medias: taskDataDetailed.value.medias,
+            medias_groups: taskDataDetailed.value.medias_groups,
+        }).then((result: any) => {
+            if (result.result === 200) {
+                editStatus.value = false
+                handleSelectionData(props.selectTaskData)
+            }
+        })
+    }
+}
 // 触发编辑
 const handleEditButton = () => {
+    if (activeName.value === 'region' && taskDataDetailed.value.fast_terminals_id !== 0) {
+        editStatus.value = true
+        return
+    }
+    if (activeName.value === 'region' && taskDataDetailed.value.fast_terminals_id === 0) {
+        terminaSelectVisible.value = true
+        return
+    }
     if (ruleForm.type === 10) {
         iconAdd.value.click()
     }
@@ -228,6 +338,7 @@ const handleEditButton = () => {
 }
 // 触发保存
 const handleEditSava = () => {
+    console.log(props.selectTaskData, taskDataDetailed.value)
     if (ruleForm.type === 4) {
         global.$http.put('/broadcasting/' + props.selectTaskData.id, {
             name: props.selectTaskData.name,
@@ -250,6 +361,18 @@ const handleEditSava = () => {
         })
     }
     if (ruleForm.type >= 10) {
+        if (activeName.value === 'region' && taskDataDetailed.value.fast_terminals_id !== 0) {
+            console.log(props.selectTaskData, taskDataDetailed.value)
+            global.$http1.put('/task', Object.assign(props.selectTaskData, {
+                fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
+            })).then((result: any) => {
+                if (result.result === 200) {
+                    editStatus.value = false
+                    handleSelectionData(props.selectTaskData)
+                }
+            })
+            return
+        }
         let data;
         if (ruleForm.type === 11) {
             data = tsctFormData.value
@@ -278,14 +401,6 @@ const handleEditSava = () => {
             })
             return
         }
-        // global.$http1.put('/task/detail/' + props.selectTaskData.id, {
-        //     content: data
-        // }).then((result: any) => {
-        //     if (result.result === 200) {
-        //         editStatus.value = false
-        //         handleSelectionData(props.selectTaskData)
-        //     }
-        // })
     }
 }
 const uploadMedia = (data: any) => {
@@ -308,6 +423,10 @@ const uploadMedia = (data: any) => {
             handleSelectionData(props.selectTaskData)
         }
     })
+}
+// 弹出快捷终端选择
+const handleShowDialog = () => {
+    terminaDialogVisible.value = true
 }
 // 选中文件时触发
 const uploadChange: UploadProps['onChange'] = (uploadFile: any) => {
@@ -389,16 +508,38 @@ const handleSelectionData = (row: any) => {
                 withMedias: true,
                 withGroups: true,
                 withFastSound: true,
+                withTerminals: true,
                 withFastTerminal: true
             }
         }).then((restlu: any)=> {
             taskDataDetailed.value = restlu.data
+            const terminals = restlu.data.terminals ? restlu.data.terminals : []
+            const terminals_groups = restlu.data.terminals_groups ? restlu.data.terminals_groups : []
+            taskTerminalAll.value = [...terminals, ...terminals_groups]
+            console.log(taskDataDetailed.value)
         })
     }else {
         global.$http1.get('/task/' + row.id).then((restlu: any)=> {
             taskDataDetailed.value = restlu.data
+            if (restlu.data.fast_terminals_id) {
+                getFastTerminals().then((data: any)=> {
+                    taskDataDetailed.value['fast_terminal'] = data.filter((item: { id: any })=> {
+                        return item.id === restlu.data.fast_terminals_id
+                    })[0]
+                })
+            }
         })
     }
+}
+// 获取快捷终端
+const getFastTerminals = () => {
+    return new Promise<void>((resolve, reject)=> {
+        global.$http.get('/fast-terminals/all').then((result: any)=> {
+            if (result.result === 200) {
+                resolve(result.data)
+            } 
+        })
+    })
 }
 // 时长转换
 const formatSecondNo = (seconds: any) => {
@@ -446,6 +587,16 @@ defineExpose({ handleEditButton })
         width: calc(100% - 20px);
         .fast-sound-source {
             position: relative;
+            .fast-sound-source-name {
+                display: inline-block;
+                width: 192px;
+                height: 30px;
+                padding: 1px 11px;
+                color: var(--el-disabled-text-color);
+                box-shadow: 0 0 0 1px var(--el-disabled-border-color) inset;
+                cursor: not-allowed;
+                border-radius: 3px;
+            }
             .el-input.is-disabled .el-input__wrapper {
                 background-color: #fff;
             }

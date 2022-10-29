@@ -35,7 +35,6 @@
 </template>
 
 <script lang="ts" setup>
-    import { Search } from '@element-plus/icons-vue'
     const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
 
     const props = defineProps([
