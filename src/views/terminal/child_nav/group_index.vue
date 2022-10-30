@@ -17,14 +17,9 @@
               @click="handleSelected(item)"
               @dblclick="viewGroupInfo(item)"
             >
-              <span
-                class="li-span"
-                :title="terminalsStatusMap.get(item.status)?.name"
-              >
+              <span class="li-span" :title="terminalsStatusMap.get(item.status)?.name">
                 <svg class="icon" aria-hidden="true">
-                  <use
-                    :xlink:href="terminalsStatusMap.get(item.status)?.class"
-                  ></use>
+                  <use :xlink:href="terminalsStatusMap.get(item.status)?.class"></use>
                 </svg>
               </span>
               <div class="li-text">
@@ -46,11 +41,7 @@
         @current-change="handleCurrentChange"
       />
     </div>
-    <el-dialog
-      v-model="show_group_info"
-      :title="group_title"
-      custom-class="group-info-class"
-    >
+    <el-dialog v-model="show_group_info" :title="group_title" class="group-info-class">
       <el-table
         ref="multipleTableRef"
         :data="form.table_data"
@@ -64,16 +55,8 @@
           width="60"
           :index="typeIndex"
         />
-        <el-table-column
-          prop="name"
-          label="终端名称"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="ip_address"
-          label="终端IP"
-          show-overflow-tooltip
-        />
+        <el-table-column prop="name" label="终端名称" show-overflow-tooltip />
+        <el-table-column prop="ip_address" label="终端IP" show-overflow-tooltip />
         <el-table-column prop="code" label="呼叫编码" />
       </el-table>
     </el-dialog>
@@ -90,12 +73,12 @@ const form = reactive<any>({
   pageSize: 20,
   total: 0,
   multipleSelection: [], // 已选择的分组
-  table_data: []
+  table_data: [],
 });
 
-const show_group_info = ref(false)
+const show_group_info = ref(false);
 
-const group_title = ref('')
+const group_title = ref("");
 
 const terminalsStatusMap = new Map([
   [0, { class: "#icon-off-line", name: "离线" }],
@@ -110,20 +93,18 @@ const {
   is_checked_all,
   handleUpdateCheckedAll,
   handleIsCheckedAll,
-  updateCheckedTerminals
+  updateCheckedTerminals,
 }: any = inject("checkedAll");
 
-const {
-  terminal_group_data,
-}:any = inject('terminal_group')
+const { terminal_group_data }: any = inject("terminal_group");
 
-const store = useTerminalStore()
+const store = useTerminalStore();
 
 const search_value = computed(() => {
-  return store.search_value
-})
+  return store.search_value;
+});
 
-const multipleTableRef = ref<InstanceType<typeof ElTable>>()
+const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 
 // 处理点击选择分组
 const handleSelected = (item: { GroupID: number }) => {
@@ -134,7 +115,7 @@ const handleSelected = (item: { GroupID: number }) => {
   } else {
     form.multipleSelection.push(item.GroupID);
   }
-  cleanCheckedTerminalIds()
+  cleanCheckedTerminalIds();
   // 设置全选 - 使用provide/inject
   handleUpdateCheckedAll(form.multipleSelection.length === form.data.length);
   handleIsCheckedAll(false);
@@ -142,32 +123,32 @@ const handleSelected = (item: { GroupID: number }) => {
 
 // 处理勾选分组数据
 const cleanCheckedTerminalIds = () => {
-  let terminals_arr: any = []
-  let checked_terminals_ids: any = []
+  let terminals_arr: any = [];
+  let checked_terminals_ids: any = [];
   form.multipleSelection.forEach((item: any) => {
-    let index = form.data.findIndex((add: { GroupID: number}) => {
-      return add.GroupID === item
-    })
+    let index = form.data.findIndex((add: { GroupID: number }) => {
+      return add.GroupID === item;
+    });
     if (index > -1) {
-      terminals_arr = terminals_arr.concat(form.data[index].terminals)
+      terminals_arr = terminals_arr.concat(form.data[index].terminals);
     }
-  })
+  });
   terminals_arr.map((item: any) => {
-    checked_terminals_ids.push(item.EndpointID)
-  })
-  updateCheckedTerminals(checked_terminals_ids)
-}
+    checked_terminals_ids.push(item.EndpointID);
+  });
+  updateCheckedTerminals(checked_terminals_ids);
+};
 
 // 分组终端详情显示
-const viewGroupInfo = ((item: { GroupName: string, terminals: Object }) => {
-  show_group_info.value = true
-  group_title.value = item.GroupName
-  form.table_data = item.terminals
-})
+const viewGroupInfo = (item: { GroupName: string; terminals: object }) => {
+  show_group_info.value = true;
+  group_title.value = item.GroupName;
+  form.table_data = item.terminals;
+};
 
 const typeIndex = (index: number) => {
-  return index + 1
-}
+  return index + 1;
+};
 
 // 处理全选
 const handleCheckedAll = () => {
@@ -175,7 +156,7 @@ const handleCheckedAll = () => {
   for (let i = 0; i < form.data.length; i++) {
     form.multipleSelection.push(form.data[i].GroupID);
   }
-  cleanCheckedTerminalIds()
+  cleanCheckedTerminalIds();
 };
 
 // 处理XXX条/页更改
@@ -212,24 +193,27 @@ watch(
   }
 );
 
-watch(() => search_value.value, () => {
-  getGroupList()
-})
+watch(
+  () => search_value.value,
+  () => {
+    getGroupList();
+  }
+);
 
 const getGroupList = () => {
   form.data = store.filterGroupData(terminal_group_data.value).filter((item: any) => {
-    return item.GroupID !== 0
-  })
-  form.total = form.data.length
+    return item.GroupID !== 0;
+  });
+  form.total = form.data.length;
   // 给分组手动添加状态，等后续增加分组状态字段再去除
   form.data.map((item: any) => {
-    item.status = 1
-  })
-}
+    item.status = 1;
+  });
+};
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  getGroupList()
+  getGroupList();
 });
 </script>
 
@@ -268,8 +252,8 @@ onMounted(() => {
     padding: 15px 0;
     margin: 0 20px;
     font-size: 14px;
-    border-bottom: 1px solid #F0F1F2;
-    
+    border-bottom: 1px solid #f0f1f2;
+
     .el-dialog__headerbtn {
       top: 0;
     }

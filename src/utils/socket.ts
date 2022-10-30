@@ -145,20 +145,20 @@ const requestTaskInfo = () => {
 // 登录
 const login = () => {
     let data = {
-        company: "BL",
-        actioncode: "c2ms_user_login",
-        token: "",
-        data: {
-            "UserName": localStorage.get("username"),
-            "Password": Md5.hashStr(localStorage.get("password")),
-            "Platform": "PC",
-            "HostIP": localStorage.get("serverIp"),
-            "ForceLogin": false,
-            "LoginTime": ''
-        },
-        result: 0,
-        return_message: ""
-    }
+      company: "BL",
+      actioncode: "c2ms_user_login",
+      token: "",
+      data: {
+        UserName: localStorage.get("username"),
+        Password: Md5.hashStr(localStorage.get("password")),
+        Platform: "PC",
+        HostIP: localStorage.get("serverIP"),
+        ForceLogin: false,
+        LoginTime: "",
+      },
+      result: 0,
+      return_message: "",
+    };
     let myDate = new Date();
     let a = myDate.getFullYear()
     let b = myDate.getMonth() + 1

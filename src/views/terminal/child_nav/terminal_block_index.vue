@@ -21,14 +21,9 @@
             @click="handleSelected(item)"
           >
             <div class="li-top">
-              <span
-                class="i-span"
-                :title="terminalsStatusMap.get(item.status)?.name"
-              >
+              <span class="i-span" :title="terminalsStatusMap.get(item.status)?.name">
                 <svg class="icon" aria-hidden="true">
-                  <use
-                    :xlink:href="terminalsStatusMap.get(item.status)?.icon"
-                  ></use>
+                  <use :xlink:href="terminalsStatusMap.get(item.status)?.icon"></use>
                 </svg>
               </span>
               <el-popover
@@ -36,10 +31,10 @@
                 trigger="click"
                 :offset="-90"
                 popper-class="terminal-volume-popper"
-                :disabled='item.status !== 1 && item.status !== 2'
+                :disabled="item.status !== 1 && item.status !== 2"
               >
                 <el-slider v-model="item.volume" @change="changeVolume(item)" />
-                <template #reference >
+                <template #reference>
                   <div class="i-volume" @click.stop>
                     <span class="iconfont icon-volume"></span>
                     <span>{{ item.volume }}</span>
@@ -54,10 +49,7 @@
             <div class="li-bottom">
               <span>编码 : {{ item.code }}</span>
               <div class="status">
-                <div
-                  class="span"
-                  :class="terminalsStatusMap.get(item.status)?.class"
-                >
+                <div class="span" :class="terminalsStatusMap.get(item.status)?.class">
                   <span v-if="item.status != 2">{{
                     terminalsStatusMap.get(item.status)?.name
                   }}</span>
@@ -85,7 +77,7 @@
 
 <script lang="ts" setup>
 import { onBeforeRouteLeave, onBeforeRouteUpdate, stringifyQuery } from "vue-router";
-import { send } from '@/utils/socket'
+import { send } from "@/utils/socket";
 import { ElMessage } from "element-plus";
 
 const form = reactive<any>({
@@ -116,50 +108,61 @@ const {
   handleIsCheckedAll,
 }: any = inject("checkedAll");
 
-const storage_terminal_data = ref()
+const storage_terminal_data = ref();
 
-const store = useTerminalStore()
+const store = useTerminalStore();
 
 const terminal_data = computed(() => {
-  return store.terminal_data
-})
+  return store.terminal_data;
+});
 
 const terminal_status = computed(() => {
-  return store.terminal_status
-})
+  return store.terminal_status;
+});
 
 const search_value = computed(() => {
-  return store.search_value
-})
+  return store.search_value;
+});
 
-const cacheTerminalData: any = []
+const cacheTerminalData: any = [];
 
-watch(()=> terminal_data.value, (newVal)=> {
-  storage_terminal_data.value = newVal
-  cacheTerminalData.value = store.defaultTerminalSort(store.filterGroupData(storage_terminal_data.value))
-  form.data = cacheTerminalData.value
-  form.total = form.data.length
-})
+watch(
+  () => terminal_data.value,
+  (newVal) => {
+    storage_terminal_data.value = newVal;
+    cacheTerminalData.value = store.defaultTerminalSort(
+      store.filterGroupData(storage_terminal_data.value)
+    );
+    form.data = cacheTerminalData.value;
+    form.total = form.data.length;
+  }
+);
 
-watch(() => terminal_status.value, () => {
-  cacheTerminalData.value = store.defaultTerminalSort(store.filterGroupData(storage_terminal_data.value))
-  form.data = cacheTerminalData.value
-  form.total = form.data.length
-})
+watch(
+  () => terminal_status.value,
+  () => {
+    cacheTerminalData.value = store.defaultTerminalSort(
+      store.filterGroupData(storage_terminal_data.value)
+    );
+    form.data = cacheTerminalData.value;
+    form.total = form.data.length;
+  }
+);
 
-watch(() => search_value.value, () => {
-  cacheTerminalData.value = store.defaultTerminalSort(store.filterGroupData(storage_terminal_data.value))
-  form.data = cacheTerminalData.value
-  form.total = form.data.length
-})
+watch(
+  () => search_value.value,
+  () => {
+    cacheTerminalData.value = store.defaultTerminalSort(
+      store.filterGroupData(storage_terminal_data.value)
+    );
+    form.data = cacheTerminalData.value;
+    form.total = form.data.length;
+  }
+);
 
-const {
-  select_terminal,
-}:any = inject('select_terminal')
+const { select_terminal }: any = inject("select_terminal");
 
-const {
-  updateCheckedTerminals
-}: any = inject("checkedAll")
+const { updateCheckedTerminals }: any = inject("checkedAll");
 
 // 处理点击选择终端
 const handleSelected = (item: { EndpointID: number }) => {
@@ -173,7 +176,7 @@ const handleSelected = (item: { EndpointID: number }) => {
   // 设置全选 - 使用provide/inject
   handleUpdateCheckedAll(form.multipleSelection.length === form.data.length);
   handleIsCheckedAll(false);
-  updateCheckedTerminals(form.multipleSelection)
+  updateCheckedTerminals(form.multipleSelection);
 };
 // 处理全选
 const handleCheckedAll = () => {
@@ -181,18 +184,21 @@ const handleCheckedAll = () => {
   for (let i = 0; i < form.data.length; i++) {
     form.multipleSelection.push(form.data[i].EndpointID);
   }
-  updateCheckedTerminals(form.multipleSelection)
+  updateCheckedTerminals(form.multipleSelection);
 };
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
   form.currentPage = 1;
-  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage)
+  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage);
 };
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
-  form.data = cacheTerminalData.value.slice(form.pageSize * (form.currentPage - 1), form.pageSize * form.currentPage)
+  form.data = cacheTerminalData.value.slice(
+    form.pageSize * (form.currentPage - 1),
+    form.pageSize * form.currentPage
+  );
 };
 
 // 修改终端音量
@@ -203,14 +209,14 @@ const changeVolume = (data: any) => {
     token: "",
     data: {
       TerminalID: String(data.EndpointID),
-      Volume: String(data.volume)
+      Volume: String(data.volume),
     },
     result: 0,
-    return_message: ""
-  }
-  console.log('send_data', send_data)
-  send(send_data)
-}
+    return_message: "",
+  };
+  console.log("send_data", send_data);
+  send(send_data);
+};
 
 const $useRoute = useRoute();
 const $useRouter = useRouter();
@@ -239,20 +245,22 @@ watch(
 );
 
 watch(select_terminal, (value) => {
-  form.pageSize = value.split('x')[0] * value.split('x')[1]
-  handleSizeChange(form.pageSize)
-})
+  form.pageSize = value.split("x")[0] * value.split("x")[1];
+  handleSizeChange(form.pageSize);
+});
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  form.layoutArrange = select_terminal
-  form.pageSizes = [form.layoutArrange.split('x')[0] * form.layoutArrange.split('x')[1]]
-  form.pageSize = form.pageSizes[0]
-  storage_terminal_data.value = terminal_data.value
-  cacheTerminalData.value = store.defaultTerminalSort(store.filterGroupData(storage_terminal_data.value))
-  form.data = cacheTerminalData.value
-  form.total = form.data.length
-})
+  form.layoutArrange = select_terminal;
+  form.pageSizes = [form.layoutArrange.split("x")[0] * form.layoutArrange.split("x")[1]];
+  form.pageSize = form.pageSizes[0];
+  storage_terminal_data.value = terminal_data.value;
+  cacheTerminalData.value = store.defaultTerminalSort(
+    store.filterGroupData(storage_terminal_data.value)
+  );
+  form.data = cacheTerminalData.value;
+  form.total = form.data.length;
+});
 </script>
 
 <style lang="scss" scoped>

@@ -12,62 +12,38 @@
           ref="multipleTableRef"
           :data="form.data"
           border
-          style="width: 100%"
           height="100%"
+          v-loading="form.loading"
+          element-loading-text="Loading..."
+          element-loading-background="rgba(0, 0, 0, 0.7)"
           @selection-change="handleSelectionChange"
         >
           <el-table-column
             type="index"
             label="No."
             show-overflow-tooltip
-            width="50"
+            width="60"
             :index="typeIndex"
           />
-          <el-table-column
-            prop="time"
-            label="时间"
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="user.name"
-            label="用户"
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="txt"
-            label="文本内容"
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="path"
-            label="路径"
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="terminal"
-            label="执行终端"
-            show-overflow-tooltip
-          >
+          <el-table-column prop="time" label="时间" show-overflow-tooltip />
+          <el-table-column prop="user.name" label="用户" show-overflow-tooltip />
+          <el-table-column prop="txt" label="文本内容" show-overflow-tooltip />
+          <el-table-column prop="path" label="路径" show-overflow-tooltip />
+          <el-table-column prop="terminal" label="执行终端" show-overflow-tooltip>
             <template #default="scope">
-              <el-button link type="primary" @click="scope.row">
-                <template #icon>
-                  <i class="iconfont icon-view-terminal" title="查看终端"></i>
-                </template>
-              </el-button>
+              <view-components-popover
+                :url="'/terminals-alarm/' + scope.row.id + '/terminals'"
+              />
             </template>
           </el-table-column>
           <el-table-column prop="time" label="开始时间" show-overflow-tooltip />
-          <el-table-column
-            prop="life_time"
-            label="持续时间"
-            show-overflow-tooltip
-          />
-          <el-table-column prop="volume" label="备注" show-overflow-tooltip />
-          <el-table-column
-            prop="volume"
-            label="日志级别"
-            show-overflow-tooltip
-          />
+          <el-table-column prop="life_time" label="持续时间" show-overflow-tooltip />
+          <el-table-column prop="remarks" label="备注" show-overflow-tooltip />
+          <el-table-column prop="level      " label="日志级别" show-overflow-tooltip>
+            <template #default="scope">
+              {{ formatterLevel(scope.row.level) }}
+            </template>
+          </el-table-column>
           <el-table-column label="操作" width="120">
             <template #default="scope">
               <el-button link type="danger" @click="scope.row">
@@ -96,51 +72,167 @@
 </template>
 
 <script lang="ts" setup>
-import { ElTable } from "element-plus";
+import { ElTable, ElMessageBox, ElMessage } from "element-plus";
+import { TTSService } from "@/utils/api/log/tts_log";
+
+// 声明触发事件
+const emit = defineEmits(["dele"]);
 
 interface User {
-  date: string;
+  id: number;
   name: string;
-  address: string;
+  level: number;
 }
 
 const form = reactive<any>({
   data: [],
+  searchDate: [],
+  orderColumn: "id",
   currentPage: 1,
   pageSize: 20,
   total: 0,
+  search_level: 0,
+  search_users_ids: -1,
+  search_tasks_name: "", //任务名称
+  search_life_time: "",
+  context: "", //文本内容
+  terminals: "", //执行终端
 });
+const search = computed(() => {
+  return form;
+});
+// 获取refs
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
 // 当前已选择表格数据
 const handleSelectionChange = (val: User[]) => {
   multipleSelection.value = val;
+  emit("dele", multipleSelection.value);
 };
 // 序号
 const typeIndex = (index: number) => {
   return index + (form.currentPage - 1) * form.pageSize + 1;
 };
+// 处理获取一页数据
+const handleGetOnePageData = async () => {
+  form.loading = true;
+  await TTSService.getOnePageTTSLog({
+    page: form.currentPage,
+    limit: form.pageSize,
+    orderColumn: form.orderColumn,
+    withTerminal: true,
+    withUser: true,
+    start_date: form.searchDate?.[0],
+    end_date: form.searchDate?.[1],
+    search_level: form.search_level,
+    search_users_ids: form.search_users_ids,
+    context: form.context,
+    terminals: form.terminals,
+  })
+    .then((result) => {
+      if (result.result?.data) {
+        form.data = result.result.data;
+        form.total = result.result.total;
+      } else {
+        ElMessage({
+          type: "error",
+          message: result.result?.message,
+          grouping: true,
+        });
+      }
+      form.loading = false;
+    })
+    .catch((error) => {
+      form.loading = false;
+      console.log(error);
+    });
+};
+// 处理默认获取
+const handleDefaultGet = () => {
+  form.currentPage = 1;
+  handleGetOnePageData();
+};
+// 处理重置
+const handleReset = () => {
+  handleDefaultGet();
+};
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
-  form.currentPage = 1;
+  handleDefaultGet();
+  multipleTableRef.value?.setScrollTop(0);
 };
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
+  handleGetOnePageData();
+  multipleTableRef.value?.setScrollTop(0);
 };
+// 处理删除
+const handleDelete = (type: string, row: any) => {
+  //single：单个删除
+  if (type != "single" && multipleSelection.value.length == 0) {
+    return;
+  }
+  ElMessageBox.confirm("即将删除, 是否继续？", "提示", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+    draggable: true,
+  })
+    .then(() => {
+      let ids = [];
+      type === "single"
+        ? ids.push(row.id)
+        : multipleSelection.value.map((item) => {
+            ids.push(item.id);
+          });
+      TTSService.deleteTTSLog({
+        ids: ids,
+      })
+        .then((result) => {
+          if (result.result > 0) {
+            // 假如删除完本页数据，form.currentPage减去一页再更新数据
+            if (form.data.length <= ids.length && form.currentPage > 1) {
+              form.currentPage--;
+            }
+            handleGetOnePageData();
+            ElMessage({
+              type: "success",
+              message: "删除成功",
+              grouping: true,
+            });
+          } else {
+            ElMessage({
+              type: "error",
+              message: result.result?.message || "删除失败",
+              grouping: true,
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    })
+    .catch(() => {});
+};
+// 日志级别格式转换
+const formatterLevel = (row: User) => {
+  return useFormatMap.logLevelTypeMap.get(row?.level);
+};
+
+// 暴露方法
+defineExpose({
+  handleGetOnePageData,
+  handleDelete,
+  handleReset,
+  handleDefaultGet,
+  search,
+});
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  for (let i = 0; i < 20; i++) {
-    form.data.push({
-      time: "2022-07-22",
-      life_time: "00:20:00",
-      status: i,
-      terminal: [],
-    });
-  }
-  form.total = form.data.length;
+  handleGetOnePageData();
 });
 </script>
 

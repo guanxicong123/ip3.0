@@ -274,6 +274,11 @@
   // -moz-appearance: none;
   outline: none;
 }
+// 图标禁用
+.icon-disabled {
+  color: $c-999 !important;
+  cursor: not-allowed;
+}
 // 终端音量 popover
 .el-popover.el-popper.terminal-volume-popper {
   min-width: 105px;

@@ -10,7 +10,9 @@ const path = require('path')
 const pathSrc = path.resolve(__dirname, 'src')
 
 module.exports = defineConfig({
+    transpileDependencies: true,
     lintOnSave: false,
+    parallel: false,
     pluginOptions: {
         electronBuilder: {
             preload: "src/preload.ts",
@@ -24,7 +26,7 @@ module.exports = defineConfig({
                 // options placed here will be merged with default configuration and passed to electron-builder
                 "productName": 'ip-broadcast', //项目名，也是生成的安装文件名，即ip-broadcast.exe
                 "appId": 'com.example.ip-broadcast',
-                "copyright": "Copyright © 2021",//版权信息
+                "copyright": "Copyright © 2022",//版权信息
                 // 设置用户可选择安装目录
                 "nsis": {
                     // "oneClick" : false,// 是否一键安装
@@ -81,7 +83,6 @@ module.exports = defineConfig({
             }
         }
     },
-    transpileDependencies: true,
     /**
      * webpack 配置进行更细粒度的修改  https://cli.vuejs.org/zh/config/#chainwebpack
      */
@@ -119,6 +120,9 @@ module.exports = defineConfig({
                             // 命名导入 import { localStorage } from '@/utils/storage'
                             'localStorage',
                         ],
+                        '@/store/get_store': [
+                            ['default', 'getStore'],
+                        ],
                         '@/store/app': [
                             ['default', 'useAppStore'],
                             // 别名 import { useFetch as useMyFetch } from '@/store'
@@ -131,6 +135,18 @@ module.exports = defineConfig({
                         ],
                         '@/store/system_config': [
                             ['default', 'useSystemStore']
+                        ],
+                        '@/utils/global/index': [
+                            ['default', 'usePublicMethod'],
+                        ],
+                        '@/utils/global/format_map_type': [
+                            ['default', 'useFormatMap'],
+                        ],
+                        '@/utils/global/regex': [
+                            ['default', 'useRegex'],
+                        ],
+                        '@/utils/vue/use_current_instance': [
+                            ['default', 'useCurrentInstance'],
                         ],
                         'axios': [
                             // 默认导入 import { default as axios } from 'axios'
@@ -151,7 +167,7 @@ module.exports = defineConfig({
                 ],
                 // eslint报错解决
                 eslintrc: {
-                    enabled: false, // Default `false`
+                    enabled: true, // Default `false`
                     filepath: './.eslintrc-auto-import.json',
                     globalsPropValue: true,
                 },
@@ -182,8 +198,8 @@ module.exports = defineConfig({
         loaderOptions: {
             scss: {
                 additionalData: `
-          @import "@/assets/css/color.scss";
-        `
+                  @import "@/assets/css/color.scss";
+                `
             }
         }
     },
@@ -203,7 +219,7 @@ module.exports = defineConfig({
      * proxy: 配置多个代理
      */
     devServer: {
-        host: "172.16.21.10",
+        host: "172.16.21.9",
         port: 8003,
         // open: true,
         // https: true,

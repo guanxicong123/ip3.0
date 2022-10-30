@@ -125,7 +125,7 @@
       v-model="func_manage_dialog"
       title="功能管理"
       width="720px"
-      custom-class="func-manage-dialog"
+      class="func-manage-dialog"
     >
       <div class="com-head">
         <div class="com-head-content com-alert-bg">
@@ -218,7 +218,7 @@
       v-model="register_manage_dialog"
       title=""
       width="450px"
-      custom-class="register-manage-dialog"
+      class="register-manage-dialog"
     >
       <div class="register-logo">
         <img class="logo-image" src="@/assets/images/logo.png" alt="logo" />
@@ -258,16 +258,18 @@
 
 <script lang="ts" setup>
 import { ElMessage, formatter } from "element-plus";
-const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 const form = reactive({
   one_key_alarm: false, // 启用一键报警功能
   alarm_track: 1, // 报警曲目
   alarmTrackOptions: [
     {
-      name: '',
-      id: '',
-    }
+      name: "",
+      id: "",
+    },
   ],
   default_terminal_status: 0, // 终端状态默认项
   terminalStatusOptions: [
@@ -371,11 +373,11 @@ const change_config_map = ref(
 const switch_form = ref();
 
 const getAlarmTask = () => {
-  global.$http.get('/one-button-alarm/all').then((res: any) => {
-    if(res.result === 200) {
-      form.alarmTrackOptions = res.data
+  proxy.$http.get("/one-button-alarm/all").then((res: any) => {
+    if (res.result === 200) {
+      form.alarmTrackOptions = res.data;
     }
-  })
+  });
 };
 
 // 数据填充
@@ -484,7 +486,7 @@ onMounted(() => {
   switch_form.value = JSON.parse(JSON.stringify(functional_configs.value));
   form.ProductKey = opcodes.value;
   // 获取报警任务
-  getAlarmTask()
+  getAlarmTask();
 });
 </script>
 
