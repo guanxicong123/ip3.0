@@ -1,5 +1,4 @@
 import router from "../router";
-import useTerminalStore from "./terminal";
 
 export interface systemState {
   media_options: any;
@@ -77,7 +76,7 @@ const permission_map = new Map([
   [4, "媒体库"],
 ]);
 
-const useSystemStore = defineStore({
+export const useSystemStore = defineStore({
   id: "system_config",
   state: (): systemState => ({
     // 媒体选项
@@ -226,7 +225,7 @@ const useSystemStore = defineStore({
         : this.router_data[0].path;
       console.log(next_path);
       const time_id = setInterval(() => {
-        // if (useTerminalStore().terminal_data.length > 0 && useTerminalStore().terminal_group.length > 0) {
+        // if (getStore.getStore.useTerminalStore().terminal_data.length > 0 && getStore.getStore.useTerminalStore().terminal_group.length > 0) {
         router.push("/play");
         clearInterval(time_id);
         // }
@@ -247,5 +246,3 @@ const useSystemStore = defineStore({
     },
   },
 });
-
-export default useSystemStore;

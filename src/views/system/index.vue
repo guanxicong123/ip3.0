@@ -298,7 +298,7 @@ const form = reactive({
 
 const $useRouter = useRouter();
 
-const systemStore = useSystemStore();
+const systemStore = getStore.useSystemStore();
 
 const system_configs = computed(() => {
   return systemStore.system_configs;

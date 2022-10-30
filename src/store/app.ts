@@ -1,5 +1,4 @@
 import router from "../router";
-import useSystemStore from "./system_config";
 
 export interface AppState {
   language: string;
@@ -10,7 +9,7 @@ export interface AppState {
   sessionsArray: Array<[]>;
 }
 
-const useAppStore: any = defineStore({
+export const useAppStore = defineStore({
   id: "app",
   state: (): AppState => ({
     // language: getLanguage(),
@@ -48,7 +47,7 @@ const useAppStore: any = defineStore({
       // }
       // 登录成功获取路由权限数据
       // router.push("/terminal")
-      useSystemStore().getConfigInfo();
+      getStore.useSystemStore().getConfigInfo();
     },
     // 会话状态
     ROUTER_TASK(data: any) {
@@ -86,5 +85,3 @@ const useAppStore: any = defineStore({
     },
   },
 });
-
-export default useAppStore;

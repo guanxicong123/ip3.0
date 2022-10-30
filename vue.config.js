@@ -123,19 +123,6 @@ module.exports = defineConfig({
                         '@/store/get_store': [
                             ['default', 'getStore'],
                         ],
-                        '@/store/app': [
-                            ['default', 'useAppStore'],
-                            // 别名 import { useFetch as useMyFetch } from '@/store'
-                            // ['useFetch', 'useMyFetch'],
-                        ],
-                        '@/store/terminal': [
-                            ['default', 'useTerminalStore'],
-                            // 别名 import { useFetch as useMyFetch } from '@/store'
-                            // ['useFetch', 'useMyFetch'],
-                        ],
-                        '@/store/system_config': [
-                            ['default', 'useSystemStore']
-                        ],
                         '@/utils/global/index': [
                             ['default', 'usePublicMethod'],
                         ],

@@ -38,7 +38,10 @@
               :value="item.value"
             />
           </el-select>
-          <el-input v-model="form.search" :placeholder="form.search_placeholder" />
+          <el-input
+            v-model="form.search"
+            :placeholder="form.search_placeholder"
+          />
           <el-button :icon="Search" @click="handleFilter"></el-button>
         </div>
         <div class="com-button">
@@ -69,10 +72,18 @@
         <el-button type="primary" color="#467CF7" @click="originateBroadcast"
           >广播</el-button
         >
-        <el-button type="primary" color="#00A1CC" v-if="$useRoute.name != 'group'">
+        <el-button
+          type="primary"
+          color="#00A1CC"
+          v-if="$useRoute.name != 'group'"
+        >
           对讲
         </el-button>
-        <el-button type="primary" color="#06BA7D" v-if="$useRoute.name != 'group'">
+        <el-button
+          type="primary"
+          color="#06BA7D"
+          v-if="$useRoute.name != 'group'"
+        >
           监听
         </el-button>
         <el-button type="danger" color="#D34500">报警</el-button>
@@ -83,7 +94,12 @@
         <span>{{ form.volume }}</span>
       </div>
     </div>
-    <el-dialog v-model="set_dialog" title="终端状态配置" width="450px" class="set-dialog">
+    <el-dialog
+      v-model="set_dialog"
+      title="终端状态配置"
+      width="450px"
+      class="set-dialog"
+    >
       <!-- template -->
       <div class="terminal-config-items">
         <el-radio-group v-model="form.view_value" class="view-config">
@@ -107,7 +123,9 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="confirmTerminalSet"> 确认 </el-button>
+          <el-button type="primary" @click="confirmTerminalSet">
+            确认
+          </el-button>
           <el-button @click="set_dialog = false"> 取消 </el-button>
         </span>
       </template>
@@ -156,9 +174,9 @@ const terminal_view_options = [
 
 const terminal_group_data = ref();
 
-const store = useTerminalStore();
+const store = getStore.useTerminalStore();
 
-const systemStore = useSystemStore();
+const systemStore = getStore.useSystemStore();
 
 const basic_configs = computed(() => {
   return systemStore.basic_configs;
@@ -276,9 +294,11 @@ const handleFilter = () => {
 
 // 过滤在线设备组成主讲终端可选项
 const cleanOnLineTerminal = () => {
-  form.speakerTerminalOptions = terminal_data.value.filter((item: { status: number }) => {
-    return item.status === 1 || item.status === 2;
-  });
+  form.speakerTerminalOptions = terminal_data.value.filter(
+    (item: { status: number }) => {
+      return item.status === 1 || item.status === 2;
+    }
+  );
   // 设置默认主讲终端
   let online_ids = form.speakerTerminalOptions.map((item: any) => {
     return item.EndpointID;
@@ -299,7 +319,11 @@ const confirmTerminalSet = () => {
     .put("http://172.16.21.25:9999/api/v1/config/" + basic_configs.value.ID, {
       DisplayType: form.view_value === "list" ? 1 : 0,
       ListDisplaySize:
-        form.select_terminal === "3x5" ? 0 : form.select_terminal === "3x6" ? 1 : 2,
+        form.select_terminal === "3x5"
+          ? 0
+          : form.select_terminal === "3x6"
+          ? 1
+          : 2,
     })
     .then((result: any) => {
       if (result.status === 200) {
@@ -307,7 +331,11 @@ const confirmTerminalSet = () => {
         let data = {
           DisplayType: form.view_value === "list" ? 1 : 0,
           ListDisplaySize:
-            form.select_terminal === "3x5" ? 0 : form.select_terminal === "3x6" ? 1 : 2,
+            form.select_terminal === "3x5"
+              ? 0
+              : form.select_terminal === "3x6"
+              ? 1
+              : 2,
         };
         systemStore.updateTerminalStatusConfig(data);
         if (form.view_value === "list") {
@@ -345,9 +373,11 @@ const originateBroadcast = () => {
   if (!form.speaker_terminal) {
     return ElMessage.error("未选择主讲终端或主讲终端未在线");
   }
-  let filter_initiator_terminals = filterCheckedTerminals().filter((item: number) => {
-    return item !== form.speaker_terminal;
-  });
+  let filter_initiator_terminals = filterCheckedTerminals().filter(
+    (item: number) => {
+      return item !== form.speaker_terminal;
+    }
+  );
   if (filter_initiator_terminals.length < 1) {
     return ElMessage.error("请选择接收终端");
   }
@@ -375,9 +405,11 @@ const initiatedTalkTask = () => {
   if (!form.speaker_terminal) {
     return ElMessage.error("未选择主讲终端或主讲终端未在线");
   }
-  let filter_initiator_terminals = filterCheckedTerminals().filter((item: number) => {
-    return item !== form.speaker_terminal;
-  });
+  let filter_initiator_terminals = filterCheckedTerminals().filter(
+    (item: number) => {
+      return item !== form.speaker_terminal;
+    }
+  );
   if (filter_initiator_terminals.length < 1) {
     return ElMessage.error("请选择接收终端");
   }

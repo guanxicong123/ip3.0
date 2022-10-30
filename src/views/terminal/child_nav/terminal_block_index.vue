@@ -21,9 +21,14 @@
             @click="handleSelected(item)"
           >
             <div class="li-top">
-              <span class="i-span" :title="terminalsStatusMap.get(item.status)?.name">
+              <span
+                class="i-span"
+                :title="terminalsStatusMap.get(item.status)?.name"
+              >
                 <svg class="icon" aria-hidden="true">
-                  <use :xlink:href="terminalsStatusMap.get(item.status)?.icon"></use>
+                  <use
+                    :xlink:href="terminalsStatusMap.get(item.status)?.icon"
+                  ></use>
                 </svg>
               </span>
               <el-popover
@@ -49,7 +54,10 @@
             <div class="li-bottom">
               <span>编码 : {{ item.code }}</span>
               <div class="status">
-                <div class="span" :class="terminalsStatusMap.get(item.status)?.class">
+                <div
+                  class="span"
+                  :class="terminalsStatusMap.get(item.status)?.class"
+                >
                   <span v-if="item.status != 2">{{
                     terminalsStatusMap.get(item.status)?.name
                   }}</span>
@@ -76,7 +84,11 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeRouteLeave, onBeforeRouteUpdate, stringifyQuery } from "vue-router";
+import {
+  onBeforeRouteLeave,
+  onBeforeRouteUpdate,
+  stringifyQuery,
+} from "vue-router";
 import { send } from "@/utils/socket";
 import { ElMessage } from "element-plus";
 
@@ -110,7 +122,7 @@ const {
 
 const storage_terminal_data = ref();
 
-const store = useTerminalStore();
+const store = getStore.useTerminalStore();
 
 const terminal_data = computed(() => {
   return store.terminal_data;
@@ -190,7 +202,10 @@ const handleCheckedAll = () => {
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
   form.currentPage = 1;
-  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage);
+  form.data = cacheTerminalData.value.slice(
+    0,
+    form.pageSize * form.currentPage
+  );
 };
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
@@ -252,7 +267,9 @@ watch(select_terminal, (value) => {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   form.layoutArrange = select_terminal;
-  form.pageSizes = [form.layoutArrange.split("x")[0] * form.layoutArrange.split("x")[1]];
+  form.pageSizes = [
+    form.layoutArrange.split("x")[0] * form.layoutArrange.split("x")[1],
+  ];
   form.pageSize = form.pageSizes[0];
   storage_terminal_data.value = terminal_data.value;
   cacheTerminalData.value = store.defaultTerminalSort(

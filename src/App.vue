@@ -20,7 +20,7 @@ import ko from "element-plus/es/locale/lang/ko";
 import ru from "element-plus/es/locale/lang/ru";
 import pt from "element-plus/es/locale/lang/pt";
 
-const app = useAppStore();
+const app = getStore.useAppStore();
 // 计算属性 computed
 const language = computed(() => app.language);
 const size: any = computed(() => app.size);

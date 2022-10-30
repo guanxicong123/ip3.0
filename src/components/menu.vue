@@ -117,7 +117,7 @@ const sidebarData = ref([
 const $useRouter = useRouter();
 const $useRoute = useRoute();
 
-const systemStore = useSystemStore();
+const systemStore = getStore.useSystemStore();
 
 const router_data = computed(() => {
   return systemStore.router_data;

@@ -1,4 +1,3 @@
-import useSystemStore from "./system_config";
 export interface terminalState {
   terminal_data: any;
   terminal_group: Array<any>;
@@ -9,7 +8,7 @@ export interface terminalState {
   filter_status: boolean;
 }
 
-const useTerminalStore = defineStore({
+export const useTerminalStore = defineStore({
   id: "terminal",
   state: (): terminalState => ({
     //所有终端
@@ -154,14 +153,13 @@ const useTerminalStore = defineStore({
     // 终端状态按默认字段排序
     defaultTerminalSort(data: any) {
       let init_data = JSON.parse(JSON.stringify(data));
-      const sort_prop = useSystemStore().system_configs.TerminalOrderbyType;
+      const sort_prop =
+        getStore.useSystemStore().system_configs.TerminalOrderbyType;
       return (init_data = this.sortChangeData(sort_prop, init_data));
     },
 
     setTerminalVolume(data: any) {
-      // console.log('set terminal volume', data)
+      console.log('set terminal volume', data)
     },
   },
 });
-
-export default useTerminalStore;

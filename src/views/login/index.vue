@@ -116,7 +116,9 @@
       </div>
     </div>
     <div class="broadcast-login-sign">
-      <el-button type="primary" @click="submit" :loading="isLogin">登录</el-button>
+      <el-button type="primary" @click="submit" :loading="isLogin"
+        >登录</el-button
+      >
     </div>
   </div>
 </template>
@@ -127,9 +129,9 @@ import { socketLogin, socket } from "@/utils/socket";
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
-const store = useAppStore();
+const store = getStore.useAppStore();
 
-const systemStore = useSystemStore();
+const systemStore = getStore.useSystemStore();
 
 const isWebsocekt = computed(() => {
   return store.is_websocekt;
@@ -307,7 +309,8 @@ onBeforeUnmount(() => {
         height: 36px;
         border-bottom: 1px solid #ddd;
         border-radius: 0;
-        box-shadow: 0 0 0 0 var(--el-input-border-color, var(--el-border-color)) inset;
+        box-shadow: 0 0 0 0 var(--el-input-border-color, var(--el-border-color))
+          inset;
       }
     }
     .login-from-remember_password {

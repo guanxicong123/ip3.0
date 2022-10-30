@@ -41,7 +41,11 @@
                 <span class="monitor-terminal-number">{{
                   `终端(共 ` + terminal_data.length + " 条)"
                 }}</span>
-                <el-input v-model="form.search" placeholder="终端名称/终端IP" clearable />
+                <el-input
+                  v-model="form.search"
+                  placeholder="终端名称/终端IP"
+                  clearable
+                />
               </div>
               <el-table
                 :data="terminal_data"
@@ -56,11 +60,14 @@
                         class="iconfont"
                         :class="terminalStatus.get(scope.row.Status)"
                       ></span>
-                      <span class="terminal-name">{{ scope.row.EndPointIP }}</span>
+                      <span class="terminal-name">{{
+                        scope.row.EndPointIP
+                      }}</span>
                       <span
                         class="iconfont"
                         :class="{
-                          'icon-selected': selectTerminalMac === scope.row.EndPointMac,
+                          'icon-selected':
+                            selectTerminalMac === scope.row.EndPointMac,
                         }"
                       ></span>
                     </div>
@@ -91,14 +98,20 @@
             width="60"
             :index="typeIndex"
           />
-          <el-table-column prop="TaskName" label="任务名称" show-overflow-tooltip />
+          <el-table-column
+            prop="TaskName"
+            label="任务名称"
+            show-overflow-tooltip
+          />
           <el-table-column prop="TaskType" label="会话类型" />
           <el-table-column prop="TaskIniator" label="发起方" />
           <el-table-column label="响应方">
             <!-- {{ scope.row.EndpointIpListArray }} -->
             <template #default="scope">
               <el-dropdown
-                v-if="scope.row.EndPointList && scope.row.EndPointList.length > 1"
+                v-if="
+                  scope.row.EndPointList && scope.row.EndPointList.length > 1
+                "
                 placement="bottom-start"
               >
                 <span class="el-dropdown-link">
@@ -114,7 +127,11 @@
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
-              <span v-if="scope.row.EndPointList && scope.row.EndPointList.length === 1">
+              <span
+                v-if="
+                  scope.row.EndPointList && scope.row.EndPointList.length === 1
+                "
+              >
                 {{ scope.row.EndPointList[0].EndPointName }}
               </span>
             </template>
@@ -179,8 +196,8 @@ interface User {
   address: string;
 }
 
-const store = useAppStore();
-const terminalStore = useTerminalStore();
+const store = getStore.useAppStore();
+const terminalStore = getStore.useTerminalStore();
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
@@ -340,7 +357,8 @@ const filterData = () => {
       }).toString();
       let searchFiletr =
         item.TaskName.toLowerCase().indexOf(form.search.toLowerCase()) !== -1 ||
-        item.TaskIniator.toLowerCase().indexOf(form.search.toLowerCase()) !== -1 ||
+        item.TaskIniator.toLowerCase().indexOf(form.search.toLowerCase()) !==
+          -1 ||
         respondent.toLowerCase().indexOf(form.search.toLowerCase()) !== -1;
       if (form.selectType !== 0) {
         return item.TaskType === form.selectType && searchFiletr;

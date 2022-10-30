@@ -13,13 +13,20 @@
             <li
               v-for="item in form.data"
               :key="item.GroupID"
-              :class="{ selected: form.multipleSelection.includes(item.GroupID) }"
+              :class="{
+                selected: form.multipleSelection.includes(item.GroupID),
+              }"
               @click="handleSelected(item)"
               @dblclick="viewGroupInfo(item)"
             >
-              <span class="li-span" :title="terminalsStatusMap.get(item.status)?.name">
+              <span
+                class="li-span"
+                :title="terminalsStatusMap.get(item.status)?.name"
+              >
                 <svg class="icon" aria-hidden="true">
-                  <use :xlink:href="terminalsStatusMap.get(item.status)?.class"></use>
+                  <use
+                    :xlink:href="terminalsStatusMap.get(item.status)?.class"
+                  ></use>
                 </svg>
               </span>
               <div class="li-text">
@@ -41,7 +48,11 @@
         @current-change="handleCurrentChange"
       />
     </div>
-    <el-dialog v-model="show_group_info" :title="group_title" class="group-info-class">
+    <el-dialog
+      v-model="show_group_info"
+      :title="group_title"
+      class="group-info-class"
+    >
       <el-table
         ref="multipleTableRef"
         :data="form.table_data"
@@ -56,7 +67,11 @@
           :index="typeIndex"
         />
         <el-table-column prop="name" label="终端名称" show-overflow-tooltip />
-        <el-table-column prop="ip_address" label="终端IP" show-overflow-tooltip />
+        <el-table-column
+          prop="ip_address"
+          label="终端IP"
+          show-overflow-tooltip
+        />
         <el-table-column prop="code" label="呼叫编码" />
       </el-table>
     </el-dialog>
@@ -98,7 +113,7 @@ const {
 
 const { terminal_group_data }: any = inject("terminal_group");
 
-const store = useTerminalStore();
+const store = getStore.useTerminalStore();
 
 const search_value = computed(() => {
   return store.search_value;
@@ -201,9 +216,11 @@ watch(
 );
 
 const getGroupList = () => {
-  form.data = store.filterGroupData(terminal_group_data.value).filter((item: any) => {
-    return item.GroupID !== 0;
-  });
+  form.data = store
+    .filterGroupData(terminal_group_data.value)
+    .filter((item: any) => {
+      return item.GroupID !== 0;
+    });
   form.total = form.data.length;
   // 给分组手动添加状态，等后续增加分组状态字段再去除
   form.data.map((item: any) => {

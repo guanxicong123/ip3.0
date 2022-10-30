@@ -31,7 +31,7 @@ const uploadManager = defineAsyncComponent(
 );
 
 const upload = getStore.useUploadStore();
-const store = useAppStore();
+const store = getStore.useAppStore();
 // 计算属性 computed
 const uploadStore = computed(() => upload.showUploadManager);
 const isWebsocekt = computed(() => {

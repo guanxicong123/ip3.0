@@ -71,7 +71,9 @@
                   <span :title="terminalsStatusMap.get(scope.row.status)?.name">
                     <svg class="icon" aria-hidden="true">
                       <use
-                        :xlink:href="terminalsStatusMap.get(scope.row.status)?.class"
+                        :xlink:href="
+                          terminalsStatusMap.get(scope.row.status)?.class
+                        "
                       ></use>
                     </svg>
                   </span>
@@ -91,8 +93,16 @@
                 show-overflow-tooltip
               />
               <el-table-column prop="code" label="呼叫编码" sortable="custom" />
-              <el-table-column prop="type" label="终端类型" show-overflow-tooltip />
-              <el-table-column prop="task.name" label="任务名称" show-overflow-tooltip />
+              <el-table-column
+                prop="type"
+                label="终端类型"
+                show-overflow-tooltip
+              />
+              <el-table-column
+                prop="task.name"
+                label="任务名称"
+                show-overflow-tooltip
+              />
             </el-table>
           </div>
         </div>
@@ -145,9 +155,9 @@ const { updateCheckedTerminals }: any = inject("checkedAll");
 
 const storage_terminal_data = ref();
 
-const store = useTerminalStore();
+const store = getStore.useTerminalStore();
 
-const systemStore = useSystemStore();
+const systemStore = getStore.useSystemStore();
 
 const system_configs = computed(() => {
   return systemStore.system_configs;
@@ -291,7 +301,10 @@ const sortChange = (column: any, prop: any, order: any) => {
     }
   } else if (column.prop == "ip_address") {
     if (column.order === "descending") {
-      cacheTerminalData.value = store.sortChangeData(1, cacheTerminalData.value);
+      cacheTerminalData.value = store.sortChangeData(
+        1,
+        cacheTerminalData.value
+      );
     } else if (column.order === "ascending") {
       cacheTerminalData.value.sort((a: any, b: any) => {
         let ip1 = a.ip_address
@@ -324,7 +337,10 @@ const typeIndex = (index: number) => {
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
   form.currentPage = 1;
-  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage);
+  form.data = cacheTerminalData.value.slice(
+    0,
+    form.pageSize * form.currentPage
+  );
 };
 
 // 处理当前页更改
@@ -345,7 +361,11 @@ const getCurGroupData = () => {
   cacheTerminalData.value = JSON.parse(
     JSON.stringify(store.filterGroupData(storage_terminal_data.value))
   );
-  sortChange(sort_condition.value, sort_condition.value.prop, sort_condition.value.order);
+  sortChange(
+    sort_condition.value,
+    sort_condition.value.prop,
+    sort_condition.value.order
+  );
   form.data = cacheTerminalData.value;
   form.total = form.data.length;
 };
