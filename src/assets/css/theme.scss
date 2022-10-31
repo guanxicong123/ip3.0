@@ -4,6 +4,9 @@
 .theme {
   color: $c-theme !important;
 }
+.theme-bg {
+  background-color: $c-theme;
+}
 //滚动条
 ::-webkit-scrollbar-thumb {
   background-color: $c-theme;

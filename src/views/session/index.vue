@@ -96,15 +96,11 @@
                     </el-table-column>
                     <el-table-column prop="TaskVolume" label="任务音量">
                         <template #default="scope">
-                            <div class="com-table-task-volume"
-                                v-if="selectTerminaVolume && selectTerminaVolume.EndPointMac !== scope.row.EndPointMac"
-                            >
+                            <div class="com-table-task-volume" v-if="selectTerminaVolume?.EndPointMac !== scope.row.EndPointMac">
                                 <span class="volume">{{scope.row.TaskVolume}}</span>
                                 <span class="iconfont icon-edit1" @click="handelSelectVolume(scope.row)"></span>
                             </div>
-                            <div class="com-table-task-volume"
-                                v-else-if="selectTerminaVolume && selectTerminaVolume.EndPointMac === scope.row.EndPointMac"
-                            >
+                            <div class="com-table-task-volume" v-else>
                                 <el-input-number
                                     v-model="selectTerminaVolume.TaskVolume"
                                     :min="1"
@@ -112,7 +108,6 @@
                                     controls-position="right"
                                     size="large"
                                 />
-                                <span class="iconfont icon-save" @click="handelSelectVolume(scope.row)"></span>
                             </div>
                         </template>
                     </el-table-column>
@@ -161,17 +156,17 @@
 import { send } from '@/utils/socket'
 import { ElMessage, ElMessageBox, ElTable } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
-import useAppStore from '@/store/app'
-import useTerminalStore from '@/store/terminal'
 interface User {
     date: string;
     name: string;
     address: string;
 }
 
-const store = useAppStore()
-const terminalStore = useTerminalStore()
-const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
+// const store = useAppStore()
+// const terminalStore = useTerminalStore()
+const store = getStore.useAppStore();
+const terminalStore = getStore.useTerminalStore();
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 const form = reactive({
     search: "",
@@ -182,7 +177,7 @@ const form = reactive({
 });
 const loading = ref(false)
 const monitorTerminal: any = ref({})
-const tableDataAll = ref([]) //过滤后的数据
+const tableDataAll = ref<any[]>([]) //过滤后的数据
 const sessionOptions = [
     { value: 0, label: "全部类型" },
     { value: 21, label: "火警" },
@@ -212,8 +207,14 @@ const terminalStatus = new Map([
 ])
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
-const selectTerminalMac: any = ref({}) //选中表格设备的mac地址
-const selectTerminaVolume: any = ref('')
+const selectTerminalMac: any = ref({
+    EndPointIP: '',
+    EndPointMac: ''
+}) //选中表格设备的mac地址
+const selectTerminaVolume = ref({
+    TaskVolume: 0,
+    EndPointMac: ''
+})
 
 const sessionsData = computed(()=> {
     return store.sessionsArray
@@ -298,12 +299,12 @@ const setMonitorTerminal = (row: { TaskID: any; }) => {
     // let terminal = store.terminals.terminalsObjects[monitorTerminal.EndpointID]
     // if (terminal && terminal.Status !== 1) {
     //     loading.value = false
-    //     return global.$message.warning()
+    //     return proxy.$message.warning()
     // }
 
     // if (monitorTerminal.EndpointID) {
-    //     let data = global.$socket.baseParams
-    //     data.actioncode = global.AppConfig.webSocketIdMap.requestSetSessionMonitorTerminal
+    //     let data = proxy.$socket.baseParams
+    //     data.actioncode = proxy.AppConfig.webSocketIdMap.requestSetSessionMonitorTerminal
     //     data.data =  {
     //         ReceiverEndPointID: monitorTerminal.EndpointID,
     //         TaskID : '',
@@ -315,8 +316,8 @@ const setMonitorTerminal = (row: { TaskID: any; }) => {
     //     }, 5000)
 
 
-    //     global.$socket.send(data, ()=>{
-    //         global.$message.info()
+    //     proxy.$socket.send(data, ()=>{
+    //         proxy.$message.info()
     //     }).onmessage = (msg: any)=>{
     //         if (msg.actioncode === AppConfig.webSocketIdMap.responseMsg
     //             && msg.data !== null
@@ -327,11 +328,12 @@ const setMonitorTerminal = (row: { TaskID: any; }) => {
     //     }
     // } else {
     //     loading.value = false
-    //     global.$message.warning()
+    //     proxy.$message.warning()
     // }
 }
 // 选中音量
 const handelSelectVolume = (row: any) => {
+    console.log(row)
     selectTerminaVolume.value = row
 }
 // 设置任务音量

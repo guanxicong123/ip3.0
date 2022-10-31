@@ -9,7 +9,7 @@
     <div class="com-head set-padding">
       <div class="com-head-content">
         <div class="com-breadcrumb">
-          <el-select v-model="form.selectType">
+          <el-select v-model="form.selectType" @change="handleDefaultGet">
             <el-option
               v-for="item in sourceTypeOptions"
               :key="item.value"
@@ -17,16 +17,53 @@
               :value="item.value"
             />
           </el-select>
-          <el-input v-model="form.search" placeholder="任务名称" clearable />
-          <el-button :icon="Search"></el-button>
-          <el-button>重置</el-button>
+          <el-input
+            v-model="form.search"
+            placeholder="任务名称"
+            clearable
+            @clear="handleDefaultGet"
+            @keyup.enter="useCommonTable.handleKeyupEnter(form.search, handleDefaultGet)"
+            @change="useCommonTable.handleKeyupDelete(form.search, handleDefaultGet)"
+          />
+          <el-button
+            :icon="Search"
+            :disabled="form.search == ''"
+            @click="handleDefaultGet"
+          ></el-button>
+          <el-button
+            :disabled="form.search == '' && form.selectType == 0"
+            @click="handleReset"
+          >
+            重置
+          </el-button>
         </div>
         <div class="com-button">
-          <i class="iconfont icon-refresh" title="刷新"></i>
-          <i class="iconfont icon-add" title="新建"></i>
-          <i class="iconfont icon-clone" title="克隆"></i>
-          <i class="iconfont icon-delete" title="批量删除"></i>
-          <!-- <el-button type="primary" plain>导出任务</el-button> -->
+          <i class="iconfont icon-refresh" title="刷新" @click="handleGetOnePageData"></i>
+          <i
+            class="iconfont icon-add"
+            title="新建"
+            @click="usePublicMethod.clickJump($useRoute.path, 0)"
+          ></i>
+          <i
+            class="iconfont icon-clone"
+            :class="{ 'icon-disabled': multipleSelection.length == 0 }"
+            title="克隆"
+            @click="handleCloneTask"
+          ></i>
+          <i
+            class="iconfont icon-delete"
+            :class="{ 'icon-disabled': multipleSelection.length == 0 }"
+            title="批量删除"
+            @click="handleDelete('batch', 0)"
+          ></i>
+          <!-- <el-button
+            type="primary"
+            plain
+            :loading="form.exporting"
+            @click="handleExportExcel"
+          >
+            导出任务
+          </el-button> -->
         </div>
       </div>
     </div>
@@ -36,10 +73,13 @@
           ref="multipleTableRef"
           :data="form.data"
           border
-          style="width: 100%"
           height="100%"
           @selection-change="handleSelectionChange"
+          @sort-change="handleSortChange"
           :default-sort="{ prop: 'execute_time', order: 'ascending' }"
+          v-loading="form.loading"
+          element-loading-text="Loading..."
+          element-loading-background="rgba(0, 0, 0, 0.7)"
         >
           <el-table-column type="expand">
             <template #default="props">
@@ -53,13 +93,11 @@
                   {{ props.row.light ? props.row.light.name : "全关" }}
                 </el-card>
                 <el-card>
-                  播放模式:
+                  {{ props.row.type == 1 || props.row.type == 4 ? "播放模式:" : "音质:" }}
                   {{
-                    props.row.type == 1
+                    props.row.type == 1 || props.row.type == 4
                       ? playModelMap.get(props.row.sound_source?.play_model)
-                      : soundQualityMap.get(
-                          props.row.sound_source?.sound_quality
-                        )
+                      : soundQualityMap.get(props.row.sound_source?.sound_quality)
                   }}
                 </el-card>
               </div>
@@ -69,7 +107,7 @@
             type="index"
             label="No."
             show-overflow-tooltip
-            width="50"
+            width="60"
             :index="typeIndex"
           />
           <el-table-column prop="name" label="任务名称" show-overflow-tooltip />
@@ -80,107 +118,181 @@
             show-overflow-tooltip
           >
             <template #default="scope">
-              <select class="custom-select" v-model="scope.row.execute_time">
-                <option
-                  v-for="(item, key) in scope.row.execute_time?.split(',')"
-                  :key="key"
-                  :disabled="true"
-                >
-                  {{ item }}
-                </option>
-              </select>
+              <el-dropdown
+                placement="left-start"
+                :max-height="234"
+                class="custom-dropdown"
+              >
+                <span class="theme">
+                  <el-icon class="el-icon--right"><arrow-down /></el-icon>
+                  {{ scope.row.execute_time?.split(",")?.[0] }}
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item
+                      v-for="(item, key) in scope.row.execute_time?.split(',')"
+                      :key="key"
+                    >
+                      {{ item }}
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </template>
           </el-table-column>
-          <el-table-column prop="repeat_weeks" label="重复日期" />
-          <el-table-column
-            prop="life_time"
-            label="播放时间/曲目"
-            show-overflow-tooltip
-          >
+          <el-table-column prop="repeat_weeks" label="重复日期" show-overflow-tooltip>
             <template #default="scope">
-              <span v-if="scope.row.task.sound_source">
-                <template v-if="scope.row.task.sound_source?.life_time">
-                  {{ scope.row.task.sound_source.life_time }}
+              <!-- 显示周/日期 -->
+              <el-dropdown
+                placement="left-start"
+                :max-height="234"
+                class="custom-dropdown"
+              >
+                <span class="theme">
+                  <el-icon class="el-icon--right"><arrow-down /></el-icon>
+                  {{ scope.row.time_type === 0 ? "按周" : "按日期" }}
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item
+                      v-for="(item, key) in scope.row.time_type === 0
+                        ? scope.row.repeat_weeks
+                        : scope.row.assign_dates"
+                      :key="key"
+                    >
+                      {{
+                        scope.row.time_type === 0
+                          ? weeksMap.get(item.repeat_weeks)
+                          : item.dates
+                      }}
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
                 </template>
-                <template v-if="scope.row.task.sound_source?.play_number">
-                  {{ scope.row.task.sound_source.play_number }} 首
+              </el-dropdown>
+            </template>
+          </el-table-column>
+          <el-table-column prop="life_time" label="播放时间/曲目" show-overflow-tooltip>
+            <template #default="scope">
+              <!-- 只有音乐播放 -->
+              <span
+                v-if="
+                  scope.row.type == 1 ||
+                  (scope.row.type === 4 && scope.row.sound_source.type === 1)
+                "
+              >
+                <template v-if="scope.row.sound_source?.life_time">
+                  {{ scope.row.sound_source.life_time }}
+                </template>
+                <template v-if="scope.row.sound_source?.play_number">
+                  {{ scope.row.sound_source.play_number }} 首
                 </template>
               </span>
               <span v-else>--</span>
             </template>
           </el-table-column>
-          <el-table-column prop="type" label="音源类型" />
-          <el-table-column prop="task" label="音源">
+          <el-table-column prop="type" label="音源类型" show-overflow-tooltip>
             <template #default="scope">
-              <template v-if="scope.row.task.type === 1">
-                <el-button link type="primary">
-                  <template #icon>
-                    <i
-                      class="iconfont icon-view-media"
-                      title="查看媒体文件"
-                    ></i>
-                  </template>
-                </el-button>
-                <el-button link type="primary">
-                  <template #icon>
-                    <i
-                      class="iconfont icon-view-media-folder"
-                      title="查看媒体文件夹"
-                    ></i>
-                  </template>
-                </el-button>
+              {{ audioSourceMap.get(scope.row.type) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="sound_source" label="音源" show-overflow-tooltip>
+            <template #default="scope">
+              <template
+                v-if="
+                  scope.row.type === 1 ||
+                  (scope.row.type === 4 && scope.row.sound_source.type === 1)
+                "
+              >
+                <view-components-popover
+                  :myConfig="mediaConfig"
+                  :url="'/timing-tasks/' + scope.row.id + '/medias'"
+                  :fastSoundID="scope.row.fast_sound_id"
+                />
+                <view-components-popover
+                  :myConfig="folderConfig"
+                  :url="'/timing-tasks/' + scope.row.id + '/medias-groups'"
+                  :fastSoundID="scope.row.fast_sound_id"
+                />
               </template>
-              <template v-if="scope.row.task.type === 2">
-                {{ scope.row.task.sound_source?.sound_card }}
+              <template
+                v-if="
+                  scope.row.type === 2 ||
+                  (scope.row.type === 4 && scope.row.sound_source.type === 2)
+                "
+              >
+                <i
+                  class="iconfont icon-view-collection-terminal"
+                  :title="scope.row.sound_source?.sound_card"
+                  v-if="scope.row.sound_source?.sound_card"
+                ></i>
+                <span v-else class="red"> 没有声卡 </span>
               </template>
-              <template v-if="scope.row.task.type === 3">
-                <span
-                  v-if="
-                    scope.row.task &&
-                    scope.row.task?.sound_source &&
-                    scope.row.task?.sound_source?.terminals_name
-                  "
-                >
-                  {{ scope.row.task.sound_source.terminals_name }}
-                </span>
+              <template
+                v-if="
+                  scope.row.type === 3 ||
+                  (scope.row.type === 4 && scope.row.sound_source.type === 3)
+                "
+              >
+                <i
+                  class="iconfont icon-view-collection-terminal"
+                  :title="scope.row.sound_source?.terminals_name"
+                  v-if="scope.row.sound_source?.terminals_name"
+                ></i>
                 <span v-else class="red"> 没有采集终端 </span>
               </template>
             </template>
           </el-table-column>
           <el-table-column prop="area" label="执行区域">
-            <template #default>
-              <el-button link type="primary">
-                <template #icon>
-                  <i class="iconfont icon-view-terminal" title="查看终端"></i>
-                </template>
-              </el-button>
-              <el-button link type="primary">
-                <template #icon>
-                  <i class="iconfont icon-view-grouping" title="查看分组"></i>
-                </template>
-              </el-button>
+            <template #default="scope">
+              <view-components-popover
+                :url="'/timing-tasks/' + scope.row.id + '/terminals'"
+                :fastTerminalsID="scope.row.fast_terminals_id"
+              />
+              <view-components-popover
+                :myConfig="groupConfig"
+                :url="'/timing-tasks/' + scope.row.id + '/terminals-groups'"
+                :fastTerminalsID="scope.row.fast_terminals_id"
+              />
             </template>
           </el-table-column>
           <el-table-column label="操作" width="120">
             <template #default="scope">
-              <el-button link type="primary" v-if="scope.row.disable === 1">
+              <el-button
+                link
+                type="primary"
+                v-if="scope.row.is_done === 0"
+                @click="handleEnableOrDisable(scope.row)"
+              >
                 <template #icon>
                   <i class="iconfont icon-enable-task" title="启用"></i>
                 </template>
               </el-button>
-              <el-button link type="danger" v-else>
+              <el-button
+                link
+                type="danger"
+                v-else
+                @click="handleEnableOrDisable(scope.row)"
+              >
                 <template #icon>
                   <i class="iconfont icon-disable-task" title="禁用"></i>
                 </template>
               </el-button>
               <el-button link type="primary">
                 <template #icon>
-                  <i class="iconfont icon-edit1" title="编辑"></i>
+                  <i
+                    class="iconfont icon-edit"
+                    title="编辑"
+                    @click="usePublicMethod.clickJump($useRoute.path, scope.row.id)"
+                  ></i>
                 </template>
               </el-button>
               <el-button link type="danger">
                 <template #icon>
-                  <i class="iconfont icon-delete" title="删除"></i>
+                  <i
+                    class="iconfont icon-delete"
+                    title="删除"
+                    @click="handleDelete('single', scope.row)"
+                  ></i>
                 </template>
               </el-button>
             </template>
@@ -200,25 +312,47 @@
         @current-change="handleCurrentChange"
       />
     </div>
+    <!-- 克隆任务 -->
+    <clone-timing-task
+      :isShow="form.cloneDialogVisible"
+      :editInfor="multipleSelection"
+      @show="handleCloneDialogVisible"
+      @success="handleCloneSuccessCallback"
+    />
+    <!-- 导出表格 -->
+    <iframe src="" ref="downloadRef" style="display: none"></iframe>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ElTable } from "element-plus";
-import { Search } from "@element-plus/icons-vue";
+import { ElTable, ElMessage, ElMessageBox } from "element-plus";
+import { Search, ArrowDown } from "@element-plus/icons-vue";
+import usePublicMethod from "@/utils/global/index";
+import useCommonTable from "@/utils/global/common_table_search";
+import { TasksService } from "@/utils/api/task/index";
+
+// defineAsyncComponent 异步组件-懒加载子组件
+const cloneTimingTask = defineAsyncComponent(
+  () => import("./components/clone_timing_task.vue")
+);
 
 interface User {
-  date: string;
+  id: number;
   name: string;
-  address: string;
+  repeat_weeks: number;
 }
 const form = reactive({
   search: "",
   selectType: 0,
-  data: [{}],
+  data: [],
   currentPage: 1,
   pageSize: 20,
   total: 0,
+  orderColumn: "execute_time",
+  orderType: "asc",
+  loading: false, // 等待加载数据状态
+  cloneDialogVisible: false, // 是否显示克隆任务弹窗
+  exporting: false, // 等待导出状态
 });
 const sourceTypeOptions = [
   { value: 0, label: "全部音源" },
@@ -226,18 +360,17 @@ const sourceTypeOptions = [
   { value: 2, label: "声卡采集" },
   { value: 3, label: "终端采集" },
 ];
-const playModelMap = new Map([
-  [0, "列表播放"],
-  [1, "循环播放"],
-  [2, "随机播放"],
-]);
-const soundQualityMap = new Map([
-  [1, "初级"],
-  [2, "中级"],
-  [3, "高级"],
-]);
+// 表格类型格式转换
+const playModelMap = useFormatMap.playModelMap;
+const soundQualityMap = useFormatMap.soundQualityMap;
+const audioSourceMap = useFormatMap.audioSourceTypeMap;
+const weeksMap = useFormatMap.weeksTypeMap;
+// 路由
+const $useRoute = useRoute();
+// 获取refs
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
+const downloadRef = ref();
 // 当前已选择表格数据
 const handleSelectionChange = (val: User[]) => {
   multipleSelection.value = val;
@@ -246,40 +379,209 @@ const handleSelectionChange = (val: User[]) => {
 const typeIndex = (index: number) => {
   return index + (form.currentPage - 1) * form.pageSize + 1;
 };
+// 处理获取一页数据
+const handleGetOnePageData = async () => {
+  form.loading = true;
+  await TasksService.getOnePageTasks({
+    type: form.selectType,
+    likeName: form.search,
+    page: form.currentPage,
+    limit: form.pageSize,
+    orderColumn: form.orderColumn,
+    orderType: form.orderType,
+    withLight: true,
+  })
+    .then((result) => {
+      if (result.result?.data) {
+        form.data = result.result.data;
+        form.total = result.result.total;
+      } else {
+        ElMessage({
+          type: "error",
+          message: result.result?.message,
+          grouping: true,
+        });
+      }
+      form.loading = false;
+    })
+    .catch((error) => {
+      form.loading = false;
+      console.log(error);
+    });
+};
+// 处理默认获取
+const handleDefaultGet = () => {
+  form.currentPage = 1;
+  handleGetOnePageData();
+};
+// 处理重置
+const handleReset = () => {
+  form.search = "";
+  form.selectType = 0;
+  handleDefaultGet();
+};
+// 处理排序
+const handleSortChange = (row: { prop: any; order: string | string[] }) => {
+  form.orderColumn = row.prop;
+  form.orderType = !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
+  handleDefaultGet();
+};
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
-  form.currentPage = 1;
+  handleDefaultGet();
+  multipleTableRef.value?.setScrollTop(0);
 };
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
+  handleGetOnePageData();
+  multipleTableRef.value?.setScrollTop(0);
+};
+// 处理删除
+const handleDelete = (type: string, row: any) => {
+  // batch: 批量删除，single：单个删除
+  if (type === "batch" && multipleSelection.value.length == 0) {
+    return;
+  }
+  ElMessageBox.confirm("即将删除, 是否继续？", "提示", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+    draggable: true,
+  })
+    .then(() => {
+      let ids = [];
+      type === "batch"
+        ? multipleSelection.value.map((item) => {
+            ids.push(item.id);
+          })
+        : ids.push(row.id);
+      TasksService.deleteTasks({
+        ids: ids,
+      })
+        .then((result) => {
+          if (result.result > 0) {
+            // 假如删除完本页数据，form.currentPage减去一页再更新数据
+            if (form.data.length <= ids.length && form.currentPage > 1) {
+              form.currentPage--;
+            }
+            handleGetOnePageData();
+            ElMessage({
+              type: "success",
+              message: "删除成功",
+              grouping: true,
+            });
+          } else {
+            ElMessage({
+              type: "error",
+              message: result.result?.message || "删除失败",
+              grouping: true,
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    })
+    .catch(() => {});
+};
+// 处理启用or停用任务
+const handleEnableOrDisable = (row: any) => {
+  const status = row.is_done === 0 ? 1 : 0;
+  TasksService.putTasks(
+    {
+      type: row.type,
+      is_done: status,
+    },
+    row.id
+  )
+    .then((result) => {
+      if (Object.prototype.hasOwnProperty.call(result.result, "id")) {
+        row.is_done = status;
+        ElMessage({
+          type: "success",
+          message: status === 1 ? "启用成功" : "禁用成功",
+          grouping: true,
+        });
+      } else {
+        ElMessage({
+          type: "error",
+          message: result.result?.message,
+          grouping: true,
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+// 处理点击克隆任务
+const handleCloneTask = () => {
+  if (multipleSelection.value.length < 1) {
+    return;
+  }
+  form.cloneDialogVisible = true;
+};
+// 处理新建-编辑克隆任务弹窗的响应展示/关闭
+const handleCloneDialogVisible = (value: boolean) => {
+  form.cloneDialogVisible = value;
+};
+// 处理编辑克隆任务弹窗的成功回调
+const handleCloneSuccessCallback = () => {
+  handleDefaultGet();
+};
+// 查看组件插件配置
+const groupConfig = {
+  iconfont: "icon-view-grouping", // 字体图标
+  iconTitle: "查看分组", // icon title
+  tableTitle: "分组", // 表格顶部 title
+  searchPlaceholder: "分组名称", // 搜索框 placeholder
+  showTableColumn: [
+    { prop: "name", label: "分组名称" },
+    { prop: "call_code", label: "呼叫编码" },
+  ], // 显示的表格列
+};
+const mediaConfig = {
+  iconfont: "icon-view-media", // 字体图标
+  iconTitle: "查看媒体文件", // icon title
+  tableTitle: "媒体文件", // 表格顶部 title
+  searchPlaceholder: "名称", // 搜索框 placeholder
+  showTableColumn: [{ prop: "name", label: "名称" }], // 显示的表格列
+};
+const folderConfig = {
+  iconfont: "icon-view-media-folder", // 字体图标
+  iconTitle: "查看媒体文件夹", // icon title
+  tableTitle: "媒体文件夹", // 表格顶部 title
+  searchPlaceholder: "名称", // 搜索框 placeholder
+  showTableColumn: [{ prop: "name", label: "名称" }], // 显示的表格列
+};
+// 处理导出表格
+const handleExportExcel = () => {
+  form.exporting = true;
+  TasksService.getExportTasks()
+    .then((result) => {
+      form.exporting = false;
+      const isHasURL = Object.prototype.hasOwnProperty.call(result.result, "url");
+      if (isHasURL) {
+        downloadRef.value.src = result.result.url;
+      } else {
+        ElMessage({
+          type: "error",
+          message: result.result?.message,
+          grouping: true,
+        });
+      }
+    })
+    .catch((error) => {
+      form.exporting = false;
+      console.log(error);
+    });
 };
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  form.data = [];
-  for (let i = 0; i < 20; i++) {
-    form.data.push({
-      status: i,
-      disable: i,
-      priority: i,
-      start_date: "2022-07-30",
-      end_date: "2022-07-30",
-      volume: i,
-      type: 1,
-      sound_source: {
-        play_model: i,
-      },
-      name: "Tom",
-      task: {
-        type: i,
-        name: "Tom",
-      },
-      address: "No. 189, Grove St, Los Angeles",
-    });
-  }
-  form.total = form.data.length;
+  handleGetOnePageData();
 });
 </script>
 

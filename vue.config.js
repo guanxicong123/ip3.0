@@ -10,7 +10,9 @@ const path = require('path')
 const pathSrc = path.resolve(__dirname, 'src')
 
 module.exports = defineConfig({
+    transpileDependencies: true,
     lintOnSave: false,
+    parallel: false,
     pluginOptions: {
         electronBuilder: {
             preload: "src/preload.ts",
@@ -24,7 +26,7 @@ module.exports = defineConfig({
                 // options placed here will be merged with default configuration and passed to electron-builder
                 "productName": 'ip-broadcast', //项目名，也是生成的安装文件名，即ip-broadcast.exe
                 "appId": 'com.example.ip-broadcast',
-                "copyright": "Copyright © 2021",//版权信息
+                "copyright": "Copyright © 2022",//版权信息
                 // 设置用户可选择安装目录
                 "nsis": {
                     // "oneClick" : false,// 是否一键安装
@@ -81,7 +83,6 @@ module.exports = defineConfig({
             }
         }
     },
-    transpileDependencies: true,
     /**
      * webpack 配置进行更细粒度的修改  https://cli.vuejs.org/zh/config/#chainwebpack
      */
@@ -119,18 +120,20 @@ module.exports = defineConfig({
                             // 命名导入 import { localStorage } from '@/utils/storage'
                             'localStorage',
                         ],
-                        '@/store/app': [
-                            ['default', 'useAppStore'],
-                            // 别名 import { useFetch as useMyFetch } from '@/store'
-                            // ['useFetch', 'useMyFetch'],
+                        '@/store/get_store': [
+                            ['default', 'getStore'],
                         ],
-                        '@/store/terminal': [
-                            ['default', 'useTerminalStore'],
-                            // 别名 import { useFetch as useMyFetch } from '@/store'
-                            // ['useFetch', 'useMyFetch'],
+                        '@/utils/global/index': [
+                            ['default', 'usePublicMethod'],
                         ],
-                        '@/store/system_config': [
-                            ['default', 'useSystemStore']
+                        '@/utils/global/format_map_type': [
+                            ['default', 'useFormatMap'],
+                        ],
+                        '@/utils/global/regex': [
+                            ['default', 'useRegex'],
+                        ],
+                        '@/utils/vue/use_current_instance': [
+                            ['default', 'useCurrentInstance'],
                         ],
                         'axios': [
                             // 默认导入 import { default as axios } from 'axios'
@@ -182,8 +185,8 @@ module.exports = defineConfig({
         loaderOptions: {
             scss: {
                 additionalData: `
-          @import "@/assets/css/color.scss";
-        `
+                  @import "@/assets/css/color.scss";
+                `
             }
         }
     },

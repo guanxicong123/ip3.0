@@ -139,7 +139,7 @@ const form = reactive<any>({
   total: 0,
   currentGroupTitle: "所有终端",
   isShowNavBar: true, // 是否显示左侧导航栏
-  current_group: 0
+  current_group: 0,
 });
 const terminalsStatusMap = new Map([
   [0, { class: "#icon-off-line", name: "离线" }],
@@ -149,82 +149,99 @@ const terminalsStatusMap = new Map([
   [4, { class: "#icon-fault", name: "故障" }],
 ]);
 
-const {
-  terminal_group_data,
-}:any = inject('terminal_group')
+const { terminal_group_data }: any = inject("terminal_group");
 
-const {
-  updateCheckedTerminals
-}: any = inject("checkedAll")
+const { updateCheckedTerminals }: any = inject("checkedAll");
 
-const storage_terminal_data = ref()
+const storage_terminal_data = ref();
 
-const store = useTerminalStore()
+const store = getStore.useTerminalStore();
 
-const systemStore = useSystemStore()
+const systemStore = getStore.useSystemStore();
 
 const system_configs = computed(() => {
-  return systemStore.system_configs
-})
+  return systemStore.system_configs;
+});
 
 const terminal_data = computed(() => {
-  return store.terminal_data
-})
+  return store.terminal_data;
+});
 
 const terminal_status = computed(() => {
-  return store.terminal_status
-})
+  return store.terminal_status;
+});
 
 const search_value = computed(() => {
-  return store.search_value
-})
+  return store.search_value;
+});
 
 const sort_condition: any = ref({
-  prop: 'ip_address',
-  order: 'descending'
-})
+  prop: "ip_address",
+  order: "descending",
+});
 
-const cacheTerminalData: any = []
+const cacheTerminalData: any = [];
 
-watch(()=> terminal_group_data.value, (newVal)=> {
-  getCurGroupData()
-},{
-  deep: true
-})
+watch(
+  () => terminal_group_data.value,
+  (newVal) => {
+    getCurGroupData();
+  },
+  {
+    deep: true,
+  }
+);
 
+watch(
+  () => terminal_status.value,
+  () => {
+    // store.filterGroupData(form.data)
+    cacheTerminalData.value = JSON.parse(
+      JSON.stringify(store.filterGroupData(storage_terminal_data.value))
+    );
+    sortChange(
+      sort_condition.value,
+      sort_condition.value.prop,
+      sort_condition.value.order
+    );
+    form.data = cacheTerminalData.value;
+    form.total = form.data.length;
+  }
+);
 
-watch(() => terminal_status.value, () => {
-  // store.filterGroupData(form.data)
-  cacheTerminalData.value = JSON.parse(JSON.stringify(store.filterGroupData(storage_terminal_data.value)))
-  sortChange(sort_condition.value, sort_condition.value.prop, sort_condition.value.order)
-  form.data = cacheTerminalData.value
-  form.total = form.data.length
-})
-
-watch(() => search_value.value, () => {
-  // store.filterGroupData(form.data)
-  cacheTerminalData.value = JSON.parse(JSON.stringify(store.filterGroupData(storage_terminal_data.value)))
-  sortChange(sort_condition.value, sort_condition.value.prop, sort_condition.value.order)
-  form.data = cacheTerminalData.value
-  form.total = form.data.length
-})
+watch(
+  () => search_value.value,
+  () => {
+    // store.filterGroupData(form.data)
+    cacheTerminalData.value = JSON.parse(
+      JSON.stringify(store.filterGroupData(storage_terminal_data.value))
+    );
+    sortChange(
+      sort_condition.value,
+      sort_condition.value.prop,
+      sort_condition.value.order
+    );
+    form.data = cacheTerminalData.value;
+    form.total = form.data.length;
+  }
+);
 
 // 路由
 let $useRouter = useRouter();
 let $useRoute = useRoute();
 
 const sort_map = new Map([
-  [0, 'status'],
-  [1, 'ip_address'],
-  [2, 'name'],
-  [3, 'code']
-])
+  [0, "status"],
+  [1, "ip_address"],
+  [2, "name"],
+  [3, "code"],
+]);
 
 // 处理点击切换分组
 const handleClickGroup = (val: any) => {
   form.currentGroupTitle = val.GroupName;
-  form.current_group = val.GroupID
-  getCurGroupData()
+  form.current_group = val.GroupID;
+  getCurGroupData();
 };
 
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
@@ -235,70 +252,81 @@ const multipleSelection = ref<User[]>([]);
 const handleSelectionChange = (val: User[]) => {
   multipleSelection.value = val;
   let terminal_ids = multipleSelection.value.map((item: any) => {
-    return item.EndpointID
-  })
-  updateCheckedTerminals(terminal_ids)
+    return item.EndpointID;
+  });
+  updateCheckedTerminals(terminal_ids);
 };
 
 const sortByIPDesc = (a: any, b: any) => {
-  let ip1 = Number(a.ip_address.split('.').map((e: any) => e.padStart(3, '0')).join(''))
-  let ip2 = Number(b.ip_address.split('.').map((e: any) => e.padStart(3, '0')).join(''))
+  let ip1 = Number(
+    a.ip_address
+      .split(".")
+      .map((e: any) => e.padStart(3, "0"))
+      .join("")
+  );
+  let ip2 = Number(
+    b.ip_address
+      .split(".")
+      .map((e: any) => e.padStart(3, "0"))
+      .join("")
+  );
   if (ip2 - ip1 > 0) {
-    return 1
+    return 1;
   } else {
-    return -1
+    return -1;
   }
-}
+};
 
 // 排序处理
 const sortChange = (column: any, prop: any, order: any) => {
   sort_condition.value = {
     prop: column.prop,
-    order: column.order
-  }
+    order: column.order,
+  };
   if (column.prop == "status") {
     if (column.order === "descending") {
-      cacheTerminalData.value.sort((a: any, b: any) =>
-        b.status - a.status
-      )
+      cacheTerminalData.value.sort((a: any, b: any) => b.status - a.status);
     } else if (column.order === "ascending") {
-      cacheTerminalData.value.sort((a: any, b: any) =>
-        a.status - b.status
-      )
+      cacheTerminalData.value.sort((a: any, b: any) => a.status - b.status);
     }
   } else if (column.prop == "name") {
     if (column.order === "descending") {
       cacheTerminalData.value.sort((a: any, b: any) =>
         b.name.localeCompare(a.name, "zh")
-      )
+      );
     } else if (column.order === "ascending") {
       cacheTerminalData.value.sort((a: any, b: any) =>
         a.name.localeCompare(b.name, "zh")
-      )
+      );
     }
   } else if (column.prop == "ip_address") {
     if (column.order === "descending") {
-      cacheTerminalData.value = store.sortChangeData(1, cacheTerminalData.value)
+      cacheTerminalData.value = store.sortChangeData(
+        1,
+        cacheTerminalData.value
+      );
     } else if (column.order === "ascending") {
       cacheTerminalData.value.sort((a: any, b: any) => {
-        let ip1 = a.ip_address.split('.').map((e: any) => e.padStart(3, '0')).join('')
-        let ip2 = b.ip_address.split('.').map((e: any) => e.padStart(3, '0')).join('')
-        return ip1 - ip2
-      })
+        let ip1 = a.ip_address
+          .split(".")
+          .map((e: any) => e.padStart(3, "0"))
+          .join("");
+        let ip2 = b.ip_address
+          .split(".")
+          .map((e: any) => e.padStart(3, "0"))
+          .join("");
+        return ip1 - ip2;
+      });
     }
   } else {
     if (column.order === "descending") {
-      cacheTerminalData.value.sort((a: any, b: any) =>
-        b.code - a.code
-      )
+      cacheTerminalData.value.sort((a: any, b: any) => b.code - a.code);
     } else if (column.order === "ascending") {
-      cacheTerminalData.value.sort((a: any, b: any) =>
-        a.code - b.code
-      )
+      cacheTerminalData.value.sort((a: any, b: any) => a.code - b.code);
     }
   }
-  handleSizeChange(form.pageSize)
-}
+  handleSizeChange(form.pageSize);
+};
 
 // 序号
 const typeIndex = (index: number) => {
@@ -309,38 +337,51 @@ const typeIndex = (index: number) => {
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
   form.currentPage = 1;
-  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage)
+  form.data = cacheTerminalData.value.slice(
+    0,
+    form.pageSize * form.currentPage
+  );
 };
 
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
-  form.data = cacheTerminalData.value.slice(form.pageSize * (form.currentPage - 1), form.pageSize * form.currentPage)
+  form.data = cacheTerminalData.value.slice(
+    form.pageSize * (form.currentPage - 1),
+    form.pageSize * form.currentPage
+  );
 };
 
 const getCurGroupData = () => {
-  form.groupData = terminal_group_data.value
-  let index = terminal_group_data.value.findIndex((item: any) => item.GroupID === form.current_group)
-  storage_terminal_data.value = terminal_group_data.value[index].terminals
-  cacheTerminalData.value = JSON.parse(JSON.stringify(store.filterGroupData(storage_terminal_data.value)))
-  sortChange(sort_condition.value, sort_condition.value.prop, sort_condition.value.order)
-  form.data = cacheTerminalData.value
-  form.total = form.data.length
-}
+  form.groupData = terminal_group_data.value;
+  let index = terminal_group_data.value.findIndex(
+    (item: any) => item.GroupID === form.current_group
+  );
+  storage_terminal_data.value = terminal_group_data.value[index].terminals;
+  cacheTerminalData.value = JSON.parse(
+    JSON.stringify(store.filterGroupData(storage_terminal_data.value))
+  );
+  sortChange(
+    sort_condition.value,
+    sort_condition.value.prop,
+    sort_condition.value.order
+  );
+  form.data = cacheTerminalData.value;
+  form.total = form.data.length;
+};
 
 const getGroupList = () => {
-  getCurGroupData()
-}
+  getCurGroupData();
+};
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   sort_condition.value = {
     prop: String(sort_map.get(system_configs.value.TerminalOrderbyType)),
-    order: 'descending'
-  }
-  getGroupList()
+    order: "descending",
+  };
+  getGroupList();
 });
-
 </script>
 
 <style lang="scss" scoped>

@@ -14,6 +14,7 @@
     "baseUrl": ".",
     "types": [
       "webpack-env",
+      "element-plus/global", // 使 volar 支持 Element+，加入类型配置
       "unplugin-icons/types/vue"
     ],
     "paths": {
@@ -22,12 +23,12 @@
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
   "include": [
-    "src/**/*.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "./auto-imports.d.ts"
   ],
   "exclude": ["node_modules"]
 }
