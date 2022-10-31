@@ -1,6 +1,5 @@
 
 // import { message } from '@/utils/resetMessage'
-// import useAppStore from '../store/app'
 import router from '../router'
 import { ElMessage } from 'element-plus'
 import { Md5 } from 'ts-md5'

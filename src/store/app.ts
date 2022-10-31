@@ -60,6 +60,7 @@ const useAppStore: any = defineStore({
         },
         // 会话数据推送
         taskDataPush(data: any) {
+            console.log(data)
             if (this.sessionsArray.length === 0) {
                 this.sessionsArray = data
             }else {

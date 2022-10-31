@@ -24,11 +24,12 @@
                     <span>监听音响</span>
                     <el-popover
                             placement="bottom"
-                            :width="400" trigger="click"
+                            :width="400"
+                            trigger="click"
                             popper-class="select-monitor-terminal"
                         >
                         <template #reference>
-                            <el-button style="margin-right: 16px">请选择监听终端</el-button>
+                            <el-button style="margin-right: 16px">{{selectTerminalMac.EndPointIP ? selectTerminalMac.EndPointIP : '请选择监听终端'}}</el-button>
                         </template>
                         <div>
                             <div class="monitor-terminal-header">
@@ -36,16 +37,18 @@
                                 <el-input v-model="form.search" placeholder="终端名称/终端IP" clearable />
                             </div>
                             <el-table
+                                class="monitor-terminal-table"
                                 :data="terminal_data"
                                 :max-height="300"
                                 size="small"
-                                @row-click="handelSelectRow">
+                                @row-click="handelSelectRow"
+                                :row-class-name="tableRowClassName">
                                 <el-table-column label="名称">
                                     <template #default="scope">
                                         <div class="monitor-terminal-name">
                                             <span class="iconfont" :class="terminalStatus.get(scope.row.Status)"></span>
                                             <span class="terminal-name">{{scope.row.EndPointIP}}</span>
-                                            <span class="iconfont" :class="{'icon-selected': selectTerminalMac === scope.row.EndPointMac}"></span>
+                                            <span class="iconfont" :class="{'icon-selected': selectTerminalMac.EndPointMac === scope.row.EndPointMac}"></span>
                                         </div>
                                     </template>
                                 </el-table-column>
@@ -58,10 +61,13 @@
         </div>
         <div class="com-main com-m-bg">
             <div class="com-table">
-                <el-table ref="multipleTableRef" :data="form.data" border style="width: 100%" height="100%"
+                <el-table
+                    ref="multipleTableRef"
+                    :data="form.data" border
+                    style="width: 100%" height="100%"
                     @selection-change="handleSelectionChange"
                     :default-sort="{ prop: 'TaskBeginTime', order: 'descending' }">
-                    <el-table-column type="index" label="序号" show-overflow-tooltip width="60" :index="typeIndex" />
+                    <el-table-column type="index" label="序号" show-overflow-tooltip :width="60" :index="typeIndex" />
                     <el-table-column prop="TaskName" label="任务名称" show-overflow-tooltip />
                     <el-table-column prop="TaskType" label="会话类型" />
                     <el-table-column prop="TaskIniator" label="发起方" />
@@ -88,7 +94,28 @@
                             </span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="TaskVolume" label="任务音量" />
+                    <el-table-column prop="TaskVolume" label="任务音量">
+                        <template #default="scope">
+                            <div class="com-table-task-volume"
+                                v-if="selectTerminaVolume && selectTerminaVolume.EndPointMac !== scope.row.EndPointMac"
+                            >
+                                <span class="volume">{{scope.row.TaskVolume}}</span>
+                                <span class="iconfont icon-edit1" @click="handelSelectVolume(scope.row)"></span>
+                            </div>
+                            <div class="com-table-task-volume"
+                                v-else-if="selectTerminaVolume && selectTerminaVolume.EndPointMac === scope.row.EndPointMac"
+                            >
+                                <el-input-number
+                                    v-model="selectTerminaVolume.TaskVolume"
+                                    :min="1"
+                                    :max="10"
+                                    controls-position="right"
+                                    size="large"
+                                />
+                                <span class="iconfont icon-save" @click="handelSelectVolume(scope.row)"></span>
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="TaskBeginTime" label="会话进行时间" sortable="custom" width="160"/>
                     <el-table-column prop="IsMonitor" label="监听状态" />
                         <!-- <template #default="scope">
@@ -132,17 +159,18 @@
 
 <script lang="ts" setup>
 import { send } from '@/utils/socket'
-import { ElMessageBox, ElTable } from "element-plus";
+import { ElMessage, ElMessageBox, ElTable } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
-
+import useAppStore from '@/store/app'
+import useTerminalStore from '@/store/terminal'
 interface User {
     date: string;
     name: string;
     address: string;
 }
 
-// const store = useAppStore()
-// const terminalStore = useTerminalStore()
+const store = useAppStore()
+const terminalStore = useTerminalStore()
 const {appContext: {config: {globalProperties: global}}} = getCurrentInstance()
 
 const form = reactive({
@@ -184,14 +212,15 @@ const terminalStatus = new Map([
 ])
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
-const selectTerminalMac = ref('') //选中表格设备的mac地址
+const selectTerminalMac: any = ref({}) //选中表格设备的mac地址
+const selectTerminaVolume: any = ref('')
 
 const sessionsData = computed(()=> {
     return store.sessionsArray
 }) //store.sessionsArray
-// const terminal_data = computed(() => {
-//     return terminalStore.terminal_data
-// })
+const terminal_data = computed(() => {
+    return terminalStore.terminal_data
+})
 
 
 watch(() => sessionsData.value, ()=> {
@@ -225,10 +254,16 @@ const getTriggerOptions = () => {
 // 选中表格行
 const handelSelectRow = (row: any) => {
     if (row.Status === 1) {
-        selectTerminalMac.value = row.EndPointMac
+        selectTerminalMac.value = row
     }else {
-        global.message.warning('监听终端必须是空闲状态')
+        ElMessage.warning('监听终端必须是空闲状态')
     }
+}
+const tableRowClassName = (row: any) => {
+    if (row.row.Status === 0) {
+        return 'Offline'
+    }
+    return ''
 }
 // 结束任务
 const handleStopTask = (row: any) => {
@@ -295,8 +330,25 @@ const setMonitorTerminal = (row: { TaskID: any; }) => {
     //     global.$message.warning()
     // }
 }
+// 选中音量
+const handelSelectVolume = (row: any) => {
+    selectTerminaVolume.value = row
+}
+// 设置任务音量
+const handelTakVolume = (row: any) => {
+    let data = {
+        "company": "BL",
+        "actioncode": "c2ls_set_task_volume",
+        "token": "",
+        "data": {
+            "TaskID": row.TaskID,
+            "Volume": row.Volume
+        },
+        "result": 0,
+        "return_message": ""
+    }
+}
 const filterData = () => {
-    console.log(form.selectType)
     let objIsEmpty = form.selectType === 0 && form.search === ''
     if (objIsEmpty) {
         return sessionsData.value
@@ -339,6 +391,7 @@ const handleCurrentChange = (val: number) => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
+    console.log(sessionsData.value)
     if (sessionsData.value.length > 0) {
         tableDataAll.value = sessionsData.value
         form.data = tableDataAll.value.slice(0,  form.pageSize)
@@ -348,6 +401,15 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+    .com-table-task-volume {
+        display: flex;
+        .volume {
+            flex: 1;
+        }
+        .iconfont {
+            width: 16px;
+        }
+    }
     .select-monitor-terminal {
         .monitor-terminal-header {
             display: flex;
@@ -360,17 +422,28 @@ onMounted(() => {
             }
         }
     }
-    // .monitor-terminal-name {
-    //     display: flex;
-    //     .iconfont {
-    //         width: 16px;
-    //     }
-    //     .terminal-name {
-    //         width: auto;
-    //         flex: 1;
-    //         overflow: hidden;
-    //         text-overflow: ellipsis;
-    //         white-space: nowrap;
-    //     }
-    // }
+    .monitor-terminal-table {
+        .monitor-terminal-name {
+            display: flex;
+            .iconfont {
+                width: 16px;
+                &:nth-child(1) {
+                    padding-right: 8px;
+                }
+                &:nth-child(2) {
+                    padding-left: 6px;
+                }
+            }
+            .terminal-name {
+                width: auto;
+                flex: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+        .Offline {
+            color: #92959b;
+        }
+    }
 </style>
