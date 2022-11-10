@@ -147,7 +147,7 @@ const form = reactive<any>({
   extensions: "mp3", // 允许上传的文件后缀
   hasUploadError: false,
   headers: {
-    authorization: localStorage.getItem("userToken"),
+    authorization: localStorage.get("userToken"),
   },
   // 状态
   successFiles: 0, // 成功文件

@@ -4,7 +4,8 @@ import { AxiosCanceler } from "./axios_cancel";
 import { ElMessage } from "element-plus";
 import { isString } from "@/utils/is";
 
-const url = localStorage.get("serverIP");
+// const url = localStorage.get("serverIP");
+const url = '172.16.21.123'
 const axiosCancel = new AxiosCanceler();
 // 处理请求状态码
 const showStatus = (status: number) => {
@@ -50,7 +51,7 @@ const showStatus = (status: number) => {
 };
 // 创建 axios
 const $http = axios.create({
-  baseURL: "http://" + url + ":81/api/v2",
+  baseURL: "http://" + url + ":81/api/v1",
   headers: { "Content-Type": "application/json;charset=utf-8" },
   withCredentials: true, // 是否跨站点访问控制请求
   timeout: 5 * 1000, // 5s超时

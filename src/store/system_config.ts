@@ -105,8 +105,7 @@ export const useSystemStore = defineStore({
   actions: {
     // 获取所有的系统配置数据
     getConfigInfo() {
-      axios
-        .get("/api/v1/config", {
+      axios.get("/api/v1/config", {
           params: {
             username: localStorage.get("username"),
             serverip: localStorage.get("serverIP"),

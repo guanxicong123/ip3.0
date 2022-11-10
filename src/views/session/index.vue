@@ -69,7 +69,11 @@
                     :default-sort="{ prop: 'TaskBeginTime', order: 'descending' }">
                     <el-table-column type="index" label="序号" show-overflow-tooltip :width="60" :index="typeIndex" />
                     <el-table-column prop="TaskName" label="任务名称" show-overflow-tooltip />
-                    <el-table-column prop="TaskType" label="会话类型" />
+                    <el-table-column prop="TaskType" label="会话类型">
+                        <template #default="scope">
+                            {{formatterTaskType(scope.row)}}
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="TaskIniator" label="发起方" />
                     <el-table-column label="响应方">
                             <!-- {{ scope.row.EndpointIpListArray }} -->
@@ -168,10 +172,10 @@ const store = getStore.useAppStore();
 const terminalStore = getStore.useTerminalStore();
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
-const form = reactive({
+const form: any = reactive({
     search: "",
     selectType: 0,
-    data: [{}],
+    data: [],
     currentPage: 1,
     pageSize: 20,
 });
@@ -179,24 +183,8 @@ const loading = ref(false)
 const monitorTerminal: any = ref({})
 const tableDataAll = ref<any[]>([]) //过滤后的数据
 const sessionOptions = [
-    { value: 0, label: "全部类型" },
-    { value: 21, label: "火警" },
-    { value: 15, label: "报警" },
-    { value: 19, label: "对讲" },
-    { value: 16, label: "广播" },
-    { value: 18, label: "电话广播" },
-    { value: 22, label: "定时巡更" },
-    { value: 14, label: "定时任务" },
-    { value: 13, label: "定时打铃" },
-    { value: 12, label: "遥控任务" },
-    { value: 11, label: "文本播放" },
-    { value: 9, label: "短路输入" },
-    { value: 8, label: "防拆报警" },
-    { value: 7, label: "音源采集" },
-    { value: 5, label: "音乐播放" },
-    { value: 4, label: "终端点播" },
-    { value: 2, label: "环境监听" },
-    { value: 1, label: "任务监听" },
+  ...[{ value: 0, label: "全部类型" }],
+  ...useFormatMap.terminalsOptions,
 ];
 const terminalStatus = new Map([
     [ 1, "icon-on-line" ], //空闲
@@ -223,9 +211,9 @@ const terminal_data = computed(() => {
     return terminalStore.terminal_data
 })
 
-
 watch(() => sessionsData.value, ()=> {
     tableDataAll.value = filterData()
+    console.log(tableDataAll.value)
     form.data = tableDataAll.value.slice(
         form.pageSize * (form.currentPage-1),
         form.pageSize * form.currentPage
@@ -268,7 +256,6 @@ const tableRowClassName = (row: any) => {
 }
 // 结束任务
 const handleStopTask = (row: any) => {
-    console.log(row)
     ElMessageBox.confirm(
         '即将停止此任务，是否继续？',
         '警告',
@@ -375,6 +362,11 @@ const filterData = () => {
 const handleSelectionChange = (val: User[]) => {
     multipleSelection.value = val;
 };
+// 任务类型格式转换
+const formatterTaskType = (row: any) => {
+  return useFormatMap.taskTypeMap.get(row.TaskType);
+};
+
 // 序号
 const typeIndex = (index: number) => {
     return index + (form.currentPage - 1) * form.pageSize + 1;
@@ -393,11 +385,9 @@ const handleCurrentChange = (val: number) => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-    console.log(sessionsData.value)
     if (sessionsData.value.length > 0) {
         tableDataAll.value = sessionsData.value
         form.data = tableDataAll.value.slice(0,  form.pageSize)
-        console.log(form.data)
     }
 });
 </script>
