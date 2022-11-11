@@ -206,7 +206,7 @@ module.exports = defineConfig({
      * proxy: 配置多个代理
      */
     devServer: {
-        host: "172.16.21.9",
+        host: "172.16.21.10",
         port: 8003,
         // open: true,
         // https: true,
