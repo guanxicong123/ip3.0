@@ -34,28 +34,57 @@
             <i class="iconfont theme" :class="form.fullscreen_satus ? 'icon-narrow' : 'icon-enlarge'"
                 :title="form.fullscreen_satus ? '缩小' : '放大'" @click="handleFullscreenStatus"></i>
             <div class="center-content">
-                <div class="content-top" :class="form.play_status ? 'playing' : ''">
+                <div class="content-top" :class="playCenterData.TaskID ? 'playing' : ''">
                     <img class="record-arm" src="@/assets/images/record-arm.png" alt="" />
                     <img class="record" src="@/assets/images/record.png" alt="" />
                 </div>
                 <div class="content-center">
-                    <p>{{ selectTaskData.value.name }}</p>
+                    <p>{{ selectTaskData.name }}</p>
                     <div class="progress">
                         <el-progress :percentage="form.percentage" :format="format" :stroke-width="3" color="#0070EE" />
                         <span class="fl">{{ form.current_duration }}</span>
                         <span class="fr">{{ form.total_duration }}</span>
                     </div>
                 </div>
-                <div class="content-bottom theme">
+                <div class="content-bottom theme" v-if="handleTaskButton()">
                     <i class="iconfont icon-list-play" title="播放列表"
                         @click="form.playlist_status = !form.playlist_status" v-if="form.fullscreen_satus"></i>
                     <i class="iconfont icon-loop-play" title="循环播放"></i>
-                    <i class="iconfont icon-prev" title="上一首"></i>
-                    <i class="iconfont" :class="form.play_status ? 'icon-suspend' : 'icon-play'"
-                        :title="form.play_status ? '暂停' : '播放'" @click="form.play_status = !form.play_status"></i>
-                    <i class="iconfont icon-next" title="下一首"></i>
-                    <i class="iconfont icon-end" title="停止"></i>
-                    <i class="iconfont icon-volume2" title="音量"></i>
+                    <i class="iconfont icon-prev" title="上一首" @click="handleSwitchTask(playCenterData, 'pre')"></i>
+                    <i class="iconfont"
+                        :class="playCenterData.TaskID ? 'icon-suspend' : 'icon-play'"
+                        :title="playCenterData.TaskID ? '暂停' : '播放'"
+                        @click="playCenterData.TaskID ? handleStopTask(playCenterData) : handlePlayTask(playCenterData)">
+                    </i>
+                    <i class="iconfont icon-next" title="下一首" @click="handleSwitchTask(playCenterData, 'next')"></i>
+                    <i class="iconfont icon-end" title="停止" @click="handleStopTask(playCenterData)"></i>
+                    <el-popover trigger="click">
+                        <template #reference>
+                            <i class="iconfont icon-volume2" title="音量"></i>
+                        </template>
+                        <el-slider
+                            v-model="playCenterData.volume"
+                            vertical height="200px"
+                            @change="handleVolumeTask(playCenterData)">
+                        </el-slider>
+                    </el-popover>
+                </div>
+                <div class="content-bottom theme" v-else>
+                    <i class="iconfont"
+                        :class="playCenterData.TaskID ? 'icon-suspend' : 'icon-play'"
+                        :title="playCenterData.TaskID ? '暂停' : '播放'"
+                        @click="playCenterData.TaskID ? handleStopTask(playCenterData) : handlePlayTask(playCenterData)">
+                    </i>
+                    <el-popover trigger="click">
+                        <template #reference>
+                            <i class="iconfont icon-volume2" title="音量"></i>
+                        </template>
+                        <el-slider
+                            v-model="playCenterData.volume"
+                            vertical height="200px"
+                            @change="handleVolumeTask(playCenterData)">
+                        </el-slider>
+                    </el-popover>
                 </div>
             </div>
         </div>
@@ -172,10 +201,33 @@ const form = reactive<any>({
     pageSize: 20,
     total: 0,
 });
-const sessionsData = computed(()=> {
+const selectTaskData: any = ref({}); //选中的任务数据
+const sessionsData: any = computed(()=> {
     return store.sessionsArray.filter((item: any)=> {
         return [12, 13, 14, 15].includes(item.TaskType)
     })
+})
+// 获取当前显示任务的执行数据
+const playCenterShowData = computed(()=> {
+    return sessionsData.value.filter((item: any) => {
+        if (selectTaskData.value.type < 10) {
+            return item.RemoteTaskID === selectTaskData.value.id
+        }
+        if (selectTaskData.value.type >= 10) {
+            return item.TaskID === selectTaskData.value.taskid
+        }
+    })[0]
+})
+
+const playCenterData = computed(()=> {
+    if (playCenterShowData.value)  {
+        return {...selectTaskData.value, ...playCenterShowData.value}
+    }else {
+        return selectTaskData.value
+    }
+})
+watch(playCenterData, (newVal)=> {
+    console.log(newVal)
 })
 const format = () => "";
 const handleFullscreenStatus = () => {
@@ -193,9 +245,13 @@ const taskPlayMode = new Map([
     [1, 'loop_play'],
     [2, 'random_play'],
 ])
+const playModeData =  [
+    { id: 1, name: '列表播放', imgUrl: require('@/assets/svg/icon_lbbf_n.svg')},
+    { id: 2, name: '列表循环', imgUrl: require('@/assets/svg/icon_sxbf_n.svg') },
+    { id: 3, name: '随机播放', imgUrl: require('@/assets/svg/icon_sjbf_n.svg') }
+]
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
-const selectTaskData: any = ref({}); //选中的任务数据
 const priorityData = new Map();
 const activeName = ref("configure");
 const playConfig = ref();
@@ -203,6 +259,19 @@ const playConfig = ref();
 watch(sessionsData, (newVal)=> {
     console.log(newVal)
 })
+// 判断是否显示按钮
+const handleTaskButton = () => {
+    if (selectTaskData.value.type === 1) {
+        return true
+    }
+    if (selectTaskData.value.type === 4 && selectTaskData.value.fast_sound && selectTaskData.value.fast_sound.type === 1) {
+        return
+    }
+    if (selectTaskData.value.type === 10) {
+        return true
+    }
+    return false
+}
 // 添加播放任务
 const addPlayTask = () => {
     $useRouter.push("/play-task/" + 0);
@@ -301,6 +370,40 @@ const handlePlayTask = (row: any) => {
         send(data)
     }
 };
+// 切换任务状态
+const handleSwitchTask = (row: any, type: String) => {
+    if (row.TaskID) {
+        let data = {
+            "company": "BL",
+            "actioncode": "c2ms_control_task",
+            "token": "",
+            "data": {
+                "TaskID": row.TaskID,
+                "ControlCode" : type,
+                "ControlValue" : ""
+            },
+            "result": 0,
+            "return_message": ""
+        }
+        send(data)
+    }
+}
+// 音量调节
+const handleVolumeTask = (row: any) => {
+    if (row.TaskID) {
+        let data = {
+            company:"BL",
+            actioncode:"c2ms_set_task_volume",
+            data: {
+                TaskID: row.TaskID,
+                Volume: row.volume
+            },
+            result:0,
+            return_message:""
+        }
+        send(data)
+    }
+}
 const guid = () => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = Math.random() * 16 | 0,
