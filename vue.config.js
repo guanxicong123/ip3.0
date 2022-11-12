@@ -154,7 +154,7 @@ module.exports = defineConfig({
                 ],
                 // eslint报错解决
                 eslintrc: {
-                    enabled: false, // Default `false`
+                    enabled: true, // Default `false`
                     filepath: './.eslintrc-auto-import.json',
                     globalsPropValue: true,
                 },

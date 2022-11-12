@@ -233,6 +233,9 @@ const handlerMsg = (msg: any) => {
         case "ms2c_get_tts_engine_info": //播放语音
             getStore.usePlayStore().setPlayVoice(msg.data)
             return
+        case 'ms2c_get_task_play_status': //客户端任务播放状态
+            getStore.usePlayStore().setPlayStatus(msg.data)
+            return
     }
 };
 

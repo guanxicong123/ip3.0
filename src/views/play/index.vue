@@ -49,7 +49,11 @@
                 <div class="content-bottom theme" v-if="handleTaskButton()">
                     <i class="iconfont icon-list-play" title="播放列表"
                         @click="form.playlist_status = !form.playlist_status" v-if="form.fullscreen_satus"></i>
-                    <i class="iconfont icon-loop-play" title="循环播放"></i>
+                    <i class="iconfont"
+                        :class="playModeIcon.get(form.play_model)?.icon"
+                        :title="playModeIcon.get(form.play_model)?.title"
+                        @click="handleSwitchTask(playCenterData, 'pre')">
+                    </i>
                     <i class="iconfont icon-prev" title="上一首" @click="handleSwitchTask(playCenterData, 'pre')"></i>
                     <i class="iconfont"
                         :class="playCenterData.TaskID ? 'icon-suspend' : 'icon-play'"
@@ -73,7 +77,7 @@
                     <i class="iconfont"
                         :class="playCenterData.TaskID ? 'icon-suspend' : 'icon-play'"
                         :title="playCenterData.TaskID ? '暂停' : '播放'"
-                        @click="playCenterData.TaskID ? handleStopTask(playCenterData) : handlePlayTask(playCenterData)">
+                        @click="playCenterData.TaskID ? handleSwitchTask(playCenterData, 'pause') : handlePlayTask(playCenterData)">
                     </i>
                     <el-popover trigger="click">
                         <template #reference>
@@ -177,7 +181,6 @@ const taskDetailsConfig = defineAsyncComponent(
 const { proxy } = useCurrentInstance.useCurrentInstance();
 // 路由
 const $useRouter = useRouter();
-const $useRoute = useRoute();
 const store = getStore.useAppStore();
 
 interface User {
@@ -192,6 +195,7 @@ const form = reactive<any>({
     total_duration: "05:25", // 总时长
     current_duration: "00:25", // 当前时长
     play_status: false, // 播放状态
+    play_model: 0,//播放模式
     fullscreen_satus: false, // 全屏状态
     playlist_status: false, // 播放列表状态
     play_list_data: [], // 播放列表数据
@@ -218,7 +222,7 @@ const playCenterShowData = computed(()=> {
         }
     })[0]
 })
-
+// 播放器任务详情
 const playCenterData = computed(()=> {
     if (playCenterShowData.value)  {
         return {...selectTaskData.value, ...playCenterShowData.value}
@@ -228,6 +232,20 @@ const playCenterData = computed(()=> {
 })
 watch(playCenterData, (newVal)=> {
     console.log(newVal)
+    if (newVal.TaskID) {
+        // form.play_model
+        let data = {
+            "company": "BL",
+            "actioncode": "c2ms_get_task_play_status",
+            "token": "",
+            "data": {
+                "TaskID": newVal.TaskID,
+            },
+            "result": 0,
+            "return_message": ""
+        }
+        send(data)
+    }
 })
 const format = () => "";
 const handleFullscreenStatus = () => {
@@ -245,11 +263,20 @@ const taskPlayMode = new Map([
     [1, 'loop_play'],
     [2, 'random_play'],
 ])
-const playModeData =  [
-    { id: 1, name: '列表播放', imgUrl: require('@/assets/svg/icon_lbbf_n.svg')},
-    { id: 2, name: '列表循环', imgUrl: require('@/assets/svg/icon_sxbf_n.svg') },
-    { id: 3, name: '随机播放', imgUrl: require('@/assets/svg/icon_sjbf_n.svg') }
-]
+const playModeIcon = new Map([
+    [0, {
+        icon: 'icon-list-play',
+        title: '列表播放'
+    }],
+    [1, {
+        icon: 'icon-loop-play',
+        title: '循环播放'
+    }],
+    [2, {
+        icon: 'icon-random',
+        title: '随机播放'
+    }],
+])
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
 const priorityData = new Map();
@@ -332,7 +359,11 @@ const handlePlayTask = (row: any) => {
     if (row.type < 10) {
         proxy.$http.get("/details/" + row.id, {
             params: {
-                tag: 'BroadcastingStudio'
+                tag: 'BroadcastingStudio',
+                withMedias: true,
+                withFastSound: true,
+                withFastTerminal: true,
+                withTerminal: true
             }
         }).then((result: any) => {
             let row = result.data
