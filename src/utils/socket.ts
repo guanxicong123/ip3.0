@@ -9,12 +9,8 @@ let socket: any;
 let reloadInterval: any;
 let connected = false;
 let connecting = false;
-const isLogin = false; //是否在登录页面
-const baseParams: any = {
-    company: "BL",
-    actioncode: "action_code",
-    data: {},
-};
+let remotePlayTaskKey: any[] = []
+let is_login = true;
 
 const registerWebSocket = async () => {
     const socketStatus = !socket || socket.readyState !== 1;
@@ -30,15 +26,13 @@ const registerWebSocket = async () => {
         connected = true;
         getStore.useAppStore().changeWsStatus(true);
         //初始化请求数据
-        if (getStore.useAppStore().is_login) {
-            send(loginData);
-            getStore.useAppStore().changeLoginStatus(false);
+        if (is_login) {
+            // send(loginData);
+            // getStore.useAppStore().changeLoginStatus(false);
             requestTaskInfo();
             requestTerminalInfo();
         } else {
             initRequest();
-            requestTaskInfo();
-            requestTerminalInfo();
         }
         };
         //WebSocket通知
@@ -86,6 +80,9 @@ const send = (data: any) => {
         if (data.actioncode !== "c2ms_user_login") {
         data["token"] = localStorage.get("userToken");
         }
+        if (data.data.TaskType === 15 && !remotePlayTaskKey.includes(data.data.TaskID)) { //远程播放任务（截取TaskID，返回连接成功后发起播放）
+            remotePlayTaskKey.push(data.data.TaskID)
+        }
         socket.send(JSON.stringify(data));
     }
 }
@@ -115,11 +112,14 @@ const socketLogin = (data: any) => {
 
     loginData = data;
     // return
+    is_login = false
     registerWebSocket();
 };
 //获取站点数据
 const initRequest = () => {
     login();
+    requestTaskInfo();
+    requestTerminalInfo()
 };
 // 获取所有终端状态
 const requestTerminalInfo = () => {
@@ -145,6 +145,28 @@ const requestTaskInfo = () => {
     };
     send(data);
 };
+// 发起远程音乐播放任务
+const startRemotePlay = (row: any) => {
+    console.log(remotePlayTaskKey, row.TaskID)
+    if (remotePlayTaskKey.includes(row.TaskID)) {
+        const data = {
+            company: "BL",
+            actioncode: "c2ms_control_task",
+            token: "",
+            data: {
+                "TaskID": row.TaskID,
+                "ControlCode" : "play",
+                "ControlValue" : ""
+            },
+            result: 0,
+            return_message: "",
+        };
+        send(data);
+        remotePlayTaskKey = remotePlayTaskKey.filter((item: any)=> {
+            return item !== row.TaskID
+        })
+    }
+};
 // 登录
 const login = () => {
     const data = {
@@ -153,7 +175,7 @@ const login = () => {
         token: "",
         data: {
         UserName: localStorage.get("username"),
-        Password: Md5.hashStr(localStorage.get("password")),
+        Password: localStorage.get("password"), //Md5.hashStr(localStorage.get("password"))
         Platform: "PC",
         HostIP: localStorage.get("serverIP"),
         ForceLogin: false,
@@ -218,6 +240,7 @@ const handlerMsg = (msg: any) => {
     }
     switch (msg.actioncode) {
         case "ms2c_user_login": //登录返回信息
+            is_login = true
             return getStore.useAppStore().loginSuccessData(msg);
         case "ms2c_push_msg":
             [...msgMap].forEach(([key, value]) => {
@@ -235,6 +258,9 @@ const handlerMsg = (msg: any) => {
             return
         case 'ms2c_get_task_play_status': //客户端任务播放状态
             getStore.usePlayStore().setPlayStatus(msg.data)
+            return
+        case 'ms2c_create_server_task':
+            startRemotePlay(msg.data)
             return
     }
 };

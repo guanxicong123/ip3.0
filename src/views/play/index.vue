@@ -41,7 +41,8 @@
                 <div class="content-center">
                     <p>{{ selectTaskData.name }}</p>
                     <div class="progress">
-                        <el-progress :percentage="form.percentage" :format="format" :stroke-width="3" color="#0070EE" />
+                        <el-slider v-model="form.percentage" />
+                        <!-- <el-progress :percentage="form.percentage" :format="format" :stroke-width="3" color="#0070EE" /> -->
                         <span class="fl">{{ form.current_duration }}</span>
                         <span class="fr">{{ form.total_duration }}</span>
                     </div>
@@ -182,6 +183,7 @@ const { proxy } = useCurrentInstance.useCurrentInstance();
 // 路由
 const $useRouter = useRouter();
 const store = getStore.useAppStore();
+const storePlay = getStore.usePlayStore();
 
 interface User {
     date: string;
@@ -210,6 +212,15 @@ const sessionsData: any = computed(()=> {
     return store.sessionsArray.filter((item: any)=> {
         return [12, 13, 14, 15].includes(item.TaskType)
     })
+})
+const playStatusData: any = computed(()=> {
+    return storePlay.playStatusData
+})
+watch(playStatusData, (newVal)=> {
+    form.current_duration = newVal.CurrentTime
+    form.total_duration = newVal.TotalTime
+    form.song_name = newVal.MusicName
+    form.play_status = newVal.PlayStatus
 })
 // 获取当前显示任务的执行数据
 const playCenterShowData = computed(()=> {
