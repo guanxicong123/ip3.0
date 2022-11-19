@@ -126,15 +126,13 @@ const close = () => {
 };
 // 提交
 const submit = () => {
-    proxy.$http1
-        .get("/login", {
-            params: {
-                server: modelRef.server_ip_address + ":51330",
-            },
-        })
-        .then((result: any) => {
-            // proxy.$md5.hashStr(modelRef.password)
-            if (!result) return;
+    proxy.$http1.get("/login", {
+        params: {
+            server: modelRef.server_ip_address + ":51330",
+        },
+    }).then((result: any) => {
+        // proxy.$md5.hashStr(modelRef.password)
+        if (result.result === 200) {
             let data = {
                 company: "BL",
                 actioncode: "c2ms_user_login",
@@ -153,7 +151,8 @@ const submit = () => {
             socketLogin(data);
             localStorage.set("serverIP", modelRef.server_ip_address);
             localStorage.set("username", modelRef.name);
-        });
+        }
+    });
 };
 
 // mounted 实例挂载完成后被调用

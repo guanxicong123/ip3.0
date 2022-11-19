@@ -12,7 +12,6 @@ export const usePlayStore = defineStore({
     }),
     actions: {
         setPlayVoice(data: any) {
-            console.log(data)
             this.playVoiceData = data.TTSEngineInfo
         },
         setPlayStatus(data: any) {

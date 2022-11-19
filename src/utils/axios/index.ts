@@ -51,7 +51,7 @@ const showStatus = (status: number) => {
 };
 // 创建 axios
 const $http = axios.create({
-  baseURL: "http://" + url + ":81/api/v1",
+  baseURL: "/api/v29+",
   headers: { "Content-Type": "application/json;charset=utf-8" },
   withCredentials: true, // 是否跨站点访问控制请求
   timeout: 5 * 1000, // 5s超时

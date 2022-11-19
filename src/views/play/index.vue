@@ -41,10 +41,10 @@
                 <div class="content-center">
                     <p>{{ selectTaskData.name }}</p>
                     <div class="progress">
-                        <el-slider v-model="form.percentage" />
+                        <el-slider v-model="form.current_duration" :max="form.total_duration" :format-tooltip="formatTooltip"/>
                         <!-- <el-progress :percentage="form.percentage" :format="format" :stroke-width="3" color="#0070EE" /> -->
-                        <span class="fl">{{ form.current_duration }}</span>
-                        <span class="fr">{{ form.total_duration }}</span>
+                        <span class="fl">{{ formatTooltip(form.current_duration) }}</span>
+                        <span class="fr">{{ formatTooltip(form.total_duration) }}</span>
                     </div>
                 </div>
                 <div class="content-bottom theme" v-if="handleTaskButton()">
@@ -194,8 +194,8 @@ interface User {
 const form = reactive<any>({
     percentage: 50, // 进度
     song_name: "音乐播放2.mp3", // 歌曲名称
-    total_duration: "05:25", // 总时长
-    current_duration: "00:25", // 当前时长
+    total_duration: 0, // 总时长
+    current_duration: 0, // 当前时长
     play_status: false, // 播放状态
     play_model: 0,//播放模式
     fullscreen_satus: false, // 全屏状态
@@ -391,7 +391,7 @@ const handlePlayTask = (row: any) => {
                         Priority: row.priority, //优先级
                         Volume: row.volume, //音量
                         TaskType: handleTaskTypeMap(row), //任务类型
-                        UserID: row.users_id, //任务名称
+                        UserID: row.users_id,
                         TaskProp: TaskProp
                     }
                 }
@@ -617,6 +617,19 @@ const getPrioritySetting = () => {
         });
     });
 };
+const formatTooltip = (seconds: number) => {
+    if (seconds) {
+        console.log(seconds)
+        let hour = Math.floor(seconds / 3600) >= 10 ? Math.floor(seconds / 3600) : '0' + Math.floor(seconds / 3600);
+        seconds -= 3600 * Number(hour);
+        let min = Math.floor(seconds / 60) >= 10 ? Math.floor(seconds / 60) : '0' + Math.floor(seconds / 60);
+        seconds -= 60 * Number(min);
+        let sec = seconds >= 10 ? seconds : '0' + seconds;
+        return hour  + ':' + min + ':' + sec
+    }else {
+        return '00:00:00'
+    }
+}
 // 序号
 // const typeIndex = (index: number) => {
 //   return index + (form.currentPage - 1) * form.pageSize + 1;

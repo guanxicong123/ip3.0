@@ -25,6 +25,7 @@ const registerWebSocket = async () => {
         connecting = false;
         connected = true;
         getStore.useAppStore().changeWsStatus(true);
+        // getStore.useSystemStore().getConfigInfo()
         //初始化请求数据
         if (is_login) {
             // send(loginData);
@@ -83,6 +84,8 @@ const send = (data: any) => {
         if (data.data.TaskType === 15 && !remotePlayTaskKey.includes(data.data.TaskID)) { //远程播放任务（截取TaskID，返回连接成功后发起播放）
             remotePlayTaskKey.push(data.data.TaskID)
         }
+        console.log(data)
+        getStore.useAppStore().taskLocalKeyRecord(data.data.TaskID)
         socket.send(JSON.stringify(data));
     }
 }
@@ -118,8 +121,8 @@ const socketLogin = (data: any) => {
 //获取站点数据
 const initRequest = () => {
     login();
-    requestTaskInfo();
-    requestTerminalInfo()
+    // requestTaskInfo();
+    // requestTerminalInfo()
 };
 // 获取所有终端状态
 const requestTerminalInfo = () => {
@@ -201,7 +204,6 @@ const handlerMsg = (msg: any) => {
             'terminal_status', () => {
             getStore.useTerminalStore().getTerminalData(msg.data)
         }],
-        ["refresh_endpoint_status", () => {}],
         [
             "terminals_group_info",
             () => {
@@ -241,6 +243,9 @@ const handlerMsg = (msg: any) => {
     switch (msg.actioncode) {
         case "ms2c_user_login": //登录返回信息
             is_login = true
+            localStorage.set("userToken", msg.token)
+            requestTaskInfo()
+            requestTerminalInfo()
             return getStore.useAppStore().loginSuccessData(msg);
         case "ms2c_push_msg":
             [...msgMap].forEach(([key, value]) => {
