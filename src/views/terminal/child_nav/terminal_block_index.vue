@@ -120,7 +120,7 @@ watch(
     (newVal) => {
         storage_terminal_data.value = newVal;
         cacheTerminalData.value = store.defaultTerminalSort(
-            store.filterGroupData(storage_terminal_data.value)
+            filterData()
         );
         form.data = cacheTerminalData.value;
         form.total = form.data.length;
@@ -131,7 +131,7 @@ watch(
     () => terminal_status.value,
     () => {
         cacheTerminalData.value = store.defaultTerminalSort(
-            store.filterGroupData(storage_terminal_data.value)
+            filterData()
         );
         form.data = cacheTerminalData.value;
         form.total = form.data.length;
@@ -142,7 +142,7 @@ watch(
     () => search_value.value,
     () => {
         cacheTerminalData.value = store.defaultTerminalSort(
-            store.filterGroupData(storage_terminal_data.value)
+            filterData()
         );
         form.data = cacheTerminalData.value;
         form.total = form.data.length;
@@ -210,6 +210,18 @@ const changeVolume = (data: any) => {
     send(send_data);
 };
 
+const filterData = () => {
+    let condition = terminal_status.value === -1 && search_value.value === ''
+    if (condition) {
+        return storage_terminal_data.value
+    }else {
+        let data = storage_terminal_data.value.filter((item: any)=> {
+            return (item.Status === terminal_status.value || terminal_status.value === -1)
+            && (item.name.match(search_value.value) || search_value.value === '')
+        })
+        return data
+    }
+}
 const $useRoute = useRoute();
 const $useRouter = useRouter();
 
@@ -250,7 +262,7 @@ onMounted(() => {
     form.pageSize = form.pageSizes[0];
     storage_terminal_data.value = terminal_data.value;
     cacheTerminalData.value = store.defaultTerminalSort(
-        store.filterGroupData(storage_terminal_data.value)
+        filterData
     );
     form.data = cacheTerminalData.value;
     form.total = form.data.length;

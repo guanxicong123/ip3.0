@@ -50,32 +50,6 @@ export const useTerminalStore = defineStore({
         })
     },
 
-    // 终端数据、分组数据更新时清洗数据
-    updateTerminalGroup() {
-        if (this.terminal_data.length < 1 || this.terminal_group.length < 1)
-        return
-      // 给分组添加属于它的终端数据
-        this.terminal_group.forEach((item: any) => {
-            item.GroupID === 0
-            ? (item.terminals = this.terminal_data)
-            : (item.terminals = [])
-        })
-      //遍历分组终端数组 EndpointArray，根据该终端所在的分组添加到 single_group_data 变量中
-        this.group_terminal.map((add: { GroupID: number; EndpointID: number }) => {
-            const group_id = add.GroupID
-            const point_id = add.EndpointID
-            const terminal = this.terminal_data.findIndex(
-                (cdd: any) => cdd.EndpointID === point_id
-            )
-            const index = this.terminal_group.findIndex(
-                (bdd) => bdd.GroupID === group_id
-            )
-            this.terminal_group[index].terminals.push(
-                this.terminal_data[terminal]
-            )
-        })
-    },
-
     // 获取终端分组信息
     getTerminalGroup(data: any) {
       this.terminal_group = [

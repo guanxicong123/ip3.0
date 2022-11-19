@@ -41,7 +41,11 @@
                 <div class="content-center">
                     <p>{{ selectTaskData.name }}</p>
                     <div class="progress">
-                        <el-slider v-model="form.current_duration" :max="form.total_duration" :format-tooltip="formatTooltip"/>
+                        <el-slider
+                            v-model="form.current_duration"
+                            :max="form.total_duration"
+                            :format-tooltip="formatTooltip"
+                            @change="handleSwitchTask(playCenterData, 'progress')"/>
                         <!-- <el-progress :percentage="form.percentage" :format="format" :stroke-width="3" color="#0070EE" /> -->
                         <span class="fl">{{ formatTooltip(form.current_duration) }}</span>
                         <span class="fr">{{ formatTooltip(form.total_duration) }}</span>
@@ -422,7 +426,7 @@ const handleSwitchTask = (row: any, type: String) => {
             "data": {
                 "TaskID": row.TaskID,
                 "ControlCode" : type,
-                "ControlValue" : ""
+                "ControlValue" : type === 'progress' ? form.current_duration : ''
             },
             "result": 0,
             "return_message": ""
@@ -619,12 +623,12 @@ const getPrioritySetting = () => {
 };
 const formatTooltip = (seconds: number) => {
     if (seconds) {
-        console.log(seconds)
-        let hour = Math.floor(seconds / 3600) >= 10 ? Math.floor(seconds / 3600) : '0' + Math.floor(seconds / 3600);
-        seconds -= 3600 * Number(hour);
-        let min = Math.floor(seconds / 60) >= 10 ? Math.floor(seconds / 60) : '0' + Math.floor(seconds / 60);
-        seconds -= 60 * Number(min);
-        let sec = seconds >= 10 ? seconds : '0' + seconds;
+        let data = Math.trunc(seconds / 1000)
+        let hour = Math.floor(data / 3600) >= 10 ? Math.floor(data / 3600) : '0' + Math.floor(data / 3600);
+        data -= 3600 * Number(hour);
+        let min = Math.floor(data / 60) >= 10 ? Math.floor(data / 60) : '0' + Math.floor(data / 60);
+        data -= 60 * Number(min);
+        let sec = data >= 10 ? data : '0' + data;
         return hour  + ':' + min + ':' + sec
     }else {
         return '00:00:00'

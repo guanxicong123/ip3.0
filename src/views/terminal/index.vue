@@ -74,8 +74,9 @@
                     {{judgeButtonStatus(19) ? '结束监听' : '监听'}}
                 </el-button>
                 <el-button
+                    v-if="system_configs.EnabledAlarm"
                     type="danger" color="#D34500"
-                    @click="functronButtonTask(3)"
+                    @click="alarmTalkTask"
                     :loading="startButton.status && startButton.type === 3"
                 >
                     报警
@@ -157,6 +158,12 @@ const terminal_view_options = [
     },
 ];
 
+const taskPlayMode = new Map([
+    [0, 'normal_play'],
+    [1, 'loop_play'],
+    [2, 'random_play'],
+])
+
 const terminal_group_data: any = ref([]);
 
 const storeTerminal = getStore.useTerminalStore();
@@ -173,39 +180,28 @@ const terminal_data = computed(() => {
     return storeTerminal.terminal_data;
 });
 
-const terminal_group = computed(() => {
-    return storeTerminal.terminal_group;
-});
-
 const sessionsLocalKey = computed(()=> { //当前客户端发起任务
     return store.sessionsLocalKey
 })
 
 const sessionsData: any = computed(()=> {
     return store.sessionsArray.filter((item: any)=> {
-        return [4, 6, 19].includes(item.TaskType) && sessionsLocalKey.value.includes(item.TaskID)
+        return [3, 4, 6, 19].includes(item.TaskType) && sessionsLocalKey.value.includes(item.TaskID)
     })
 })
+
+const system_configs = computed(() => {
+    return systemStore.system_configs;
+});
 
 watch(sessionsData, ()=> {
     startButton.value.status = false
 })
-watch(
-    () => terminal_data.value,
-    (newVal) => {
-        getGroupList();
+watch(() => terminal_data.value, () => {
         cleanOnLineTerminal();
     },
     {
         deep: true,
-    }
-);
-
-watch(
-    () => terminal_group.value,
-    (newVal) => {
-        console.log(newVal)
-        getGroupList();
     }
 );
 
@@ -384,9 +380,11 @@ const functronButtonTask = (type: number) => {
         return
     }
     if (!judgeButtonStatus(type) && sessionsData.value.length > 0) {
+        startButton.value.status = false
         return proxy.$message.warning('主讲终端忙碌中')
     }
     if (!form.speaker_terminal) {
+        startButton.value.status = false
         return proxy.$message.error("未选择主讲终端或主讲终端未在线");
     }
     let filter_initiator_terminals = filterCheckedTerminals().filter(
@@ -395,12 +393,14 @@ const functronButtonTask = (type: number) => {
         }
     );
     if (filter_initiator_terminals.length < 1) {
+        startButton.value.status = false
         return proxy.$message.error("请选择接收终端");
     }
     if (type === 6) {
         originateBroadcast(filter_initiator_terminals)
     }
     if (type === 4) {
+        startButton.value.status = false
         if (filter_initiator_terminals.length > 1) {
             return proxy.$message.error("对讲接收终端只能选一个");
         }
@@ -463,6 +463,7 @@ const initiatedTalkTask = (EndPointList: any[]) => {
     send(send_data);
 };
 
+// 发起监听任务
 const monitorTalkTask = (EndPointList: any[]) => {
     let send_data = {
         company: "BL",
@@ -471,7 +472,7 @@ const monitorTalkTask = (EndPointList: any[]) => {
             EndPointsAdditionalProp: {},
             EndPointList: EndPointList,
             TaskID: guid(),
-            TaskName: '客户端对讲任务（' + localStorage.get('username') + '）',
+            TaskName: '客户端监听任务（' + localStorage.get('username') + '）',
             Priority: 100,
             Volume: form.volume,
             TaskType: 19,
@@ -488,11 +489,62 @@ const monitorTalkTask = (EndPointList: any[]) => {
     send(send_data);
 }
 
-const getGroupList = () => {
-    // storeTerminal.updateTerminalGroup();
-    // terminal_group_data.value = terminal_group.value;
+// 发起报警任务
+const alarmTalkTask = (EndPointList: any[]) => {
+    proxy.$http.get("/details/" + system_configs.value.AlarmID, {
+        params: {
+            tag: 'OneButtonAlarm',
+            withMedias: true,
+            withFastSound: true,
+            withFastTerminal: true,
+            withTerminal: true
+        }
+    }).then((result: any) => {
+        let row = result.data
+        let send_data = {
+            company: "BL",
+            actioncode: "c2ms_create_server_task",
+            data: {
+                EndPointsAdditionalProp: {},
+                EndPointList: row.terminalsIds,
+                TaskID: guid(),
+                TaskName: row.name,
+                Priority: row.priority,
+                Volume: row.volume,
+                TaskType: 3,
+                UserID: Number(localStorage.get('LoginUserID')),
+                TaskProp: {
+                    "TaskAudioType" : 6,
+                    "RemoteID" : 0,
+                    "RemoteType" : "manual_alarm",
+                    "RemoteAudioProp" : {
+                        "MusicIDs" : row.mediasIds,
+                        "LimitTime" : row.sound_source.life_time ? timeToSec(row.sound_source.life_time, 1) : 0,
+                        "PlayMode" : taskPlayMode.get(row.sound_source.play_model),
+                        "PlayTimes" : row.sound_source.play_times ? timeToSec(row.sound_source.play_times, 1) : 0
+                    }
+                }
+            },
+            result: 0,
+            return_message: "",
+        };
+        // console.log(send_data)
+        send(send_data);
+    }).catch(()=> {
+        startButton.value.status = false
+    })
 }
-// 获取所有跟组
+
+// 将时间转换为秒
+const timeToSec = (time: any, num = 1) => {
+    var hour = time.split(':')[0]
+    var min = time.split(':')[1]
+    var sec = time.split(':')[2]
+    var s = Number(hour * 3600) + Number(min * 60) + Number(sec)
+    return s * num
+}
+
+// 获取所有分组
 const getTerminalGroupAll =  () => {
     proxy.$http.get('/terminals-groups/all', {
         params: {
@@ -500,7 +552,6 @@ const getTerminalGroupAll =  () => {
             withTerminalsNums: true,
         }
     }).then((result:any) => {
-        console.log(result.data)
         if (result.result === 200) {
             terminal_group_data.value = result.data
         }
@@ -509,7 +560,10 @@ const getTerminalGroupAll =  () => {
 
 // Judge button status
 const judgeButtonStatus = (type: Number) => {
-    if (sessionsData.value.length > 0 && sessionsData.value[0].TaskType === type) {
+    let status = sessionsData.value.some((item: any) => {
+        return item.TaskType === type
+    })
+    if (sessionsData.value.length > 0 && status) {
         return true
     }
     return false
@@ -538,7 +592,6 @@ provide("terminal_group", {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
     getTerminalGroupAll()
-    getGroupList();
     $useRouter.push("/terminal/terminal_list");
     form.search_placeholder = "终端名称";
     cleanOnLineTerminal();
