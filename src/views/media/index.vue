@@ -313,7 +313,7 @@ const handleClickFolder = (item: any) => {
     id: item.id,
     name: item.name,
   };
-  localStorage.setItem("folder", JSON.stringify(folder));
+  localStorage.set("folder", JSON.stringify(folder));
   handleGetOnePageData();
 };
 // 获取refs
@@ -614,7 +614,7 @@ watch(
     // 当第一次进入界面加载，并且获取到全部媒体文件夹数据时
     if (newFolder && form.firstLoad) {
       // 刷新页面时，获取下当前媒体文件夹id
-      const currentFolder = localStorage.getItem("folder") || "";
+      const currentFolder = localStorage.get("folder") || "";
       if (currentFolder) {
         form.currentFolder = JSON.parse(currentFolder);
       }
@@ -636,7 +636,7 @@ watch(
 
 // 当前位置的组件将要离开时触发
 onBeforeRouteLeave(() => {
-  localStorage.removeItem("folder");
+  localStorage.remove("folder");
 });
 
 // mounted 实例挂载完成后被调用
