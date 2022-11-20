@@ -39,7 +39,7 @@
                     <img class="record" src="@/assets/images/record.png" alt="" />
                 </div>
                 <div class="content-center">
-                    <p>{{ selectTaskData.name }}</p>
+                    <p>{{ selectTaskData.TaskID !== playStatusData.TaskID ? selectTaskData.name : playStatusData.MusicName }}</p>
                     <div class="progress">
                         <el-slider
                             v-model="form.current_duration"
@@ -217,7 +217,7 @@ const sessionsData: any = computed(()=> {
         return [12, 13, 14, 15].includes(item.TaskType)
     })
 })
-const playStatusData: any = computed(()=> {
+const playStatusData: any = computed(()=> { //当前任务播放状态
     return storePlay.playStatusData
 })
 watch(playStatusData, (newVal)=> {
@@ -246,7 +246,6 @@ const playCenterData = computed(()=> {
     }
 })
 watch(playCenterData, (newVal)=> {
-    console.log(newVal)
     if (newVal.TaskID) {
         // form.play_model
         let data = {
@@ -298,9 +297,6 @@ const priorityData = new Map();
 const activeName = ref("configure");
 const playConfig = ref();
 
-watch(sessionsData, (newVal)=> {
-    console.log(newVal)
-})
 // 判断是否显示按钮
 const handleTaskButton = () => {
     if (selectTaskData.value.type === 1) {
@@ -643,7 +639,6 @@ const formatTooltip = (seconds: number) => {
 onMounted(() => {
     getPrioritySetting();
     Promise.all([getBroadcastingAll(), getTaskAll()]).then((data: any) => {
-        console.log(data);
         form.data = [...data[0], ...data[1]];
         handleSelectionClick(form.data[0]);
         multipleTableRef.value!.setCurrentRow(form.data[0]);

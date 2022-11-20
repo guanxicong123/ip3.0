@@ -93,8 +93,10 @@
                             </el-row>
                         </el-tab-pane>
                         <el-tab-pane label="终端选择" :name="1">
-                            <terminals-select-components :responseTerminals="responseTerminals"
-                                :responseGroups="responseGroups" @requestTerminals="requestTerminals"
+                            <terminals-select-components
+                                :responseTerminals="responseTerminals"
+                                :responseGroups="responseGroups"
+                                @requestTerminals="requestTerminals"
                                 @requestGroups="requestGroups">
                             </terminals-select-components>
                         </el-tab-pane>
@@ -285,33 +287,27 @@ const submitTask = () => {
 // 快捷音源任务
 const createQuickSou = (data: any) => {
     if (ruleForm.fast_sound_id === -1) return proxy.$message.warning("请选择快捷音源");
-
-    proxy.$http
-        .post(
-            "/broadcasting",
-            Object.assign(data, {
-                sound_source: soundSourceForm.value,
-            })
-        )
-        .then((result: any) => {
-            if (result.result === 200) {
-                $useRouter.push("/play");
-            }
-            console.log(result);
-        });
+    proxy.$http.post("/broadcasting",
+        Object.assign(data, {
+            sound_source: soundSourceForm.value,
+        })
+    ).then((result: any) => {
+        if (result.result === 200) {
+            $useRouter.push("/play");
+        }
+        console.log(result);
+    });
 };
 // 音乐播放任务
 const createLocalAudio = (data: any) => {
     if (ruleForm.content.length === 0) return proxy.$message.warning("请添加音频文件");
-
-    proxy.$http1
-        .post("/task", Object.assign(data, musicPlayForm.value))
-        .then((result: any) => {
-            if (result.result === 200) {
-                $useRouter.push("/play");
-            }
-            console.log(result);
-        });
+    proxy.$http1.post("/task",
+        Object.assign(data, musicPlayForm.value)
+    ).then((result: any) => {
+        if (result.result === 200) {
+            $useRouter.push("/play");
+        }
+    });
 };
 // 远程任务
 const createRemteTask = (data: any) => {
@@ -447,32 +443,32 @@ const getLocalTask = (row: any) => {
 };
 // 请求服务器任务
 const getServeTask = (row: any) => {
-    proxy.$http
-        .get("/broadcasting/" + row, {
-            params: {
-                withMedias: true,
-                withGroups: true,
-                withFastSound: true,
-                withTerminals: true,
-                withFastTerminal: true,
-            },
-        })
-        .then((result: any) => {
-            ruleForm.type = result.data.type;
-            ruleForm.name = result.data.name;
-            ruleForm.volume = result.data.volume;
-            ruleForm.priority = result.data.priority;
-            console.log(result);
-            if (result.data.fast_terminals_id === 0) {
-                executionregiontype.value = 1;
-            } else {
-                quickTerminaName.value = result.data.fast_terminals.name;
-            }
-            if (ruleForm.type === 1) {
-                responseMedia.value = result.data.medias;
-                responseeMediaGroups.value = result.data.medias_groups;
-            }
-        });
+    proxy.$http.get("/broadcasting/" + row, {
+        params: {
+            withMedias: true,
+            withGroups: true,
+            withFastSound: true,
+            withTerminals: true,
+            withFastTerminal: true,
+        },
+    })
+    .then((result: any) => {
+        ruleForm.type = result.data.type;
+        ruleForm.name = result.data.name;
+        ruleForm.volume = result.data.volume;
+        ruleForm.priority = result.data.priority;
+        if (result.data.fast_terminals_id === 0) {
+            executionregiontype.value = 1;
+        } else {
+            quickTerminaName.value = result.data.fast_terminals.name;
+        }
+        if (ruleForm.type === 1) {
+            responseMedia.value = result.data.medias;
+            responseeMediaGroups.value = result.data.medias_groups;
+        }
+        responseTerminals.value = result.data.terminals
+        responseGroups.value = result.data.terminals_groups
+    });
 };
 // 获取所有分组
 const getGroupsAll = () => {

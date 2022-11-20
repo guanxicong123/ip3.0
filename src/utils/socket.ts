@@ -97,7 +97,7 @@ const reload = () => {
         // message.error("服务器连接断开")
     }, 3000);
 };
-// 登录协议
+// 初始化ws连接
 const socketLogin = (data: any) => {
     sessionStorage.setItem(
         "websocketUrl",
@@ -118,11 +118,9 @@ const socketLogin = (data: any) => {
     is_login = false
     registerWebSocket();
 };
-//获取站点数据
+
 const initRequest = () => {
     login();
-    // requestTaskInfo();
-    // requestTerminalInfo()
 };
 // 获取所有终端状态
 const requestTerminalInfo = () => {
@@ -172,21 +170,7 @@ const startRemotePlay = (row: any) => {
 };
 // 登录
 const login = () => {
-    const data = {
-        company: "BL",
-        actioncode: "c2ms_user_login",
-        token: "",
-        data: {
-        UserName: localStorage.get("username"),
-        Password: localStorage.get("password"), //Md5.hashStr(localStorage.get("password"))
-        Platform: "PC",
-        HostIP: localStorage.get("serverIP"),
-        ForceLogin: false,
-        LoginTime: "",
-        },
-        result: 0,
-        return_message: "",
-    };
+    const data = loginData
     const myDate = new Date();
     const a = myDate.getFullYear();
     const b = myDate.getMonth() + 1;

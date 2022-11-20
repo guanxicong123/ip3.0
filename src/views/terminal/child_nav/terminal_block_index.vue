@@ -219,6 +219,7 @@ const filterData = () => {
             return (item.Status === terminal_status.value || terminal_status.value === -1)
             && (item.name.match(search_value.value) || search_value.value === '')
         })
+        console.log(data)
         return data
     }
 }
@@ -262,7 +263,7 @@ onMounted(() => {
     form.pageSize = form.pageSizes[0];
     storage_terminal_data.value = terminal_data.value;
     cacheTerminalData.value = store.defaultTerminalSort(
-        filterData
+        filterData()
     );
     form.data = cacheTerminalData.value;
     form.total = form.data.length;

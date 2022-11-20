@@ -554,6 +554,7 @@ const getTerminalGroupAll =  () => {
     }).then((result:any) => {
         if (result.result === 200) {
             terminal_group_data.value = result.data
+            $useRouter.push("/terminal/terminal_list")
         }
     })
 }
@@ -592,7 +593,7 @@ provide("terminal_group", {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
     getTerminalGroupAll()
-    $useRouter.push("/terminal/terminal_list");
+    // $useRouter.push("/terminal/terminal_list");
     form.search_placeholder = "终端名称";
     cleanOnLineTerminal();
     form.select_terminal =

@@ -91,7 +91,8 @@ global.$http1.interceptors.response.use(
   }
 )
 //请求拦截器
-global.$http.interceptors.request.use((config: { headers: { Authorization: string } }) => {
+global.$http.interceptors.request.use(
+    (config: { headers: { Authorization: string } }) => {
         // 在发送请求之前做些什么
         const token = localStorage.get('userToken')
         if (token) {

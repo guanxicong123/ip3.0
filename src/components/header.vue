@@ -45,30 +45,22 @@
                 </el-dropdown>
                 <el-icon>
                     <template #default>
-                        <svg class="icon" aria-hidden="true">
-                            <use xlink:href="#icon-skin"></use>
-                        </svg>
+                        <span class="iconfont icon-skin"></span>
                     </template>
                 </el-icon>
                 <el-icon @click="handleMinimize">
                     <template #default>
-                        <svg class="icon" aria-hidden="true">
-                            <use xlink:href="#icon-minimize"></use>
-                        </svg>
+                        <span class="iconfont icon-minimize"></span>
                     </template>
                 </el-icon>
                 <el-icon @click="handleMaxMin">
                     <template #default>
-                        <svg class="icon" aria-hidden="true">
-                            <use xlink:href="#icon-win"></use>
-                        </svg>
+                        <span class="iconfont icon-win"></span>
                     </template>
                 </el-icon>
                 <el-icon @click="close">
                     <template #default>
-                        <svg class="icon" aria-hidden="true">
-                            <use xlink:href="#icon-close"></use>
-                        </svg>
+                        <span class="iconfont icon-close"></span>
                     </template>
                 </el-icon>
             </div>

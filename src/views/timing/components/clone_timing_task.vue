@@ -189,7 +189,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
           } else {
             ElMessage({
               type: "error",
-              message: result.result?.message,
+              message: result.data?.message,
               grouping: true,
             });
           }
