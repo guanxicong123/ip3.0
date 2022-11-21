@@ -218,7 +218,7 @@ export const useSystemStore = defineStore({
         : this.router_data[0].path
         const time_id = setInterval(() => {
         // if (getStore.getStore.useTerminalStore().terminal_data.length > 0 && getStore.getStore.useTerminalStore().terminal_group.length > 0) {
-        router.push('/play')
+        router.push('/terminal')
         clearInterval(time_id)
         // }
         }, 100)

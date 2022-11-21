@@ -218,7 +218,7 @@ module.exports = defineConfig({
             '/api/v1/': {
                 target: 'http://172.16.21.25:9999',
                 changeOrigin: true
-            }
+            },
         }
     },
 })

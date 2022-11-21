@@ -131,7 +131,6 @@ const submit = () => {
             server: modelRef.server_ip_address + ":51330",
         },
     }).then((result: any) => {
-        // proxy.$md5.hashStr(modelRef.password)
         if (result.result === 200) {
             let data = {
                 company: "BL",

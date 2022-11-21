@@ -60,7 +60,7 @@
                             <el-table-column prop="type" label="终端类型" show-overflow-tooltip />
                             <el-table-column prop="TaskName" label="任务名称" show-overflow-tooltip>
                                 <template #default="scope">
-                                    {{scope.row.TaskName.length ? scope.row.TaskName : '-'}}
+                                    {{scope.row.TaskName && scope.row.TaskName.length ? scope.row.TaskName : '-'}}
                                 </template>
                             </el-table-column> 
                         </el-table>
@@ -145,15 +145,20 @@ watch([terminal_data, storage_terminal_data], ()=> {
         form.pageSize * form.currentPage
     );
 })
+
 watch(
     () => terminal_group_data.value,
     (newVal) => {
+        if (!form.current_group && newVal.length > 0) {
+            form.current_group = newVal[0].id
+        }
         getCurGroupData();
     },
     {
         deep: true,
     }
 );
+
 watch(()=> cacheTerminalData.value, (newVal)=> {
     form.data = newVal.slice(
         form.pageSize * (form.currentPage - 1),
@@ -221,7 +226,7 @@ const sortByIPDesc = (a: any, b: any) => {
         return -1;
     }
 };
-const filterData = (data: any) => {
+const filterData = () => {
     let condition = terminal_status.value === -1 && search_value.value === ''
     if (condition) {
         return storage_terminal_data.value

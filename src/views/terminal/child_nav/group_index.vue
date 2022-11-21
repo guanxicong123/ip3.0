@@ -86,13 +86,13 @@ const search_value = computed(() => {
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 
 // 处理点击选择分组
-const handleSelected = (item: { GroupID: number }) => {
-    if (form.multipleSelection.includes(item.GroupID)) {
+const handleSelected = (item: { id: number }) => {
+    if (form.multipleSelection.includes(item.id)) {
         form.multipleSelection = form.multipleSelection.filter(
-            (row: number) => row !== item.GroupID
+            (row: number) => row !== item.id
         );
     } else {
-        form.multipleSelection.push(item.GroupID);
+        form.multipleSelection.push(item.id);
     }
     cleanCheckedTerminalIds();
     // 设置全选 - 使用provide/inject
@@ -105,8 +105,8 @@ const cleanCheckedTerminalIds = () => {
     let terminals_arr: any = [];
     let checked_terminals_ids: any = [];
     form.multipleSelection.forEach((item: any) => {
-        let index = form.data.findIndex((add: { GroupID: number }) => {
-            return add.GroupID === item;
+        let index = form.data.findIndex((add: { id: number }) => {
+            return add.id === item;
         });
         if (index > -1) {
             terminals_arr = terminals_arr.concat(form.data[index]?.terminals);
@@ -133,7 +133,7 @@ const typeIndex = (index: number) => {
 const handleCheckedAll = () => {
     form.multipleSelection = [];
     for (let i = 0; i < form.data.length; i++) {
-        form.multipleSelection.push(form.data[i].GroupID);
+        form.multipleSelection.push(form.data[i].id);
     }
     cleanCheckedTerminalIds();
 };
@@ -183,7 +183,7 @@ const getGroupList = () => {
     form.data = store
         .filterGroupData(terminal_group_data.value)
         .filter((item: any) => {
-            return item.GroupID !== 0;
+            return item.id !== 0;
         });
     form.total = form.data.length;
     // 给分组手动添加状态，等后续增加分组状态字段再去除

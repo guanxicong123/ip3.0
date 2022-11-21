@@ -349,7 +349,7 @@ const handleDeleteMediaGroup = (row: any) => {
           } else {
             ElMessage({
               type: "error",
-              message: result.result?.message || "删除失败",
+              message: result.data?.message || "删除失败",
               grouping: true,
             });
           }
@@ -382,13 +382,13 @@ const handleGetOnePageData = async () => {
     check: true,
   })
     .then((result) => {
-      if (result.result?.data) {
-        form.data = result.result.data;
-        form.total = result.result.total;
+      if (result.data.data) {
+        form.data = result.data.data;
+        form.total = result.data.total;
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.data?.message,
           grouping: true,
         });
       }
@@ -471,7 +471,7 @@ const handleDelete = (type: string, row: any) => {
           } else {
             ElMessage({
               type: "error",
-              message: result.result?.message || "删除失败",
+              message: result.data?.message || "删除失败",
               grouping: true,
             });
           }
@@ -514,7 +514,7 @@ const handleGetAllBellsGroups = async () => {
     withUser: true,
   })
     .then((result) => {
-      if (result.result) {
+      if (result.data) {
         let num = 0;
         form.folderData = [
           ...[
@@ -528,15 +528,15 @@ const handleGetAllBellsGroups = async () => {
           ...result.result,
         ];
         // 统计全部媒体文件数量
-        for (let index = 0; index < result.result.length; index++) {
-          const item = result.result[index];
+        for (let index = 0; index < result.data.length; index++) {
+          const item = result.data[index];
           num = num + item.medias_count;
         }
         form.folderData[0].medias_count = num;
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.data?.message,
           grouping: true,
         });
       }
@@ -553,13 +553,13 @@ const handleDownloadOneFile = (id: number) => {
   MeidaService.getDownloadOneMeida(id)
     .then((result) => {
       form.downloading = false;
-      const isHasURL = Object.prototype.hasOwnProperty.call(result.result, "url");
+      const isHasURL = Object.prototype.hasOwnProperty.call(result.data, "url");
       if (isHasURL) {
-        downloadRef.value.src = result.result.url;
+        downloadRef.value.src = result.data.url;
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.data?.message,
           grouping: true,
         });
       }
@@ -584,13 +584,13 @@ const handlePackageDownloadFile = () => {
   })
     .then((result) => {
       form.downloading = false;
-      const isHasURL = Object.prototype.hasOwnProperty.call(result.result, "url");
+      const isHasURL = Object.prototype.hasOwnProperty.call(result.data, "url");
       if (isHasURL) {
-        downloadRef.value.src = result.result.url;
+        downloadRef.value.src = result.data.url;
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.data?.message,
           grouping: true,
         });
       }

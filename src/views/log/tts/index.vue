@@ -130,13 +130,13 @@ const handleGetOnePageData = async () => {
     terminals: form.terminals,
   })
     .then((result) => {
-      if (result.result?.data) {
-        form.data = result.result.data;
-        form.total = result.result.total;
+      if (result.data.data) {
+        form.data = result.data.data;
+        form.total = result.data.total;
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.data?.message,
           grouping: true,
         });
       }
@@ -205,7 +205,7 @@ const handleDelete = (type: string, row: any) => {
           } else {
             ElMessage({
               type: "error",
-              message: result.result?.message || "删除失败",
+              message: result.data?.message || "删除失败",
               grouping: true,
             });
           }
