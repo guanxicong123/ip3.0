@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "25081163",
+      "name": "disable-task",
+      "font_class": "disable-task",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "25081172",
+      "name": "enable-task",
+      "font_class": "enable-task",
+      "unicode": "e61f",
+      "unicode_decimal": 58911
+    },
+    {
+      "icon_id": "31553266",
+      "name": "Collection terminal",
+      "font_class": "view-collection-terminal",
+      "unicode": "e6ae",
+      "unicode_decimal": 59054
+    },
+    {
       "icon_id": "30888911",
       "name": "最小化1",
       "font_class": "minimize",

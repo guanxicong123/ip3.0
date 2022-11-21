@@ -17,7 +17,10 @@
         <el-tab-pane name="first" v-if="config.isSelectTerminals">
           <template #label>
             <div class="custom-tabs-label">
-              <el-popover :visible="form.searchTerminalsVisible" placement="top-start">
+              <el-popover
+                :visible="form.searchTerminalsVisible"
+                placement="top-start"
+              >
                 <template #reference>
                   <el-icon @click="handleClickTerminalsVisible">
                     <Search />
@@ -55,13 +58,20 @@
             <div class="scroll-bar">
               <el-scrollbar>
                 <ul class="scroll-ul">
-                  <template v-for="item in form.allTerminalsData" :key="item.id">
+                  <template
+                    v-for="item in form.allTerminalsData"
+                    :key="item.id"
+                  >
                     <li
                       @click="selectTerminal(item)"
                       v-show="
                         !form.searchTerminalsVisible ||
-                        item[config.searchColumnName].match(form.searchTerminalsReg) ||
-                        item[config.searchColumnIP].match(form.searchTerminalsReg)
+                        item[config.searchColumnName].match(
+                          form.searchTerminalsReg
+                        ) ||
+                        item[config.searchColumnIP].match(
+                          form.searchTerminalsReg
+                        )
                       "
                     >
                       {{ item.name }}
@@ -121,8 +131,17 @@
       </el-tabs>
     </div>
     <div class="com-select-center">
-      <span title="全部右移" @click="selectAll" class="iconfont icon-shift-right"> </span>
-      <span title="全部左移" @click="deselectAll" class="iconfont icon-shift-left">
+      <span
+        title="全部右移"
+        @click="selectAll"
+        class="iconfont icon-shift-right"
+      >
+      </span>
+      <span
+        title="全部左移"
+        @click="deselectAll"
+        class="iconfont icon-shift-left"
+      >
       </span>
     </div>
     <!-- 已选终端 -->
@@ -145,7 +164,8 @@
           >
             <el-icon
               @click="
-                form.selectedSearchTerminalsVisible = !form.selectedSearchTerminalsVisible
+                form.selectedSearchTerminalsVisible =
+                  !form.selectedSearchTerminalsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -174,12 +194,19 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template v-for="(item, index) in form.selectedTerminalsData" :key="item.id">
+            <template
+              v-for="(item, index) in form.selectedTerminalsData"
+              :key="item.id"
+            >
               <li
                 v-show="
                   !form.selectedSearchTerminalsVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
-                  item[config.searchColumnIP].match(form.selectedSearchTerminalsReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchTerminalsReg
+                  ) ||
+                  item[config.searchColumnIP].match(
+                    form.selectedSearchTerminalsReg
+                  )
                 "
               >
                 <div class="item-terminals">
@@ -255,12 +282,14 @@
         >
           <template
             v-if="
-              item.column !== config.searchColumnName || !form.selectedSearchGroupsVisible
+              item.column !== config.searchColumnName ||
+              !form.selectedSearchGroupsVisible
             "
           >
             <el-icon
               @click="
-                form.selectedSearchGroupsVisible = !form.selectedSearchGroupsVisible
+                form.selectedSearchGroupsVisible =
+                  !form.selectedSearchGroupsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -287,11 +316,16 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template v-for="(item, index) in form.selectedGroupsData" :key="item.id">
+            <template
+              v-for="(item, index) in form.selectedGroupsData"
+              :key="item.id"
+            >
               <li
                 v-show="
                   !form.selectedSearchGroupsVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchGroupsReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchGroupsReg
+                  )
                 "
               >
                 <div class="item-terminals group">
@@ -301,22 +335,31 @@
                     :style="row.style"
                     :title="item[row.column]"
                   >
-                    <el-popover placement="bottom" width="448px" trigger="click">
+                    <el-popover
+                      placement="bottom"
+                      width="448px"
+                      trigger="click"
+                    >
                       <template #reference>
                         <span
                           :class="{
-                            'iconfont icon-view-terminlas': row.column === 'list',
+                            'iconfont icon-terminals1': row.column === 'list',
                           }"
                           :title="row.column === 'list' ? '点击查看' : ''"
                         >
-                          {{ row.column === "key" ? index + 1 : item[row.column] }}
+                          {{
+                            row.column === "key" ? index + 1 : item[row.column]
+                          }}
                         </span>
                       </template>
                       <el-table :data="item.terminals" style="width: 448px">
                         <el-table-column type="index" label="序号" width="50" />
                         <el-table-column property="name" label="终端名称" />
                         <el-table-column property="ip_address" label="终端IP" />
-                        <el-table-column property="call_code" label="呼叫编码" />
+                        <el-table-column
+                          property="call_code"
+                          label="呼叫编码"
+                        />
                       </el-table>
                     </el-popover>
                   </div>
@@ -552,10 +595,12 @@ const handleUpdateSelectedTerminals = () => {
       form.selectedTerminalsID.push(item.id);
       request.name = item.name;
       selectedName += item.name + ",";
-      request[config.terminalsRequestColumnName] = item[config.terminalsColumnName];
+      request[config.terminalsRequestColumnName] =
+        item[config.terminalsColumnName];
 
       if (config.selectAmplifier) {
-        request[config.amplifierRequestColumnName] = item[config.amplifierColumnName];
+        request[config.amplifierRequestColumnName] =
+          item[config.amplifierColumnName];
       }
 
       request = Object.assign(request, config.terminalsOtherData);
@@ -573,8 +618,9 @@ const deselectAll = () => {
     form.selectedTerminalsData.forEach(
       (item: { [x: string]: string; ip_address: string }) => {
         if (form.selectedSearchTerminals) {
-          item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
-          item.ip_address.match(form.selectedSearchTerminalsReg)
+          item[config.searchColumnName].match(
+            form.selectedSearchTerminalsReg
+          ) || item.ip_address.match(form.selectedSearchTerminalsReg)
             ? selected.push(item)
             : noSelect.push(item);
         } else {
@@ -619,7 +665,9 @@ const selectAll = () => {
           : noSelect.push(item);
       }
     );
-    form.selectedTerminalsData = Array.from(selected.concat(form.selectedTerminalsData));
+    form.selectedTerminalsData = Array.from(
+      selected.concat(form.selectedTerminalsData)
+    );
     form.allTerminalsData = Array.from(noSelect);
     handleUpdateSelectedTerminals();
   }
@@ -632,7 +680,9 @@ const selectAll = () => {
         ? selected.push(item)
         : noSelect.push(item);
     });
-    form.selectedGroupsData = Array.from(selected.concat(form.selectedGroupsData));
+    form.selectedGroupsData = Array.from(
+      selected.concat(form.selectedGroupsData)
+    );
     form.allGroupsData = Array.from(noSelect);
     handleUpdateSelectedGroups();
   }
@@ -641,9 +691,11 @@ const selectAll = () => {
 const selectTerminal = (row: { id: number }) => {
   if (form.selectedTerminalsID.indexOf(row.id) < 0) {
     form.selectedTerminalsData.push(Object.assign({}, row));
-    form.allTerminalsData = form.allTerminalsData.filter((item: { id: number }) => {
-      return row.id !== item.id;
-    });
+    form.allTerminalsData = form.allTerminalsData.filter(
+      (item: { id: number }) => {
+        return row.id !== item.id;
+      }
+    );
     handleUpdateSelectedTerminals();
   }
 };
@@ -673,9 +725,11 @@ const selectGroup = (row: { id: number }) => {
 const deleteGroup = (row: { id: number }) => {
   if (form.selectedGroupsID.indexOf(row.id) >= 0) {
     form.allGroupsData.unshift(Object.assign({}, row));
-    form.selectedGroupsData = form.selectedGroupsData.filter((item: { id: number }) => {
-      return row.id !== item.id;
-    });
+    form.selectedGroupsData = form.selectedGroupsData.filter(
+      (item: { id: number }) => {
+        return row.id !== item.id;
+      }
+    );
     handleUpdateSelectedGroups();
   }
 };
@@ -689,7 +743,8 @@ const handleCheckAllAmplifierChange = (item: any) => {
 const handleSelectAmplifierChange = (item: any) => {
   const checkedCount = item[config.amplifierColumnName].length;
   item.checkAll_amplifier = checkedCount === config.amplifierValue.length;
-  item.isIndeterminate = checkedCount > 0 && checkedCount < config.amplifierValue.length;
+  item.isIndeterminate =
+    checkedCount > 0 && checkedCount < config.amplifierValue.length;
   handleUpdateSelectedTerminals();
 };
 // 设置tab当前选择状态
@@ -716,13 +771,15 @@ const getGroupsAll = () => {
     })
     .then((result: { result: number; data: any[] }) => {
       if (result.result === 200) {
-        form.allGroupsData = form.allGroupsOptions = result.data.map((item: any) => {
-          return {
-            id: item.id,
-            name: item.name,
-            terminals: item.terminals,
-          };
-        });
+        form.allGroupsData = form.allGroupsOptions = result.data.map(
+          (item: any) => {
+            return {
+              id: item.id,
+              name: item.name,
+              terminals: item.terminals,
+            };
+          }
+        );
         handleEditGroupsData();
       }
     });
@@ -799,7 +856,10 @@ const handleEditGroupsData = () => {
 onMounted(() => {
   getTerminalsAll();
   getGroupsAll();
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
   setCurrentTabSelectStatus();
 });
 </script>

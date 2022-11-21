@@ -10,15 +10,12 @@
     width="420px"
     destroy-on-close
     draggable
-    :show-close="false"
+    class="com-default-dialog"
     @close="emit('show', false)"
   >
-    <template #header="{ close, titleId, titleClass }">
+    <template #header="{ titleId, titleClass }">
       <div class="com-dialog-header">
         <span :id="titleId" :class="titleClass">{{ form.title }}</span>
-        <span class="dialog-icon">
-          <el-icon @click="close"><Close /></el-icon>
-        </span>
       </div>
     </template>
     <div
@@ -122,7 +119,7 @@ const validateName = (rule: any, value: any, callback: any) => {
     data: { name: value },
   })
     .then((result) => {
-      if (result.result?.status) {
+      if (result.data?.status) {
         callback();
       } else {
         callback(new Error("名称已存在"));
@@ -142,7 +139,9 @@ const validateEmpty = (rule: any, value: any, callback: any) => {
 // 表单验证规则
 const rules = reactive({
   name: [{ validator: validateName, trigger: "blur", required: true }],
-  execute_time: [{ validator: validateEmpty, trigger: "change", required: true }],
+  execute_time: [
+    { validator: validateEmpty, trigger: "change", required: true },
+  ],
   end_time: [{ validator: validateEmpty, trigger: "blur", required: true }],
 });
 // 处理提交保存
@@ -152,7 +151,9 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
   await formEl.validate((valid, fields) => {
     if (valid) {
       let start =
-        parentData.editInfor?.[0].type !== 3 ? form.execute_time : form.end_time[0];
+        parentData.editInfor?.[0].type !== 3
+          ? form.execute_time
+          : form.end_time[0];
       let end = parentData.editInfor?.[0].type !== 3 ? "" : form.end_time[1];
       let ids: any[] = [];
       parentData.editInfor.forEach((item: { id: any }) => ids.push(item.id));
@@ -189,7 +190,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
           } else {
             ElMessage({
               type: "error",
-              message: result.data?.message,
+              message: result.return_message,
               grouping: true,
             });
           }

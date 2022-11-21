@@ -117,7 +117,7 @@
                 >
                   <span
                     :class="{
-                      'iconfont icon-view-terminlas':
+                      'iconfont icon-terminals1':
                         row.column === 'list' && !item.hasOwnProperty('medias_id'),
                     }"
                     :title="
