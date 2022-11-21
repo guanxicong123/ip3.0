@@ -160,10 +160,6 @@ const userPasswordForm = reactive({
 const dialogVersionNo = ref(false); //关于弹框
 const dialogLogOut = ref(false); //退出登录弹框
 
-// mounted 实例挂载完成后被调用
-onMounted(() => {
-    console.log(data);
-});
 const handleCommandUser = (command: string | number | object) => {
     if (command === "simplified") {
         dialogUserName.value = true;

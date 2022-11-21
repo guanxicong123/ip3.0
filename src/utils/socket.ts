@@ -84,7 +84,6 @@ const send = (data: any) => {
         if (data.data.TaskType === 15 && !remotePlayTaskKey.includes(data.data.TaskID)) { //远程播放任务（截取TaskID，返回连接成功后发起播放）
             remotePlayTaskKey.push(data.data.TaskID)
         }
-        console.log(data)
         getStore.useAppStore().taskLocalKeyRecord(data.data.TaskID)
         socket.send(JSON.stringify(data));
     }
@@ -242,7 +241,7 @@ const handlerMsg = (msg: any) => {
         case "ms2c_get_server_terminals_status": //所有终端状态
             getStore.useTerminalStore().getTerminalData(msg.data);
             return;
-        case "ms2c_get_tts_engine_info": //播放语音
+        case "ms2c_get_tts_engine_info": //播放语音(TTS引擎)
             getStore.usePlayStore().setPlayVoice(msg.data)
             return
         case 'ms2c_get_task_play_status': //客户端任务播放状态

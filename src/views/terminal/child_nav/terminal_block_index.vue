@@ -219,12 +219,9 @@ const filterData = () => {
             return (item.Status === terminal_status.value || terminal_status.value === -1)
             && (item.name.match(search_value.value) || search_value.value === '')
         })
-        console.log(data)
         return data
     }
 }
-const $useRoute = useRoute();
-const $useRouter = useRouter();
 
 // 监听路由
 onBeforeRouteLeave((to, from) => {

@@ -29,20 +29,24 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
+
 const global = app.config.globalProperties //原型链
 global.$md5 = Md5
 global.$message = ElMessage
+const url = localStorage.get("serverIP")
 global.$http = axios.create({
-  baseURL: '/api/v29+',
-  headers: {
-    'X-Requested-With': 'XMLHttpRequest',
-  },
+    baseURL: '/api/v29+',
+    // baseURL: 'http://' + url + '/api/v29+'
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+    },
 })
 global.$http1 = axios.create({
-  baseURL: '/api/v1/',
-  headers: {
-    'X-Requested-With': 'XMLHttpRequest',
-  },
+    baseURL: '/api/v1/',
+    // baseURL: 'http://127.0.0.1:8010/api/v1/'
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+    },
 })
 //请求拦截器
 global.$http1.interceptors.request.use(

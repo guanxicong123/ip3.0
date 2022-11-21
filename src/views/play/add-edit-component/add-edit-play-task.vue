@@ -137,7 +137,6 @@ const $useRoute: any = useRoute();
 
 const uploadRef = ref<UploadInstance>();
 const fileList = ref<UploadUserFile[]>();
-const activeName = ref("first");
 const musicSelect: any = ref([]); //播放配置选中的音频文件
 const ruleForm = reactive({
     type: 4, //任务类型；快捷音源&远程播放走非本地http协议；其余本地http协议。
@@ -287,36 +286,66 @@ const submitTask = () => {
 // 快捷音源任务
 const createQuickSou = (data: any) => {
     if (ruleForm.fast_sound_id === -1) return proxy.$message.warning("请选择快捷音源");
-    proxy.$http.post("/broadcasting",
-        Object.assign(data, {
-            sound_source: soundSourceForm.value,
-        })
-    ).then((result: any) => {
-        if (result.result === 200) {
-            $useRouter.push("/play");
-        }
-        console.log(result);
-    });
+    if ($useRoute.query.id && $useRoute.query.id !== "0") {
+        proxy.$http.put("/broadcasting/" + $useRoute.query.id,
+            Object.assign(data, {
+                sound_source: soundSourceForm.value,
+            })
+        ).then((result: any) => {
+            if (result.result === 200) {
+                $useRouter.push("/play");
+            }
+        });
+    }else {
+        proxy.$http.post("/broadcasting",
+            Object.assign(data, {
+                sound_source: soundSourceForm.value,
+            })
+        ).then((result: any) => {
+            if (result.result === 200) {
+                $useRouter.push("/play");
+            }
+        });
+    }
 };
 // 音乐播放任务
 const createLocalAudio = (data: any) => {
     if (ruleForm.content.length === 0) return proxy.$message.warning("请添加音频文件");
-    proxy.$http1.post("/task",
-        Object.assign(data, musicPlayForm.value)
-    ).then((result: any) => {
-        if (result.result === 200) {
-            $useRouter.push("/play");
-        }
-    });
+    if ($useRoute.query.id && $useRoute.query.id !== "0") {
+        proxy.$http1.put("/task/" + $useRoute.query.id, 
+            Object.assign(data, musicPlayForm.value)
+        ).then((result: any) => {
+            if (result.result === 200) {
+                $useRouter.push("/play");
+            }
+        })
+    } else {
+        proxy.$http1.post("/task",
+            Object.assign(data, musicPlayForm.value)
+        ).then((result: any) => {
+            if (result.result === 200) {
+                $useRouter.push("/play");
+            }
+        })
+    }
 };
 // 远程任务
 const createRemteTask = (data: any) => {
     if (ruleForm.medias.length === 0 && ruleForm.medias_groups.length === 0)
         return proxy.$message.warning("请添加媒体文件或媒体文件夹");
 
-    proxy.$http
-        .post(
-            "/broadcasting",
+    if ($useRoute.query.id && $useRoute.query.id !== "0") {
+        proxy.$http1.put("/broadcasting/" + $useRoute.query.id, 
+            Object.assign(data, {
+                sound_source: remotePlayForm.value,
+            })
+        ).then((result: any) => {
+            if (result.result === 200) {
+                $useRouter.push("/play");
+            }
+        })
+    } else {
+        proxy.$http.post("/broadcasting",
             Object.assign(data, {
                 sound_source: remotePlayForm.value,
             })
@@ -325,8 +354,8 @@ const createRemteTask = (data: any) => {
             if (result.result === 200) {
                 $useRouter.push("/play");
             }
-            console.log(result);
         });
+    }
 };
 // 文本播放
 const createTxstPlay = (data: any) => {
@@ -336,34 +365,27 @@ const createTxstPlay = (data: any) => {
         return proxy.$message.warning("请输入文本内容");
 
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
-        proxy.$http1
-            .put(
-                "/task",
-                Object.assign(data, {
-                    content: tsctFormData.value,
-                    id: Number($useRoute.query.id),
-                })
-            )
-            .then((result: any) => {
-                if (result.result === 200) {
-                    $useRouter.push("/play");
-                }
-                console.log(result);
-            });
+        proxy.$http1.put("/task",
+            Object.assign(data, {
+                content: tsctFormData.value,
+                id: Number($useRoute.query.id),
+            })
+        ).then((result: any) => {
+            if (result.result === 200) {
+                $useRouter.push("/play");
+            }
+        });
     } else {
-        proxy.$http1
-            .post(
-                "/task",
-                Object.assign(data, {
-                    content: tsctFormData.value,
-                })
-            )
-            .then((result: any) => {
-                if (result.result === 200) {
-                    $useRouter.push("/play");
-                }
-                console.log(result);
-            });
+        proxy.$http1.post(
+            "/task",
+            Object.assign(data, {
+                content: tsctFormData.value,
+            })
+        ).then((result: any) => {
+            if (result.result === 200) {
+                $useRouter.push("/play");
+            }
+        });
     }
 };
 // 音源采集
@@ -395,18 +417,25 @@ const createSoundSourceCollection = (data: any) => {
             type: sourAcquisiFrom.value.type === 1 ? 12 : 13,
         }
     );
-
-    proxy.$http1.post("/task", submitFrom).then((result: any) => {
-        if (result.result === 200) {
-            $useRouter.push("/play");
-        }
-        console.log(result);
-    });
+    if ($useRoute.query.id && $useRoute.query.id !== "0") {
+        proxy.$http1.put("/task/" + $useRoute.query.id,
+            submitFrom
+        ).then((result: any) => {
+            if (result.result === 200) {
+                $useRouter.push("/play");
+            }
+        });
+    } else {
+        proxy.$http1.post("/task", submitFrom).then((result: any) => {
+            if (result.result === 200) {
+                $useRouter.push("/play");
+            }
+        });
+    }
 };
 // 请求本地任务
 const getLocalTask = (row: any) => {
     proxy.$http1.get("/task/" + row).then((result: any) => {
-        console.log(result);
         requestTaskConfig.value = result.data;
         ruleForm.type = result.data.type;
         ruleForm.name = result.data.name;
@@ -451,8 +480,7 @@ const getServeTask = (row: any) => {
             withTerminals: true,
             withFastTerminal: true,
         },
-    })
-    .then((result: any) => {
+    }).then((result: any) => {
         ruleForm.type = result.data.type;
         ruleForm.name = result.data.name;
         ruleForm.volume = result.data.volume;

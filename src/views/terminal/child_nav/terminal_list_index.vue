@@ -139,7 +139,7 @@ watch([terminal_data, storage_terminal_data], ()=> {
             return false
         })
     })
-    cacheTerminalData.value = filterData(storage_terminal_data.value)
+    cacheTerminalData.value = filterData()
     form.data = cacheTerminalData.value.slice(
         form.pageSize * (form.currentPage - 1),
         form.pageSize * form.currentPage
@@ -170,7 +170,7 @@ watch(()=> cacheTerminalData.value, (newVal)=> {
 watch(
     [terminal_status, search_value],
     () => {
-        cacheTerminalData.value = filterData(storage_terminal_data.value)
+        cacheTerminalData.value = filterData()
         sortChange(
             sort_condition.value,
             sort_condition.value.prop,
@@ -335,6 +335,7 @@ onMounted(() => {
         prop: String(sort_map.get(system_configs.value.TerminalOrderbyType)),
         order: "descending",
     };
+    console.log(terminal_group_data.value)
     if (terminal_group_data.value.length > 0) {
         form.current_group = terminal_group_data.value[0].id
     }
