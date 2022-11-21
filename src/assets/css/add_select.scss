@@ -1,0 +1,34 @@
+// 选择框添加组件样式
+.com-add-select-components {
+  position: relative;
+  width: 100%;
+
+  .animation {
+    font-size: 18px;
+    transform: rotate(360deg);
+    animation: rotation 2s linear infinite;
+  }
+
+  @keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .select-button {
+    position: absolute;
+    top: 0;
+    right: -54px;
+    display: flex;
+    align-items: center;
+    min-width: 52px;
+
+    i {
+      padding: 0 5px;
+    }
+  }
+}

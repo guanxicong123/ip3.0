@@ -56,7 +56,7 @@
                   :class="form.currentFolder.id == item.id ? 'theme com-select-bg' : ''"
                 >
                   <div class="nav-one">
-                    <i class="iconfont icon-gray-fine"></i>
+                    <i class="iconfont icon-folder"></i>
                     <i
                       class="iconfont"
                       :class="
@@ -70,7 +70,7 @@
                       <span :title="item.name">{{ item.name }}</span>
                     </div>
                     <span class="num">( {{ item.medias_count }} )</span>
-                    <span class="icon" v-if="item.id > 0">
+                    <span class="icon-btn" v-if="item.id > 0">
                       <i
                         class="iconfont icon-edit"
                         title="编辑"
@@ -158,7 +158,7 @@
                 @click.stop="handleAddUploadGroup(form.currentFolder)"
               ></i>
               <i
-                class="iconfont icon-batch-download"
+                class="iconfont icon-download"
                 :class="{ 'icon-disabled': multipleSelection.length == 0 }"
                 title="批量下载"
                 @click="handlePackageDownloadFile"
@@ -349,7 +349,7 @@ const handleDeleteMediaGroup = (row: any) => {
           } else {
             ElMessage({
               type: "error",
-              message: result.data?.message || "删除失败",
+              message: result.return_message || "删除失败",
               grouping: true,
             });
           }
@@ -388,7 +388,7 @@ const handleGetOnePageData = async () => {
       } else {
         ElMessage({
           type: "error",
-          message: result.data?.message,
+          message: result.return_message,
           grouping: true,
         });
       }
@@ -471,7 +471,7 @@ const handleDelete = (type: string, row: any) => {
           } else {
             ElMessage({
               type: "error",
-              message: result.data?.message || "删除失败",
+              message: result.return_message || "删除失败",
               grouping: true,
             });
           }
@@ -525,7 +525,7 @@ const handleGetAllBellsGroups = async () => {
               is_public: 1,
             },
           ],
-          ...result.result,
+          ...result.data,
         ];
         // 统计全部媒体文件数量
         for (let index = 0; index < result.data.length; index++) {
@@ -536,7 +536,7 @@ const handleGetAllBellsGroups = async () => {
       } else {
         ElMessage({
           type: "error",
-          message: result.data?.message,
+          message: result.return_message,
           grouping: true,
         });
       }
@@ -559,7 +559,7 @@ const handleDownloadOneFile = (id: number) => {
       } else {
         ElMessage({
           type: "error",
-          message: result.data?.message,
+          message: result.return_message,
           grouping: true,
         });
       }
@@ -590,7 +590,7 @@ const handlePackageDownloadFile = () => {
       } else {
         ElMessage({
           type: "error",
-          message: result.data?.message,
+          message: result.return_message,
           grouping: true,
         });
       }

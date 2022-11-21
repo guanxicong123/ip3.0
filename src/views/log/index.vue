@@ -821,8 +821,8 @@ const handleAllUsersData = async () => {
   form.loading = true;
   await UsersService.getAllUsers({})
     .then((result) => {
-      if (result.result) {
-        form.userOptions = [...[{ id: -1, name: "全部用户" }], ...result.result];
+      if (result.data) {
+        form.userOptions = [...[{ id: -1, name: "全部用户" }], ...result.data];
       } else {
         ElMessage({
           type: "error",

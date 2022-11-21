@@ -25,13 +25,21 @@
             width="60"
             :index="typeIndex"
           />
-          <el-table-column prop="status" label="任务操作" show-overflow-tooltip />
-          <el-table-column prop="launch_terminal" label="发起端" show-overflow-tooltip />
+          <el-table-column
+            prop="status"
+            label="任务操作"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="launch_terminal"
+            label="发起端"
+            show-overflow-tooltip
+          />
           <el-table-column prop="terminal" label="接收端" show-overflow-tooltip>
             <template #default="scope">
               <el-button link type="primary" @click="scope.row">
                 <template #icon>
-                  <i class="iconfont icon-view-terminal" title="查看终端"></i>
+                  <i class="iconfont icon-terminals1" title="查看终端"></i>
                 </template>
               </el-button>
             </template>
@@ -45,7 +53,11 @@
             <template #default="scope"> ({{ scope.row.life_time }}) </template>
           </el-table-column>
           <el-table-column prop="remarks" label="备注" show-overflow-tooltip />
-          <el-table-column prop="level      " label="日志级别" show-overflow-tooltip>
+          <el-table-column
+            prop="level      "
+            label="日志级别"
+            show-overflow-tooltip
+          >
             <template #default="scope">
               {{ formatterLevel(scope.row.level) }}
             </template>

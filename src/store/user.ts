@@ -36,6 +36,7 @@ export const useUserStore = defineStore({
           ensembles: [],
           home_config_json: [],
           users_config: {
+            view_mode: 1,
             default_timing_bells_groups_id: 0,
           },
         },

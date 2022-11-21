@@ -1,5 +1,3 @@
-import router from "../router";
-
 export interface AppState {
     language: string;
     size: string;

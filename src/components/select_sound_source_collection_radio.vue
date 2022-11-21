@@ -56,7 +56,7 @@
                   :title="item[row.column]"
                 >
                   <span>
-                    {{ row.column === "key" ? index + 1 : item }}
+                    {{ row.column === "key" ? index + 1 : item[row.column] }}
                   </span>
                 </div>
               </li>

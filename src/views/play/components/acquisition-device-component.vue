@@ -54,16 +54,11 @@
       width="800px"
       destroy-on-close
       draggable
-      append-to-body
-      :show-close="false"
-      @close="folderDialogVisible = false"
+      class="com-default-dialog"
     >
-      <template #header="{ close, titleId, titleClass }">
+      <template #header="{ titleId, titleClass }">
         <div class="com-dialog-header">
           <span :id="titleId" :class="titleClass">选择文件夹</span>
-          <span class="dialog-icon">
-            <el-icon @click="close"><Close /></el-icon>
-          </span>
         </div>
       </template>
       <select-folder @selectedPath="handleSelectedPath" />
@@ -171,7 +166,7 @@ const handleConfirm = () => {
   ruleForm.data.recordpath = selectPath.value;
   folderDialogVisible.value = false;
 };
-const getTerminalsAll = (TerminalsId: Number) => {
+const getTerminalsAll = (TerminalsId: number) => {
   proxy.$http
     .get("/terminals/all", {
       params: {

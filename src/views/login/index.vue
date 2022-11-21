@@ -126,32 +126,25 @@ const close = () => {
 };
 // 提交
 const submit = () => {
-    proxy.$http1.get("/login", {
-        params: {
-            server: modelRef.server_ip_address + ":51330",
+    let data = {
+        company: "BL",
+        actioncode: "c2ms_user_login",
+        token: "",
+        data: {
+            UserName: modelRef.name,
+            Password: "123456",
+            Platform: "PC",
+            HostIP: modelRef.server_ip_address,
+            ForceLogin: false,
+            server: modelRef.server_ip_address + ':51330'
         },
-    }).then((result: any) => {
-        if (result.result === 200) {
-            let data = {
-                company: "BL",
-                actioncode: "c2ms_user_login",
-                token: "",
-                data: {
-                    UserName: modelRef.name,
-                    Password: "123456",
-                    Platform: "PC",
-                    HostIP: modelRef.server_ip_address,
-                    ForceLogin: false,
-                },
-                result: 0,
-                return_message: "",
-            };
-            store.changeLoginStatus(true);
-            socketLogin(data);
-            localStorage.set("serverIP", modelRef.server_ip_address);
-            localStorage.set("username", modelRef.name);
-        }
-    });
+        result: 0,
+        return_message: "",
+    };
+    store.changeLoginStatus(true);
+    socketLogin(data);
+    localStorage.set("serverIP", modelRef.server_ip_address);
+    localStorage.set("username", modelRef.name);
 };
 
 // mounted 实例挂载完成后被调用

@@ -164,7 +164,7 @@ const uploadRef = ref();
 // 处理点击
 const handleClick = (item: any) => {
   form.currentSelected = item;
-  form.url = proxy.$user.config.apiBaseUrl + "/medias/upload/" + form.currentSelected.id;
+  form.url = "/api/v29+/medias/upload/" + form.currentSelected.id;
   form.showFilesInfo = form.files.filter((row: { postAction: string | string[] }) => {
     let folderId = row.postAction.slice(row.postAction.lastIndexOf("/") + 1);
     if (folderId == item.id) {

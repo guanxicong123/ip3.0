@@ -6,11 +6,11 @@ import '@vue/runtime-core'
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Container: typeof import('./components/container.vue')['default']
-    ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
-    ElBreadcrumbItem: typeof import('element-plus/es')['ElBreadcrumbItem']
+    Date_setting: typeof import('./components/configura_components/date_setting.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
+    ElCheckboxButton: typeof import('element-plus/es')['ElCheckboxButton']
     ElCheckboxGroup: typeof import('element-plus/es')['ElCheckboxGroup']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
@@ -53,13 +53,22 @@ declare module '@vue/runtime-core' {
     QuickMusicDialog: typeof import('./components/quick-music-dialog.vue')['default']
     QuickTerminalDialog: typeof import('./components/quick-terminal-dialog.vue')['default']
     Register: typeof import('./components/register.vue')['default']
+    Restrict_dialing: typeof import('./components/configura_components/restrict_dialing.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Select_group_radio: typeof import('./components/select_components/select_group_radio.vue')['default']
     Select_media_group: typeof import('./components/select_media_group.vue')['default']
+    Select_media_radio: typeof import('./components/select_components/select_media_radio.vue')['default']
     Select_shortcut_sound_source: typeof import('./components/select_shortcut_sound_source.vue')['default']
+    Select_shortcut_sound_source_radio: typeof import('./components/select_components/select_shortcut_sound_source_radio.vue')['default']
     Select_shortcut_terminal_radio: typeof import('./components/select_shortcut_terminal_radio.vue')['default']
     Select_sound_source_collection_radio: typeof import('./components/select_sound_source_collection_radio.vue')['default']
+    Select_terminals_groups: typeof import('./components/select_components/select_terminals_groups.vue')['default']
+    Select_terminals_radio: typeof import('./components/select_components/select_terminals_radio.vue')['default']
+    Sound_source_settings: typeof import('./components/configura_components/sound_source_settings.vue')['default']
+    Terminal_settings: typeof import('./components/configura_components/terminal_settings.vue')['default']
     TerminalsSelectComponents: typeof import('./components/terminals-select-components.vue')['default']
+    View_components: typeof import('./components/view_components/index.vue')['default']
   }
 }
 
