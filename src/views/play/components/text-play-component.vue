@@ -184,20 +184,20 @@ const ruleForm: any = reactive({
   displayattribute: 0, //显示属性
 });
 const textType = ref(0);
-const playVoiceOptions = [
-  {
-    EngineIndex: 0,
-    EngineName: "Microsoft Huihui Desktop - Chinese (Simplified)",
-  },
-];
 // 显示属性
 const dispProperOption = ref<any[]>([]);
 // 播放语速
 const playSpeedOption = ref<any[]>([]);
 const uploadRef = ref<UploadInstance>();
+const playVoiceOptions = computed(() => {
+  return getStore.usePlayStore().playVoiceData;
+});
 
 watch(ruleForm, (newVal) => {
   emit("update:tsctFormData", newVal);
+});
+watch(playVoiceOptions, (newVal) => {
+  console.log(newVal);
 });
 watch(
   () => props.selectTaskData,
@@ -222,16 +222,6 @@ const formatterSpeed = (row: number) => {
       return row;
   }
 };
-const getTtsEngine = () => {
-  let data = {
-    company: "BL",
-    actioncode: "c2ms_get_tts_engine_info",
-    data: {},
-    result: 0,
-    return_message: "",
-  };
-  send(data);
-};
 const getLedDisplay = () => {
   proxy.$http.get("/led-display-cfg/all").then((result: any) => {
     if (result.result === 200) {
@@ -241,7 +231,7 @@ const getLedDisplay = () => {
 };
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  getTtsEngine();
+  console.log(playVoiceOptions.value);
   getLedDisplay();
   if (props.selectTaskData) {
     Object.assign(ruleForm, props.selectTaskData.content);
@@ -257,6 +247,7 @@ onMounted(() => {
   .el-select {
     width: 100%;
   }
+
   .el-input-number {
     width: 100%;
   }

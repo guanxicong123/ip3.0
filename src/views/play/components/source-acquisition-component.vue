@@ -57,15 +57,11 @@
       destroy-on-close
       draggable
       append-to-body
-      :show-close="false"
-      @close="folderDialogVisible = false"
+      class="com-default-dialog"
     >
-      <template #header="{ close, titleId, titleClass }">
+      <template #header="{ titleId, titleClass }">
         <div class="com-dialog-header">
           <span :id="titleId" :class="titleClass">选择文件夹</span>
-          <span class="dialog-icon">
-            <el-icon @click="close"><Close /></el-icon>
-          </span>
         </div>
       </template>
       <select-folder @selectedPath="handleSelectedPath" />
@@ -162,10 +158,10 @@ const getTerminalsAll = () => {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   console.log(props.selectTaskData);
-  if (props.selectTaskData.hasOwnProperty("type")) {
+  if (Object.prototype.hasOwnProperty.call(props.selectTaskData, "type")) {
     ruleForm.type = props.selectTaskData.type === 12 ? 1 : 2;
     ruleForm.audioQuality = props.selectTaskData.content.audioQuality;
-    if (props.selectTaskData.content.hasOwnProperty("terminalID")) {
+    if (Object.prototype.hasOwnProperty.call(props.selectTaskData, "terminalID")) {
       getTerminalsAll();
     }
   }

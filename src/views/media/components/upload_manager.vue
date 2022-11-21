@@ -147,7 +147,7 @@ const form = reactive<any>({
   extensions: "mp3", // 允许上传的文件后缀
   hasUploadError: false,
   headers: {
-    authorization: localStorage.getItem("userToken"),
+    authorization: localStorage.get("userToken"),
   },
   // 状态
   successFiles: 0, // 成功文件
@@ -164,7 +164,7 @@ const uploadRef = ref();
 // 处理点击
 const handleClick = (item: any) => {
   form.currentSelected = item;
-  form.url = proxy.$user.config.apiBaseUrl + "/medias/upload/" + form.currentSelected.id;
+  form.url = "/api/v29+/medias/upload/" + form.currentSelected.id;
   form.showFilesInfo = form.files.filter((row: { postAction: string | string[] }) => {
     let folderId = row.postAction.slice(row.postAction.lastIndexOf("/") + 1);
     if (folderId == item.id) {

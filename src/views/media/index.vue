@@ -56,7 +56,7 @@
                   :class="form.currentFolder.id == item.id ? 'theme com-select-bg' : ''"
                 >
                   <div class="nav-one">
-                    <i class="iconfont icon-gray-fine"></i>
+                    <i class="iconfont icon-folder"></i>
                     <i
                       class="iconfont"
                       :class="
@@ -70,7 +70,7 @@
                       <span :title="item.name">{{ item.name }}</span>
                     </div>
                     <span class="num">( {{ item.medias_count }} )</span>
-                    <span class="icon" v-if="item.id > 0">
+                    <span class="icon-btn" v-if="item.id > 0">
                       <i
                         class="iconfont icon-edit"
                         title="编辑"
@@ -158,7 +158,7 @@
                 @click.stop="handleAddUploadGroup(form.currentFolder)"
               ></i>
               <i
-                class="iconfont icon-batch-download"
+                class="iconfont icon-download"
                 :class="{ 'icon-disabled': multipleSelection.length == 0 }"
                 title="批量下载"
                 @click="handlePackageDownloadFile"
@@ -313,7 +313,7 @@ const handleClickFolder = (item: any) => {
     id: item.id,
     name: item.name,
   };
-  localStorage.setItem("folder", JSON.stringify(folder));
+  localStorage.set("folder", JSON.stringify(folder));
   handleGetOnePageData();
 };
 // 获取refs
@@ -349,7 +349,7 @@ const handleDeleteMediaGroup = (row: any) => {
           } else {
             ElMessage({
               type: "error",
-              message: result.result?.message || "删除失败",
+              message: result.return_message || "删除失败",
               grouping: true,
             });
           }
@@ -382,13 +382,13 @@ const handleGetOnePageData = async () => {
     check: true,
   })
     .then((result) => {
-      if (result.result?.data) {
-        form.data = result.result.data;
-        form.total = result.result.total;
+      if (result.data.data) {
+        form.data = result.data.data;
+        form.total = result.data.total;
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.return_message,
           grouping: true,
         });
       }
@@ -471,7 +471,7 @@ const handleDelete = (type: string, row: any) => {
           } else {
             ElMessage({
               type: "error",
-              message: result.result?.message || "删除失败",
+              message: result.return_message || "删除失败",
               grouping: true,
             });
           }
@@ -514,7 +514,7 @@ const handleGetAllBellsGroups = async () => {
     withUser: true,
   })
     .then((result) => {
-      if (result.result) {
+      if (result.data) {
         let num = 0;
         form.folderData = [
           ...[
@@ -525,18 +525,18 @@ const handleGetAllBellsGroups = async () => {
               is_public: 1,
             },
           ],
-          ...result.result,
+          ...result.data,
         ];
         // 统计全部媒体文件数量
-        for (let index = 0; index < result.result.length; index++) {
-          const item = result.result[index];
+        for (let index = 0; index < result.data.length; index++) {
+          const item = result.data[index];
           num = num + item.medias_count;
         }
         form.folderData[0].medias_count = num;
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.return_message,
           grouping: true,
         });
       }
@@ -553,13 +553,13 @@ const handleDownloadOneFile = (id: number) => {
   MeidaService.getDownloadOneMeida(id)
     .then((result) => {
       form.downloading = false;
-      const isHasURL = Object.prototype.hasOwnProperty.call(result.result, "url");
+      const isHasURL = Object.prototype.hasOwnProperty.call(result.data, "url");
       if (isHasURL) {
-        downloadRef.value.src = result.result.url;
+        downloadRef.value.src = result.data.url;
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.return_message,
           grouping: true,
         });
       }
@@ -584,13 +584,13 @@ const handlePackageDownloadFile = () => {
   })
     .then((result) => {
       form.downloading = false;
-      const isHasURL = Object.prototype.hasOwnProperty.call(result.result, "url");
+      const isHasURL = Object.prototype.hasOwnProperty.call(result.data, "url");
       if (isHasURL) {
-        downloadRef.value.src = result.result.url;
+        downloadRef.value.src = result.data.url;
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.return_message,
           grouping: true,
         });
       }
@@ -614,7 +614,7 @@ watch(
     // 当第一次进入界面加载，并且获取到全部媒体文件夹数据时
     if (newFolder && form.firstLoad) {
       // 刷新页面时，获取下当前媒体文件夹id
-      const currentFolder = localStorage.getItem("folder") || "";
+      const currentFolder = localStorage.get("folder") || "";
       if (currentFolder) {
         form.currentFolder = JSON.parse(currentFolder);
       }
@@ -636,7 +636,7 @@ watch(
 
 // 当前位置的组件将要离开时触发
 onBeforeRouteLeave(() => {
-  localStorage.removeItem("folder");
+  localStorage.remove("folder");
 });
 
 // mounted 实例挂载完成后被调用

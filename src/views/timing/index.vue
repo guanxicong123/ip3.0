@@ -392,13 +392,13 @@ const handleGetOnePageData = async () => {
     withLight: true,
   })
     .then((result) => {
-      if (result.result?.data) {
-        form.data = result.result.data;
-        form.total = result.result.total;
+      if (result.data.data) {
+        form.data = result.data.data;
+        form.total = result.data.total;
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.return_message,
           grouping: true,
         });
       }
@@ -475,7 +475,7 @@ const handleDelete = (type: string, row: any) => {
           } else {
             ElMessage({
               type: "error",
-              message: result.result?.message || "删除失败",
+              message: result.return_message || "删除失败",
               grouping: true,
             });
           }
@@ -497,7 +497,7 @@ const handleEnableOrDisable = (row: any) => {
     row.id
   )
     .then((result) => {
-      if (Object.prototype.hasOwnProperty.call(result.result, "id")) {
+      if (Object.prototype.hasOwnProperty.call(result.data, "id")) {
         row.is_done = status;
         ElMessage({
           type: "success",
@@ -507,7 +507,7 @@ const handleEnableOrDisable = (row: any) => {
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.return_message,
           grouping: true,
         });
       }
@@ -533,7 +533,7 @@ const handleCloneSuccessCallback = () => {
 };
 // 查看组件插件配置
 const groupConfig = {
-  iconfont: "icon-view-grouping", // 字体图标
+  iconfont: "icon-grade", // 字体图标
   iconTitle: "查看分组", // icon title
   tableTitle: "分组", // 表格顶部 title
   searchPlaceholder: "分组名称", // 搜索框 placeholder
@@ -543,14 +543,14 @@ const groupConfig = {
   ], // 显示的表格列
 };
 const mediaConfig = {
-  iconfont: "icon-view-media", // 字体图标
+  iconfont: "icon-music", // 字体图标
   iconTitle: "查看媒体文件", // icon title
   tableTitle: "媒体文件", // 表格顶部 title
   searchPlaceholder: "名称", // 搜索框 placeholder
   showTableColumn: [{ prop: "name", label: "名称" }], // 显示的表格列
 };
 const folderConfig = {
-  iconfont: "icon-view-media-folder", // 字体图标
+  iconfont: "icon-media-folder", // 字体图标
   iconTitle: "查看媒体文件夹", // icon title
   tableTitle: "媒体文件夹", // 表格顶部 title
   searchPlaceholder: "名称", // 搜索框 placeholder
@@ -568,7 +568,7 @@ const handleExportExcel = () => {
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.return_message,
           grouping: true,
         });
       }

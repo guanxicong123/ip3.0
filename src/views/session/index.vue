@@ -5,430 +5,437 @@
   @Describe: 会话状态
 -->
 <template>
-  <div class="com-index">
-    <div class="com-head set-padding">
-      <div class="com-head-content">
-        <div class="com-breadcrumb">
-          <el-select v-model="form.selectType" @change="handleSearch">
-            <el-option
-              v-for="item in sessionOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <el-input
-            v-model="form.search"
-            placeholder="任务名称/发起方/响应方"
-            clearable
-          />
-          <el-button :icon="Search" @click="handleSearch"></el-button>
-          <el-button @click="resetSearch">重置</el-button>
-        </div>
-        <div class="com-button">
-          <span>监听音响</span>
-          <el-popover
-            placement="bottom"
-            :width="400"
-            trigger="click"
-            popper-class="select-monitor-terminal"
-          >
-            <template #reference>
-              <el-button style="margin-right: 16px">请选择监听终端</el-button>
-            </template>
-            <div>
-              <div class="monitor-terminal-header">
-                <span class="monitor-terminal-number">{{
-                  `终端(共 ` + terminal_data.length + " 条)"
-                }}</span>
-                <el-input
-                  v-model="form.search"
-                  placeholder="终端名称/终端IP"
-                  clearable
-                />
-              </div>
-              <el-table
-                :data="terminal_data"
-                :max-height="300"
-                size="small"
-                @row-click="handelSelectRow"
-              >
-                <el-table-column label="名称">
-                  <template #default="scope">
-                    <div class="monitor-terminal-name">
-                      <span
-                        class="iconfont"
-                        :class="terminalStatus.get(scope.row.Status)"
-                      ></span>
-                      <span class="terminal-name">{{
-                        scope.row.EndPointIP
-                      }}</span>
-                      <span
-                        class="iconfont"
-                        :class="{
-                          'icon-selected':
-                            selectTerminalMac === scope.row.EndPointMac,
-                        }"
-                      ></span>
-                    </div>
-                  </template>
-                </el-table-column>
-                <el-table-column property="EndPointIP" label="IP地址" />
-              </el-table>
+    <div class="com-index">
+        <div class="com-head set-padding">
+            <div class="com-head-content">
+                <div class="com-breadcrumb">
+                    <el-select v-model="form.selectType" @change="handleSearch">
+                        <el-option
+                            v-for="item in sessionOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"/>
+                    </el-select>
+                    <el-input v-model="form.search" placeholder="任务名称/发起方/响应方" clearable />
+                    <el-button :icon="Search" @click="handleSearch"></el-button>
+                    <el-button @click="resetSearch">重置</el-button>
+                </div>
+                <div class="com-button">
+                    <span>监听音响</span>
+                    <el-popover
+                            placement="bottom"
+                            :width="400"
+                            trigger="click"
+                            popper-class="select-monitor-terminal"
+                        >
+                        <template #reference>
+                            <el-button style="margin-right: 16px">{{selectTerminalMac.EndPointIP ? selectTerminalMac.EndPointIP : '请选择监听终端'}}</el-button>
+                        </template>
+                        <div>
+                            <div class="monitor-terminal-header">
+                                <span class="monitor-terminal-number">{{`终端(共 ` + terminal_data.length + ' 条)'}}</span>
+                                <el-input v-model="form.search" placeholder="终端名称/终端IP" clearable />
+                            </div>
+                            <el-table
+                                class="monitor-terminal-table"
+                                :data="terminal_data"
+                                :max-height="300"
+                                size="small"
+                                @row-click="handelSelectRow"
+                                :row-class-name="tableRowClassName">
+                                <el-table-column label="名称">
+                                    <template #default="scope">
+                                        <div class="monitor-terminal-name">
+                                            <span class="iconfont" :class="terminalStatus.get(scope.row.Status)"></span>
+                                            <span class="terminal-name">{{scope.row.EndPointIP}}</span>
+                                            <span class="iconfont" :class="{'icon-selected': selectTerminalMac.EndPointMac === scope.row.EndPointMac}"></span>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column property="EndPointIP" label="IP地址" />
+                            </el-table>
+                        </div>
+                    </el-popover>
+                </div>
             </div>
-          </el-popover>
         </div>
-      </div>
-    </div>
-    <div class="com-main com-m-bg">
-      <div class="com-table">
-        <el-table
-          ref="multipleTableRef"
-          :data="form.data"
-          border
-          style="width: 100%"
-          height="100%"
-          @selection-change="handleSelectionChange"
-          :default-sort="{ prop: 'TaskBeginTime', order: 'descending' }"
-        >
-          <el-table-column
-            type="index"
-            label="序号"
-            show-overflow-tooltip
-            width="60"
-            :index="typeIndex"
-          />
-          <el-table-column
-            prop="TaskName"
-            label="任务名称"
-            show-overflow-tooltip
-          />
-          <el-table-column prop="TaskType" label="会话类型" />
-          <el-table-column prop="TaskIniator" label="发起方" />
-          <el-table-column label="响应方">
-            <!-- {{ scope.row.EndpointIpListArray }} -->
-            <template #default="scope">
-              <el-dropdown
-                v-if="
-                  scope.row.EndPointList && scope.row.EndPointList.length > 1
-                "
-                placement="bottom-start"
-              >
-                <span class="el-dropdown-link">
-                  <i class="el-icon-arrow-down el-icon--right"></i>
-                  {{ scope.row.EndPointList[0].EndPointName }}
-                </span>
-                <el-dropdown-menu class="EndpointIpListArray">
-                  <el-dropdown-item
-                    v-for="(item, key) in scope.row.EndPointList"
-                    :key="key"
-                  >
-                    {{ item.EndPointName }}
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-              <span
-                v-if="
-                  scope.row.EndPointList && scope.row.EndPointList.length === 1
-                "
-              >
-                {{ scope.row.EndPointList[0].EndPointName }}
-              </span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="TaskVolume" label="任务音量" />
-          <el-table-column
-            prop="TaskBeginTime"
-            label="会话进行时间"
-            sortable="custom"
-            width="160"
-          />
-          <el-table-column prop="IsMonitor" label="监听状态" />
-          <!-- <template #default="scope">
+        <div class="com-main com-m-bg">
+            <div class="com-table">
+                <el-table
+                    ref="multipleTableRef"
+                    :data="form.data" border
+                    style="width: 100%" height="100%"
+                    @selection-change="handleSelectionChange"
+                    :default-sort="{ prop: 'TaskBeginTime', order: 'descending' }">
+                    <el-table-column type="index" label="序号" show-overflow-tooltip :width="60" :index="typeIndex" />
+                    <el-table-column prop="TaskName" label="任务名称" show-overflow-tooltip />
+                    <el-table-column prop="TaskType" label="会话类型">
+                        <template #default="scope">
+                            {{formatterTaskType(scope.row)}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="TaskIniator" label="发起方" />
+                    <el-table-column label="响应方">
+                            <!-- {{ scope.row.EndpointIpListArray }} -->
+                        <template #default="scope">
+                            <el-dropdown v-if="scope.row.EndPointList && scope.row.EndPointList.length > 1" placement="bottom-start">
+                                <span class="el-dropdown-link">
+                                    <i class="el-icon-arrow-down el-icon--right"></i>
+                                    {{scope.row.EndPointList[0].EndPointName}}
+                                </span>
+                                <el-dropdown-menu class="EndpointIpListArray"  slot="dropdown">
+                                    <template
+                                        v-for="item in scope.row.EndPointList"
+                                    >
+                                        <el-dropdown-item>
+                                            {{item.EndPointName}}
+                                        </el-dropdown-item>
+                                    </template>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                            <span v-if="scope.row.EndPointList && scope.row.EndPointList.length === 1">
+                                {{ scope.row.EndPointList[0].EndPointName}}
+                            </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="TaskVolume" label="任务音量">
+                        <template #default="scope">
+                            <div class="com-table-task-volume" v-if="selectTerminaVolume?.EndPointMac !== scope.row.EndPointMac">
+                                <span class="volume">{{scope.row.TaskVolume}}</span>
+                                <span class="iconfont icon-edit1" @click="handelSelectVolume(scope.row)"></span>
+                            </div>
+                            <div class="com-table-task-volume" v-else>
+                                <el-input-number
+                                    v-model="selectTerminaVolume.TaskVolume"
+                                    :min="1"
+                                    :max="10"
+                                    controls-position="right"
+                                    size="large"
+                                />
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="TaskBeginTime" label="会话进行时间" sortable="custom" width="160"/>
+                    <el-table-column prop="IsMonitor" label="监听状态" />
+                        <!-- <template #default="scope">
                             <span v-if="scope.row.IsMonitor">
                                 {{scope.row.MonitorTaskID}}
                             </span>
                         </template> -->
-          <el-table-column label="操作" width="120">
-            <template #default="scope">
-              <el-button link type="danger" @click="handleStopTask(scope.row)">
-                <template #icon>
-                  <i class="iconfont icon-end" title="结束任务"></i>
-                </template>
-              </el-button>
-              <el-button link type="primary" @click="setMonitorTerminal">
-                <template #icon>
-                  <i class="iconfont icon-headset" title="点击监听"></i>
-                </template>
-              </el-button>
-              <!-- <el-button link type="danger">
+                    <el-table-column label="操作" width="120">
+                        <template #default="scope">
+                            <el-button link type="danger" @click="handleStopTask(scope.row)">
+                                <template #icon>
+                                    <i class="iconfont icon-end" title="结束任务"></i>
+                                </template>
+                            </el-button>
+                            <el-button link type="primary" @click="setMonitorTerminal">
+                                <template #icon>
+                                    <i class="iconfont icon-headset" title="点击监听"></i>
+                                </template>
+                            </el-button>
+                            <!-- <el-button link type="danger">
                                 <template #icon>
                                 <i class="iconfont icon-headphones-disabled" title="取消监听"></i>
                                 </template>
                             </el-button> -->
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </div>
+        <div class="com-footer com-m-bg" v-if="form.data.length > 0">
+            <el-pagination
+                v-model:currentPage="form.currentPage"
+                v-model:page-size="form.pageSize"
+                :page-sizes="[10, 20, 50, 100]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="tableDataAll.length"
+                @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+        </div>
     </div>
-    <div class="com-footer com-m-bg" v-if="form.data.length > 0">
-      <el-pagination
-        v-model:currentPage="form.currentPage"
-        v-model:page-size="form.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="tableDataAll.length"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
-    </div>
-  </div>
 </template>
 
 <script lang="ts" setup>
-import { send } from "@/utils/socket";
-import { ElMessageBox, ElTable } from "element-plus";
+import { send } from '@/utils/socket'
+import { ElMessage, ElMessageBox, ElTable } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
-
 interface User {
-  date: string;
-  name: string;
-  address: string;
+    date: string;
+    name: string;
+    address: string;
 }
 
+// const store = useAppStore()
+// const terminalStore = useTerminalStore()
 const store = getStore.useAppStore();
 const terminalStore = getStore.useTerminalStore();
-// 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
-const form = reactive({
-  search: "",
-  selectType: 0,
-  data: [{}],
-  currentPage: 1,
-  pageSize: 20,
+const form: any = reactive({
+    search: "",
+    selectType: 0,
+    data: [],
+    currentPage: 1,
+    pageSize: 20,
 });
-const loading = ref(false);
-const monitorTerminal: any = ref({});
-const tableDataAll = ref([]); //过滤后的数据
+const loading = ref(false)
+const monitorTerminal: any = ref({})
+const tableDataAll = ref<any[]>([]) //过滤后的数据
 const sessionOptions = [
-  { value: 0, label: "全部类型" },
-  { value: 21, label: "火警" },
-  { value: 15, label: "报警" },
-  { value: 19, label: "对讲" },
-  { value: 16, label: "广播" },
-  { value: 18, label: "电话广播" },
-  { value: 22, label: "定时巡更" },
-  { value: 14, label: "定时任务" },
-  { value: 13, label: "定时打铃" },
-  { value: 12, label: "遥控任务" },
-  { value: 11, label: "文本播放" },
-  { value: 9, label: "短路输入" },
-  { value: 8, label: "防拆报警" },
-  { value: 7, label: "音源采集" },
-  { value: 5, label: "音乐播放" },
-  { value: 4, label: "终端点播" },
-  { value: 2, label: "环境监听" },
-  { value: 1, label: "任务监听" },
+  ...[{ value: 0, label: "全部类型" }],
+  ...useFormatMap.terminalsOptions,
 ];
 const terminalStatus = new Map([
-  [1, "icon-on-line"], //空闲
-  [2, "icon-executing"], //忙碌
-  [3, "icon-freeze"], //冻结
-  [4, "icon-fault"], //故障
-  [0, "icon-off-line"], //离线
-]);
+    [ 1, "icon-on-line" ], //空闲
+    [ 2, "icon-executing" ], //忙碌
+    [ 3, "icon-freeze" ], //冻结
+    [ 4, "icon-fault" ], //故障
+    [ 0, "icon-off-line" ], //离线
+])
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
-const selectTerminalMac = ref(""); //选中表格设备的mac地址
+const selectTerminalMac: any = ref({
+    EndPointIP: '',
+    EndPointMac: ''
+}) //选中表格设备的mac地址
+const selectTerminaVolume = ref({
+    TaskVolume: 0,
+    EndPointMac: ''
+})
 
-const sessionsData = computed(() => {
-  return store.sessionsArray;
-}); //store.sessionsArray
+const sessionsData = computed(()=> {
+    return store.sessionsArray
+}) //store.sessionsArray
 const terminal_data = computed(() => {
-  return terminalStore.terminal_data;
-});
+    return terminalStore.terminal_data
+})
 
-watch(
-  () => sessionsData.value,
-  () => {
-    tableDataAll.value = filterData();
+watch(() => sessionsData.value, ()=> {
+    tableDataAll.value = filterData()
+    console.log(tableDataAll.value)
     form.data = tableDataAll.value.slice(
-      form.pageSize * (form.currentPage - 1),
-      form.pageSize * form.currentPage
-    );
-  }
-);
+        form.pageSize * (form.currentPage-1),
+        form.pageSize * form.currentPage
+    )
+})
 
 // 搜索
 const handleSearch = () => {
-  form.currentPage = 1;
-  tableDataAll.value = filterData();
-  form.data = tableDataAll.value.slice(0, form.pageSize);
-};
+    form.currentPage = 1
+    tableDataAll.value = filterData()
+    form.data = tableDataAll.value.slice(0,  form.pageSize)
+}
 // 重置搜索
 const resetSearch = () => {
-  form.search = "";
-  form.selectType = 0;
-  form.currentPage = 1;
-  tableDataAll.value = sessionsData.value;
-  form.data = tableDataAll.value.slice(0, form.pageSize);
-};
+    form.search = ''
+    form.selectType = 0
+    form.currentPage = 1
+    tableDataAll.value = sessionsData.value
+    form.data = tableDataAll.value.slice(0, form.pageSize)
+}
 // 获取触发选项
 const getTriggerOptions = () => {
-  form.currentPage = 1;
-  tableDataAll.value = filterData();
-  form.data = tableDataAll.value.slice(0, form.pageSize);
-};
+    form.currentPage = 1
+    tableDataAll.value = filterData()
+    form.data = tableDataAll.value.slice(0,  form.pageSize)
+}
 // 选中表格行
 const handelSelectRow = (row: any) => {
-  if (row.Status === 1) {
-    selectTerminalMac.value = row.EndPointMac;
-  } else {
-    proxy.message.warning("监听终端必须是空闲状态");
-  }
-};
+    if (row.Status === 1) {
+        selectTerminalMac.value = row
+    }else {
+        ElMessage.warning('监听终端必须是空闲状态')
+    }
+}
+const tableRowClassName = (row: any) => {
+    if (row.row.Status === 0) {
+        return 'Offline'
+    }
+    return ''
+}
 // 结束任务
 const handleStopTask = (row: any) => {
-  console.log(row);
-  ElMessageBox.confirm("即将停止此任务，是否继续？", "警告", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-  })
-    .then(() => {
-      let data = {
-        company: "BL",
-        actioncode: "c2ms_stop_task",
-        token: "",
-        data: {
-          TaskID: row.TaskID,
-        },
-        result: 0,
-        return_message: "",
-      };
-      send(data);
+    ElMessageBox.confirm(
+        '即将停止此任务，是否继续？',
+        '警告',
+    {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+    }).then(() => {
+        let data = {
+            company: "BL",
+            actioncode: "c2ms_stop_task",
+            token: "",
+            data: {
+                'TaskID': row.TaskID
+            },
+            result: 0,
+            return_message: ""
+        }
+        send(data)
+    }).catch(() => {
+        
     })
-    .catch(() => {});
-};
+}
 // 开启监听
-const setMonitorTerminal = (row: { TaskID: any }) => {
-  // if (loading.value)return
-  // loading.value = true
-  // let terminal = store.terminals.terminalsObjects[monitorTerminal.EndpointID]
-  // if (terminal && terminal.Status !== 1) {
-  //     loading.value = false
-  //     return proxy.$message.warning()
-  // }
-  // if (monitorTerminal.EndpointID) {
-  //     let data = proxy.$socket.baseParams
-  //     data.actioncode = proxy.AppConfig.webSocketIdMap.requestSetSessionMonitorTerminal
-  //     data.data =  {
-  //         ReceiverEndPointID: monitorTerminal.EndpointID,
-  //         TaskID : '',
-  //         MonitorTaskID : row.TaskID,
-  //     }
-  //     let i = setTimeout(()=>{
-  //         loading.value = false
-  //     }, 5000)
-  //     proxy.$socket.send(data, ()=>{
-  //         proxy.$message.info()
-  //     }).onmessage = (msg: any)=>{
-  //         if (msg.actioncode === AppConfig.webSocketIdMap.responseMsg
-  //             && msg.data !== null
-  //             && msg.data.EventID === AppConfig.webSocketIdMap.responseTerminals) {
-  //             clearTimeout(i)
-  //             loading.value = false
-  //         }
-  //     }
-  // } else {
-  //     loading.value = false
-  //     proxy.$message.warning()
-  // }
-};
+const setMonitorTerminal = (row: { TaskID: any; }) => {
+    // if (loading.value)return
+    // loading.value = true
+
+    // let terminal = store.terminals.terminalsObjects[monitorTerminal.EndpointID]
+    // if (terminal && terminal.Status !== 1) {
+    //     loading.value = false
+    //     return proxy.$message.warning()
+    // }
+
+    // if (monitorTerminal.EndpointID) {
+    //     let data = proxy.$socket.baseParams
+    //     data.actioncode = proxy.AppConfig.webSocketIdMap.requestSetSessionMonitorTerminal
+    //     data.data =  {
+    //         ReceiverEndPointID: monitorTerminal.EndpointID,
+    //         TaskID : '',
+    //         MonitorTaskID : row.TaskID,
+    //     }
+
+    //     let i = setTimeout(()=>{
+    //         loading.value = false
+    //     }, 5000)
+
+
+    //     proxy.$socket.send(data, ()=>{
+    //         proxy.$message.info()
+    //     }).onmessage = (msg: any)=>{
+    //         if (msg.actioncode === AppConfig.webSocketIdMap.responseMsg
+    //             && msg.data !== null
+    //             && msg.data.EventID === AppConfig.webSocketIdMap.responseTerminals) {
+    //             clearTimeout(i)
+    //             loading.value = false
+    //         }
+    //     }
+    // } else {
+    //     loading.value = false
+    //     proxy.$message.warning()
+    // }
+}
+// 选中音量
+const handelSelectVolume = (row: any) => {
+    console.log(row)
+    selectTerminaVolume.value = row
+}
+// 设置任务音量
+const handelTakVolume = (row: any) => {
+    let data = {
+        "company": "BL",
+        "actioncode": "c2ls_set_task_volume",
+        "token": "",
+        "data": {
+            "TaskID": row.TaskID,
+            "Volume": row.Volume
+        },
+        "result": 0,
+        "return_message": ""
+    }
+}
 const filterData = () => {
-  console.log(form.selectType);
-  let objIsEmpty = form.selectType === 0 && form.search === "";
-  if (objIsEmpty) {
-    return sessionsData.value;
-  } else {
-    let data = sessionsData.value.filter((item: any) => {
-      let respondent = item.EndPointList.map((row: any) => {
-        return row.EndPointName;
-      }).toString();
-      let searchFiletr =
-        item.TaskName.toLowerCase().indexOf(form.search.toLowerCase()) !== -1 ||
-        item.TaskIniator.toLowerCase().indexOf(form.search.toLowerCase()) !==
-          -1 ||
-        respondent.toLowerCase().indexOf(form.search.toLowerCase()) !== -1;
-      if (form.selectType !== 0) {
-        return item.TaskType === form.selectType && searchFiletr;
-      } else {
-        return searchFiletr;
-      }
-    });
-    return data;
-  }
-};
+    let objIsEmpty = form.selectType === 0 && form.search === ''
+    if (objIsEmpty) {
+        return sessionsData.value
+    }else {
+        let data = sessionsData.value.filter((item: any)=> {
+            let respondent = item.EndPointList.map((row: any)=> {
+                return row.EndPointName
+            }).toString()
+            let searchFiletr = item.TaskName.toLowerCase().indexOf(form.search.toLowerCase()) !== -1 ||
+                            item.TaskIniator.toLowerCase().indexOf(form.search.toLowerCase()) !== -1 ||
+                            respondent.toLowerCase().indexOf(form.search.toLowerCase()) !== -1
+            if (form.selectType !== 0) {
+                return item.TaskType === form.selectType && searchFiletr
+            } else {
+                return searchFiletr
+            }
+        })
+        return data
+    }
+}
 // 当前已选择表格数据
 const handleSelectionChange = (val: User[]) => {
-  multipleSelection.value = val;
+    multipleSelection.value = val;
 };
+// 任务类型格式转换
+const formatterTaskType = (row: any) => {
+  return useFormatMap.taskTypeMap.get(row.TaskType);
+};
+
 // 序号
 const typeIndex = (index: number) => {
-  return index + (form.currentPage - 1) * form.pageSize + 1;
+    return index + (form.currentPage - 1) * form.pageSize + 1;
 };
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
-  form.pageSize = val;
-  form.currentPage = 1;
-  form.data = tableDataAll.value.slice(
-    (form.currentPage - 1) * form.pageSize,
-    form.currentPage * form.pageSize
-  );
+    form.pageSize = val;
+    form.currentPage = 1;
+    form.data = tableDataAll.value.slice((form.currentPage - 1) * form.pageSize,  form.currentPage * form.pageSize)
 };
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
-  form.currentPage = val;
-  form.data = tableDataAll.value.slice(
-    (form.currentPage - 1) * form.pageSize,
-    form.currentPage * form.pageSize
-  );
+    form.currentPage = val;
+    form.data = tableDataAll.value.slice((form.currentPage - 1) * form.pageSize,  form.currentPage * form.pageSize)
 };
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  if (sessionsData.value.length > 0) {
-    tableDataAll.value = sessionsData.value;
-    form.data = tableDataAll.value.slice(0, form.pageSize);
-    console.log(form.data);
-  }
+    if (sessionsData.value.length > 0) {
+        tableDataAll.value = sessionsData.value
+        form.data = tableDataAll.value.slice(0,  form.pageSize)
+    }
 });
 </script>
 
 <style lang="scss">
-.select-monitor-terminal {
-  .monitor-terminal-header {
-    display: flex;
-    .monitor-terminal-number {
-      flex: 1;
-      line-height: 32px;
+    .com-table-task-volume {
+        display: flex;
+        .volume {
+            flex: 1;
+        }
+        .iconfont {
+            width: 16px;
+        }
     }
-    .el-input {
-      width: 235px;
+    .select-monitor-terminal {
+        .monitor-terminal-header {
+            display: flex;
+            .monitor-terminal-number {
+                flex: 1;
+                line-height: 32px;
+            }
+            .el-input {
+                width: 235px;
+            }
+        }
     }
-  }
-}
-// .monitor-terminal-name {
-//     display: flex;
-//     .iconfont {
-//         width: 16px;
-//     }
-//     .terminal-name {
-//         width: auto;
-//         flex: 1;
-//         overflow: hidden;
-//         text-overflow: ellipsis;
-//         white-space: nowrap;
-//     }
-// }
+    .monitor-terminal-table {
+        .monitor-terminal-name {
+            display: flex;
+            .iconfont {
+                width: 16px;
+                &:nth-child(1) {
+                    padding-right: 8px;
+                }
+                &:nth-child(2) {
+                    padding-left: 6px;
+                }
+            }
+            .terminal-name {
+                width: auto;
+                flex: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+        .Offline {
+            color: #92959b;
+        }
+    }
 </style>

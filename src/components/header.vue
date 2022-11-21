@@ -30,9 +30,7 @@
         <el-dropdown @command="handleCommand">
           <el-icon>
             <template #default>
-              <svg class="icon" aria-hidden="true">
-                <use xlink:href="#icon-language"></use>
-              </svg>
+              <span class="iconfont icon-language"></span>
             </template>
           </el-icon>
           <template #dropdown>
@@ -45,30 +43,22 @@
         </el-dropdown>
         <el-icon>
           <template #default>
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-skin"></use>
-            </svg>
+            <span class="iconfont icon-skin"></span>
           </template>
         </el-icon>
         <el-icon @click="handleMinimize">
           <template #default>
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-minimize"></use>
-            </svg>
+            <span class="iconfont icon-minimize"></span>
           </template>
         </el-icon>
         <el-icon @click="handleMaxMin">
           <template #default>
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-win"></use>
-            </svg>
+            <span class="iconfont icon-win"></span>
           </template>
         </el-icon>
         <el-icon @click="close">
           <template #default>
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-close"></use>
-            </svg>
+            <span class="iconfont icon-close"></span>
           </template>
         </el-icon>
       </div>
@@ -207,6 +197,7 @@
 
 <script lang="ts" setup>
 import { FormInstance, FormRules } from "element-plus";
+import { send } from "@/utils/socket";
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
@@ -315,6 +306,16 @@ const handleChangeUserPass = (formEl: FormInstance | undefined) => {
 // 退出登录
 const handleLogOut = () => {
   $useRouter.push("/");
+  let data = {
+    company: "BL",
+    actioncode: "c2ms_user_logout",
+    token: "",
+    data: {},
+    result: 0,
+    return_message: "",
+  };
+  send(data);
+  localStorage.remove("userToken");
 };
 // 验证
 const validateOldPassword = (rule: any, value: any, callback: any) => {

@@ -9,7 +9,9 @@
     <div class="com-select-left">
       <div class="custom-title">
         <template v-if="!form.searchConfigureVisible">
-          <el-icon @click="form.searchConfigureVisible = !form.searchConfigureVisible">
+          <el-icon
+            @click="form.searchConfigureVisible = !form.searchConfigureVisible"
+          >
             <Search />
           </el-icon>
           <span> 配置名称 </span>
@@ -69,7 +71,8 @@
           >
             <el-icon
               @click="
-                form.selectedSearchConfigureVisible = !form.selectedSearchConfigureVisible
+                form.selectedSearchConfigureVisible =
+                  !form.selectedSearchConfigureVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -103,7 +106,9 @@
               <li
                 v-show="
                   !form.selectedSearchConfigureVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchConfigureReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchConfigureReg
+                  )
                 "
               >
                 <div
@@ -114,11 +119,13 @@
                 >
                   <span
                     :class="{
-                      'iconfont icon-view-terminlas':
-                        row.column === 'list' && !item.hasOwnProperty('ip_address'),
+                      'iconfont icon-terminals1':
+                        row.column === 'list' &&
+                        !item.hasOwnProperty('ip_address'),
                     }"
                     :title="
-                      row.column === 'list' && !item.hasOwnProperty('ip_address')
+                      row.column === 'list' &&
+                      !item.hasOwnProperty('ip_address')
                         ? '点击查看'
                         : ''
                     "
@@ -126,7 +133,8 @@
                     {{
                       row.column === "key" // 序号
                         ? index + 1
-                        : row.column === "list" && item.hasOwnProperty("ip_address") // 终端列表
+                        : row.column === "list" &&
+                          item.hasOwnProperty("ip_address") // 终端列表
                         ? "-"
                         : row.column === "ip_address" &&
                           !item.hasOwnProperty("ip_address") // IP地址
@@ -254,7 +262,10 @@ const getFastTerminals = (current: number, page: number) => {
 };
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
   getFastTerminals(1, 30);
 });
 </script>

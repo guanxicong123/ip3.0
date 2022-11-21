@@ -14,6 +14,8 @@ import quickMusicDialog from "@/components/quick-music-dialog.vue";
 import selectSoundSourceCollectionRadio from "@/components/select_sound_source_collection_radio.vue";
 import selectShortcutTerminalRadio from "@/components/select_shortcut_terminal_radio.vue";
 import { ElMessage } from "element-plus";
+// 注册全局通用组件
+import registerComponents from "@/utils/global/register_components";
 
 const app = createApp(App);
 // 注册全局通用组件
@@ -48,7 +50,6 @@ global.$http1 = axios.create({
 global.$http1.interceptors.request.use(
   (config: any) => {
     // 在发送请求之前做些什么
-    console.log(config);
     if (config.url !== "/login") {
       const token = localStorage.get("userToken");
       if (token) {
@@ -95,7 +96,6 @@ global.$http1.interceptors.response.use(
 global.$http.interceptors.request.use(
   (config: { headers: { Authorization: string } }) => {
     // 在发送请求之前做些什么
-    console.log(config);
     const token = localStorage.get("userToken");
     if (token) {
       config.headers.Authorization = token;
@@ -140,4 +140,5 @@ global.$http.interceptors.response.use(
 app
   .use(store)
   .use(router as any)
+  .use(registerComponents)
   .mount("#app");

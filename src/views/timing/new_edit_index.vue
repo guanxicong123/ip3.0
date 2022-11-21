@@ -6,21 +6,11 @@
 -->
 <template>
   <div class="com-index">
-    <div class="com-head">
-      <div class="com-head-content">
-        <div class="com-breadcrumb">
-          <el-breadcrumb :separator-icon="ArrowRight">
-            <el-breadcrumb-item>定时</el-breadcrumb-item>
-            <el-breadcrumb-item :to="{ path: '/timing/tasks' }">
-              定时任务
-            </el-breadcrumb-item>
-            <el-breadcrumb-item>{{ form.title }}</el-breadcrumb-item>
-          </el-breadcrumb>
-        </div>
-        <div class="com-button"></div>
-      </div>
-    </div>
-    <div class="com-main" v-loading="form.loading" element-loading-text="Loading...">
+    <div
+      class="com-main"
+      v-loading="form.loading"
+      element-loading-text="Loading..."
+    >
       <div class="com-table">
         <el-scrollbar>
           <el-form
@@ -97,8 +87,14 @@
                   </el-form-item>
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                  <el-form-item label="优先级" prop="priority" class="custom-form-input">
-                    <div class="custom-number red" title="任务优先级-定时任务">70</div>
+                  <el-form-item
+                    label="优先级"
+                    prop="priority"
+                    class="custom-form-input"
+                  >
+                    <div class="custom-number red" title="任务优先级-定时任务">
+                      70
+                    </div>
                     <el-input-number
                       v-model="ruleForm.priority"
                       :min="1"
@@ -117,21 +113,42 @@
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                   <el-form-item label="灯光配置" prop="terminals_light_id">
-                    <add-lights
-                      @checkedID="handleLightCheckedID"
-                      :editID="ruleForm.terminals_light_id"
-                    />
+                    <el-select
+                      v-model="ruleForm.terminals_light_id"
+                      placeholder="请选择"
+                    >
+                      <el-option
+                        v-for="(item, keys) in form.lightData"
+                        :key="keys"
+                        :label="item.name"
+                        :value="item.id"
+                      />
+                    </el-select>
                   </el-form-item>
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                   <el-form-item label="LED配置" prop="led_config_id">
-                    <add-led-config
-                      @checkedID="handleLedCheckedID"
-                      :editID="ruleForm.led_config_id"
-                    />
+                    <el-select
+                      v-model="ruleForm.led_config_id"
+                      placeholder="请选择"
+                    >
+                      <el-option
+                        v-for="(item, keys) in form.ledData"
+                        :key="keys"
+                        :label="item.name"
+                        :value="item.id"
+                      />
+                    </el-select>
                   </el-form-item>
                 </el-col>
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="form.type !== 1">
+                <el-col
+                  :xs="12"
+                  :sm="8"
+                  :md="8"
+                  :lg="8"
+                  :xl="6"
+                  v-if="form.type !== 1"
+                >
                   <el-form-item label="执行时间" prop="execute_time">
                     <el-time-picker
                       v-model="ruleForm.execute_time"
@@ -172,16 +189,22 @@
                           type="primary"
                           text
                           @click="
-                            form.isShowAdvancedVisible = !form.isShowAdvancedVisible
+                            form.isShowAdvancedVisible =
+                              !form.isShowAdvancedVisible
                           "
                         >
                           高级>>
                         </el-button>
                       </template>
                       <div class="com-form custom-execute-time-range">
-                        <p style="margin-bottom: 10px">增加固定间隔的执行时间点 :</p>
+                        <p style="margin-bottom: 10px">
+                          增加固定间隔的执行时间点 :
+                        </p>
                         <el-form label-position="top" :model="form">
-                          <el-form-item label="执行时间点范围" prop="execute_time_range">
+                          <el-form-item
+                            label="执行时间点范围"
+                            prop="execute_time_range"
+                          >
                             <el-time-picker
                               is-range
                               v-model="form.execute_time_range"
@@ -192,7 +215,10 @@
                               end-placeholder="结束时间"
                             />
                           </el-form-item>
-                          <el-form-item label="间隔时间(分钟)" prop="interval_time">
+                          <el-form-item
+                            label="间隔时间(分钟)"
+                            prop="interval_time"
+                          >
                             <el-input-number
                               v-model="form.interval_time"
                               :min="1"
@@ -206,7 +232,8 @@
                           <el-button
                             plain
                             @click="
-                              form.isShowAdvancedVisible = !form.isShowAdvancedVisible
+                              form.isShowAdvancedVisible =
+                                !form.isShowAdvancedVisible
                             "
                           >
                             关闭
@@ -230,7 +257,10 @@
                   <div class="com-ir-bg custom-execute-time">
                     <el-scrollbar>
                       <ul>
-                        <li v-for="(item, index) in form.executionTimeData" :key="index">
+                        <li
+                          v-for="(item, index) in form.executionTimeData"
+                          :key="index"
+                        >
                           <el-time-picker
                             v-model="item.value"
                             format="HH:mm:ss"
@@ -337,8 +367,13 @@
             </div>
           </el-form>
           <div class="com-form-button">
-            <el-button plain @click="usePublicMethod.clickBack()"> 取消 </el-button>
-            <el-button type="primary" @click="handleSubmitFormSave(ruleFormRef)">
+            <el-button plain @click="usePublicMethod.clickBack()">
+              取消
+            </el-button>
+            <el-button
+              type="primary"
+              @click="handleSubmitFormSave(ruleFormRef)"
+            >
               保存
             </el-button>
           </div>
@@ -355,6 +390,8 @@ import { ArrowRight } from "@element-plus/icons-vue";
 import usePublicMethod from "@/utils/global/index";
 import { ValidatorService } from "@/utils/api/validator/index";
 import { TasksService } from "@/utils/api/task/index";
+import { TerminalsLightService } from "@/utils/api/light_config";
+import { LEDService } from "@/utils/api/led_config";
 
 const form = reactive<any>({
   title: "",
@@ -376,6 +413,8 @@ const form = reactive<any>({
   quick_terminal: { id: 0, name: "" }, // 快捷终端
   id: 0, // 路由id
   sound_source: {}, // 音源设置
+  lightData: [], // 灯光配置数据
+  ledData: [], // LED配置数据
 });
 // 提交表单字段
 const ruleForm = reactive<any>({
@@ -416,7 +455,9 @@ const disabledStartDate = (time: { getTime: () => number }) => {
 const disabledEndDate = (time: { getTime: () => number }) => {
   let beginEndDate = ruleForm.start_date;
   if (beginEndDate) {
-    return time.getTime() < usePublicMethod.dateConversionToTimestamp(beginEndDate);
+    return (
+      time.getTime() < usePublicMethod.dateConversionToTimestamp(beginEndDate)
+    );
   }
 };
 // 路由
@@ -439,7 +480,7 @@ const validateName = (rule: any, value: any, callback: any) => {
     data: { name: value },
   })
     .then((result) => {
-      if (result.result?.status) {
+      if (result.data?.status) {
         callback();
       } else {
         callback(new Error("名称已存在"));
@@ -460,16 +501,10 @@ const validateEmpty = (rule: any, value: any, callback: any) => {
 const rules = reactive({
   name: [{ validator: validateName, trigger: "blur", required: true }],
   start_date: [{ validator: validateEmpty, trigger: "blur", required: true }],
-  execute_time: [{ validator: validateEmpty, trigger: "change", required: true }],
+  execute_time: [
+    { validator: validateEmpty, trigger: "change", required: true },
+  ],
 });
-// 处理选择灯光配置
-const handleLightCheckedID = (data: number) => {
-  ruleForm.terminals_light_id = data;
-};
-// 处理选择LED配置
-const handleLedCheckedID = (data: number) => {
-  ruleForm.led_config_id = data;
-};
 // 处理音源设置返回的数据
 const handleRequestSoundType = (data: number) => {
   form.type = data;
@@ -573,9 +608,11 @@ const handleUnique = (arr: any[]) => {
 };
 // 处理删除多选执行时间
 const handleDeleteExecutionTime = (row: number) => {
-  form.executionTimeData = form.executionTimeData.filter((val: any, key: number) => {
-    return row !== key;
-  });
+  form.executionTimeData = form.executionTimeData.filter(
+    (val: any, key: number) => {
+      return row !== key;
+    }
+  );
   form.multiple_execute_time =
     form.executionTimeData.length > 0 ? form.executionTimeData[0].value : "";
 };
@@ -592,8 +629,10 @@ const batchAddExecutionTime = () => {
   for (let i = 0; i <= num; i++) {
     let d = new Date(start + interval * i);
     let hour = d.getHours() < 10 ? "0" + d.getHours() : "" + d.getHours();
-    let minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : "" + d.getMinutes();
-    let seconds = d.getSeconds() < 10 ? "0" + d.getSeconds() : "" + d.getSeconds();
+    let minutes =
+      d.getMinutes() < 10 ? "0" + d.getMinutes() : "" + d.getMinutes();
+    let seconds =
+      d.getSeconds() < 10 ? "0" + d.getSeconds() : "" + d.getSeconds();
     let time = hour + ":" + minutes + ":" + seconds;
     form.executionTimeData.push({
       value: time,
@@ -624,7 +663,9 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
       let isQuick = form.type == 4 && ruleForm.fast_sound_id == 0;
       // 音源设置 - 音乐播放
       let isMusic =
-        form.type === 1 && form.medias.length < 1 && form.medias_groups.length < 1;
+        form.type === 1 &&
+        form.medias.length < 1 &&
+        form.medias_groups.length < 1;
       // 音源设置 - 音源采集
       let isSound =
         (form.type === 2 && form.sound_source.sound_card == "") ||
@@ -634,7 +675,10 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
         return handleReturnError("请选择音源");
       }
       // 重复日期
-      if (form.request_weeks.length < 1 && form.request_assign_dates.length < 1) {
+      if (
+        form.request_weeks.length < 1 &&
+        form.request_assign_dates.length < 1
+      ) {
         return handleReturnError("请选择重复日期");
       }
       // 终端或分组
@@ -652,7 +696,8 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
       if (
         form.type === 2 ||
         form.type === 3 ||
-        (form.type === 4 && (form.sound_source.type == 2 || form.sound_source.type == 3))
+        (form.type === 4 &&
+          (form.sound_source.type == 2 || form.sound_source.type == 3))
       ) {
         const start_time = ruleForm.execute_time.replace(/:/g, "");
         const end_time = form.sound_source.end_time.replace(/:/g, "");
@@ -695,7 +740,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
             } else {
               ElMessage({
                 type: "error",
-                message: result.result?.message,
+                message: result.return_message,
                 grouping: true,
               });
             }
@@ -730,7 +775,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
             } else {
               ElMessage({
                 type: "error",
-                message: result.result?.message,
+                message: result.return_message,
                 grouping: true,
               });
             }
@@ -761,36 +806,36 @@ const handleGetEditData = async () => {
     form.id
   )
     .then((result) => {
-      if (result.result) {
-        form.old_name = result.result.name;
+      if (result.data) {
+        form.old_name = result.data.name;
         Object.keys(ruleForm).forEach((item) => {
-          Object.keys(result.result).forEach((row) => {
+          Object.keys(result.data).forEach((row) => {
             if (item === row) {
-              ruleForm[item] = result.result[row];
+              ruleForm[item] = result.data[row];
             }
           });
         });
-        if (result.result.type === 1) {
-          const executionTimeData = result.result.execute_time.split(",");
+        if (result.data.type === 1) {
+          const executionTimeData = result.data.execute_time.split(",");
           executionTimeData.forEach((item: any) => {
             form.executionTimeData.push({
               value: item,
             });
           });
         }
-        if (result.result.end_date === "0000-00-00") {
+        if (result.data.end_date === "0000-00-00") {
           ruleForm.end_date = "";
         }
-        if (result.result.fast_terminals_id > 0) {
+        if (result.data.fast_terminals_id > 0) {
           form.quick_terminal = {
-            id: result.result.fast_terminal?.id,
-            name: result.result.fast_terminal?.name,
+            id: result.data.fast_terminal?.id,
+            name: result.data.fast_terminal?.name,
           };
         }
       } else {
         ElMessage({
           type: "error",
-          message: result.result?.message,
+          message: result.return_message,
           grouping: true,
         });
       }
@@ -801,9 +846,53 @@ const handleGetEditData = async () => {
       console.log(error);
     });
 };
+// 获取所有灯光配置
+const getAllTerminalsLight = async () => {
+  await TerminalsLightService.getAllTerminalsLight({})
+    .then((result) => {
+      if (result.data) {
+        form.lightData = result.data;
+        if (result.data?.length > 0) {
+          ruleForm.terminals_light_id = result.data?.[0].id;
+        }
+      } else {
+        ElMessage({
+          type: "error",
+          message: result.return_message,
+          grouping: true,
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+// 获取所有LED配置
+const getAllLED = async () => {
+  await LEDService.getAllLED({})
+    .then((result) => {
+      if (result.data) {
+        form.ledData = result.data;
+        if (result.data?.length > 0) {
+          ruleForm.led_config_id = result.data?.[0].id;
+        }
+      } else {
+        ElMessage({
+          type: "error",
+          message: result.return_message,
+          grouping: true,
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
+  getAllTerminalsLight();
+  getAllLED();
   form.id = Number($useRoute.params?.id);
   form.title = form.id > 0 ? "编辑" : "新建";
   if (form.id > 0) {

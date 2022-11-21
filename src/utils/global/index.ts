@@ -7,7 +7,7 @@ const usePublicMethod = {
   },
   // 是否到了刷新token的时间
   isRefreshToken() {
-    const time = Number(localStorage.getItem("tokenExpireMonitor")) || 0;
+    const time = Number(localStorage.get("tokenExpireMonitor")) || 0;
     return time < 1 || time <= new Date().getTime();
   },
   // 跳转新建/编辑界面
