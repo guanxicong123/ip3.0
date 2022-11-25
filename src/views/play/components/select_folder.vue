@@ -5,21 +5,16 @@
   @Describe: 选择文件夹路径
 -->
 <template>
-  <div class="com-select-folder">
-    <div class="select-dir"><span>已选择</span> : {{ form.selected.path }}</div>
-    <div class="select-tree">
-      <el-scrollbar>
-        <el-tree
-          style="width: 100%; height: 100%"
-          :props="props"
-          :load="handleGetPaths"
-          @node-click="handleNodeClick"
-          lazy
-        >
-        </el-tree>
-      </el-scrollbar>
+    <div class="com-select-folder">
+        <div class="select-dir"><span>已选择</span> : {{ form.selected.path }}</div>
+        <div class="select-tree">
+            <el-scrollbar>
+                <el-tree style="width: 100%; height: 100%" :props="props" :load="handleGetPaths"
+                    @node-click="handleNodeClick" lazy>
+                </el-tree>
+            </el-scrollbar>
+        </div>
     </div>
-  </div>
 </template>
 
 <script lang="ts" setup>
@@ -32,83 +27,83 @@ const { proxy } = useCurrentInstance.useCurrentInstance();
 const emit = defineEmits(["selectedPath"]);
 
 interface Tree {
-  name: string;
-  leaf?: boolean;
+    name: string;
+    leaf?: boolean;
 }
 
 const props = {
-  label: "name",
-  children: "directories",
-  isLeaf: "leaf",
+    label: "name",
+    children: "directories",
+    isLeaf: "leaf",
 };
 
 const form = reactive({
-  selected: {
-    path: "",
-  },
+    selected: {
+        path: "",
+    },
 });
 // 处理树形组件点击
 const handleNodeClick = (data: any) => {
-  form.selected = data;
-  emit("selectedPath", form.selected.path);
+    form.selected = data;
+    emit("selectedPath", form.selected.path);
 };
 // 处理获取文件夹路径
 const handleGetPaths = (node: Node, resolve: (data: Tree[]) => void) => {
-  let params = {
-    path: node && node.data && node.data.path ? node.data.path : "",
-  };
-  console.log(node);
-  getToolsDir(params).then((data: any) => {
-    resolve && resolve(data);
-  });
+    let params = {
+        path: node && node.data && node.data.path ? node.data.path : "",
+    };
+    console.log(node);
+    getToolsDir(params).then((data: any) => {
+        resolve && resolve(data);
+    });
 };
 
 const getToolsDir = (params: any) => {
-  console.log(params);
-  return new Promise((resolve, rejected) => {
-    proxy.$http1
-      .get("/tools/dir", {
-        params: {
-          path: params.path,
-        },
-      })
-      .then((result: any) => {
-        console.log(result);
-        if (result.result === 200) {
-          if (result.data) {
-            let data = result.data.map((item: any) => {
-              return {
-                name: item,
-                path: item,
-                directories: [],
-              };
+    console.log(params);
+    return new Promise((resolve, rejected) => {
+        proxy.$http1
+            .get("/tools/dir", {
+                params: {
+                    path: params.path,
+                },
+            })
+            .then((result: any) => {
+                console.log(result);
+                if (result.result === 200) {
+                    if (result.data) {
+                        let data = result.data.map((item: any) => {
+                            return {
+                                name: item,
+                                path: item,
+                                directories: [],
+                            };
+                        });
+                        resolve(data);
+                    } else {
+                        resolve([]);
+                    }
+                } else {
+                    rejected([]);
+                }
             });
-            resolve(data);
-          } else {
-            resolve([]);
-          }
-        } else {
-          rejected([]);
-        }
-      });
-  });
+    });
 };
 
 // mounted 实例挂载完成后被调用
-onMounted(() => {});
+onMounted(() => { });
 </script>
 
 <style lang="scss" scoped>
 .com-select-folder {
-  border: 1px solid #ddd;
+    border: 1px solid #ddd;
 
-  .select-dir {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-  }
+    .select-dir {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
 
-  .select-tree {
-    height: 300px;
-  }
+    .select-tree {
+        height: 300px;
+    }
 }
 </style>

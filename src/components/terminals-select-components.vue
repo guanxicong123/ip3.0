@@ -567,7 +567,7 @@ const handleUpdateSelectedGroups = () => {
   let requestGroups: any[] = [];
   let selectedName = "";
   form.selectedGroupsID = [];
-
+  console.log(form.selectedGroupsData)
   form.selectedGroupsData.forEach(
     (item: { [x: string]: any; id: number; name: string }) => {
       let request: any = {};

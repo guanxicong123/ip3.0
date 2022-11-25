@@ -16,6 +16,7 @@ module.exports = defineConfig({
     pluginOptions: {
         electronBuilder: {
             preload: "src/preload.ts",
+            customFileProtocol: "./", //打包后iconfont路径指向
             builderOptions: {
                 "extraResources": [
                     {
@@ -95,6 +96,9 @@ module.exports = defineConfig({
         resolve: {
             alias: {
                 '@': pathSrc,
+                'assets': '@/assets',
+                'components': '@/components',
+                'views': '@/views'
             },
         },
         /**
@@ -207,7 +211,8 @@ module.exports = defineConfig({
      */
     devServer: {
         host: "127.0.0.1",
-        port: 8003,
+        port: 8010,
+        open: false,
         // open: true,
         // https: true,
         proxy: {

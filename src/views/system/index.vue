@@ -302,9 +302,10 @@ const func_switch_data = ref([
 const switch_form = ref();
 
 const getAlarmTask = () => {
-    proxy.$http.get("/one-button-alarm/all").then((res: any) => {
-        if (res.result === 200) {
-            form.alarmTrackOptions = res.data;
+    proxy.$http.get("/one-button-alarm/all").then((result: any) => {
+        console.log(result)
+        if (result.result === 200) {
+            form.alarmTrackOptions = result.data;
         }
     });
 };
@@ -328,17 +329,15 @@ const formatData = () => {
 
 // 功能管理配置
 const saveSet = () => {
-    axios
-        .put(
-            "http://172.16.21.25:9999/api/v1/config/" + basic_configs.value.ID,
-            switch_form.value
-        )
-        .then((result) => {
-            if (result.status === 200) {
-                // ElMessage.success('配置成功')
-                $useRouter.push("/");
-            }
-        });
+    proxy.$http1.put("/config/" + basic_configs.value.ID,
+        switch_form.value
+    )
+    .then((result: any) => {
+        if (result.result === 200) {
+            // ElMessage.success('配置成功')
+            $useRouter.push("/");
+        }
+    });
 };
 
 // 功能管理弹窗
@@ -355,20 +354,18 @@ const registerManage = () => {
 
 // 注册操作
 const confirmRegister = () => {
-    axios
-        .post("http://172.16.21.25:9999/api/v1/register", {
-            code: form.code,
-        })
-        .then((res) => {
-            if (res.status === 200) {
-                if (res.data.code === 200) {
-                    ElMessage.success("注册成功");
-                    register_manage_dialog.value = false;
-                } else {
-                    ElMessage.error(res.data.message);
-                }
+    proxy.$http.post("/register", {
+        code: form.code,
+    }).then((result: any) => {
+        if (result.result === 200) {
+            if (result.data.code === 200) {
+                ElMessage.success("注册成功");
+                register_manage_dialog.value = false;
+            } else {
+                ElMessage.error(result.data.message);
             }
-        });
+        }
+    });
 };
 
 // 系统配置各模块配置数据处理
@@ -399,14 +396,14 @@ const updateConfigData = (model: string) => {
 // 更改模块配置
 const changeConfig = (model: string) => {
     let send_data = updateConfigData(model);
-    axios
-        .put("http://172.16.21.25:9999/api/v1/config/" + basic_configs.value.ID, send_data)
-        .then((result) => {
-            if (result.status === 200) {
-                ElMessage.success("配置成功");
-                systemStore.updateSystemConfig(send_data);
-            }
-        });
+    proxy.$http1.put("/config/" + basic_configs.value.ID, 
+        send_data
+    ).then((result: any) => {
+        if (result.status === 200) {
+            ElMessage.success("配置成功");
+            systemStore.updateSystemConfig(send_data);
+        }
+    });
 };
 
 // mounted 实例挂载完成后被调用

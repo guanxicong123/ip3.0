@@ -48,11 +48,15 @@ const showStatus = (status: number) => {
   }
   return `${message}，请检查网络或联系管理员！`
 }
-const url = localStorage.get('serverIP')
 // 创建 axios
 const $http = axios.create({
-    baseURL: '/api/v29+', // 'http://' + url + '/api/v29+' || 
-    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+    baseURL: '/api/v1/', // 'http://127.0.0.1:9999/api/v1/' || /api/v1/
+    headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        // 'Access-Control-Allow-Origin' : '*',
+        // 'Access-Control-Allow-Headers': 'content-type',
+        // 'Access-Control-Request-Method': 'GET,POST'
+    },
     withCredentials: true, // 是否跨站点访问控制请求
     timeout: 5 * 1000, // 5s超时
     validateStatus() {
@@ -78,27 +82,27 @@ const $http = axios.create({
 })
 // 请求拦截器
 $http.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
-    // 在请求开始前，对之前的请求做检查，重复就取消操作
-    // axiosCancel.removePending(config)
-    // 将当前请求添加到 pending 中
-    axiosCancel.addPending(config)
-    const token = localStorage.get('userToken')
-    // 每次请求带上token
-    if (token && config.headers) {
-      config.headers.Authorization = `${token}`
+    (config: AxiosRequestConfig) => {
+        // // 在请求开始前，对之前的请求做检查，重复就取消操作
+        // axiosCancel.removePending(config)
+        // // 将当前请求添加到 pending 中
+        // axiosCancel.addPending(config)
+        const token = localStorage.get('userToken')
+        // 每次请求带上token
+        if (token && config.headers) {
+            config.headers.Authorization = `${token}`
+        }
+        return config
+    },
+    (error) => {
+        // 请求还没有到达服务器，但是报错了,抛到弹窗提示
+        ElMessage({
+            type: 'error',
+            message: '服务器异常，请联系管理员！',
+            grouping: true,
+        })
+        return Promise.reject(error)
     }
-    return config
-  },
-  (error) => {
-    // 请求还没有到达服务器，但是报错了,抛到弹窗提示
-    ElMessage({
-      type: 'error',
-      message: '服务器异常，请联系管理员！',
-      grouping: true,
-    })
-    return Promise.reject(error)
-  }
 )
 // 响应拦截器
 $http.interceptors.response.use(
@@ -120,8 +124,8 @@ $http.interceptors.response.use(
         } else {
             // 判断后端有返回 message
             const isMsg = Object.prototype.hasOwnProperty.call(
-            response.data.result,
-            'message'
+                response.data.result,
+                'message'
             )
             // 没有就添加上自定义 message
             if (!isMsg) {

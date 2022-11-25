@@ -123,6 +123,7 @@ import type {
     UploadFile,
     UploadRawFile,
 } from "element-plus";
+import $http from "@/utils/axios/index";
 import soundSourceComponent from "../components/sound-source-component.vue";
 import musicPlayComponent from "../components/music-play-component.vue";
 import remotePlayComponent from "../components/remote-play-component.vue";
@@ -287,7 +288,7 @@ const submitTask = () => {
 const createQuickSou = (data: any) => {
     if (ruleForm.fast_sound_id === -1) return proxy.$message.warning("请选择快捷音源");
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
-        proxy.$http.put("/broadcasting/" + $useRoute.query.id,
+        $http.put("/broadcasting/" + $useRoute.query.id,
             Object.assign(data, {
                 sound_source: soundSourceForm.value,
             })
@@ -297,7 +298,7 @@ const createQuickSou = (data: any) => {
             }
         });
     }else {
-        proxy.$http.post("/broadcasting",
+        $http.post("/broadcasting",
             Object.assign(data, {
                 sound_source: soundSourceForm.value,
             })
@@ -345,7 +346,7 @@ const createRemteTask = (data: any) => {
             }
         })
     } else {
-        proxy.$http.post("/broadcasting",
+        $http.post("/broadcasting",
             Object.assign(data, {
                 sound_source: remotePlayForm.value,
             })
@@ -472,7 +473,7 @@ const getLocalTask = (row: any) => {
 };
 // 请求服务器任务
 const getServeTask = (row: any) => {
-    proxy.$http.get("/broadcasting/" + row, {
+    $http.get("/broadcasting/" + row, {
         params: {
             withMedias: true,
             withGroups: true,
@@ -501,7 +502,7 @@ const getServeTask = (row: any) => {
 // 获取所有分组
 const getGroupsAll = () => {
     return new Promise((resolve, reject) => {
-        proxy.$http
+        $http
             .get("terminals-groups/all", {
                 params: {
                     withTerminals: true,
@@ -517,7 +518,7 @@ const getGroupsAll = () => {
 // 获取所有终端
 const getTerminalsAll = () => {
     return new Promise((resolve, reject) => {
-        proxy.$http
+        $http
             .get("/terminals/all", {
                 params: {
                     withGroups: true,

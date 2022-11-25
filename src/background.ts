@@ -17,7 +17,7 @@ async function createWindow() {
     const win = new BrowserWindow({
         width: 320,
         height: 530,
-        resizable: false, //窗口是否可以由用户手动调整大小的属性
+        resizable: true, //窗口是否可以由用户手动调整大小的属性
         autoHideMenuBar: true, //是否隐藏菜单
         frame: false, //false为无边框窗口
         transparent: true, //使窗口 透明。 默认值为 false. 在Windows上，仅在无边框窗口下起作用。
@@ -28,6 +28,7 @@ async function createWindow() {
                 .ELECTRON_NODE_INTEGRATION as unknown as boolean,
             contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
             preload: path.join(__dirname, "preload.js"), //预加载
+            webSecurity: false
         },
     });
 

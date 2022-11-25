@@ -2,7 +2,6 @@
 
 import router from "../router";
 import { ElMessage } from "element-plus";
-import { Md5 } from "ts-md5";
 
 let loginData: any = ""; //用于储存登录时请求信息
 let socket: any;
@@ -13,30 +12,30 @@ let remotePlayTaskKey: any[] = [];
 let is_login = true;
 
 const registerWebSocket = async () => {
-  const socketStatus = !socket || socket.readyState !== 1;
-  if (socketStatus && !connected && !connecting) {
-    connected = false;
-    connecting = true;
-    // const WbakUrl = "ws://127.0.0.1:9999/socket";
-    const WbakUrl = "ws://172.16.21.124:9999/socket";
-    socket = new WebSocket(WbakUrl);
-    //WebSocket连接成功
-    socket.onopen = () => {
-      connecting = false;
-      connected = true;
-      getStore.useAppStore().changeWsStatus(true);
-      // getStore.useSystemStore().getConfigInfo()
-      //初始化请求数据
-      if (is_login) {
-        // send(loginData);
-        // getStore.useAppStore().changeLoginStatus(false);
-        requestTaskInfo();
-        requestTerminalInfo();
-        getTtsEngine();
-      } else {
-        initRequest();
-      }
-    };
+    const socketStatus = !socket || socket.readyState !== 1;
+    if (socketStatus && !connected && !connecting) {
+        connected = false;
+        connecting = true;
+        // const WbakUrl = "ws://127.0.0.1:9999/socket";
+        const WbakUrl = "ws://172.16.21.124:9999/socket";
+        socket = new WebSocket(WbakUrl);
+        //WebSocket连接成功
+        socket.onopen = () => {
+            connecting = false;
+            connected = true;
+            getStore.useAppStore().changeWsStatus(true);
+            // getStore.useSystemStore().getConfigInfo()
+            //初始化请求数据
+            if (is_login) {
+                // send(loginData);
+                // getStore.useAppStore().changeLoginStatus(false);
+                requestTaskInfo();
+                requestTerminalInfo();
+                getTtsEngine();
+            } else {
+                initRequest();
+            }
+        };
     //WebSocket通知
     socket.onmessage = ({ data }: any) => {
       try {

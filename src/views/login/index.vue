@@ -90,7 +90,6 @@
 
 <script lang="ts" setup>
 import { socketLogin, socket } from "@/utils/socket";
-
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
@@ -126,6 +125,16 @@ const close = () => {
 };
 // 提交
 const submit = () => {
+    // proxy.$http1.get('/config', {
+    //     params: {
+    //         username: 'admin',
+    //         serverip: '172.16.21.124'
+    //     }
+    // }).then((result: any)=> {
+    //     if (result.result === 0) {
+    //         console.log(result.data)
+    //     }
+    // })
     let data = {
         company: "BL",
         actioncode: "c2ms_user_login",

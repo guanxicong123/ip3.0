@@ -2,14 +2,14 @@
 @import 'index.scss';
 
 .theme {
-  color: $c-theme !important;
+    color: $c-theme !important;
 }
 .theme-bg {
-  background-color: $c-theme;
+    background-color: $c-theme;
 }
 //滚动条
 ::-webkit-scrollbar-thumb {
-  background-color: $c-theme;
+    background-color: $c-theme;
 }
 //icom
 .icon-add,
@@ -26,5 +26,5 @@
 .icon-grade,
 .icon-select-file,
 .el-table__expand-icon>.el-icon {
-  color: $c-theme;
+    color: $c-theme;
 }

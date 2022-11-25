@@ -1,4 +1,5 @@
 import router from '../router'
+import $http1 from "@/utils/axios/local_index";
 
 export interface systemState {
     media_options: any
@@ -105,13 +106,14 @@ export const useSystemStore = defineStore({
     actions: {
         // 获取所有的系统配置数据
         getConfigInfo() {
-            axios.get('/api/v1/config', {
+            console.log(axios)
+            $http1.get('/config', {
                 params: {
                     username: localStorage.get('username'),
                     serverip: localStorage.get('serverIP'),
                 },
             }).then((result: any) => {
-                if (result.data.result === 200) {
+                if (result.result === 200) {
                     // 功能管理相关数据
                     const {
                         FolderDisplay,
@@ -122,7 +124,7 @@ export const useSystemStore = defineStore({
                         SessionEnabled,
                         TimingEnabled,
                         MediasEnabled,
-                    } = result.data.data
+                    } = result.data
                     this.functional_configs = {
                         FolderDisplay,
                         GroupDisplay,
@@ -144,7 +146,7 @@ export const useSystemStore = defineStore({
                         EnabledPersonAlert,
                         EnabledTerminalOffAlert,
                         EnabledTerminalOffRingfAlert,
-                    } = result.data.data
+                    } = result.data
                     this.system_configs = {
                         EnabledAlarm,
                         AlarmID,
@@ -164,7 +166,7 @@ export const useSystemStore = defineStore({
                         DisplayType,
                         ListDisplaySize,
                         ID,
-                    } = result.data.data
+                    } = result.data
                     this.basic_configs = {
                         MainEndpointID,
                         Theme,
@@ -180,9 +182,9 @@ export const useSystemStore = defineStore({
 
     // 获取机器码
     getProductKey() {
-        axios.get('http://172.16.21.119:9999/api/v1/register').then((result: any) => {
-            if (result.data.result === 200) {
-                this.opcodes = result.data.data.ProductKey
+        $http1.get('/register').then((result: any) => {
+            if (result.result === 200) {
+                this.opcodes = result.data.ProductKey
                 this.opcodes = '14827-67853-39229-50676-09802-52491-53438'
             }
         })
