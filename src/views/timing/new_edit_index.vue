@@ -82,7 +82,7 @@
                       content="音量为0时，使用终端的默认音量"
                       placement="right-start"
                     >
-                      <i class="iconfont icon-gray-item theme"></i>
+                      <i class="iconfont icon-tips theme"></i>
                     </el-tooltip>
                   </el-form-item>
                 </el-col>
@@ -107,7 +107,7 @@
                       content="自定义优先级数值越高,同类任务中优先级越高"
                       placement="right-start"
                     >
-                      <i class="iconfont icon-gray-item theme"></i>
+                      <i class="iconfont icon-tips theme"></i>
                     </el-tooltip>
                   </el-form-item>
                 </el-col>

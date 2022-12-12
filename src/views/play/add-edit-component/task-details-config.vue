@@ -10,10 +10,12 @@
             <div class="com-head-content">
                 <div class="com-tabs">
                     <div :class="{ select: activeName === 'configure' }" @click="handleSwitchTabs('configure')">
-                        播放配置（4）
+                        播放配置
+                        {{musicsNumber !=='' ? '(' + musicsNumber + ')' : ''}}
                     </div>
                     <div :class="{ select: activeName === 'region' }" @click="handleSwitchTabs('region')">
-                        播放区域（4）
+                        播放区域
+                        {{terminasNumber !== '' ? '(' + terminasNumber + ')' : ''}}
                     </div>
                 </div>
                 <div class="com-button">
@@ -47,7 +49,20 @@
             <div class="com-table" v-if="ruleForm.type === 10">
                 <el-table :data="ruleForm.data" height="100%">
                     <el-table-column type="index" label="序号" width="80" />
-                    <el-table-column prop="path" label="名称" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="path" label="名称" show-overflow-tooltip>
+                        <template #default="scope">
+                            <div class="tabel-data-popover">
+                                <div class="tabel-data-popover-content">
+                                    <span>
+                                        {{ scope.row.name }}
+                                    </span>
+                                    <view-components-popover v-if="!scope.row.medias_id"
+                                        :url="'/medias-groups/' + scope.row.id + '/medias'"
+                                    />
+                                </div>
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column width="120">
                         <template #default="scope">
                             <el-button link type="primary" @click="handleMoveUp(scope.row, scope.$index)">
@@ -77,7 +92,21 @@
             <div class="com-table" v-if="ruleForm.type === 1">
                 <el-table :data="ruleForm.data" style="width: 100%" height="100%">
                     <el-table-column type="index" label="序号" width="80" />
-                    <el-table-column prop="name" label="名称" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="name" label="名称" show-overflow-tooltip>
+                        <template #default="scope">
+                            <div class="tabel-data-popover">
+                                <div class="tabel-data-popover-content">
+                                    <span>
+                                        {{ scope.row.name }}
+                                    </span>
+                                    <!-- <view-components-popover v-if="!scope.row.medias_id"
+                                        :url="'/medias'"
+                                        :mediaGroupsID="scope.row.id"
+                                    /> -->
+                                </div>
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column width="80">
                         <template #default="scope">
                             <el-button link type="primary" @click="handleDelete(scope.row)">
@@ -99,7 +128,21 @@
             <div class="com-table" v-if="taskDataDetailed.fast_terminals_id === 0">
                 <el-table :data="taskTerminalAll" height="100%">
                     <el-table-column type="index" label="序号" width="80" />
-                    <el-table-column prop="name" label="名称" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="name" label="名称" show-overflow-tooltip>
+                        <template #default="scope">
+                            <div class="tabel-data-popover">
+                                <div class="tabel-data-popover-content">
+                                    <span>
+                                        {{ scope.row.name }}
+                                    </span>
+                                    <view-components-popover
+                                        v-if="scope.row.terminals_groups_id"
+                                        :url="'/terminals-groups/' + scope.row.id + '/terminals'"
+                                    />
+                                </div>
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="ip_address" label="IP地址" show-overflow-tooltip>
                         <template #default="scope">
                             {{ scope.row.hasOwnProperty("ip_address") ? scope.row.ip_address : "-" }}
@@ -166,6 +209,7 @@ import textPlayComponent from "../components/text-play-component.vue";
 import selectMediaDialog from "../dialogComponents/select-media-dialog.vue";
 import terminalsSelectDialog from "../dialogComponents/terminals-select-dialog.vue";
 import { UploadProps } from "element-plus";
+import { send } from "@/utils/socket";
 
 // defineAsyncComponent 异步组件-懒加载子组件
 const acquisitionDeviceComponent = defineAsyncComponent(
@@ -177,6 +221,7 @@ const { proxy } = useCurrentInstance.useCurrentInstance();
 
 const props: any = defineProps({
     selectTaskData: Object,
+    playCenterData: Object,
 });
 const ruleForm: any = reactive({
     type: 1,
@@ -192,7 +237,7 @@ const iconAdd = ref();
 const fileList = ref([]); //选中的文件
 const responseMedia = ref([]); //媒体音频
 const responseeMediaGroups = ref([]); //媒体音频分组
-const soundSourceForm = ref({}); //快捷音源配置
+const soundSourceForm: any = ref({}); //快捷音源配置
 const sourAcquisiFrom: any = ref({}); //音源采集配置
 const tsctFormData = ref({});
 const taskDataDetailed: any = ref({}); //任务详情数据
@@ -204,10 +249,19 @@ const terminaSelectVisible = ref(false); //终端选择弹框
 const isConfigure = computed(() => {
     return activeName.value === "configure";
 });
+
+const terminasNumber = computed(()=> {
+    return taskDataDetailed.value.fast_terminals_id ? '' : taskTerminalAll.value.length
+})
+
+const musicsNumber = computed(()=> {
+    return [1, 10].includes(taskDataDetailed.value.type) ? ruleForm.data.length : ''
+})
+
 watch(
     () => props.selectTaskData,
     (newVal: any) => {
-        handleSelectionData(newVal);
+        handleSelectionData(newVal)
     },
     {
         deep: true,
@@ -217,7 +271,7 @@ watch(taskDataDetailed, (newVal: any) => {
     editStatus.value = false;
     ruleForm.type = newVal.type;
     if (newVal.type === 1) {
-        ruleForm.data = [...newVal.medias, ...newVal.medias_groups];
+        ruleForm.data = [...newVal.medias_groups, ...newVal.medias];
     }
     if (newVal.type === 10 || newVal.type === 12 || newVal.type === 13) {
         ruleForm.data = newVal.content;
@@ -245,63 +299,129 @@ const handleSwitchTabs = (tabsName: string) => {
 const requestSoundSource = (data: any) => {
     soundSourceForm.value = data;
     ruleForm.fast_sound_id = data.id;
-    delete soundSourceForm.value.id;
+    delete soundSourceForm.value.id
 };
 // 选择快捷终端配置
 const handleSelectedConfigure = (data: any) => {
-    taskDataDetailed.value.fast_terminals_id = data.id;
-    taskDataDetailed.value.fast_terminal = data;
+    taskDataDetailed.value.fast_terminals_id = data.id
+    if (ruleForm.type < 10) {
+        handleRemoteTasks().then(()=> {
+            handleChangeTaskTerminals()
+        })
+    }else {
+        handleLocalTaskTermina().then(()=> {
+            handleChangeTaskTerminals()
+        })
+    }
 };
 //  选择的终端/终端分组
 const handleSelectedTerminals = (data: any) => {
+    let putData = {
+        terminals:  data.terminals,
+        terminals_groups: data.terminals_groups.map((item: any) => {
+            return {
+                name: item.name,
+                terminals_groups_id: item.terminals_groups_id
+            }
+        })
+    }
     if (ruleForm.type >= 10) {
         if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id !== 0) {
             proxy.$http1
                 .put("/task/terminal/" + props.selectTaskData.id, {
-                    terminals: data.terminals,
-                    terminals_groups: data.terminals_groups,
+                    terminals: putData.terminals,
+                    terminals_groups: putData.terminals_groups,
                 })
                 .then((result: any) => {
                     if (result.result === 200) {
-                        handleSelectionData(props.selectTaskData);
+                        handleChangeTaskTerminals()
                     }
                 });
             return;
         }
     } else {
-        proxy.$http
-            .put("/broadcasting/" + taskDataDetailed.value.id, {
-                name: taskDataDetailed.value.name,
-                priority: taskDataDetailed.value.priority,
-                volume: taskDataDetailed.value.volume,
-                play_model: taskDataDetailed.value.play_model,
-                type: taskDataDetailed.value.type,
-                fast_sound_id: taskDataDetailed.value.fast_sound_id,
-                fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
-                terminals: data.terminals,
-                terminals_groups: data.terminals_groups,
-                sound_source: taskDataDetailed.value.sound_source,
-                medias: taskDataDetailed.value.medias,
-                medias_groups: taskDataDetailed.value.medias_groups,
-            })
-            .then((result: any) => {
-                if (result.result === 200) {
-                    editStatus.value = false;
-                    handleSelectionData(props.selectTaskData);
-                }
-            });
+        proxy.$http.put("/broadcasting/" + taskDataDetailed.value.id, {
+            name: taskDataDetailed.value.name,
+            priority: taskDataDetailed.value.priority,
+            volume: taskDataDetailed.value.volume,
+            play_model: taskDataDetailed.value.play_model,
+            type: taskDataDetailed.value.type,
+            fast_sound_id: taskDataDetailed.value.fast_sound_id,
+            fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
+            terminals: putData.terminals,
+            terminals_groups: putData.terminals_groups,
+            sound_source: taskDataDetailed.value.sound_source,
+            medias: taskDataDetailed.value.medias,
+            medias_groups: taskDataDetailed.value.medias_groups,
+        }).then((result: any) => {
+            if (result.result === 200) {
+                editStatus.value = false;
+                handleChangeTaskTerminals()
+            }
+        });
     }
 };
+// 改变任务终端
+const handleChangeTaskTerminals = () => {
+    handleSelectionData(props.selectTaskData).then((result: any)=> {
+        if (props.playCenterData.TaskID) {
+            let newTerminals = result?.terminalsIds
+            handleAllTerminals(newTerminals, props.playCenterData)
+        }
+    })
+}
+const handleAllTerminals = (newVal: any, oldVal: any) => {
+    let oldValData = oldVal.EndPointList.map((item: any) => {
+        return item.EndPointID
+    })
+    // 新增数据
+    let addData = newVal.filter((item: any)=> {
+        return !oldValData.includes(item)
+    })
+    // 删除数据
+    let delData = oldValData.filter((item: any)=> {
+        return !newVal.includes(item)
+    })
+    if (addData.length > 0) {
+        let data = {
+            company: "BL",
+            actioncode: "ms2cs_notify_add_endpoint_to_task",
+            token: "",
+            data: {
+                TaskID: props.playCenterData.TaskID,
+                EndPoints: addData
+            },
+            result: 0,
+            return_message: "",
+        };
+        send(data);
+    }
+    if (delData.length > 0) {
+        let data = {
+            company: "BL",
+            actioncode: "ms2cs_notify_remove_endpoint_to_task",
+            token: "",
+            data: {
+                TaskID: props.playCenterData.TaskID,
+                EndPoints: delData
+            },
+            result: 0,
+            return_message: "",
+        };
+        send(data);
+    }
+}
 // 触发编辑
 const handleEditButton = () => {
     if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id !== 0) {
-        editStatus.value = true;
+        terminaDialogVisible.value = true;
         return;
     }
     if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id === 0) {
         terminaSelectVisible.value = true;
         return;
     }
+    if (props.playCenterData.TaskID) return proxy.$message.warning('任务正在执行中')
     if (ruleForm.type === 10) {
         iconAdd.value.click();
     }
@@ -321,48 +441,13 @@ const handleEditButton = () => {
 };
 // 触发保存
 const handleEditSava = () => {
-    console.log(props.selectTaskData, taskDataDetailed.value);
     if (ruleForm.type === 4) {
-        proxy.$http
-            .put("/broadcasting/" + props.selectTaskData.id, {
-                name: props.selectTaskData.name,
-                priority: props.selectTaskData.priority,
-                volume: props.selectTaskData.volume,
-                play_model: props.selectTaskData.play_model,
-                type: props.selectTaskData.type,
-                fast_sound_id: ruleForm.fast_sound_id,
-                fast_terminals_id: props.selectTaskData.fast_terminals_id,
-                terminals: props.selectTaskData.terminals,
-                terminals_groups: props.selectTaskData.terminals_groups,
-                sound_source: soundSourceForm.value,
-                medias: props.selectTaskData.medias,
-                medias_groups: props.selectTaskData.medias_groups,
-            })
-            .then((result: any) => {
-                if (result.result === 200) {
-                    editStatus.value = false;
-                    handleSelectionData(props.selectTaskData);
-                }
-            });
+        handleRemoteTasks().then(()=> {
+            editStatus.value = false;
+            handleSelectionData(props.selectTaskData);
+        })
     }
     if (ruleForm.type >= 10) {
-        if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id !== 0) {
-            console.log(props.selectTaskData, taskDataDetailed.value);
-            proxy.$http1
-                .put(
-                    "/task",
-                    Object.assign(props.selectTaskData, {
-                        fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
-                    })
-                )
-                .then((result: any) => {
-                    if (result.result === 200) {
-                        editStatus.value = false;
-                        handleSelectionData(props.selectTaskData);
-                    }
-                });
-            return;
-        }
         let data;
         if (ruleForm.type === 11) {
             data = tsctFormData.value;
@@ -380,24 +465,60 @@ const handleEditSava = () => {
                     terminalID: sourAcquisiFrom.value.terminalID,
                 };
             }
-            proxy.$http1
-                .put(
-                    "/task",
-                    Object.assign(props.selectTaskData, {
-                        content: data,
-                        type: ruleForm.type,
-                    })
-                )
-                .then((result: any) => {
-                    if (result.result === 200) {
-                        editStatus.value = false;
-                        handleSelectionData(props.selectTaskData);
-                    }
-                });
+            proxy.$http1.put(
+                "/task",
+                Object.assign(props.selectTaskData, {
+                    content: data,
+                    type: ruleForm.type,
+                })
+            ).then((result: any) => {
+                if (result.result === 200) {
+                    editStatus.value = false;
+                    handleSelectionData(props.selectTaskData);
+                }
+            });
             return;
         }
     }
 };
+// 更新远程任务
+const handleRemoteTasks = () => {
+    return new Promise((resolve: any, reject: any)=> {
+        proxy.$http.put("/broadcasting/" + props.selectTaskData.id, {
+            name: props.selectTaskData.name,
+            priority: props.selectTaskData.priority,
+            volume: props.selectTaskData.volume,
+            play_model: props.selectTaskData.play_model,
+            type: props.selectTaskData.type,
+            fast_sound_id: props.selectTaskData.fast_sound_id,
+            fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
+            terminals: props.selectTaskData.terminals,
+            terminals_groups: props.selectTaskData.terminals_groups,
+            sound_source: props.selectTaskData.type === 4 ? soundSourceForm.value : '',
+            medias: props.selectTaskData.medias,
+            medias_groups: props.selectTaskData.medias_groups,
+        }).then((result: any) => {
+            if (result.result === 200) {
+                resolve()
+            }
+        });
+    })
+}
+// 更新本地任务（快捷终端修改）
+const handleLocalTaskTermina = () => {
+    return new Promise((resolve: any, reject: any)=> {
+        proxy.$http1.put(
+            "/task",
+            Object.assign(props.selectTaskData, {
+                fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
+            })
+        ).then((result: any) => {
+            if (result.result === 200) {
+                resolve()
+            }
+        });
+    })
+} 
 const uploadMedia = (data: any) => {
     proxy.$http
         .put("/broadcasting/" + props.selectTaskData.id, {
@@ -505,38 +626,52 @@ const handleDelete = (row: any) => {
 };
 // 获取选中任务详情信息
 const handleSelectionData = (row: any) => {
-    if (row.type < 10) {
-        proxy.$http
-            .get("/broadcasting/" + row.id, {
+    return new Promise((resolve: any, reject: any)=> {
+        if (row.type < 10) {
+            proxy.$http.get("/details/" + row.id, {
                 params: {
+                    tag: "BroadcastingStudio",
                     withMedias: true,
                     withGroups: true,
                     withFastSound: true,
                     withTerminals: true,
                     withFastTerminal: true,
                 },
-            })
-            .then((restlu: any) => {
+            }).then((restlu: any) => {
                 taskDataDetailed.value = restlu.data;
                 const terminals = restlu.data.terminals ? restlu.data.terminals : [];
                 const terminals_groups = restlu.data.terminals_groups
                     ? restlu.data.terminals_groups
                     : [];
-                taskTerminalAll.value = [...terminals, ...terminals_groups];
-                console.log(taskDataDetailed.value);
+                taskTerminalAll.value = [...terminals_groups, ...terminals];
+                if (restlu.data.fast_terminals_id) {
+                    getFastTerminals().then((data: any) => {
+                        taskDataDetailed.value["fast_terminal"] = data.filter((item: { id: any }) => {
+                            return item.id === restlu.data.fast_terminals_id;
+                        })[0];
+                    });
+                }
+                resolve(restlu.data)
             });
-    } else {
-        proxy.$http1.get("/task/" + row.id).then((restlu: any) => {
-            taskDataDetailed.value = restlu.data;
-            if (restlu.data.fast_terminals_id) {
-                getFastTerminals().then((data: any) => {
-                    taskDataDetailed.value["fast_terminal"] = data.filter((item: { id: any }) => {
-                        return item.id === restlu.data.fast_terminals_id;
-                    })[0];
-                });
-            }
-        });
-    }
+        } else {
+            proxy.$http1.get("/task/" + row.id).then((restlu: any) => {
+                taskDataDetailed.value = restlu.data;
+                if (restlu.data.fast_terminals_id) {
+                    getFastTerminals().then((data: any) => {
+                        taskDataDetailed.value["fast_terminal"] = data.filter((item: { id: any }) => {
+                            return item.id === restlu.data.fast_terminals_id;
+                        })[0];
+                    });
+                }
+                const terminals = restlu.data.terminals ? restlu.data.terminals : [];
+                const terminals_groups = restlu.data.terminals_groups
+                    ? restlu.data.terminals_groups
+                    : [];
+                taskTerminalAll.value = [...terminals_groups, ...terminals];
+                resolve(restlu.data)
+            });
+        }
+    })
 };
 // 获取快捷终端
 const getFastTerminals = () => {

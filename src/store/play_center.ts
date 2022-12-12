@@ -10,15 +10,8 @@ export const usePlayStore = defineStore({
     }),
     actions: {
         setPlayVoice(data: any) {
-            this.playVoiceData = []
-            if (Array.isArray(data)) {
-                data.forEach((item) => {
-                this.playVoiceData.push({
-                    id: item.EngineIndex,
-                    name: item.EngineName,
-                })
-                })
-            }
+            this.playVoiceData = data || []
+            console.log(this.playVoiceData)
         },
         setPlayStatus(data: any) {
             this.playStatusData = data

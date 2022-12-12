@@ -8,7 +8,7 @@
     <el-dialog v-model="props.dialogVisible" class="terminals-select-dialog" title="请选择终端" width="70%"
         :before-close="handleClose">
         <terminals-select-components :responseTerminals="responseTerminals" :responseGroups="responseGroups"
-            @requestTerminals="requestTerminals" @requestGroups="requestGroups">
+            @requestTerminals="requestTerminals" @requestGroups="requestGroups" :isTerminalGroups="true">
         </terminals-select-components>
         <template #footer>
             <span class="dialog-footer">

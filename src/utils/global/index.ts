@@ -1,5 +1,6 @@
 import router from "@/router";
 
+let $timer: any = null
 const usePublicMethod = {
   // 设置一小时刷新一次token
   setTokenMonitorTime() {
@@ -172,6 +173,13 @@ const usePublicMethod = {
     }
     return canvas.toDataURL(type || "image/jpeg", 0.5);
   },
+  debounce(fn: () => void, wait: number | undefined) {
+      // 清除上一次延时器
+      clearTimeout($timer)
+      $timer = setTimeout(function() {
+          fn()
+      }, wait)
+  }
 };
 
 export default usePublicMethod;

@@ -16,18 +16,57 @@
                         <el-row :gutter="80">
                             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                                 <el-form-item label="任务名称">
-                                    <el-input v-model="ruleForm.name" clearable />
+                                    <el-input
+                                        v-model="ruleForm.name"
+                                        placeholder="请输入1-100字符"
+                                        maxlength="100"
+                                        show-word-limit
+                                        clearable
+                                    />
                                 </el-form-item>
                             </el-col>
                             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                                 <el-form-item label="任务音量">
-                                    <el-input v-model.number="ruleForm.volume" />
+                                    <el-input-number
+                                        v-model="ruleForm.volume"
+                                        :min="0"
+                                        :max="100"
+                                        :value-on-clear="ruleForm.volume"
+                                        controls-position="right"
+                                    />
+                                    <el-tooltip
+                                        effect="dark"
+                                        content="音量为0时，使用终端的默认音量"
+                                        placement="right-start"
+                                    >
+                                        <i class="iconfont icon-tips theme"></i>
+                                    </el-tooltip>
                                 </el-form-item>
                             </el-col>
                             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                                <el-form-item label="优先级">
-                                    <el-input v-model.number="ruleForm.priority" />
-                                </el-form-item>
+                                <el-form-item
+                                    label="优先级"
+                                    prop="priority"
+                                    class="custom-form-input"
+                                >
+                                    <div class="custom-number red" title="任务优先级-音乐播放">
+                                        70
+                                    </div>
+                                    <el-input-number
+                                        v-model="ruleForm.priority"
+                                        :min="1"
+                                        :max="100"
+                                        :value-on-clear="ruleForm.priority"
+                                        controls-position="right"
+                                    />
+                                    <el-tooltip
+                                        effect="dark"
+                                        content="自定义优先级数值越高,同类任务中优先级越高"
+                                        placement="right-start"
+                                    >
+                                        <i class="iconfont icon-tips theme"></i>
+                                    </el-tooltip>
+                            </el-form-item>
                             </el-col>
                             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                                 <el-form-item label="音源类型">
@@ -57,14 +96,19 @@
                 </div>
                 <div class="play-task-configure-content configure-level-content">
                     <sound-source-component v-if="ruleForm.type === 4" v-model:ruleForm="ruleForm"
-                        @requestSoundSource="requestSoundSource">
+                        @requestSoundSource="requestSoundSource" :selectTaskData="taskDataDetailed">
                     </sound-source-component>
-                    <music-play-component v-if="ruleForm.type === 10" v-model:fileList="ruleForm.content"
+                    <music-play-component
+                        v-if="ruleForm.type === 10" v-model:fileList="ruleForm.content"
                         v-model:musicSelect="musicSelect" :requestConfig="requestMusicConfig"
                         @requestDispose="requestDispose">
                     </music-play-component>
-                    <remote-play-component v-if="ruleForm.type === 1" v-model:medias="ruleForm.medias"
-                        v-model:medias_groups="ruleForm.medias_groups" :responseMedia="responseMedia"
+                    <remote-play-component
+                        v-if="ruleForm.type === 1"
+                        v-model:medias="ruleForm.medias"
+                        v-model:medias_groups="ruleForm.medias_groups"
+                        :soundSource="ruleForm.sound_source"
+                        :responseMedia="responseMedia"
                         :responseGroups="responseeMediaGroups" @requestDispose="requestRemotePlay">
                     </remote-play-component>
                     <text-play-component v-if="ruleForm.type === 11" v-model:tsctFormData="tsctFormData"
@@ -116,14 +160,11 @@
 
 <script lang="ts" setup>
 import type {
-    TabsPaneContext,
     UploadInstance,
     UploadUserFile,
     UploadProps,
     UploadFile,
-    UploadRawFile,
 } from "element-plus";
-import $http from "@/utils/axios/index";
 import soundSourceComponent from "../components/sound-source-component.vue";
 import musicPlayComponent from "../components/music-play-component.vue";
 import remotePlayComponent from "../components/remote-play-component.vue";
@@ -144,12 +185,13 @@ const ruleForm = reactive({
     name: "", //任务名称
     serverIP: localStorage.get("serverIP"), //服务器IP
     userID: localStorage.get("LoginUserID"), //用户ID
-    priority: "", //任务优先级
-    volume: "", //任务音量
+    priority: 50, //任务优先级
+    volume: 50, //任务音量
     fast_sound_id: 0, //快捷音源id
     content: [], //音乐路径集合
     medias: [], //已选择的媒体文件
     medias_groups: [], //已选择的媒体媒体文件夹
+    sound_source: {}, 
 });
 const fast_terminals_id = ref(); //快捷终端id
 const terminals = ref([]); //终端id集合
@@ -175,6 +217,7 @@ const responseMedia = ref([]); //已选择的媒体文件
 const responseeMediaGroups = ref([]); //已选择的媒体媒体文件夹
 const requestMusicConfig = ref({}); //音乐播放配置
 const requestTaskConfig = ref({}); //文本播放配置
+const taskDataDetailed = ref({})
 const dialogVisible = ref(false);
 const typeOptions = [
     { label: "快捷音源", value: 4 },
@@ -208,7 +251,7 @@ const deteleSelectMusic = () => {
     });
 };
 // 选中文件时触发
-const uploadChange: UploadProps["onChange"] = (uploadFile: any, uploadFiles) => {
+const uploadChange: UploadProps["onChange"] = (uploadFile: any) => {
     getTimes(uploadFile);
 };
 // 获取文件时长
@@ -288,7 +331,7 @@ const submitTask = () => {
 const createQuickSou = (data: any) => {
     if (ruleForm.fast_sound_id === -1) return proxy.$message.warning("请选择快捷音源");
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
-        $http.put("/broadcasting/" + $useRoute.query.id,
+        proxy.$http.put("/broadcasting/" + $useRoute.query.id,
             Object.assign(data, {
                 sound_source: soundSourceForm.value,
             })
@@ -298,7 +341,7 @@ const createQuickSou = (data: any) => {
             }
         });
     }else {
-        $http.post("/broadcasting",
+        proxy.$http.post("/broadcasting",
             Object.assign(data, {
                 sound_source: soundSourceForm.value,
             })
@@ -313,8 +356,10 @@ const createQuickSou = (data: any) => {
 const createLocalAudio = (data: any) => {
     if (ruleForm.content.length === 0) return proxy.$message.warning("请添加音频文件");
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
-        proxy.$http1.put("/task/" + $useRoute.query.id, 
-            Object.assign(data, musicPlayForm.value)
+        proxy.$http1.put("/task/", 
+            Object.assign(data, musicPlayForm.value, {
+                id: Number($useRoute.query.id)
+            })
         ).then((result: any) => {
             if (result.result === 200) {
                 $useRouter.push("/play");
@@ -336,7 +381,7 @@ const createRemteTask = (data: any) => {
         return proxy.$message.warning("请添加媒体文件或媒体文件夹");
 
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
-        proxy.$http1.put("/broadcasting/" + $useRoute.query.id, 
+        proxy.$http.put("/broadcasting/" + $useRoute.query.id, 
             Object.assign(data, {
                 sound_source: remotePlayForm.value,
             })
@@ -346,7 +391,7 @@ const createRemteTask = (data: any) => {
             }
         })
     } else {
-        $http.post("/broadcasting",
+        proxy.$http.post("/broadcasting",
             Object.assign(data, {
                 sound_source: remotePlayForm.value,
             })
@@ -419,13 +464,14 @@ const createSoundSourceCollection = (data: any) => {
         }
     );
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
-        proxy.$http1.put("/task/" + $useRoute.query.id,
-            submitFrom
+        proxy.$http1.put("/task",Object.assign(submitFrom, {
+            id: Number($useRoute.query.id)
+        })
         ).then((result: any) => {
             if (result.result === 200) {
                 $useRouter.push("/play");
             }
-        });
+        })
     } else {
         proxy.$http1.post("/task", submitFrom).then((result: any) => {
             if (result.result === 200) {
@@ -456,24 +502,16 @@ const getLocalTask = (row: any) => {
             executionregiontype.value = 1;
         }
         if (result.data.terminals) {
-            getTerminalsAll().then((data: any) => {
-                responseTerminals.value = data.filter((item: { id: number }) => {
-                    return result.data.terminals.includes(item.id);
-                });
-            });
+            responseTerminals.value = result.data.terminals
         }
         if (result.data.terminals_groups) {
-            getGroupsAll().then((data: any) => {
-                responseGroups.value = data.filter((item: { id: number }) => {
-                    return result.data.terminals_groups.includes(item.id);
-                });
-            });
+            responseGroups.value = result.data.terminals_groups
         }
     });
 };
 // 请求服务器任务
 const getServeTask = (row: any) => {
-    $http.get("/broadcasting/" + row, {
+    proxy.$http.get("/broadcasting/" + row, {
         params: {
             withMedias: true,
             withGroups: true,
@@ -482,10 +520,12 @@ const getServeTask = (row: any) => {
             withFastTerminal: true,
         },
     }).then((result: any) => {
+        taskDataDetailed.value = result.data
         ruleForm.type = result.data.type;
         ruleForm.name = result.data.name;
         ruleForm.volume = result.data.volume;
         ruleForm.priority = result.data.priority;
+        ruleForm.sound_source = result.data.sound_source;
         if (result.data.fast_terminals_id === 0) {
             executionregiontype.value = 1;
         } else {
@@ -502,7 +542,7 @@ const getServeTask = (row: any) => {
 // 获取所有分组
 const getGroupsAll = () => {
     return new Promise((resolve, reject) => {
-        $http
+        proxy.$http
             .get("terminals-groups/all", {
                 params: {
                     withTerminals: true,
@@ -518,7 +558,7 @@ const getGroupsAll = () => {
 // 获取所有终端
 const getTerminalsAll = () => {
     return new Promise((resolve, reject) => {
-        $http
+        proxy.$http
             .get("/terminals/all", {
                 params: {
                     withGroups: true,
@@ -534,7 +574,6 @@ const getTerminalsAll = () => {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
-        console.log("编辑任务");
         if ($useRoute.query.type < 10) {
             getServeTask($useRoute.query.id);
         } else {
@@ -602,12 +641,17 @@ onMounted(() => {
 
         .el-form-item {
             .el-form-item__content {
-                .el-select {
+                .el-select, .el-input-number {
                     width: 100%;
                 }
             }
         }
-
+        .custom-form-input {
+            .el-input-number {
+                width: calc(100% - 50px) !important;
+            }
+        }
+        
         .fast-sound-source {
             width: 100%;
             position: relative;
@@ -622,6 +666,12 @@ onMounted(() => {
                 color: #0070ee;
                 cursor: pointer;
             }
+        }
+
+        .icon-tips {
+            position: absolute;
+            top: -35px;
+            left: -20px;
         }
     }
 

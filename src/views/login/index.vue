@@ -10,23 +10,26 @@
             <div class="login-header-functron">
                 <el-icon @click="handleMinimize">
                     <template #default>
-                        <svg class="icon" aria-hidden="true">
+                        <span class="iconfont icon-minimize"></span>
+                        <!-- <svg class="icon" aria-hidden="true">
                             <use xlink:href="#icon-minimize"></use>
-                        </svg>
+                        </svg> -->
                     </template>
                 </el-icon>
                 <el-icon @click="register">
                     <template #default>
-                        <svg class="icon" aria-hidden="true">
+                        <span class="iconfont icon-set-up"></span>
+                        <!-- <svg class="icon" aria-hidden="true">
                             <use xlink:href="#icon-set-up"></use>
-                        </svg>
+                        </svg> -->
                     </template>
                 </el-icon>
                 <el-icon @click="close">
                     <template #default>
-                        <svg class="icon" aria-hidden="true">
+                        <span class="iconfont icon-clear"></span>
+                        <!-- <svg class="icon" aria-hidden="true">
                             <use xlink:href="#icon-clear"></use>
-                        </svg>
+                        </svg> -->
                     </template>
                 </el-icon>
             </div>
@@ -125,23 +128,13 @@ const close = () => {
 };
 // 提交
 const submit = () => {
-    // proxy.$http1.get('/config', {
-    //     params: {
-    //         username: 'admin',
-    //         serverip: '172.16.21.124'
-    //     }
-    // }).then((result: any)=> {
-    //     if (result.result === 0) {
-    //         console.log(result.data)
-    //     }
-    // })
     let data = {
         company: "BL",
         actioncode: "c2ms_user_login",
         token: "",
         data: {
             UserName: modelRef.name,
-            Password: "123456",
+            Password: modelRef.password,
             Platform: "PC",
             HostIP: modelRef.server_ip_address,
             ForceLogin: false,

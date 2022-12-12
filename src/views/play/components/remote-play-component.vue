@@ -50,6 +50,7 @@ import selectMediaGroup from "@/components/select_media_group.vue";
 const props = defineProps({
     responseMedia: Array,
     responseGroups: Array,
+    soundSource: Object
 });
 const emit = defineEmits(["requestDispose", "update:medias", "update:medias_groups"]);
 const ruleForm = reactive({
@@ -58,8 +59,7 @@ const ruleForm = reactive({
     play_number: 1, //播放曲目
     radioVal: 1,
 });
-const responseMedia = ref([]); //已选择的媒体文件
-const responseeMediaGroups = ref([]); //已选择的媒体媒体文件夹
+
 const duration = ref(0); //持续时间
 const playmodelOptions = [
     { label: "列表播放", value: 0 },
@@ -77,8 +77,14 @@ watch([ruleForm, duration], () => {
         data["life_time"] =
             ruleForm.play_model === 0 ? formatSecondNo(duration.value) : ruleForm.life_time;
     }
+    console.log(ruleForm)
     emit("requestDispose", data);
 });
+
+watch(()=> props.soundSource, ()=> {
+    Object.assign(ruleForm, props.soundSource)
+    props.soundSource?.play_number ? ruleForm.radioVal = 2 : ruleForm.radioVal = 1
+})
 
 // 选择的媒体文件
 const requestMedia = (data: any) => {
@@ -123,6 +129,10 @@ onMounted(() => {
         };
     }
     emit("requestDispose", data);
+    if (props.soundSource) {
+        Object.assign(ruleForm, props.soundSource)
+        props.soundSource?.play_number ? ruleForm.radioVal = 2 : ruleForm.radioVal = 1
+    }
 });
 </script>
 

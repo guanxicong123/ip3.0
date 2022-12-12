@@ -100,17 +100,18 @@
                     </el-table-column>
                     <el-table-column prop="TaskVolume" label="任务音量">
                         <template #default="scope">
-                            <div class="com-table-task-volume" v-if="selectTerminaVolume?.EndPointMac !== scope.row.EndPointMac">
+                            <div class="com-table-task-volume" v-if="selectTerminaVolume?.TaskID !== scope.row.TaskID">
                                 <span class="volume">{{scope.row.TaskVolume}}</span>
                                 <span class="iconfont icon-edit1" @click="handelSelectVolume(scope.row)"></span>
                             </div>
                             <div class="com-table-task-volume" v-else>
                                 <el-input-number
-                                    v-model="selectTerminaVolume.TaskVolume"
+                                    v-model="scope.row.TaskVolume"
                                     :min="1"
-                                    :max="10"
+                                    :max="100"
                                     controls-position="right"
-                                    size="large"
+                                    size="small"
+                                    @change="changeTaskVolume(scope.row)"
                                 />
                             </div>
                         </template>
@@ -160,6 +161,7 @@
 import { send } from '@/utils/socket'
 import { ElMessage, ElMessageBox, ElTable } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
+import usePublicMethod from "@/utils/global/index";
 interface User {
     date: string;
     name: string;
@@ -201,7 +203,7 @@ const selectTerminalMac: any = ref({
 }) //选中表格设备的mac地址
 const selectTerminaVolume = ref({
     TaskVolume: 0,
-    EndPointMac: ''
+    TaskID: ''
 })
 
 const sessionsData = computed(()=> {
@@ -320,22 +322,28 @@ const setMonitorTerminal = (row: { TaskID: any; }) => {
 }
 // 选中音量
 const handelSelectVolume = (row: any) => {
-    console.log(row)
     selectTerminaVolume.value = row
 }
-// 设置任务音量
-const handelTakVolume = (row: any) => {
-    let data = {
-        "company": "BL",
-        "actioncode": "c2ls_set_task_volume",
-        "token": "",
-        "data": {
-            "TaskID": row.TaskID,
-            "Volume": row.Volume
-        },
-        "result": 0,
-        "return_message": ""
+// 改变任务音量
+const changeTaskVolume = (row: any) => {
+    if (row.TaskVolume === undefined) {
+        row.TaskVolume = 0
     }
+    let func = ()=> {
+        let data = {
+            "company": "BL",
+            "actioncode": "c2ls_set_task_volume",
+            "token": "",
+            "data": {
+                "TaskID": row.TaskID,
+                "Volume": row.TaskVolume
+            },
+            "result": 0,
+            "return_message": ""
+        }
+        send(data)
+    }
+    usePublicMethod.debounce(func, 1000)
 }
 const filterData = () => {
     let objIsEmpty = form.selectType === 0 && form.search === ''

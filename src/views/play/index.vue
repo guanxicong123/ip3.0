@@ -41,15 +41,14 @@
                 <div class="content-center">
                     <p>
                         {{
-                            selectTaskData.TaskID !== playStatusData.TaskID
-                                ? selectTaskData.name
+                            playCenterData.TaskID !== playStatusData.TaskID
+                                ? playCenterData.name
                                 : playStatusData.MusicName
                         }}
                     </p>
                     <div class="progress">
                         <el-slider v-model="form.current_duration" :max="form.total_duration"
                             :format-tooltip="formatTooltip" @change="handleSwitchTask(playCenterData, 'progress')" />
-                        <!-- <el-progress :percentage="form.percentage" :format="format" :stroke-width="3" color="#0070EE" /> -->
                         <span class="fl">{{ formatTooltip(form.current_duration) }}</span>
                         <span class="fr">{{ formatTooltip(form.total_duration) }}</span>
                     </div>
@@ -71,12 +70,12 @@
                     </i>
                     <i class="iconfont icon-next" title="下一首" @click="handleSwitchTask(playCenterData, 'next')"></i>
                     <i class="iconfont icon-end" title="停止" @click="handleStopTask(playCenterData)"></i>
-                    <el-popover trigger="click">
+                    <el-popover trigger="click" popper-class="play-volume-popper">
                         <template #reference>
                             <i class="iconfont icon-volume2" title="音量"></i>
                         </template>
-                        <el-slider v-model="playCenterData.volume" vertical height="200px"
-                            @change="handleVolumeTask(playCenterData)">
+                        <el-slider v-model="form.volume" vertical height="200px"
+                            @change="handleVolumeTask">
                         </el-slider>
                     </el-popover>
                 </div>
@@ -92,8 +91,8 @@
                         <template #reference>
                             <i class="iconfont icon-volume2" title="音量"></i>
                         </template>
-                        <el-slider v-model="playCenterData.volume" vertical height="200px"
-                            @change="handleVolumeTask(playCenterData)">
+                        <el-slider v-model="form.volume" vertical height="200px"
+                            @change="handleVolumeTask">
                         </el-slider>
                     </el-popover>
                 </div>
@@ -132,9 +131,8 @@
                                 </el-table-column>
                                 <el-table-column prop="priority" label="优先级">
                                     <template #default="scope">
-                                        <span class="red">[{{ priorityData.get(scope.row.type) }}]</span>{{
-                                                scope.row.priority
-                                        }}
+                                        <span class="red">[{{ priorityData.get(scope.row.type) }}]</span>
+                                        {{scope.row.priority}}
                                     </template>
                                 </el-table-column>
                                 <el-table-column label="操作" width="120">
@@ -169,7 +167,8 @@
                 </div>
             </div>
             <div class="right-bottom">
-                <task-details-config :selectTaskData="selectTaskData"> </task-details-config>
+                <task-details-config :selectTaskData="selectTaskData" :playCenterData="playCenterData">
+                </task-details-config>
             </div>
         </div>
     </div>
@@ -213,6 +212,7 @@ const form = reactive<any>({
     currentPage: 1,
     pageSize: 20,
     total: 0,
+    volume: 0,
 });
 const selectTaskData: any = ref({}); //选中的任务数据(http)
 const sessionsData: any = computed(() => {
@@ -233,10 +233,10 @@ watch(playStatusData, (newVal) => {
 // 获取当前显示任务的执行数据
 const playCenterShowData = computed(() => {
     return sessionsData.value.filter((item: any) => {
-        if (selectTaskData.value.type < 10) {
+        if (selectTaskData.value?.type < 10) {
             return item.RemoteTaskID === selectTaskData.value.id;
         }
-        if (selectTaskData.value.type >= 10) {
+        if (selectTaskData.value?.type >= 10) {
             return item.TaskID === selectTaskData.value.taskid;
         }
     })[0];
@@ -250,8 +250,8 @@ const playCenterData = computed(() => {
     }
 });
 watch(playCenterData, (newVal) => {
+    form.volume = newVal.volume
     if (newVal.TaskID) {
-        // form.play_model
         let data = {
             company: "BL",
             actioncode: "c2ms_get_task_play_status",
@@ -265,7 +265,6 @@ watch(playCenterData, (newVal) => {
         send(data);
     }
 });
-const format = () => "";
 const handleFullscreenStatus = () => {
     form.fullscreen_satus = !form.fullscreen_satus;
     form.playlist_status = false;
@@ -307,7 +306,6 @@ const playModeIcon = new Map([
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
 const priorityData = new Map();
-const activeName = ref("configure");
 const playConfig = ref();
 
 // 判断是否显示按钮
@@ -450,14 +448,14 @@ const handleSwitchTask = (row: any, type: string) => {
     }
 };
 // 音量调节
-const handleVolumeTask = (row: any) => {
-    if (row.TaskID) {
+const handleVolumeTask = (volume: any) => {
+    if (playCenterData.value?.TaskID) {
         let data = {
             company: "BL",
             actioncode: "c2ms_set_task_volume",
             data: {
-                TaskID: row.TaskID,
-                Volume: row.volume,
+                TaskID: playCenterData.value.TaskID,
+                Volume: volume,
             },
             result: 0,
             return_message: "",
@@ -502,11 +500,9 @@ const handleTaskAttribute = (row: any) => {
             RemoteType: "remote_play",
             RemoteAudioProp: {
                 MusicIDs: row.mediasIds,
-                LimitTime: row.life_time ? timeToSec(row.life_time, 1) : 0,
+                LimitTime: row.sound_source.life_time ? timeToSec(row.sound_source.life_time, 1) : 0,
                 PlayMode: taskPlayMode.get(row.sound_source.play_model),
-                PlayTimes: row.sound_source.play_times
-                    ? timeToSec(row.sound_source.play_times, 1)
-                    : 0,
+                PlayTimes: row.sound_source?.play_number || 0,
             },
         };
     }
@@ -525,9 +521,7 @@ const handleTaskAttribute = (row: any) => {
                         ? timeToSec(row.sound_source.life_time, 1)
                         : 0,
                     PlayMode: taskPlayMode.get(row.sound_source.play_model),
-                    PlayTimes: row.sound_source.play_times
-                        ? timeToSec(row.sound_source.play_times, 1)
-                        : 0,
+                    PlayTimes: row.sound_source?.play_number || 0,
                 },
             };
         }
@@ -646,11 +640,14 @@ const getTaskAll = () => {
 };
 // 获取所有系统优先级
 const getPrioritySetting = () => {
-    proxy.$http.get("/priority-setting").then((restlu: any) => {
-        restlu.data.forEach((item: { task_type: any; priority: any }) => {
-            priorityData.set(item.task_type, item.priority);
+    return new Promise((resolve, reject) => {
+        proxy.$http.get("/priority-setting").then((restlu: any) => {
+            restlu.data.forEach((item: { task_type: any; priority: any }) => {
+                priorityData.set(item.task_type, item.priority);
+            });
+            resolve(restlu.data)
         });
-    });
+    })
 };
 const formatTooltip = (seconds: number) => {
     if (seconds) {
@@ -676,8 +673,7 @@ const formatTooltip = (seconds: number) => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-    getPrioritySetting();
-    Promise.all([getBroadcastingAll(), getTaskAll()]).then((data: any) => {
+    Promise.all([getBroadcastingAll(), getTaskAll(), getPrioritySetting()]).then((data: any) => {
         form.data = [...data[0], ...data[1]];
         handleSelectionClick(form.data[0]);
         multipleTableRef.value!.setCurrentRow(form.data[0]);

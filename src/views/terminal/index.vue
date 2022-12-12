@@ -490,7 +490,7 @@ const monitorTalkTask = (EndPointList: any[]) => {
 }
 
 // 发起报警任务
-const alarmTalkTask = (EndPointList: any[]) => {
+const alarmTalkTask = () => {
     proxy.$http.get("/details/" + system_configs.value.AlarmID, {
         params: {
             tag: 'OneButtonAlarm',

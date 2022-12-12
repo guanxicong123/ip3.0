@@ -110,7 +110,6 @@ $http.interceptors.response.use(
         // 在请求结束后，移除本次请求
         // axiosCancel.removePending(response)
         const status = response.status
-        console.log(response)
         if (status < 200 || status >= 300) {
             const message = showStatus(status)
             // 处理http错误，抛到业务代码

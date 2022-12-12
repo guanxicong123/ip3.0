@@ -24,22 +24,28 @@
 
 <script lang="ts" setup>
 import { registerWebSocket } from "@/utils/socket";
+import { send } from "@/utils/socket";
 
 // defineAsyncComponent 异步组件-懒加载子组件
 const uploadManager = defineAsyncComponent(
     () => import("@/views/media/components/upload_manager.vue")
 );
 
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 const upload = getStore.useUploadStore();
 const store = getStore.useAppStore();
+
+const timeToken: any = ref(null)
+const timeoutToken: any = ref(null)
+// 是否展示上传管理器
+const showUploadManager = ref(false);
+
 // 计算属性 computed
 const uploadStore = computed(() => upload.showUploadManager);
 const isWebsocekt = computed(() => {
     return store.is_websocekt;
 });
-
-// 是否展示上传管理器
-const showUploadManager = ref(false);
 
 // 监听变化
 watch(
@@ -54,6 +60,19 @@ watch(
     }
 );
 
+const refreshToken = () => {
+    timeoutToken.value = null
+    proxy.$http.get('/auth/refresh').then((result: any)=> {
+        if (result.result === 200) {
+            localStorage.set("userToken", result.token)
+        }else {
+            timeoutToken.value = setTimeout(refreshToken, 60000)
+        }
+    }).catch(()=> {
+        timeoutToken.value = setTimeout(refreshToken, 60000)
+    })
+}
+
 // mounted 实例挂载完成后被调用
 onMounted(() => {
     window.electronAPI.send("main-window", "");
@@ -61,7 +80,12 @@ onMounted(() => {
         registerWebSocket();
     }
     getStore.useSystemStore().getConfigInfo()
+    timeToken.value = setInterval(refreshToken, 90*60*1000)
 });
+
+onBeforeUnmount(()=> {
+    clearInterval(timeToken.value)
+})
 </script>
 
 <style lang="scss">

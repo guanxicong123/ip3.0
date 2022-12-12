@@ -4,7 +4,6 @@ import { AxiosCanceler } from './axios_cancel'
 import { ElMessage } from 'element-plus'
 import { isString } from '@/utils/is'
 
-// const url = localStorage.get("serverIP");
 const axiosCancel = new AxiosCanceler()
 // 处理请求状态码
 const showStatus = (status: number) => {
@@ -51,7 +50,7 @@ const showStatus = (status: number) => {
 const url = localStorage.get('serverIP')
 // 创建 axios
 const $http = axios.create({
-    baseURL: '/api/v29+', // 'http://' + url + '/api/v29+' || 
+    baseURL: '/api/v29+', // 'http://' + url + ':81/api/v29+' || 
     headers: { 'Content-Type': 'application/json;charset=utf-8' },
     withCredentials: true, // 是否跨站点访问控制请求
     timeout: 5 * 1000, // 5s超时
@@ -106,7 +105,6 @@ $http.interceptors.response.use(
         // 在请求结束后，移除本次请求
         // axiosCancel.removePending(response)
         const status = response.status
-        console.log(response)
         if (status < 200 || status >= 300) {
             const message = showStatus(status)
             // 处理http错误，抛到业务代码

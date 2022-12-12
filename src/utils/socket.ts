@@ -16,8 +16,8 @@ const registerWebSocket = async () => {
     if (socketStatus && !connected && !connecting) {
         connected = false;
         connecting = true;
-        // const WbakUrl = "ws://127.0.0.1:9999/socket";
-        const WbakUrl = "ws://172.16.21.124:9999/socket";
+        const WbakUrl = "ws://127.0.0.1:9999/socket";
+        // const WbakUrl = "ws://172.16.21.124:9999/socket";
         socket = new WebSocket(WbakUrl);
         //WebSocket连接成功
         socket.onopen = () => {
@@ -47,31 +47,31 @@ const registerWebSocket = async () => {
     };
     //WebSocket异常
     socket.onerror = () => {
-      if (getStore.useAppStore().is_login) return;
-      clearInterval(reloadInterval);
-      reload();
-      connecting = false;
-      connected = false;
-      getStore.useAppStore().changeWsStatus(false);
-    };
-    //WebSocket关闭
-    socket.onclose = () => {
-      if (getStore.useAppStore().is_login) {
+        if (getStore.useAppStore().is_login) return;
+        clearInterval(reloadInterval);
+        reload();
         connecting = false;
         connected = false;
         getStore.useAppStore().changeWsStatus(false);
-        getStore.useAppStore().changeLoginStatus(false);
-        ElMessage.error("服务连接失败");
-        return;
-      }
-      clearInterval(reloadInterval);
-      connecting = false;
-      connected = false;
-      getStore.useAppStore().changeWsStatus(false);
-      if (router.currentRoute.value.fullPath !== "/") {
-        //登陆页面主动断开不重连
-        reload();
-      }
+    };
+    //WebSocket关闭
+    socket.onclose = () => {
+        if (getStore.useAppStore().is_login) {
+            connecting = false;
+            connected = false;
+            getStore.useAppStore().changeWsStatus(false);
+            getStore.useAppStore().changeLoginStatus(false);
+            ElMessage.error("服务连接失败");
+            return;
+        }
+        clearInterval(reloadInterval);
+        connecting = false;
+        connected = false;
+        getStore.useAppStore().changeWsStatus(false);
+        if (router.currentRoute.value.fullPath !== "/") {
+            //登陆页面主动断开不重连
+            reload();
+        }
     };
   }
 };
@@ -97,21 +97,19 @@ const reload = () => {
 };
 // 初始化ws连接
 const socketLogin = (data: any) => {
-  sessionStorage.setItem("websocketUrl", "ws://172.16.21.119:51330/socket");
+    const myDate = new Date();
+    const a = myDate.getFullYear();
+    const b = myDate.getMonth() + 1;
+    const c = myDate.getDate();
+    const d = myDate.getHours();
+    const e = myDate.getMinutes();
+    const f = myDate.getSeconds();
+    data.data.LoginTime = a + "-" + b + "-" + c + " " + d + ":" + e + ":" + f;
 
-  const myDate = new Date();
-  const a = myDate.getFullYear();
-  const b = myDate.getMonth() + 1;
-  const c = myDate.getDate();
-  const d = myDate.getHours();
-  const e = myDate.getMinutes();
-  const f = myDate.getSeconds();
-  data.data.LoginTime = a + "-" + b + "-" + c + " " + d + ":" + e + ":" + f;
-
-  loginData = data;
-  // return
-  is_login = false;
-  registerWebSocket();
+    loginData = data;
+    // return
+    is_login = false;
+    registerWebSocket();
 };
 
 const initRequest = () => {
@@ -119,73 +117,72 @@ const initRequest = () => {
 };
 // 获取所有终端状态
 const requestTerminalInfo = () => {
-  const data = {
-    company: "BL",
-    actioncode: "c2ms_get_server_terminals_status",
-    token: "",
-    data: {},
-    result: 0,
-    return_message: "",
-  };
-  send(data);
+    const data = {
+        company: "BL",
+        actioncode: "c2ms_get_server_terminals_status",
+        token: "",
+        data: {},
+        result: 0,
+        return_message: "",
+    };
+    send(data);
 };
 // 获取所有任务信息
 const requestTaskInfo = () => {
-  const data = {
-    company: "BL",
-    actioncode: "c2ms_get_task_status",
-    token: "",
-    data: {},
-    result: 0,
-    return_message: "",
-  };
-  send(data);
+    const data = {
+        company: "BL",
+        actioncode: "c2ms_get_task_status",
+        token: "",
+        data: {},
+        result: 0,
+        return_message: "",
+    };
+    send(data);
 };
 const getTtsEngine = () => {
-  const data = {
-    company: "BL",
-    actioncode: "c2ms_get_tts_engine_info",
-    data: {},
-    result: 0,
-    return_message: "",
-  };
-  send(data);
+    const data = {
+        company: "BL",
+        actioncode: "c2ms_get_tts_engine_info",
+        data: {},
+        result: 0,
+        return_message: "",
+    };
+    send(data);
 };
 // 发起远程音乐播放任务
 const startRemotePlay = (row: any) => {
-  console.log(remotePlayTaskKey, row.TaskID);
-  if (remotePlayTaskKey.includes(row.TaskID)) {
-    const data = {
-      company: "BL",
-      actioncode: "c2ms_control_task",
-      token: "",
-      data: {
-        TaskID: row.TaskID,
-        ControlCode: "play",
-        ControlValue: "",
-      },
-      result: 0,
-      return_message: "",
-    };
-    send(data);
-    remotePlayTaskKey = remotePlayTaskKey.filter((item: any) => {
-      return item !== row.TaskID;
-    });
-  }
+    console.log(remotePlayTaskKey, row.TaskID);
+    if (remotePlayTaskKey.includes(row.TaskID)) {
+        const data = {
+            company: "BL",
+            actioncode: "c2ms_control_task",
+            token: "",
+        data: {
+            TaskID: row.TaskID,
+            ControlCode: "play",
+            ControlValue: "",
+        },
+            result: 0,
+            return_message: "",
+        };
+            send(data);
+            remotePlayTaskKey = remotePlayTaskKey.filter((item: any) => {
+            return item !== row.TaskID;
+        });
+    }
 };
 // 登录
 const login = () => {
-  const data = loginData;
-  const myDate = new Date();
-  const a = myDate.getFullYear();
-  const b = myDate.getMonth() + 1;
-  const c = myDate.getDate();
-  const d = myDate.getHours();
-  const e = myDate.getMinutes();
-  const f = myDate.getSeconds();
-  data.data.LoginTime = a + "-" + b + "-" + c + " " + d + ":" + e + ":" + f;
-
-  send(data);
+    const data = loginData;
+    const myDate = new Date();
+    const a = myDate.getFullYear();
+    const b = myDate.getMonth() + 1;
+    const c = myDate.getDate();
+    const d = myDate.getHours();
+    const e = myDate.getMinutes();
+    const f = myDate.getSeconds();
+    data.data.LoginTime = a + "-" + b + "-" + c + " " + d + ":" + e + ":" + f;
+    send(data);
 };
 const handlerMsg = (msg: any) => {
     const msgMap = new Map([
@@ -213,7 +210,7 @@ const handlerMsg = (msg: any) => {
         ]
     ]);
     if (msg.result !== 200) {
-        if (msg.actioncode === "ls2c_user_login") {
+        if (msg.actioncode === "ms2c_user_login") {
             //登录失败
             getStore.useAppStore().changeLoginStatus(false);
             socket.close();
@@ -248,7 +245,7 @@ const handlerMsg = (msg: any) => {
             getStore.useTerminalStore().getTerminalData(msg.data);
             return;
         case "ms2c_get_tts_engine_info": //播放语音(TTS引擎)
-            getStore.usePlayStore().setPlayVoice(msg.data)
+            getStore.usePlayStore().setPlayVoice(msg.data.TTSEngineInfo)
             return
         case 'ms2c_get_task_play_status': //客户端任务播放状态
             getStore.usePlayStore().setPlayStatus(msg.data)
