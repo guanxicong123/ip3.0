@@ -58,8 +58,8 @@
         </div>
         <div class="broadcast-login-from">
             <div class="login-from-name">
-                <el-input type="text" auto-complete="off" v-model="modelRef.name" :disabled="isLogin" :maxlength="100"
-                    placeholder="请输入账号" clearable suffix-icon="">
+                <el-input auto-complete="off" v-model="modelRef.name" :disabled="isLogin" :maxlength="100"
+                    placeholder="请输入账号" clearable :spellcheck="false">
                     <template #prefix>
                         <i class="iconfont icon-user"></i>
                     </template>
@@ -67,7 +67,7 @@
             </div>
             <div class="login-from-password">
                 <el-input type="password" v-model="modelRef.password" :disabled="isLogin" :maxlength="20"
-                    placeholder="请输入密码" clearable show-password suffix-icon="" auto-complete="new-password"
+                    placeholder="请输入密码" clearable show-password auto-complete="new-password"
                     oncopy="return false" ondragstart="return false" onselectstart="return false">
                     <template #prefix>
                         <i class="iconfont icon-password"></i>
@@ -87,6 +87,9 @@
         </div>
         <div class="broadcast-login-sign">
             <el-button type="primary" @click="submit" :loading="isLogin">登录</el-button>
+        </div>
+        <div class="broadcast-login-edition">
+            V3.0.1
         </div>
     </div>
 </template>
@@ -315,6 +318,11 @@ onBeforeUnmount(() => {
                 opacity: 0.8;
             }
         }
+    }
+    .broadcast-login-edition {
+        padding-top: 18px;
+        text-align: center;
+        color: #999999;
     }
 }
 </style>

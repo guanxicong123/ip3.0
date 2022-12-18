@@ -13,7 +13,7 @@
             v-model="form.searchDate"
             type="datetimerange"
             unlink-panels
-            value-format="yyyy-MM-dd HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm:ss"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"

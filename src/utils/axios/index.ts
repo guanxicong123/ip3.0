@@ -111,19 +111,21 @@ $http.interceptors.response.use(
             if (isString(response.data)) {
                 // 组装成后端返回一样的数据结构
                 response.data = {
-                result: {
-                    message,
-                },
-            }
+                    result: {
+                        message,
+                    },
+              }
         } else {
             // 判断后端有返回 message
             const isMsg = Object.prototype.hasOwnProperty.call(
-            response.data.result,
-            'message'
+                response.data,
+                'return_message'
             )
             // 没有就添加上自定义 message
             if (!isMsg) {
-                response.data.result.message = message
+                response.data.return_message = message
+            }else {
+                ElMessage.error(response.data.return_message)
             }
         }
         }

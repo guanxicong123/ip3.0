@@ -9,12 +9,20 @@
         <div class="com-main">
             <div class="com-table">
                 <el-table :data="tableData" style="width: 100%" height="250" ref="multipleTableRef"
-                    @selection-change="handleSelectionChange">
-                    <el-table-column type="index" width="50" />
-                    <el-table-column prop="name" label="文件名称" />
+                    @selection-change="handleSelectionChange"
+                    row-class-name="com-table-list">
+                    <el-table-column type="index" width="60" label="序号"/>
+                    <el-table-column prop="name" label="文件名称" show-overflow-tooltip/>
                     <el-table-column prop="time" label="时长">
                         <template #default="scope">
                             {{ formatSecondNo(scope.row.time) }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column  width="55">
+                        <template #default="scope">
+                            <div class="com-table-list-del">
+                                <span class="iconfont icon-close" @click="handleDelData(scope.row)"></span>
+                            </div>
                         </template>
                     </el-table-column>
                     <el-table-column type="selection" width="55" />
@@ -64,7 +72,7 @@ const props = defineProps({
     fileList: Array,
     requestConfig: Object,
 });
-const emit = defineEmits(["update:musicSelect", "requestDispose"]);
+const emit = defineEmits(["update:musicSelect", "requestDispose", 'deteleOneMusic']);
 const ruleForm = reactive({
     play_model: 0, //播放模式
     life_time: "00:00:00", //持续时间
@@ -111,6 +119,10 @@ const handleSelectionChange = (val: any) => {
     });
     emit("update:musicSelect", val);
 };
+//删除数据
+const handleDelData = (row: any) => {
+    emit('deteleOneMusic', row)
+};
 // 时长转换
 const formatSecondNo = (seconds: any) => {
     let hour: any =
@@ -153,5 +165,16 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-
+    .com-music-play-component {
+        .com-table-list {
+            .com-table-list-del {
+                display: none;
+            }
+            &:hover {
+                .com-table-list-del {
+                    display: inline-block;
+                }
+            }
+        }
+    }
 </style>

@@ -16,7 +16,7 @@
                     <el-form-item label="快捷音源">
                         <div class="fast-sound-source">
                             <el-input v-model="seleQuickMusic.name" disabled />
-                            <span class="iconfont icon-select-file" @click="handleShowDialog"></span>
+                            <span class="iconfont icon-select-file" @click="handleShowDialog" v-show="props.isEdit"></span>
                         </div>
                     </el-form-item>
                 </el-col>
@@ -165,7 +165,6 @@ watch(ruleForm, (newVal) => {
 });
 
 const handleShowDialog = () => {
-    if (!props.isEdit) return;
     isShow.value = true;
 };
 // 处理选中配置

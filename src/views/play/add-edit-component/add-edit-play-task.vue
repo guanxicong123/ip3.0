@@ -99,9 +99,11 @@
                         @requestSoundSource="requestSoundSource" :selectTaskData="taskDataDetailed">
                     </sound-source-component>
                     <music-play-component
-                        v-if="ruleForm.type === 10" v-model:fileList="ruleForm.content"
+                        v-if="ruleForm.type === 10"
+                        v-model:fileList="ruleForm.content"
                         v-model:musicSelect="musicSelect" :requestConfig="requestMusicConfig"
-                        @requestDispose="requestDispose">
+                        @requestDispose="requestDispose"
+                        @deteleOneMusic="deteleOneMusic">
                     </music-play-component>
                     <remote-play-component
                         v-if="ruleForm.type === 1"
@@ -229,12 +231,17 @@ const typeOptions = [
 
 watch(fileList, (newVal: any) => {
     setTimeout(() => {
-        ruleForm.content = newVal.map((item: any) => {
-            return {
-                name: item.name,
-                path: item.raw.path,
-                time: item.time,
-            };
+        let dataPatch: any[] = ruleForm.content.map((item: any) => {
+            return item.path;
+        });
+        newVal.forEach((item: any) => {
+            if (!dataPatch.includes(item.raw.path)) {
+                ruleForm.content.push({
+                    name: item.name,
+                    path: item.raw.path,
+                    time: item.time,
+                })
+            }
         });
     }, 300);
 });
@@ -248,6 +255,15 @@ const deteleSelectMusic = () => {
     });
     fileList.value = fileList.value?.filter((item: any) => {
         return dataPatch.includes(item.raw.path) === false;
+    });
+};
+// 删除单个音频
+const deteleOneMusic = (row: any) => {
+    ruleForm.content = ruleForm.content?.filter((item: any) => {
+        return item.path !== row.path
+    })
+    fileList.value = fileList.value?.filter((item: any) => {
+        return item.raw.path !== row.path
     });
 };
 // 选中文件时触发
@@ -356,7 +372,7 @@ const createQuickSou = (data: any) => {
 const createLocalAudio = (data: any) => {
     if (ruleForm.content.length === 0) return proxy.$message.warning("请添加音频文件");
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
-        proxy.$http1.put("/task/", 
+        proxy.$http1.put("/task", 
             Object.assign(data, musicPlayForm.value, {
                 id: Number($useRoute.query.id)
             })

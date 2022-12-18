@@ -220,7 +220,7 @@ export const useSystemStore = defineStore({
         : this.router_data[0].path
         const time_id = setInterval(() => {
         // if (getStore.getStore.useTerminalStore().terminal_data.length > 0 && getStore.getStore.useTerminalStore().terminal_group.length > 0) {
-        router.push('/terminal')
+        // router.push('/terminal')
         clearInterval(time_id)
         // }
         }, 100)
@@ -234,6 +234,7 @@ export const useSystemStore = defineStore({
 
     // 更新系统配置数据
     updateSystemConfig(data: any) {
+        console.log(data)
         for (const [key, value] of Object.entries(data)) {
             this.system_configs[key] = value
         }

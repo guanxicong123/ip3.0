@@ -57,7 +57,11 @@
                             <el-table-column prop="volume" label="音量" />
                             <el-table-column prop="ip_address" label="终端IP" sortable="custom" show-overflow-tooltip />
                             <el-table-column prop="code" label="呼叫编码" sortable="custom" />
-                            <el-table-column prop="type" label="终端类型" show-overflow-tooltip />
+                            <el-table-column prop="type" label="终端类型" show-overflow-tooltip>
+                                <template #default="scope">
+                                    {{formatterTerminalsType(scope.row)}}
+                                </template>
+                            </el-table-column>
                             <el-table-column prop="TaskName" label="任务名称" show-overflow-tooltip>
                                 <template #default="scope">
                                     {{scope.row.TaskName && scope.row.TaskName.length ? scope.row.TaskName : '-'}}
@@ -128,6 +132,11 @@ const sort_condition: any = ref({
 });
 const storage_terminal_data = ref(); //当前分组下的设备信息
 const cacheTerminalData: any = ref([]); //过滤后得数据
+
+// 格式化终端类型
+const formatterTerminalsType = (row: User) => {
+  return useFormatMap.terminalsMap.get(row.type);
+};
 
 watch([terminal_data, storage_terminal_data], ()=> {
     storage_terminal_data.value.forEach((one: any)=> {
@@ -321,12 +330,12 @@ const getCurGroupData = () => {
         );
         storage_terminal_data.value = terminal_group_data.value[index]?.terminals;
     }
-    // cacheTerminalData.value = filterData(storage_terminal_data.value) || []
     sortChange(
         sort_condition.value,
         sort_condition.value.prop,
         sort_condition.value.order
     );
+    console.log(terminal_group_data.value, storage_terminal_data.value,  form.groupData, '终端列表')
 };
 
 // mounted 实例挂载完成后被调用
@@ -335,7 +344,6 @@ onMounted(() => {
         prop: String(sort_map.get(system_configs.value.TerminalOrderbyType)),
         order: "descending",
     };
-    console.log(terminal_group_data.value)
     if (terminal_group_data.value.length > 0) {
         form.current_group = terminal_group_data.value[0].id
     }

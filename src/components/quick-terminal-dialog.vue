@@ -6,7 +6,7 @@
 -->
 <template>
     <div class="com-quick-terminal-dialog">
-        <el-dialog class="com-default-dialog" v-model="props.dialogVisible" width="700px" :close-on-click-modal="false"
+        <el-dialog class="com-default-dialog" v-model="props.dialogVisible" width="800px" :close-on-click-modal="false"
             :close-on-press-escape="false" :before-close="handleClose">
             <template #header="{ close, titleId, titleClass }">
                 <div class="com-dialog-header">

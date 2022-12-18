@@ -47,7 +47,7 @@
                                     <template #default="scope">
                                         <div class="monitor-terminal-name">
                                             <span class="iconfont" :class="terminalStatus.get(scope.row.Status)"></span>
-                                            <span class="terminal-name">{{scope.row.EndPointIP}}</span>
+                                            <span class="terminal-name">{{scope.row.EndPointName}}</span>
                                             <span class="iconfont" :class="{'icon-selected': selectTerminalMac.EndPointMac === scope.row.EndPointMac}"></span>
                                         </div>
                                     </template>
@@ -76,24 +76,29 @@
                     </el-table-column>
                     <el-table-column prop="TaskIniator" label="发起方" />
                     <el-table-column label="响应方">
-                            <!-- {{ scope.row.EndpointIpListArray }} -->
                         <template #default="scope">
-                            <el-dropdown v-if="scope.row.EndPointList && scope.row.EndPointList.length > 1" placement="bottom-start">
+                            <el-dropdown
+                                v-if="scope.row.EndPointList && scope.row.EndPointList.length > 1"
+                                placement="bottom-start"
+                                class="dropdown-link-tabel"
+                            >
                                 <span class="el-dropdown-link">
-                                    <i class="el-icon-arrow-down el-icon--right"></i>
-                                    {{scope.row.EndPointList[0].EndPointName}}
+                                    <span class="dropdown-link-defalut">
+                                        {{scope.row.EndPointList[0].EndPointName}}
+                                    </span>
+                                    <el-icon class="el-icon--right">
+                                        <arrow-down />
+                                    </el-icon>
                                 </span>
-                                <el-dropdown-menu class="EndpointIpListArray"  slot="dropdown">
-                                    <template
-                                        v-for="item in scope.row.EndPointList"
-                                    >
-                                        <el-dropdown-item>
+                                <template #dropdown>
+                                    <el-dropdown-menu class="EndpointIpListArray">
+                                        <el-dropdown-item v-for="item in scope.row.EndPointList">
                                             {{item.EndPointName}}
                                         </el-dropdown-item>
-                                    </template>
-                                </el-dropdown-menu>
-                            </el-dropdown>
-                            <span v-if="scope.row.EndPointList && scope.row.EndPointList.length === 1">
+                                    </el-dropdown-menu>
+                                </template>
+                             </el-dropdown>
+                            <span v-if="scope.row.EndPointList && scope.row.EndPointList.length === 1" class="dropdown-link-defalut">
                                 {{ scope.row.EndPointList[0].EndPointName}}
                             </span>
                         </template>

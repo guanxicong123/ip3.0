@@ -123,12 +123,14 @@ $http.interceptors.response.use(
         } else {
             // 判断后端有返回 message
             const isMsg = Object.prototype.hasOwnProperty.call(
-                response.data.result,
-                'message'
+                response.data,
+                'return_message'
             )
             // 没有就添加上自定义 message
             if (!isMsg) {
-                response.data.result.message = message
+                response.data.return_message = message
+            }else {
+                ElMessage.error(response.data.return_message)
             }
         }
         }

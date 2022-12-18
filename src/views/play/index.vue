@@ -58,7 +58,7 @@
                         @click="form.playlist_status = !form.playlist_status" v-if="form.fullscreen_satus"></i>
                     <i class="iconfont" :class="playModeIcon.get(form.play_model)?.icon"
                         :title="playModeIcon.get(form.play_model)?.title"
-                        @click="handleSwitchTask(playCenterData, 'pre')">
+                        @click="handleSwitchTask(playCenterData, 'PlayMode')">
                     </i>
                     <i class="iconfont icon-prev" title="上一首" @click="handleSwitchTask(playCenterData, 'pre')"></i>
                     <i class="iconfont" :class="playCenterData.TaskID ? 'icon-suspend' : 'icon-play'"
@@ -87,7 +87,7 @@
                                 : handlePlayTask(playCenterData)
                         ">
                     </i>
-                    <el-popover trigger="click">
+                    <el-popover trigger="click" popper-class="play-volume-popper">
                         <template #reference>
                             <i class="iconfont icon-volume2" title="音量"></i>
                         </template>
@@ -107,8 +107,8 @@
                                 <div class="play-table-title theme">
                                     <span>任务列表</span>
                                 </div>
-                                <el-input v-model="form.search" placeholder="任务名称" />
-                                <el-button :icon="Search"></el-button>
+                                <el-input v-model="form.search" placeholder="任务名称" @keyup.enter="handleSearch"/>
+                                <el-button :icon="Search" @click="handleSearch"></el-button>
                             </div>
                             <div class="com-button">
                                 <i class="iconfont icon-add" title="添加" @click="addPlayTask"></i>
@@ -214,6 +214,7 @@ const form = reactive<any>({
     total: 0,
     volume: 0,
 });
+const tableDataAll: any = ref([])
 const selectTaskData: any = ref({}); //选中的任务数据(http)
 const sessionsData: any = computed(() => {
     return store.sessionsArray.filter((item: any) => {
@@ -286,6 +287,7 @@ const playModeIcon = new Map([
         {
             icon: "icon-list-play",
             title: "列表播放",
+            model: 'normal_play',
         },
     ],
     [
@@ -293,6 +295,7 @@ const playModeIcon = new Map([
         {
             icon: "icon-loop-play",
             title: "循环播放",
+            model: 'loop_play',
         },
     ],
     [
@@ -300,6 +303,7 @@ const playModeIcon = new Map([
         {
             icon: "icon-random",
             title: "随机播放",
+            model: 'random_play',
         },
     ],
 ]);
@@ -333,7 +337,26 @@ const addPlayTask = () => {
 const handleSelectionChange = (val: User[]) => {
     multipleSelection.value = val;
 };
-const handleDeleteAll = () => { };
+// 批量删除任务
+const handleDeleteAll = () => {
+    if (multipleSelection.value.length === 0) 
+        return proxy.$message.warning('请选择任务')
+    let serverDataID: any[] = []
+    let LocalDataID: any[] = []
+    multipleSelection.value.forEach((item: any)=> {
+        if (item.type < 10) {
+            serverDataID.push(item.id)
+        }else {
+            LocalDataID.push(item.id)
+        }
+    })
+    Promise.all([
+        handelDelServeRask(serverDataID),
+        handelDelLocalRask(LocalDataID)
+    ]).then(()=> {
+        getTaskAll()
+    })
+};
 // 编辑
 const handleEditButton = () => {
     playConfig.value.handleEditButton();
@@ -341,6 +364,27 @@ const handleEditButton = () => {
 // 获取选中任务详情信息
 const handleSelectionClick = (row: any) => {
     selectTaskData.value = row;
+    // let task = sessionsData.value.filter((item: any) => {
+    //     if (selectTaskData.value?.type < 10) {
+    //         return item.RemoteTaskID === selectTaskData.value.id;
+    //     }
+    //     if (selectTaskData.value?.type >= 10) {
+    //         return item.TaskID === selectTaskData.value.taskid;
+    //     }
+    // })[0]
+    // if (task) {
+    //     let data = {
+    //         company: "BL",
+    //         actioncode: "c2ms_subscribe_task_progress_bar",
+    //         token: "",
+    //         data: {
+    //             TaskID: task[0].TaskID,
+    //         },
+    //         result: 0,
+    //         return_message: "",
+    //     };
+    //     send(data);
+    // }
 };
 // 判断任务是否执行中
 const handleDecideStatus = (row: any) => {
@@ -439,7 +483,7 @@ const handleSwitchTask = (row: any, type: string) => {
             data: {
                 TaskID: row.TaskID,
                 ControlCode: type,
-                ControlValue: type === "progress" ? form.current_duration : "",
+                ControlValue: handleControlValuev(type),
             },
             result: 0,
             return_message: "",
@@ -447,6 +491,17 @@ const handleSwitchTask = (row: any, type: string) => {
         send(data);
     }
 };
+const handleControlValuev = (type: string) => {
+    if (type === "progress") {
+        return form.current_duration
+    }
+    if (type === 'PlayMode') {
+        let model = 0
+        form.play_model === 2 ? model = 0 : model = form.play_model + 1 
+        return playModeIcon.get(model)?.model
+    }
+    return ''
+}
 // 音量调节
 const handleVolumeTask = (volume: any) => {
     if (playCenterData.value?.TaskID) {
@@ -585,29 +640,61 @@ const handleEditTask = (row: any) => {
 // 删除播放任务
 const handleDeleteTask = (row: any) => {
     if (row.type < 10) {
-        proxy.$http.delete("/broadcasting/" + row.id).then((result: any) => {
-            if (result.result === 200) {
-                Promise.all([getBroadcastingAll(), getTaskAll()]).then((data: any) => {
-                    form.data = [...data[0], ...data[1]];
-                });
-            }
-        });
+        handelDelServeRask(row).then(()=> {
+            getTaskAll()
+        })
     } else {
-        proxy.$http1
-            .delete("/task", {
-                data: {
-                    ids: [row.id],
-                },
-            })
-            .then((result: any) => {
-                if (result.result === 200) {
-                    Promise.all([getBroadcastingAll(), getTaskAll()]).then((data: any) => {
-                        form.data = [...data[0], ...data[1]];
-                    });
-                }
-            });
+        handelDelLocalRask(row).then(()=> {
+            getTaskAll()
+        })
     }
 };
+// 删除远程任务
+const handelDelServeRask = (row: any) => {
+    return new Promise((resolve, reject)=> {
+        if (Array.isArray(row) && row.length === 0) return resolve()
+        proxy.$http.delete("/broadcasting/", {
+            data: {
+                ids: Array.isArray(row) ? row : [row.id],
+            }
+        }).then((result: any) => {
+            if (result.result === 200) {
+                resolve()
+            }else {
+                reject()
+            }
+        }).catch(()=> {
+            reject()
+        })
+    })
+}
+// 删除本地任务
+const handelDelLocalRask = (row: any) => {
+    console.log(row)
+    return new Promise((resolve, reject)=> {
+        if (Array.isArray(row) && row.length === 0) return resolve()
+        proxy.$http1.delete("/task", {
+            data: {
+                ids: Array.isArray(row) ? row : [row.id],
+            },
+        }).then((result: any) => {
+            if (result.result === 200) {
+                resolve()
+            }else {
+                reject()
+            }
+        }).catch(()=> {
+            reject()
+        })
+    })
+}
+// 获取所有任务
+const getTaskAll = () => {
+    Promise.all([getBroadcastingAll(), getTaskLocalAll()]).then((data: any) => {
+        tableDataAll.value = [...data[0], ...data[1]];
+        form.data = filterData()
+    });
+}
 // 获取所有播放任务
 const getBroadcastingAll = () => {
     return new Promise((resolve, reject) => {
@@ -620,22 +707,21 @@ const getBroadcastingAll = () => {
     });
 };
 // 获取所有任务(本地)
-const getTaskAll = () => {
+const getTaskLocalAll = () => {
     return new Promise((resolve, reject) => {
-        proxy.$http1
-            .get("/task", {
-                params: {
-                    userID: localStorage.get("LoginUserID"),
-                    serverIP: localStorage.get("serverIP"),
-                },
-            })
-            .then((restlu: any) => {
-                if (Array.isArray(restlu.data)) {
-                    resolve(restlu.data);
-                } else {
-                    resolve([]);
-                }
-            });
+        proxy.$http1.get("/task", {
+            params: {
+                userID: localStorage.get("LoginUserID"),
+                serverIP: localStorage.get("serverIP"),
+            },
+        })
+        .then((restlu: any) => {
+            if (Array.isArray(restlu.data)) {
+                resolve(restlu.data);
+            } else {
+                resolve([]);
+            }
+        });
     });
 };
 // 获取所有系统优先级
@@ -666,6 +752,16 @@ const formatTooltip = (seconds: number) => {
         return "00:00:00";
     }
 };
+const handleSearch = () => {
+    form.data = filterData()
+}
+// 数据过滤
+const filterData = () => {
+    if (form.search === '') return tableDataAll.value
+    return tableDataAll.value.filter((item: any)=> {
+        return item.name.indexOf(form.search) !== -1
+    })
+}
 // 序号
 // const typeIndex = (index: number) => {
 //   return index + (form.currentPage - 1) * form.pageSize + 1;
@@ -673,7 +769,8 @@ const formatTooltip = (seconds: number) => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-    Promise.all([getBroadcastingAll(), getTaskAll(), getPrioritySetting()]).then((data: any) => {
+    Promise.all([getBroadcastingAll(), getTaskLocalAll(), getPrioritySetting()]).then((data: any) => {
+        tableDataAll.value = [...data[0], ...data[1]]
         form.data = [...data[0], ...data[1]];
         handleSelectionClick(form.data[0]);
         multipleTableRef.value!.setCurrentRow(form.data[0]);

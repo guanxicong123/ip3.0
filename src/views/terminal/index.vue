@@ -24,7 +24,7 @@
                         <el-option v-for="(item, keys) in form.terminalStatusOptions" :key="keys" :label="item.label"
                             :value="item.value" />
                     </el-select>
-                    <el-input v-model="form.search" :placeholder="form.search_placeholder" />
+                    <el-input v-model="form.search" :placeholder="form.search_placeholder"  clearable/>
                     <el-button :icon="Search" @click="handleFilter"></el-button>
                 </div>
                 <div class="com-button">
@@ -234,6 +234,9 @@ const $useRouter = useRouter();
 const $useRoute = useRoute();
 const set_dialog = ref(false);
 
+watch($useRoute, (newVal)=> {
+    console.log(newVal.fullPath)
+})
 const select_terminal = ref("3x6");
 
 // 全选
@@ -392,9 +395,13 @@ const functronButtonTask = (type: number) => {
             return item !== form.speaker_terminal;
         }
     );
-    if (filter_initiator_terminals.length < 1) {
+    if (checked_terminals.value.length === 0) {
         startButton.value.status = false
-        return proxy.$message.error("请选择接收终端");
+        return proxy.$message.error("请选择终端");
+    }
+    if (filter_initiator_terminals.length < 1 && checked_terminals.value.length > 0) {
+        startButton.value.status = false
+        return proxy.$message.error("选中终端中不存在可执行任务终端");
     }
     if (type === 6) {
         originateBroadcast(filter_initiator_terminals)
@@ -593,7 +600,6 @@ provide("terminal_group", {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
     getTerminalGroupAll()
-    // $useRouter.push("/terminal/terminal_list");
     form.search_placeholder = "终端名称";
     cleanOnLineTerminal();
     form.select_terminal =

@@ -5,9 +5,9 @@
   @Describe: 根组件
 -->
 <template>
-  <el-config-provider :locale="locale" :size="size">
-    <router-view />
-  </el-config-provider>
+    <el-config-provider :locale="locale" :size="size">
+        <router-view />
+    </el-config-provider>
 </template>
 
 <script lang="ts" setup>
@@ -35,16 +35,16 @@ const languageMap = new Map([
   ["pt", pt],
   ["ko", ko],
 ]);
-const locale = ref();
+const locale = ref(zhCn);
 
-watch(
-  language,
-  (newLang) => {
-    locale.value = languageMap.get(newLang.language);
-  },
-  {
-    // 初始化立即执行
-    immediate: true,
-  }
-);
+// watch(
+//   language,
+//   (newLang) => {
+//       locale.value = languageMap.get(newLang.language);
+//   },
+//   {
+//     // 初始化立即执行
+//     immediate: true,
+//   }
+// );
 </script>

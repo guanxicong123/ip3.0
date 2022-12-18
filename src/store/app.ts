@@ -1,3 +1,4 @@
+import router from "../router";
 export interface AppState {
     language: string;
     size: string;
@@ -44,7 +45,7 @@ export const useAppStore = defineStore({
         //     router.push("/terminal")
         // }
         // 登录成功获取路由权限数据
-        // router.push("/terminal")
+        router.push("/terminal")
         getStore.useSystemStore().getConfigInfo(); //获取系统配置
     },
     // 会话状态

@@ -24,7 +24,6 @@ const registerWebSocket = async () => {
             connecting = false;
             connected = true;
             getStore.useAppStore().changeWsStatus(true);
-            // getStore.useSystemStore().getConfigInfo()
             //初始化请求数据
             if (is_login) {
                 // send(loginData);
@@ -252,6 +251,8 @@ const handlerMsg = (msg: any) => {
             return
         case 'ms2c_create_server_task':
             startRemotePlay(msg.data)
+            return
+        case 'ms2c_subscribe_task_progress_bar': //订阅模式
             return
     }
 };

@@ -56,9 +56,9 @@
                                     <span>
                                         {{ scope.row.name }}
                                     </span>
-                                    <view-components-popover v-if="!scope.row.medias_id"
+                                    <!-- <view-components-popover v-if="!scope.row.medias_id"
                                         :url="'/medias-groups/' + scope.row.id + '/medias'"
-                                    />
+                                    /> -->
                                 </div>
                             </div>
                         </template>

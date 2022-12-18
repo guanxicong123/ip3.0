@@ -331,8 +331,7 @@ const formatData = () => {
 const saveSet = () => {
     proxy.$http1.put("/config/" + basic_configs.value.ID,
         switch_form.value
-    )
-    .then((result: any) => {
+    ).then((result: any) => {
         if (result.result === 200) {
             // ElMessage.success('配置成功')
             $useRouter.push("/");
@@ -399,7 +398,7 @@ const changeConfig = (model: string) => {
     proxy.$http1.put("/config/" + basic_configs.value.ID, 
         send_data
     ).then((result: any) => {
-        if (result.status === 200) {
+        if (result.result === 200) {
             ElMessage.success("配置成功");
             systemStore.updateSystemConfig(send_data);
         }
