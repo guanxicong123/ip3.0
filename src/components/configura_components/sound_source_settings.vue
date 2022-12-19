@@ -68,10 +68,7 @@
           >
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
               <el-form-item label="播放模式" prop="play_model">
-                <el-select
-                  v-model="form.play_model"
-                  @change="handleSelectedConfigure"
-                >
+                <el-select v-model="form.play_model" @change="handleSelectedConfigure">
                   <el-option
                     v-for="(item, keys) in config.setMusicPlayModelOption"
                     :key="keys"
@@ -81,21 +78,12 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col
-              :xs="12"
-              :sm="8"
-              :md="8"
-              :lg="8"
-              :xl="6"
-              v-if="form.play_model === 0"
-            >
-              <el-form-item label="&nbsp;" prop="life_time">
-                <span>持续时间 : {{ form.life_time }}</span>
+            <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="form.play_model === 0">
+              <el-form-item label="&nbsp;" prop="fase_life_time">
+                <span>持续时间 : {{ form.fase_life_time }}</span>
               </el-form-item>
             </el-col>
-            <template
-              v-if="config.musicPlayModelRandomConfig && form.play_model !== 0"
-            >
+            <template v-if="config.musicPlayModelRandomConfig && form.play_model !== 0">
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <el-radio
                   v-model="form.selete_time_or_number"
@@ -165,10 +153,7 @@
               v-if="config.soundSourceQuality"
             >
               <el-form-item label="采集音质" prop="sound_quality">
-                <el-select
-                  v-model="form.sound_quality"
-                  @change="handleSelectedConfigure"
-                >
+                <el-select v-model="form.sound_quality" @change="handleSelectedConfigure">
                   <el-option
                     v-for="(item, keys) in config.setSoundQualityOption"
                     :key="keys"
@@ -247,10 +232,7 @@
           <template v-if="config.musicPlayModel">
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
               <el-form-item label="播放模式" prop="play_model">
-                <el-select
-                  v-model="form.play_model"
-                  @change="handleSelectedConfigure"
-                >
+                <el-select v-model="form.play_model" @change="handleSelectedConfigure">
                   <el-option
                     v-for="(item, keys) in config.setMusicPlayModelOption"
                     :key="keys"
@@ -260,21 +242,12 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col
-              :xs="12"
-              :sm="8"
-              :md="8"
-              :lg="8"
-              :xl="6"
-              v-if="form.play_model === 0"
-            >
+            <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="form.play_model === 0">
               <el-form-item label="&nbsp;" prop="life_time">
                 <span>持续时间 : {{ form.life_time }}</span>
               </el-form-item>
             </el-col>
-            <template
-              v-if="config.musicPlayModelRandomConfig && form.play_model !== 0"
-            >
+            <template v-if="config.musicPlayModelRandomConfig && form.play_model !== 0">
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <el-radio
                   v-model="form.selete_time_or_number"
@@ -354,10 +327,7 @@
             v-if="config.soundSourceQuality"
           >
             <el-form-item label="采集音质" prop="sound_quality">
-              <el-select
-                v-model="form.sound_quality"
-                @change="handleSelectedConfigure"
-              >
+              <el-select v-model="form.sound_quality" @change="handleSelectedConfigure">
                 <el-option
                   v-for="(item, keys) in config.setSoundQualityOption"
                   :key="keys"
@@ -406,12 +376,7 @@
           </el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane
-        label="文本播放"
-        :name="5"
-        lazy
-        v-if="config.isSelectTextPlay"
-      >
+      <el-tab-pane label="文本播放" :name="5" lazy v-if="config.isSelectTextPlay">
         <el-row :gutter="60">
           <el-col :span="24">
             <el-form-item label="文本内容" prop="txt" style="width: 100%">
@@ -479,10 +444,7 @@
           <template v-if="form.is_play">
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
               <el-form-item label="播放语音" prop="sound">
-                <el-select
-                  v-model="form.sound"
-                  @change="handleSelectedConfigure"
-                >
+                <el-select v-model="form.sound" @change="handleSelectedConfigure">
                   <el-option
                     v-for="(item, keys) in playVoiceOption"
                     :key="keys"
@@ -494,10 +456,7 @@
             </el-col>
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
               <el-form-item label="播放语速" prop="speed">
-                <el-select
-                  v-model="form.speed"
-                  @change="handleSelectedConfigure"
-                >
+                <el-select v-model="form.speed" @change="handleSelectedConfigure">
                   <el-option
                     v-for="item in playSpeedOption"
                     :key="item"
@@ -572,9 +531,7 @@
       />
       <template #footer>
         <div class="com-dialog-footer">
-          <el-button plain @click="form.mediaDialogVisible = false">
-            关闭
-          </el-button>
+          <el-button plain @click="form.mediaDialogVisible = false"> 关闭 </el-button>
         </div>
       </template>
     </el-dialog>
@@ -609,8 +566,14 @@ const parentData = defineProps([
 ]);
 
 const user = getStore.useUserStore();
+const TTS = getStore.useTTSStore();
 // 计算属性 computed
-const userStore = computed(() => user.user);
+const userStore = computed(() => {
+  return user.user;
+});
+const TTSStore = computed(() => {
+  return TTS.allTTS;
+});
 
 const form = reactive<any>({
   activeName: 4,
@@ -622,6 +585,8 @@ const form = reactive<any>({
     name: "",
     type: 0,
   }, // 快捷音源
+  old_sound_source_data: {}, // 存储快捷音源
+  fase_life_time: "00:00:00", // 快捷音源-持续时间
   media: {
     name: "",
   }, // 音乐文件
@@ -694,7 +659,8 @@ const handleTabClick = (tab: TabsPaneContext) => {
     form.sound_source.type = form.sound_source_type;
   } else {
     emit("requestType", tab.paneName);
-    form.sound_source.type = Number(tab.paneName);
+    form.sound_source.type =
+      tab.paneName != 4 ? Number(tab.paneName) : form.old_sound_source_data.type;
   }
   handleSelectedConfigure();
 };
@@ -752,9 +718,11 @@ const handleRequestType = (data: number) => {
 };
 // 处理选择快捷音源组件的数据
 const handleRequestConfigure = (data: any) => {
+  form.old_sound_source_data = data;
   form.sound_source.id = data.id;
   form.sound_source.name = data.name;
   form.sound_source.type = data.type;
+  form.fase_life_time = usePublicMethod.convertSongDuration(data.length);
   emit("requestSoundSourceID", form.sound_source.id);
   handleSelectedConfigure();
 };
@@ -802,7 +770,7 @@ const handleSelectedConfigure = () => {
       is_play: form.is_play,
       sound: form.sound,
       speed: form.speed,
-      play_number: form.play_number,
+      play_number: form.broadcast_number,
       txt: form.txt,
       led_display_cfg_id: form.led_display_cfg_id,
       type: form.sound_source.type,
@@ -834,8 +802,8 @@ const getAllDisplayAttribute = async () => {
 
 // 监听变化
 watch(
-  () => [parentData, userStore.value?.user.users_config],
-  ([newData, newMode]) => {
+  () => [parentData, userStore.value?.user.users_config, TTSStore.value],
+  ([newData, newMode, newTTS]) => {
     // 编辑回传的音源类型
     if (newData.responseType) {
       form.activeName =
@@ -845,10 +813,7 @@ watch(
       emit("requestType", newData.responseType);
     }
     // 编辑回传的音乐播放数据
-    if (
-      parentData.responseMedia.length > 0 ||
-      parentData.responseGroups.length > 0
-    ) {
+    if (parentData.responseMedia.length > 0 || parentData.responseGroups.length > 0) {
       let media_name = "";
       let group_name = "";
       for (let index = 0; index < parentData.responseMedia.length; index++) {
@@ -865,8 +830,7 @@ watch(
     }
     // 编辑回传的音源
     if (newData.responseSoundSource) {
-      form.sound_source.type =
-        newData.responseSoundSource.type || newData.responseType;
+      form.sound_source.type = newData.responseSoundSource.type || newData.responseType;
       Object.keys(form).forEach((item) => {
         Object.keys(newData.responseSoundSource).forEach((row) => {
           if (item === row) {
@@ -884,10 +848,7 @@ watch(
       }
       // 声卡采集
       if (
-        Object.prototype.hasOwnProperty.call(
-          newData.responseSoundSource,
-          "sound_card"
-        )
+        Object.prototype.hasOwnProperty.call(newData.responseSoundSource, "sound_card")
       ) {
         form.old_sound_source_type = 2;
         form.sound_source_acquisition = {
@@ -901,12 +862,20 @@ watch(
           terminals_name: newData.responseSoundSource.terminals_name,
         };
       }
+      // 文本播放
+      if (form.sound_source.type == 5) {
+        form.broadcast_number = newData.responseSoundSource.play_number;
+      }
     }
     // 编辑回传的快捷音源
-    if (newData.responseFastSoundSource) {
+    if (newData.responseFastSoundSource?.id) {
       form.sound_source.id = newData.responseFastSoundSource.id;
       form.sound_source.name = newData.responseFastSoundSource.name;
       form.sound_source.type = newData.responseFastSoundSource.type;
+      form.fase_life_time = usePublicMethod.convertSongDuration(
+        newData.responseFastSoundSource.length
+      );
+      form.old_sound_source_data.type = newData.responseFastSoundSource.type;
     }
     // 界面模式
     if (newMode) {
@@ -920,6 +889,10 @@ watch(
         }
       }
     }
+    // 播放语音
+    if (newTTS) {
+      playVoiceOption.value = newTTS;
+    }
     handleSelectedConfigure();
   },
   {
@@ -932,10 +905,7 @@ watch(
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   // 更新插件配置
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   // 设置默认activeName
   if (parentData.responseActiveName) {
     form.activeName = parentData.responseActiveName;
@@ -951,6 +921,11 @@ onMounted(() => {
   // 播放语速
   for (let i = 1; i < 9; i++) {
     playSpeedOption.value.push(i);
+  }
+  // 播放语音
+  playVoiceOption.value = TTSStore.value;
+  if (playVoiceOption.value.length > 0) {
+    form.sound = playVoiceOption.value[0].name;
   }
   getAllDisplayAttribute();
   form.view_mode = userStore.value?.user.users_config.view_mode;

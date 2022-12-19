@@ -152,8 +152,8 @@ const emit = defineEmits([
 const parentData = defineProps([
   "myConfig", // config 配置,将对应覆盖 config
   "responseWeekData", // 编辑界面传递回来的周期数据，用于展示组件的已选择状态
-  "responseMonthData", // 编辑界面传递回来的周期数据，用于展示组件的已选择状态
-  "responseDayData", // 编辑界面传递回来的周期数据，用于展示组件的已选择状态
+  "responseMonthData", // 编辑界面传递回来的月期数据，用于展示组件的已选择状态
+  "responseDayData", // 编辑界面传递回来的日期数据，用于展示组件的已选择状态
   "responseType", // 编辑界面传递回来的数据类型，用于展示组件的已选择状态
   "minDay", // 最小日期
   "maxDay", // 最大日期
@@ -400,7 +400,9 @@ const handleEditMonthData = () => {
 };
 const handleEditDayData = async () => {
   await parentData?.responseDayData.forEach((item: { dates: string }) => {
-    handleSelectedDate(item.dates);
+    if (item.dates) {
+      handleSelectedDate(item.dates);
+    }
   });
   handleUpdateRequestDayData();
 };

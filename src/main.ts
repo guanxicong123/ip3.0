@@ -32,18 +32,13 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);
 }
 
-const global = app.config.globalProperties //原型链
-global.$md5 = Md5
-global.$message = ElMessage
+const global = app.config.globalProperties; //原型链
+global.$md5 = Md5;
+global.$message = ElMessage;
 
-global.$http = reactive(
-  $http
-)
-global.$http1 = reactive(
-  $http1
-)
+global.$http = reactive($http);
+global.$http1 = reactive($http1);
 // axios.defaults.withCredentials = true
-
 
 app
   .use(store)

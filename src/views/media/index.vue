@@ -88,7 +88,7 @@
                         @click.stop="handleAddUploadGroup(item)"
                       ></i>
                       <i
-                        class="iconfont icon-cancel-download red"
+                        class="iconfont icon-delete"
                         title="删除"
                         v-if="
                           item.id > 2 &&
@@ -257,14 +257,12 @@
       @success="handleSuccessCallback"
     >
     </new-edit>
-    <!-- 下载文件 -->
-    <iframe src="" ref="downloadRef" style="display: none"></iframe>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ElTable, ElMessage, ElMessageBox } from "element-plus";
-import { ArrowRight, Search } from "@element-plus/icons-vue";
+import { Search } from "@element-plus/icons-vue";
 import { MeidaService } from "@/utils/api/media";
 import { onBeforeRouteLeave } from "vue-router";
 import usePublicMethod from "@/utils/global/index";
@@ -304,8 +302,6 @@ const form = reactive<any>({
   firstLoad: true, // 第一次进入界面加载
   downloading: false, // 等待下载状态
 });
-// 路由
-let $useRouter = useRouter();
 // 处理点击切换文件夹
 const handleClickFolder = (item: any) => {
   form.currentFolder = item;
@@ -313,13 +309,12 @@ const handleClickFolder = (item: any) => {
     id: item.id,
     name: item.name,
   };
-  localStorage.set("folder", JSON.stringify(folder));
+  localStorage.set("folder", folder);
   handleGetOnePageData();
 };
 // 获取refs
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
-const downloadRef = ref();
 // 处理删除媒体文件夹
 const handleDeleteMediaGroup = (row: any) => {
   ElMessageBox.confirm("即将删除, 是否继续？", "提示", {
@@ -553,9 +548,15 @@ const handleDownloadOneFile = (id: number) => {
   MeidaService.getDownloadOneMeida(id)
     .then((result) => {
       form.downloading = false;
-      const isHasURL = Object.prototype.hasOwnProperty.call(result.data, "url");
+      const isHasURL = Object.prototype.hasOwnProperty.call(result?.data, "url");
       if (isHasURL) {
-        downloadRef.value.src = result.data.url;
+        const url = "http:/" + result.data.url;
+        const index = result.data.url.lastIndexOf("/");
+        const fileName = result.data.url.substring(index + 1, url.length);
+        window.electronAPI.send("download", {
+          downloadPath: url, // 下载链接
+          fileName: fileName, // 下载文件名，需要包含后缀名
+        });
       } else {
         ElMessage({
           type: "error",
@@ -584,9 +585,15 @@ const handlePackageDownloadFile = () => {
   })
     .then((result) => {
       form.downloading = false;
-      const isHasURL = Object.prototype.hasOwnProperty.call(result.data, "url");
+      const isHasURL = Object.prototype.hasOwnProperty.call(result?.data, "url");
       if (isHasURL) {
-        downloadRef.value.src = result.data.url;
+        const url = "http:/" + result.data.url;
+        const index = result.data.url.lastIndexOf("/");
+        const fileName = result.data.url.substring(index + 1, url.length);
+        window.electronAPI.send("download", {
+          downloadPath: url, // 下载链接
+          fileName: fileName, // 下载文件名，需要包含后缀名
+        });
       } else {
         ElMessage({
           type: "error",
@@ -616,7 +623,7 @@ watch(
       // 刷新页面时，获取下当前媒体文件夹id
       const currentFolder = localStorage.get("folder") || "";
       if (currentFolder) {
-        form.currentFolder = JSON.parse(currentFolder);
+        form.currentFolder = currentFolder;
       }
       form.firstLoad = false;
       handleClickFolder(form.currentFolder);
@@ -626,6 +633,7 @@ watch(
       handleDefaultGet();
       return upload.updateUploadCompleted(false);
     }
+    console.log(userStore.value);
   },
   {
     // 初始化立即执行
@@ -642,6 +650,30 @@ onBeforeRouteLeave(() => {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   handleGetAllBellsGroups();
+  // 下载正在进行中
+  window.electronAPI.on("download-progress", (event: any, data: any) => {
+    console.log(data);
+  });
+  // 下载成功
+  window.electronAPI.on("download-done", (event: any, data: any) => {
+    let message = "下载成功";
+    ElMessage({
+      type: "success",
+      message: message,
+      grouping: true,
+    });
+    console.log(data);
+  });
+  // 下载失败
+  window.electronAPI.on("download-failed", (event: any, data: any) => {
+    let message = "下载失败";
+    ElMessage({
+      type: "error",
+      message: message,
+      grouping: true,
+    });
+    console.log(data);
+  });
 });
 </script>
 

@@ -6,11 +6,7 @@
 -->
 <template>
   <div class="com-index">
-    <div
-      class="com-main"
-      v-loading="form.loading"
-      element-loading-text="Loading..."
-    >
+    <div class="com-main" v-loading="form.loading" element-loading-text="Loading...">
       <div class="com-table">
         <el-scrollbar>
           <el-form
@@ -87,14 +83,8 @@
                   </el-form-item>
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                  <el-form-item
-                    label="优先级"
-                    prop="priority"
-                    class="custom-form-input"
-                  >
-                    <div class="custom-number red" title="任务优先级-定时任务">
-                      70
-                    </div>
+                  <el-form-item label="优先级" prop="priority" class="custom-form-input">
+                    <div class="custom-number red" title="任务优先级-定时任务">70</div>
                     <el-input-number
                       v-model="ruleForm.priority"
                       :min="1"
@@ -113,10 +103,7 @@
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                   <el-form-item label="灯光配置" prop="terminals_light_id">
-                    <el-select
-                      v-model="ruleForm.terminals_light_id"
-                      placeholder="请选择"
-                    >
+                    <el-select v-model="ruleForm.terminals_light_id" placeholder="请选择">
                       <el-option
                         v-for="(item, keys) in form.lightData"
                         :key="keys"
@@ -128,10 +115,7 @@
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                   <el-form-item label="LED配置" prop="led_config_id">
-                    <el-select
-                      v-model="ruleForm.led_config_id"
-                      placeholder="请选择"
-                    >
+                    <el-select v-model="ruleForm.led_config_id" placeholder="请选择">
                       <el-option
                         v-for="(item, keys) in form.ledData"
                         :key="keys"
@@ -141,14 +125,7 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
-                <el-col
-                  :xs="12"
-                  :sm="8"
-                  :md="8"
-                  :lg="8"
-                  :xl="6"
-                  v-if="form.type !== 1"
-                >
+                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="form.type !== 1">
                   <el-form-item label="执行时间" prop="execute_time">
                     <el-time-picker
                       v-model="ruleForm.execute_time"
@@ -189,22 +166,16 @@
                           type="primary"
                           text
                           @click="
-                            form.isShowAdvancedVisible =
-                              !form.isShowAdvancedVisible
+                            form.isShowAdvancedVisible = !form.isShowAdvancedVisible
                           "
                         >
                           高级>>
                         </el-button>
                       </template>
                       <div class="com-form custom-execute-time-range">
-                        <p style="margin-bottom: 10px">
-                          增加固定间隔的执行时间点 :
-                        </p>
+                        <p style="margin-bottom: 10px">增加固定间隔的执行时间点 :</p>
                         <el-form label-position="top" :model="form">
-                          <el-form-item
-                            label="执行时间点范围"
-                            prop="execute_time_range"
-                          >
+                          <el-form-item label="执行时间点范围" prop="execute_time_range">
                             <el-time-picker
                               is-range
                               v-model="form.execute_time_range"
@@ -215,10 +186,7 @@
                               end-placeholder="结束时间"
                             />
                           </el-form-item>
-                          <el-form-item
-                            label="间隔时间(分钟)"
-                            prop="interval_time"
-                          >
+                          <el-form-item label="间隔时间(分钟)" prop="interval_time">
                             <el-input-number
                               v-model="form.interval_time"
                               :min="1"
@@ -232,8 +200,7 @@
                           <el-button
                             plain
                             @click="
-                              form.isShowAdvancedVisible =
-                                !form.isShowAdvancedVisible
+                              form.isShowAdvancedVisible = !form.isShowAdvancedVisible
                             "
                           >
                             关闭
@@ -257,10 +224,7 @@
                   <div class="com-ir-bg custom-execute-time">
                     <el-scrollbar>
                       <ul>
-                        <li
-                          v-for="(item, index) in form.executionTimeData"
-                          :key="index"
-                        >
+                        <li v-for="(item, index) in form.executionTimeData" :key="index">
                           <el-time-picker
                             v-model="item.value"
                             format="HH:mm:ss"
@@ -367,13 +331,8 @@
             </div>
           </el-form>
           <div class="com-form-button">
-            <el-button plain @click="usePublicMethod.clickBack()">
-              取消
-            </el-button>
-            <el-button
-              type="primary"
-              @click="handleSubmitFormSave(ruleFormRef)"
-            >
+            <el-button plain @click="usePublicMethod.clickBack()"> 取消 </el-button>
+            <el-button type="primary" @click="handleSubmitFormSave(ruleFormRef)">
               保存
             </el-button>
           </div>
@@ -455,9 +414,7 @@ const disabledStartDate = (time: { getTime: () => number }) => {
 const disabledEndDate = (time: { getTime: () => number }) => {
   let beginEndDate = ruleForm.start_date;
   if (beginEndDate) {
-    return (
-      time.getTime() < usePublicMethod.dateConversionToTimestamp(beginEndDate)
-    );
+    return time.getTime() < usePublicMethod.dateConversionToTimestamp(beginEndDate);
   }
 };
 // 路由
@@ -501,9 +458,7 @@ const validateEmpty = (rule: any, value: any, callback: any) => {
 const rules = reactive({
   name: [{ validator: validateName, trigger: "blur", required: true }],
   start_date: [{ validator: validateEmpty, trigger: "blur", required: true }],
-  execute_time: [
-    { validator: validateEmpty, trigger: "change", required: true },
-  ],
+  execute_time: [{ validator: validateEmpty, trigger: "change", required: true }],
 });
 // 处理音源设置返回的数据
 const handleRequestSoundType = (data: number) => {
@@ -608,11 +563,9 @@ const handleUnique = (arr: any[]) => {
 };
 // 处理删除多选执行时间
 const handleDeleteExecutionTime = (row: number) => {
-  form.executionTimeData = form.executionTimeData.filter(
-    (val: any, key: number) => {
-      return row !== key;
-    }
-  );
+  form.executionTimeData = form.executionTimeData.filter((val: any, key: number) => {
+    return row !== key;
+  });
   form.multiple_execute_time =
     form.executionTimeData.length > 0 ? form.executionTimeData[0].value : "";
 };
@@ -629,10 +582,8 @@ const batchAddExecutionTime = () => {
   for (let i = 0; i <= num; i++) {
     let d = new Date(start + interval * i);
     let hour = d.getHours() < 10 ? "0" + d.getHours() : "" + d.getHours();
-    let minutes =
-      d.getMinutes() < 10 ? "0" + d.getMinutes() : "" + d.getMinutes();
-    let seconds =
-      d.getSeconds() < 10 ? "0" + d.getSeconds() : "" + d.getSeconds();
+    let minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : "" + d.getMinutes();
+    let seconds = d.getSeconds() < 10 ? "0" + d.getSeconds() : "" + d.getSeconds();
     let time = hour + ":" + minutes + ":" + seconds;
     form.executionTimeData.push({
       value: time,
@@ -663,9 +614,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
       let isQuick = form.type == 4 && ruleForm.fast_sound_id == 0;
       // 音源设置 - 音乐播放
       let isMusic =
-        form.type === 1 &&
-        form.medias.length < 1 &&
-        form.medias_groups.length < 1;
+        form.type === 1 && form.medias.length < 1 && form.medias_groups.length < 1;
       // 音源设置 - 音源采集
       let isSound =
         (form.type === 2 && form.sound_source.sound_card == "") ||
@@ -675,10 +624,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
         return handleReturnError("请选择音源");
       }
       // 重复日期
-      if (
-        form.request_weeks.length < 1 &&
-        form.request_assign_dates.length < 1
-      ) {
+      if (form.request_weeks.length < 1 && form.request_assign_dates.length < 1) {
         return handleReturnError("请选择重复日期");
       }
       // 终端或分组
@@ -696,8 +642,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
       if (
         form.type === 2 ||
         form.type === 3 ||
-        (form.type === 4 &&
-          (form.sound_source.type == 2 || form.sound_source.type == 3))
+        (form.type === 4 && (form.sound_source.type == 2 || form.sound_source.type == 3))
       ) {
         const start_time = ruleForm.execute_time.replace(/:/g, "");
         const end_time = form.sound_source.end_time.replace(/:/g, "");
@@ -730,7 +675,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
           form.id
         )
           .then((result) => {
-            if (result.result?.id) {
+            if (result.data?.id) {
               ElMessage({
                 type: "success",
                 message: "编辑成功",
@@ -765,7 +710,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
           })
         )
           .then((result) => {
-            if (result.result?.id) {
+            if (result.data?.id) {
               ElMessage({
                 type: "success",
                 message: "新建成功",

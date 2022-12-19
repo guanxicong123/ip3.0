@@ -10,6 +10,14 @@ const validChannels = [
   "minimize",
   "maximize",
   "unmaximize",
+  "will-download",
+  "download",
+  "done",
+  "updated",
+  "download-progress",
+  "download-done",
+  "download-cancell",
+  "download-failed",
 ];
 contextBridge.exposeInMainWorld("electronAPI", {
   send: (channel: string, data?: any) => {

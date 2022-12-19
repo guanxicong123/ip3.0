@@ -94,6 +94,7 @@
                 </el-card>
                 <el-card>
                   {{ props.row.type == 1 || props.row.type == 4 ? "播放模式:" : "音质:" }}
+                  :
                   {{
                     props.row.type == 1 || props.row.type == 4
                       ? playModelMap.get(props.row.sound_source?.play_model)
@@ -214,31 +215,54 @@
                   :fastSoundID="scope.row.fast_sound_id"
                 />
               </template>
-              <template
-                v-if="
-                  scope.row.type === 2 ||
-                  (scope.row.type === 4 && scope.row.sound_source.type === 2)
-                "
-              >
+              <!-- 音源采集 -->
+              <template v-if="scope.row.type === 23">
+                <!-- 声卡采集 or 终端采集 -->
                 <i
                   class="iconfont icon-view-collection-terminal"
-                  :title="scope.row.sound_source?.sound_card"
-                  v-if="scope.row.sound_source?.sound_card"
+                  :title="
+                    scope.row.sound_source?.sound_card ||
+                    scope.row.sound_source?.terminals_name
+                  "
+                  v-if="
+                    scope.row.sound_source?.sound_card ||
+                    scope.row.sound_source?.terminals_name
+                  "
                 ></i>
-                <span v-else class="red"> 没有声卡 </span>
+                <span
+                  class="red"
+                  v-if="
+                    !scope.row.sound_source?.sound_card &&
+                    !scope.row.sound_source?.terminals_name
+                  "
+                >
+                  没有音源
+                </span>
               </template>
-              <template
-                v-if="
-                  scope.row.type === 3 ||
-                  (scope.row.type === 4 && scope.row.sound_source.type === 3)
-                "
-              >
+              <!-- 快捷音源 -->
+              <template v-if="scope.row.type === 4">
+                <!-- 声卡采集 or 终端采集 -->
                 <i
                   class="iconfont icon-view-collection-terminal"
-                  :title="scope.row.sound_source?.terminals_name"
-                  v-if="scope.row.sound_source?.terminals_name"
+                  :title="
+                    scope.row.fast_sound?.fast_source?.sound_card ||
+                    scope.row.fast_sound?.fast_source?.terminals_name
+                  "
+                  v-if="
+                    scope.row.fast_sound?.fast_source?.sound_card ||
+                    scope.row.fast_sound?.fast_source?.terminals_name
+                  "
                 ></i>
-                <span v-else class="red"> 没有采集终端 </span>
+                <span
+                  class="red"
+                  v-if="
+                    scope.row.sound_source?.type != 1 &&
+                    !scope.row.fast_sound?.fast_source?.sound_card &&
+                    !scope.row.fast_sound?.fast_source?.terminals_name
+                  "
+                >
+                  没有音源
+                </span>
               </template>
             </template>
           </el-table-column>
@@ -319,8 +343,6 @@
       @show="handleCloneDialogVisible"
       @success="handleCloneSuccessCallback"
     />
-    <!-- 导出表格 -->
-    <iframe src="" ref="downloadRef" style="display: none"></iframe>
   </div>
 </template>
 
@@ -370,7 +392,6 @@ const $useRoute = useRoute();
 // 获取refs
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
-const downloadRef = ref();
 // 当前已选择表格数据
 const handleSelectionChange = (val: User[]) => {
   multipleSelection.value = val;
@@ -564,7 +585,7 @@ const handleExportExcel = () => {
       form.exporting = false;
       const isHasURL = Object.prototype.hasOwnProperty.call(result.result, "url");
       if (isHasURL) {
-        downloadRef.value.src = result.result.url;
+        console.log(result.result.url);
       } else {
         ElMessage({
           type: "error",

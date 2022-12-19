@@ -168,10 +168,10 @@ const parentData = defineProps([
   "responseType", // 编辑界面传递回来的音源类型，用于展示组件的已选择状态
 ]);
 
-const TTS = getStore.usePlayStore();
+const TTS = getStore.useTTSStore();
 // 计算属性 computed
 const TTSStore = computed(() => {
-  return TTS.playVoiceData;
+  return TTS.allAudioCard;
 });
 
 const form = reactive<any>({

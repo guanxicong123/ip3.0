@@ -249,13 +249,12 @@
     </div>
     <!-- 导出日志 -->
     <export-log :isShow="form.logDialogVisible" @show="handleLogDialogVisible" />
-    <iframe src="" ref="downloadRef" style="display: none"></iframe>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ElMessage, TabsPaneContext, ElMessageBox } from "element-plus";
-import { ArrowRight, Search } from "@element-plus/icons-vue";
+import { Search } from "@element-plus/icons-vue";
 import { UsersService } from "@/utils/api/users/index";
 import $http from "@/utils/axios/index";
 
@@ -268,7 +267,6 @@ const intercomLog = defineAsyncComponent(() => import("./intercom/index.vue"));
 const ttsLog = defineAsyncComponent(() => import("./tts/index.vue"));
 
 // refs
-const downloadRef = ref();
 const systemRef = ref();
 const intercomRef = ref();
 const TTSRef = ref();
@@ -376,7 +374,13 @@ const taskOperationOptions = [
 // 处理导出日志弹窗的响应展示/关闭
 const handleLogDialogVisible = (value: boolean, src: any) => {
   form.logDialogVisible = value;
-  downloadRef.value.src = src;
+  const url = "http:/" + src;
+  const index = src.lastIndexOf("/");
+  const fileName = src.substring(index + 1, url.length);
+  window.electronAPI.send("download", {
+    downloadPath: url, // 下载链接
+    fileName: fileName, // 下载文件名，需要包含后缀名
+  });
 };
 // 处理点击tabs选项
 const handleClick = (tab: TabsPaneContext) => {

@@ -123,7 +123,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
       if (form.id > 0) {
         await MeidaService.putMeidaGroup(ruleForm, form.id)
           .then((result) => {
-            if (result.result?.id) {
+            if (result.data?.id) {
               emit("show", false);
               emit("success");
               ElMessage({
@@ -147,7 +147,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
       } else {
         await MeidaService.postMeidaGroup(ruleForm)
           .then((result) => {
-            if (result.result?.id) {
+            if (result.data?.id) {
               emit("show", false);
               emit("success");
               ElMessage({

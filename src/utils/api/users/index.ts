@@ -65,4 +65,14 @@ export class UsersService {
       },
     });
   }
+
+  static async getUsersMe(params: any): Promise<any> {
+    return $http("/me", {
+      method: "get",
+      responseType: "json",
+      params: {
+        ...params,
+      },
+    });
+  }
 }

@@ -143,8 +143,9 @@ const form = reactive<any>({
   url: "/",
   files: [], // 上传文件数据
   md5Finish: 0,
-  accept: "audio/mpeg, audio/mp3, audio/ogg, audio/wav", // 表单的accept属性, MIME type
-  extensions: "mp3", // 允许上传的文件后缀
+  accept:
+    "audio/mpeg,audio/mp3,audio/ogg,audio/wav,audio/aac,audio/flac,audio/amr,audio/opus", // 表单的accept属性, MIME type
+  extensions: "mpeg,mp3,ogg,wav,aac,flac,amr,opus", // 允许上传的文件后缀
   hasUploadError: false,
   headers: {
     authorization: localStorage.get("userToken"),
@@ -203,10 +204,22 @@ const handleRemoveFiles = (item: any) => {
   form.showFilesInfo = form.showFilesInfo.filter((row: { name: any }) => {
     return item.name != row.name;
   });
+  form.files = form.files.filter((row: { name: any }) => {
+    return item.name != row.name;
+  });
+};
+// 初始化上传文件的状态参数值
+const handleInitializationParameters = () => {
+  form.speed = 0;
+  form.errorFiles = 0;
+  form.successFiles = 0;
+  form.totalFilesLength = 0;
+  form.totalProgress = 0;
 };
 // 清空列表
 const handleClearList = () => {
   form.showFilesInfo = [];
+  handleInitializationParameters();
   clearFiles(form.currentSelected.id.toString());
 };
 // 清除上传文件队列数据
@@ -225,6 +238,10 @@ const inputFilter = (
 ) => {
   if (newFile && !oldFile) {
     const size = newFile.size || 0;
+    // 自定义当前文件 body 或 query 附加内容
+    newFile.data = {
+      type: newFile.type,
+    };
     // 去掉大于500M文件
     if (size > 500 * 1024 * 1024) {
       form.isFileLarge = true;
@@ -298,10 +315,7 @@ const inputFile = (
       form.showFilesInfo = form.files;
     }
     // 进度状态
-    form.speed = 0;
-    form.errorFiles = 0;
-    form.successFiles = 0;
-    form.totalFilesLength = 0;
+    handleInitializationParameters();
     if (form.files.length) {
       form.files.forEach((file: { speed: any; error: any; success: any }) => {
         form.totalFilesLength = form.files.length;
@@ -331,7 +345,18 @@ const inputFile = (
     }
   }
   if (!newFile && oldFile) {
-    // remove
+    // remove-更新状态
+    form.totalFilesLength -= 1;
+    if (oldFile.error && form.errorFiles > 0) {
+      form.errorFiles -= 1;
+    }
+    if (oldFile.success && form.successFiles > 0) {
+      form.successFiles -= 1;
+    }
+    if (form.errorFiles == 0 && form.successFiles == 0) {
+      form.speed = 0;
+      form.totalProgress = 0;
+    }
     console.log("remove", oldFile);
   }
   // 自动上传
@@ -367,25 +392,36 @@ const inputFile = (
               form.currentSelected.id
             )
               .then((result) => {
+                // 另外的文件夹里已存在文件，自行造数据显示上传成功状态
                 if (result.data?.id) {
                   newFile.success = true;
                   newFile.progress = "100";
                   newFile.response = result;
                   form.successFiles += 1;
+                  form.totalFilesLength += 1;
                   const num = (form.successFiles / form.totalFilesLength) * 100;
                   // num.toFixed(2)四舍五入, 不四舍五入 Math.floor(num)
                   form.totalProgress = num.toFixed(2);
-                } else {
-                  newFile.tips = result.result.message;
+                  form.showFilesInfo.push(newFile);
+                  form.speed = 4194304;
+                  upload.updateUploadCompleted(true);
                 }
-                form.md5Finish++;
-                autoUpload();
+                // 文件夹内已存在文件，则提示，否则上传
+                if (result.data == true) {
+                  ElMessage({
+                    type: "error",
+                    message: newFile.name + "-文件已存在",
+                    grouping: true,
+                  });
+                  handleRemoveFiles(newFile);
+                  return;
+                } else {
+                  form.md5Finish++;
+                  autoUpload();
+                }
               })
               .catch((error) => {
-                form.md5Finish++;
-                autoUpload();
                 console.log(error, "error");
-                newFile.tips = error.result.message;
               });
           }
         };
