@@ -173,7 +173,7 @@
                       />
                       <div class="select-button">
                         <i
-                          class="iconfont icon-execution-failed"
+                          class="iconfont icon-clear"
                           title="清除全部执行时间"
                           @click="handleClearAllExecutionTime"
                         ></i>

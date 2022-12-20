@@ -190,14 +190,25 @@
                 <span class="iconfont icon-add" ref="iconAdd" style="display: none"></span>
             </template>
         </el-upload>
-        <select-media-dialog v-if="mediaDialogVisible" v-model:dialogVisible="mediaDialogVisible"
-            :responseMedia="responseMedia" :responseeMediaGroups="responseeMediaGroups" @uploadMedia="uploadMedia">
+        <select-media-dialog
+            v-if="mediaDialogVisible"
+            v-model:dialogVisible="mediaDialogVisible"
+            :responseMedia="responseMedia"
+            :responseeMediaGroups="responseeMediaGroups"
+            @uploadMedia="uploadMedia"
+        >
         </select-media-dialog>
-        <quick-terminal-dialog v-model:dialogVisible="terminaDialogVisible"
-            @handleSelectedConfigure="handleSelectedConfigure">
+        <quick-terminal-dialog 
+            v-model:dialogVisible="terminaDialogVisible"
+            @handleSelectedConfigure="handleSelectedConfigure"
+        >
         </quick-terminal-dialog>
-        <terminals-select-dialog v-if="terminaSelectVisible" v-model:dialogVisible="terminaSelectVisible"
-            :taskDataDetailed="taskDataDetailed" @handleSelectedTerminals="handleSelectedTerminals">
+        <terminals-select-dialog
+            v-if="terminaSelectVisible"
+            v-model:dialogVisible="terminaSelectVisible"
+            :taskDataDetailed="taskDataDetailed"
+            @handleSelectedTerminals="handleSelectedTerminals"
+        >
         </terminals-select-dialog>
     </div>
 </template>
@@ -426,9 +437,9 @@ const handleEditButton = () => {
         iconAdd.value.click();
     }
     if (ruleForm.type === 1) {
-        mediaDialogVisible.value = true;
         responseMedia.value = taskDataDetailed.value.medias;
         responseeMediaGroups.value = taskDataDetailed.value.medias_groups;
+        mediaDialogVisible.value = true;
     }
     if (
         ruleForm.type === 4 ||
@@ -518,7 +529,8 @@ const handleLocalTaskTermina = () => {
             }
         });
     })
-} 
+}
+// 媒体弹框更新保存
 const uploadMedia = (data: any) => {
     proxy.$http
         .put("/broadcasting/" + props.selectTaskData.id, {
@@ -537,6 +549,8 @@ const uploadMedia = (data: any) => {
         })
         .then((result: any) => {
             if (result.result === 200) {
+                responseMedia.value = []
+                responseeMediaGroups.value = []
                 mediaDialogVisible.value = false;
                 handleSelectionData(props.selectTaskData);
             }
@@ -618,9 +632,7 @@ const handleDelete = (row: any) => {
         })
         .then((result: any) => {
             if (result.result === 200) {
-                ruleForm.data = ruleForm.data.filter((item: any) => {
-                    return item !== row;
-                });
+                handleSelectionData(props.selectTaskData)
             }
         });
 };
@@ -639,6 +651,7 @@ const handleSelectionData = (row: any) => {
                 },
             }).then((restlu: any) => {
                 taskDataDetailed.value = restlu.data;
+                console.log(taskDataDetailed.value.medias)
                 const terminals = restlu.data.terminals ? restlu.data.terminals : [];
                 const terminals_groups = restlu.data.terminals_groups
                     ? restlu.data.terminals_groups

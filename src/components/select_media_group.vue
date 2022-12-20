@@ -12,7 +12,7 @@
                 <el-tab-pane name="first" v-if="config.isSelectMedia">
                     <template #label>
                         <div class="custom-tabs-label">
-                            <el-popover :visible="form.searchMediaVisible" placement="top-start">
+                            <el-popover :visible="form.searchMediaVisible" placement="top-start" :width="260">
                                 <template #reference>
                                     <el-icon @click="handleClickMediaVisible">
                                         <Search />
@@ -565,6 +565,7 @@ const handleMediasDragEnter = (e: any, item: any) => {
     newMedias.splice(dst, 0, ...newMedias.splice(src, 1));
 
     form.selectedMediaData = newMedias;
+    handleUpdateSelectedMedia();
 };
 // 时长转换
 const formatSecondNo = (seconds: any) => {
@@ -625,7 +626,6 @@ const setEditDataIDS = (data: any[]) => {
 // 处理编辑界面传递回来的已选择媒体数据
 const handleEditTerminalsData = () => {
     form.selectedMediaID = setEditDataIDS(parentData.responseMedia);
-    console.log(form.allMediaData);
     let allData = [];
     let selectedData = [];
     for (let index = 0; index < form.allMediaData.length; index++) {
