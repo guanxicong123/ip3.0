@@ -100,7 +100,7 @@
               @input="handleSelectedTerminalsSearch"
             />
             <i
-              class="iconfont icon-execution-failed delete"
+              class="iconfont icon-clear delete"
               @click="handleClickCloSesearchInput"
             ></i>
           </span>

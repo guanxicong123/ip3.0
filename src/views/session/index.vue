@@ -105,11 +105,11 @@
                     </el-table-column>
                     <el-table-column prop="TaskVolume" label="任务音量">
                         <template #default="scope">
-                            <div class="com-table-task-volume" v-if="selectTerminaVolume?.TaskID !== scope.row.TaskID">
+                            <!-- <div class="com-table-task-volume" v-if="selectTerminaVolume?.TaskID !== scope.row.TaskID">
                                 <span class="volume">{{scope.row.TaskVolume}}</span>
                                 <span class="iconfont icon-edit1" @click="handelSelectVolume(scope.row)"></span>
-                            </div>
-                            <div class="com-table-task-volume" v-else>
+                            </div> -->
+                            <div class="com-table-task-volume">
                                 <el-input-number
                                     v-model="scope.row.TaskVolume"
                                     :min="1"
@@ -123,11 +123,6 @@
                     </el-table-column>
                     <el-table-column prop="TaskBeginTime" label="会话进行时间" sortable="custom" width="160"/>
                     <el-table-column prop="IsMonitor" label="监听状态" />
-                        <!-- <template #default="scope">
-                            <span v-if="scope.row.IsMonitor">
-                                {{scope.row.MonitorTaskID}}
-                            </span>
-                        </template> -->
                     <el-table-column label="操作" width="120">
                         <template #default="scope">
                             <el-button link type="danger" @click="handleStopTask(scope.row)">
@@ -135,16 +130,16 @@
                                     <i class="iconfont icon-end" title="结束任务"></i>
                                 </template>
                             </el-button>
-                            <el-button link type="primary" @click="setMonitorTerminal">
+                            <el-button link type="primary"  v-if="scope.row.IsMonitor < 1" @click="setMonitorTerminal(scope.row)">
                                 <template #icon>
                                     <i class="iconfont icon-headset" title="点击监听"></i>
                                 </template>
                             </el-button>
-                            <!-- <el-button link type="danger">
+                            <el-button link type="danger" v-else>
                                 <template #icon>
                                 <i class="iconfont icon-headphones-disabled" title="取消监听"></i>
                                 </template>
-                            </el-button> -->
+                            </el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -286,44 +281,29 @@ const handleStopTask = (row: any) => {
     })
 }
 // 开启监听
-const setMonitorTerminal = (row: { TaskID: any; }) => {
+const setMonitorTerminal = (row: any) => {
+    console.log(row, selectTerminalMac)
+    if (!selectTerminalMac.value?.EndPointID) {
+        return ElMessage.warning('请选择监听音响')
+    }
     // if (loading.value)return
     // loading.value = true
-
-    // let terminal = store.terminals.terminalsObjects[monitorTerminal.EndpointID]
-    // if (terminal && terminal.Status !== 1) {
-    //     loading.value = false
-    //     return proxy.$message.warning()
-    // }
-
-    // if (monitorTerminal.EndpointID) {
-    //     let data = proxy.$socket.baseParams
-    //     data.actioncode = proxy.AppConfig.webSocketIdMap.requestSetSessionMonitorTerminal
-    //     data.data =  {
-    //         ReceiverEndPointID: monitorTerminal.EndpointID,
-    //         TaskID : '',
-    //         MonitorTaskID : row.TaskID,
-    //     }
-
-    //     let i = setTimeout(()=>{
-    //         loading.value = false
-    //     }, 5000)
-
-
-    //     proxy.$socket.send(data, ()=>{
-    //         proxy.$message.info()
-    //     }).onmessage = (msg: any)=>{
-    //         if (msg.actioncode === AppConfig.webSocketIdMap.responseMsg
-    //             && msg.data !== null
-    //             && msg.data.EventID === AppConfig.webSocketIdMap.responseTerminals) {
-    //             clearTimeout(i)
-    //             loading.value = false
-    //         }
-    //     }
-    // } else {
-    //     loading.value = false
-    //     proxy.$message.warning()
-    // }
+    let func = ()=> {
+        let data = {
+            "company": "BL",
+            "actioncode": "ms2c_monitor_task",
+            "token": "",
+            "data": {
+                "TaskID": usePublicMethod.guid(),
+                "MonitorTaskID": row.TaskID,
+                "EndPointList": [selectTerminalMac.value?.EndPointID]
+            },
+            "result": 0,
+            "return_message": ""
+        }
+        send(data)
+    }
+    usePublicMethod.debounce(func, 500)
 }
 // 选中音量
 const handelSelectVolume = (row: any) => {

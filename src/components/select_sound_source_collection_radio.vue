@@ -68,7 +68,7 @@
                     <span v-else>
                         <el-input class="title-search-input" v-model="form.selectedSearchAcquisition"
                             placeholder="终端名称/终端IP" maxlength="100" clearable @input="handleSelectedTerminalsSearch" />
-                        <i class="iconfont icon-execution-failed delete" @click="handleClickCloSesearchInput"></i>
+                        <i class="iconfont icon-clear delete" @click="handleClickCloSesearchInput"></i>
                     </span>
                 </div>
             </div>

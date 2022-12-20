@@ -17,7 +17,7 @@
                 <span v-else :class="{ span: form.searchConfigureVisible }">
                     <el-input class="title-search-input" v-model="form.searchConfigure" placeholder="配置名称"
                         maxlength="100" clearable @input="handleConfigureSearch" />
-                    <i class="iconfont icon-execution-failed delete" @click="handleClickCloSesearchInput"></i>
+                    <i class="iconfont icon-clear delete" @click="handleClickCloSesearchInput"></i>
                 </span>
             </div>
             <div class="custom-content">
@@ -57,7 +57,7 @@
                     <span v-else>
                         <el-input class="title-search-input" v-model="form.selectedSearchConfigure" placeholder="终端/分组"
                             maxlength="100" clearable @input="handleSelectedConfigureSearch" />
-                        <i class="iconfont icon-execution-failed delete" @click="handleClickCloSelectedSesearch"></i>
+                        <i class="iconfont icon-clear delete" @click="handleClickCloSelectedSesearch"></i>
                     </span>
                 </div>
             </div>

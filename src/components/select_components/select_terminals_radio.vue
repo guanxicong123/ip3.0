@@ -26,7 +26,7 @@
             @input="handleGourpsSearch"
           />
           <i
-            class="iconfont icon-execution-failed delete"
+            class="iconfont icon-clear delete"
             @click="handleClickCloGroupSearch"
           ></i>
         </span>
@@ -85,7 +85,7 @@
               @input="handleSelectedTerminalsSearch"
             />
             <i
-              class="iconfont icon-execution-failed delete"
+              class="iconfont icon-clear delete"
               @click="handleClickCloSearchTerminals"
             ></i>
           </span>

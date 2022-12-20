@@ -12,7 +12,7 @@
                 <el-tab-pane name="first" v-if="config.isSelectTerminals">
                     <template #label>
                         <div class="custom-tabs-label">
-                            <el-popover :visible="form.searchTerminalsVisible" placement="top-start">
+                            <el-popover :visible="form.searchTerminalsVisible" placement="top-start" :width="260">
                                 <template #reference>
                                     <el-icon @click="handleClickTerminalsVisible">
                                         <Search />
@@ -21,7 +21,7 @@
                                 <div class="custom-popover">
                                     <el-input v-model="form.searchTerminals" placeholder="终端名称/终端IP" maxlength="100"
                                         clearable @input="handleTerminalsSearch" />
-                                    <i class="iconfont icon-execution-failed" @click="handleClickClosePopover"></i>
+                                    <i class="iconfont icon-clear" @click="handleClickClosePopover"></i>
                                 </div>
                             </el-popover>
                             <span>{{ config.terminalsTitle }}</span>
@@ -68,7 +68,7 @@
                                 <div class="custom-popover">
                                     <el-input v-model="form.searchGroups" placeholder="分组名称" maxlength="100" clearable
                                         @input="handleGroupsSearch" />
-                                    <i class="iconfont icon-execution-failed" @click="handleClickClosePopover"></i>
+                                    <i class="iconfont icon-clear" @click="handleClickClosePopover"></i>
                                 </div>
                             </el-popover>
                             <span>{{ config.groupsTitle }}</span>
@@ -116,7 +116,7 @@
                     <span v-else>
                         <el-input class="title-search-input" v-model="form.selectedSearchTerminals"
                             placeholder="终端名称/终端IP" maxlength="100" clearable @input="handleSelectedTerminalsSearch" />
-                        <i class="iconfont icon-execution-failed delete" @click="handleClickCloSesearchInput"></i>
+                        <i class="iconfont icon-clear delete" @click="handleClickCloSesearchInput"></i>
                     </span>
                 </div>
             </div>
@@ -234,7 +234,7 @@
                                 </div>
                                 <div class="icon-font-delete">
                                     <i
-                                    class="iconfont icon-execution-failed delete"
+                                    class="iconfont icon-clear delete"
                                     @click="deleteGroup(item)"
                                     ></i>
                                 </div>

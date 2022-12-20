@@ -253,6 +253,7 @@ const playCenterData = computed(() => {
 watch(playCenterData, (newVal) => {
     form.volume = newVal.volume
     if (newVal.TaskID) {
+        // 获取任务状态
         let data = {
             company: "BL",
             actioncode: "c2ms_get_task_play_status",
@@ -364,27 +365,27 @@ const handleEditButton = () => {
 // 获取选中任务详情信息
 const handleSelectionClick = (row: any) => {
     selectTaskData.value = row;
-    // let task = sessionsData.value.filter((item: any) => {
-    //     if (selectTaskData.value?.type < 10) {
-    //         return item.RemoteTaskID === selectTaskData.value.id;
-    //     }
-    //     if (selectTaskData.value?.type >= 10) {
-    //         return item.TaskID === selectTaskData.value.taskid;
-    //     }
-    // })[0]
-    // if (task) {
-    //     let data = {
-    //         company: "BL",
-    //         actioncode: "c2ms_subscribe_task_progress_bar",
-    //         token: "",
-    //         data: {
-    //             TaskID: task[0].TaskID,
-    //         },
-    //         result: 0,
-    //         return_message: "",
-    //     };
-    //     send(data);
-    // }
+    let task = sessionsData.value.filter((item: any) => {
+        if (selectTaskData.value?.type < 10) {
+            return item.RemoteTaskID === selectTaskData.value.id;
+        }
+        if (selectTaskData.value?.type >= 10) {
+            return item.TaskID === selectTaskData.value.taskid;
+        }
+    })[0]
+    if (task) {
+        let data = {
+            company: "BL",
+            actioncode: "c2ms_subscribe_task_progress_bar",
+            token: "",
+            data: {
+                TaskID: task.TaskID,
+            },
+            result: 0,
+            return_message: "",
+        };
+        send(data);
+    }
 };
 // 判断任务是否执行中
 const handleDecideStatus = (row: any) => {

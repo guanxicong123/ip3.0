@@ -35,7 +35,7 @@
                     @input="handleMediaSearch"
                   />
                   <i
-                    class="iconfont icon-execution-failed"
+                    class="iconfont icon-clear"
                     @click="handleClickClosePopover"
                   ></i>
                 </div>
@@ -100,7 +100,7 @@
                     @input="handleGroupsSearch"
                   />
                   <i
-                    class="iconfont icon-execution-failed"
+                    class="iconfont icon-clear"
                     @click="handleClickClosePopover"
                   ></i>
                 </div>
@@ -175,7 +175,7 @@
               @input="handleSelectedMediaSearch"
             />
             <i
-              class="iconfont icon-execution-failed delete"
+              class="iconfont icon-clear delete"
               @click="handleClickCloSesearchInput"
             ></i>
           </span>
@@ -215,7 +215,7 @@
                   </div>
                   <div class="icon-font-delete">
                     <i
-                      class="iconfont icon-execution-failed delete"
+                      class="iconfont icon-clear delete"
                       @click="deleteTerminal(item)"
                     ></i>
                   </div>
@@ -265,7 +265,7 @@
               @input="handleSelectedGroupsSearch"
             />
             <i
-              class="iconfont icon-execution-failed delete"
+              class="iconfont icon-clear delete"
               @click="handleClickCloSesearchInput"
             ></i>
           </span>
@@ -299,7 +299,7 @@
                   </div>
                   <div class="icon-font-delete">
                     <i
-                      class="iconfont icon-execution-failed delete"
+                      class="iconfont icon-clear delete"
                       @click="deleteGroup(item)"
                     ></i>
                   </div>

@@ -24,7 +24,7 @@
             @input="handleConfigureSearch"
           />
           <i
-            class="iconfont icon-execution-failed delete"
+            class="iconfont icon-clear delete"
             @click="handleClickCloSesearchInput"
           ></i>
         </span>
@@ -90,7 +90,7 @@
               @input="handleSelectedConfigureSearch"
             />
             <i
-              class="iconfont icon-execution-failed delete"
+              class="iconfont icon-clear delete"
               @click="handleClickCloSelectedSesearch"
             ></i>
           </span>

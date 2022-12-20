@@ -90,9 +90,9 @@ const tableData = computed(() => {
     return props.fileList;
 });
 
-watch(tableData, (newVal) => {
+watch([tableData, props.fileList], (newVal) => {
     let timeDuration = 0;
-    newVal?.forEach((item: any) => {
+    tableData.value?.forEach((item: any) => {
         timeDuration += Number(item.time);
     });
     duration.value = formatSecondNo(timeDuration);
