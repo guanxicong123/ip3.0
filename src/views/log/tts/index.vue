@@ -32,25 +32,25 @@
           <el-table-column prop="terminal" label="执行终端" show-overflow-tooltip>
             <template #default="scope">
               <view-components-popover
-                :url="'/terminals-alarm/' + scope.row.id + '/terminals'"
+                :url="'/logs/tts/' + scope.row.id + '/terminals'"
               />
             </template>
           </el-table-column>
           <el-table-column prop="time" label="开始时间" show-overflow-tooltip />
           <el-table-column prop="life_time" label="持续时间" show-overflow-tooltip />
           <el-table-column prop="remarks" label="备注" show-overflow-tooltip />
-          <el-table-column prop="level      " label="日志级别" show-overflow-tooltip>
+          <el-table-column prop="level" label="日志级别" show-overflow-tooltip>
             <template #default="scope">
               {{ formatterLevel(scope.row.level) }}
             </template>
           </el-table-column>
           <el-table-column label="操作" width="120">
             <template #default="scope">
-              <el-button link type="danger" @click="scope.row">
-                <template #icon>
-                  <i class="iconfont icon-delete" title="删除"></i>
-                </template>
-              </el-button>
+              <i
+                class="iconfont icon-delete"
+                title="删除"
+                @click="handleDelete('single', scope.row)"
+              ></i>
             </template>
           </el-table-column>
           <el-table-column type="selection" width="44" />
@@ -191,7 +191,7 @@ const handleDelete = (type: string, row: any) => {
         ids: ids,
       })
         .then((result) => {
-          if (result.result > 0) {
+          if (result.data > 0) {
             // 假如删除完本页数据，form.currentPage减去一页再更新数据
             if (form.data.length <= ids.length && form.currentPage > 1) {
               form.currentPage--;

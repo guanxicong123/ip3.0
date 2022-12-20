@@ -462,7 +462,7 @@ const rules = reactive({
 });
 // 处理音源设置返回的数据
 const handleRequestSoundType = (data: number) => {
-  form.type = data;
+  ruleForm.type = form.type = data;
 };
 const handleRequestSoundSourceID = (data: number) => {
   ruleForm.fast_sound_id = data;

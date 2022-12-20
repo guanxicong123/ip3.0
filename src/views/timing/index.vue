@@ -10,12 +10,9 @@
       <div class="com-head-content">
         <div class="com-breadcrumb">
           <el-select v-model="form.selectType" @change="handleDefaultGet">
-            <el-option
-              v-for="item in sourceTypeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
+            <template v-for="item in sourceTypeOptions" :key="item.value">
+              <el-option v-if="item.value != 5" :label="item.label" :value="item.value" />
+            </template>
           </el-select>
           <el-input
             v-model="form.search"
@@ -376,12 +373,7 @@ const form = reactive({
   cloneDialogVisible: false, // 是否显示克隆任务弹窗
   exporting: false, // 等待导出状态
 });
-const sourceTypeOptions = [
-  { value: 0, label: "全部音源" },
-  { value: 1, label: "音乐播放" },
-  { value: 2, label: "声卡采集" },
-  { value: 3, label: "终端采集" },
-];
+const sourceTypeOptions = useFormatMap.audioSourceTypeOptions;
 // 表格类型格式转换
 const playModelMap = useFormatMap.playModelMap;
 const soundQualityMap = useFormatMap.soundQualityMap;

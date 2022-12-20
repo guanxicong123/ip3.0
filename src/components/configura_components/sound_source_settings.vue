@@ -499,7 +499,6 @@
       v-if="config.isSelectMusicPlay"
       v-model="form.mediaDialogVisible"
       width="1000px"
-      destroy-on-close
       draggable
       class="com-default-dialog"
     >

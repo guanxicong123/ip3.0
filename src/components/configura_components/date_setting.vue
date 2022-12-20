@@ -468,15 +468,11 @@ onMounted(() => {
       border-left-color: $c-theme;
     }
   }
-  .repeat-day {
-    height: 350px;
-  }
   .curstom-date-day-right {
     display: flex;
     flex-flow: column;
-    height: 341px;
+    height: 343px;
     margin-left: 360px;
-    margin-top: -25px;
     border-radius: 5px;
     border: 1px solid #ddd;
     .right-title {
@@ -563,7 +559,7 @@ onMounted(() => {
 :deep(.curstom-popper-day) {
   display: block !important;
   left: 4px !important;
-  top: 0 !important;
+  top: 14px !important;
   box-shadow: none !important;
   .el-picker-panel__footer,
   .el-popper__arrow {

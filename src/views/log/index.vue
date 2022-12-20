@@ -265,6 +265,7 @@ const taskLog = defineAsyncComponent(() => import("./task/index.vue"));
 const broadcastLog = defineAsyncComponent(() => import("./broadcast/index.vue"));
 const intercomLog = defineAsyncComponent(() => import("./intercom/index.vue"));
 const ttsLog = defineAsyncComponent(() => import("./tts/index.vue"));
+const exportLog = defineAsyncComponent(() => import("./components/export_log.vue"));
 
 // refs
 const systemRef = ref();

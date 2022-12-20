@@ -117,12 +117,22 @@ const useFormatMap = {
     [2, "管理员"],
     [3, "普通用户"],
   ]),
+  audioSourceTypeOptions: [
+    { value: 0, label: "全部音源" },
+    { value: 1, label: "音乐播放" },
+    // { value: 2, label: "声卡采集" },
+    // { value: 3, label: "终端采集" },
+    { value: 23, label: "音源采集" },
+    { value: 4, label: "快捷音源" },
+    { value: 5, label: "文本播放" },
+  ],
   audioSourceTypeMap: new Map([
     [1, "音乐播放"],
     [2, "声卡采集"],
     [3, "终端采集"],
     [4, "快捷音源"],
     [5, "文本播放"],
+    [23, "音源采集"],
   ]),
   weeksTypeMap: new Map([
     [1, "周一"],
