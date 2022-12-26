@@ -351,6 +351,7 @@ import { ValidatorService } from "@/utils/api/validator/index";
 import { TasksService } from "@/utils/api/task/index";
 import { TerminalsLightService } from "@/utils/api/light_config";
 import { LEDService } from "@/utils/api/led_config";
+import { onBeforeRouteLeave } from 'vue-router';
 
 const form = reactive<any>({
   title: "",
@@ -849,6 +850,23 @@ onMounted(() => {
     );
   }
 });
+onBeforeRouteLeave((to, from, next)=> {
+    if (to.path === '/timing' || to.path === '/') {
+        next()
+    }else {
+        ElMessageBox.confirm(
+            '本次修改尚未保存，即将退出页面，是否继续?',
+            '提示',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }
+        ).then(() => {
+            next()
+        })
+    }
+})
 </script>
 
 <style lang="scss" scoped>

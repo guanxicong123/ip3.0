@@ -251,8 +251,8 @@ const playCenterData = computed(() => {
     }
 });
 watch(playCenterData, (newVal) => {
-    form.volume = newVal.volume
-    if (newVal.TaskID) {
+    form.volume = newVal?.volume
+    if (newVal?.TaskID) {
         // 获取任务状态
         let data = {
             company: "BL",
@@ -773,8 +773,10 @@ onMounted(() => {
     Promise.all([getBroadcastingAll(), getTaskLocalAll(), getPrioritySetting()]).then((data: any) => {
         tableDataAll.value = [...data[0], ...data[1]]
         form.data = [...data[0], ...data[1]];
-        handleSelectionClick(form.data[0]);
-        multipleTableRef.value!.setCurrentRow(form.data[0]);
+        if (form.data.length > 0) {
+            handleSelectionClick(form.data[0]);
+            multipleTableRef.value!.setCurrentRow(form.data[0]);
+        }
     });
 });
 </script>

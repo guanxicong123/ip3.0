@@ -14,9 +14,7 @@
                             selected: form.multipleSelection.includes(item.id),
                         }" @click="handleSelected(item)" @dblclick="viewGroupInfo(item)">
                             <span class="li-span" :title="terminalsStatusMap.get(item.status)?.name">
-                                <svg class="icon" aria-hidden="true">
-                                    <use :xlink:href="terminalsStatusMap.get(item.status)?.class"></use>
-                                </svg>
+                                <span class="iconfont" :class="terminalsStatusMap.get(item.status)?.class"></span>
                             </span>
                             <div class="li-text">
                                 <span :title="item.name">{{ item.name }}</span>
@@ -60,11 +58,11 @@ const show_group_info = ref(false);
 const group_title = ref("");
 
 const terminalsStatusMap = new Map([
-    [0, { class: "#icon-off-line", name: "离线" }],
-    [1, { class: "#icon-on-line", name: "空闲" }],
-    [2, { class: "#icon-executing", name: "忙碌" }],
-    [3, { class: "#icon-freeze", name: "冻结" }],
-    [4, { class: "#icon-fault", name: "故障" }],
+    [0, { class: ".icon-off-line", name: "离线" }],
+    [1, { class: ".icon-on-line", name: "空闲" }],
+    [2, { class: ".icon-executing", name: "忙碌" }],
+    [3, { class: ".icon-freeze", name: "冻结" }],
+    [4, { class: ".icon-fault", name: "故障" }],
 ]);
 // 注入祖先组件供给的数据
 const {

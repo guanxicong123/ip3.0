@@ -67,8 +67,10 @@
                 </el-col>
             </el-row>
         </el-form>
-        <quick-music-dialog v-model:isShow="isShow" @handleSelectedConfigure="handleSelectedConfigure"
-            :seleQuickMusic="seleQuickMusic" />
+        <quick-music-dialog
+            v-model:isShow="isShow"
+            @handleSelectedConfigure="handleSelectedConfigure"
+            :seleQuickMusic="seleQuickMusic"/>
     </div>
 </template>
 
@@ -150,6 +152,7 @@ watch(seleQuickMusic, (newVal) => {
     ruleForm.id = newVal?.id;
 });
 watch(ruleForm, (newVal) => {
+    console.log(newVal, seleQuickMusic.value)
     let data: any = {
         id: newVal.id,
         type: newVal.type,
