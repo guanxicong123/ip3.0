@@ -200,6 +200,7 @@ watch(
         form.title = "编辑";
         handleGetEditData(parentData.editInfor);
       } else {
+        form.id = 0;
         form.title = "新建";
       }
     } else {

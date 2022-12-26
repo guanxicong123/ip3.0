@@ -86,7 +86,7 @@
             <template v-if="config.musicPlayModelRandomConfig && form.play_model !== 0">
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <el-radio
-                  v-model="form.selete_time_or_number"
+                  v-model="form.play_type"
                   :label="0"
                   style="height: 28px"
                   @change="handleSelectedConfigure"
@@ -101,7 +101,7 @@
                       value-format="HH:mm:ss"
                       placeholder="持续时间"
                       :clearable="false"
-                      :disabled="form.selete_time_or_number === 1"
+                      :disabled="form.play_type === 1"
                       @change="handleSelectedConfigure"
                     />
                     <!-- <div class="select-button">
@@ -116,7 +116,7 @@
               </el-col>
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <el-radio
-                  v-model="form.selete_time_or_number"
+                  v-model="form.play_type"
                   :label="1"
                   style="height: 28px"
                   @change="handleSelectedConfigure"
@@ -130,7 +130,7 @@
                     :max="9999"
                     :value-on-clear="form.play_number"
                     controls-position="right"
-                    :disabled="form.selete_time_or_number === 0"
+                    :disabled="form.play_type === 0"
                     @change="handleSelectedConfigure"
                   />
                 </el-form-item>
@@ -250,7 +250,7 @@
             <template v-if="config.musicPlayModelRandomConfig && form.play_model !== 0">
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <el-radio
-                  v-model="form.selete_time_or_number"
+                  v-model="form.play_type"
                   :label="0"
                   style="height: 28px"
                   @change="handleSelectedConfigure"
@@ -265,7 +265,7 @@
                       value-format="HH:mm:ss"
                       placeholder="持续时间"
                       :clearable="false"
-                      :disabled="form.selete_time_or_number === 1"
+                      :disabled="form.play_type === 1"
                       @change="handleSelectedConfigure"
                     />
                     <div class="select-button">
@@ -280,7 +280,7 @@
               </el-col>
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <el-radio
-                  v-model="form.selete_time_or_number"
+                  v-model="form.play_type"
                   :label="1"
                   style="height: 28px"
                   @change="handleSelectedConfigure"
@@ -294,7 +294,7 @@
                     :max="9999"
                     :value-on-clear="form.play_number"
                     controls-position="right"
-                    :disabled="form.selete_time_or_number === 0"
+                    :disabled="form.play_type === 0"
                     @change="handleSelectedConfigure"
                   />
                 </el-form-item>
@@ -595,7 +595,7 @@ const form = reactive<any>({
   end_time: "00:00:00", // 结束时间
   sound_quality: 1, // 采集音质
   reset_auto_check: 0, // 自检
-  selete_time_or_number: 0, // 0持续时间 1播放曲目
+  play_type: 0, // 0持续时间 1播放曲目
   sound_source_type: 2, // 音源采集类型
   old_sound_source_type: 2, // 音源采集类型
   sound_source_acquisition: {}, // 音源采集
@@ -734,8 +734,9 @@ const handleSelectedConfigure = () => {
   if (form.sound_source.type === 1) {
     sound_source = {
       play_model: form.play_model,
-      life_time: !form.selete_time_or_number ? form.life_time : "",
-      play_number: form.selete_time_or_number ? form.play_number : 0,
+      life_time: form.life_time,
+      play_number: form.play_number,
+      play_type: form.play_type,
       type: form.sound_source.type,
     };
     if (!config.musicPlayModelRandomConfig) {
@@ -818,10 +819,12 @@ watch(
       for (let index = 0; index < parentData.responseMedia.length; index++) {
         const media = parentData.responseMedia[index];
         media_name += media.name + ",";
+        form.totalSecond += media.length;
       }
       for (let index = 0; index < parentData.responseGroups.length; index++) {
         const group = parentData.responseGroups[index];
         group_name += group.name + ",";
+        form.totalSecond += group.length;
       }
       form.media.name = media_name + group_name;
       emit("requestMedia", parentData.responseMedia);
@@ -838,11 +841,9 @@ watch(
         });
       });
       // 音乐播放
-      if (form.life_time != "") {
-        form.selete_time_or_number = 0;
+      if (form.play_type == 0) {
         form.play_number = 1;
       } else {
-        form.selete_time_or_number = 1;
         form.life_time = "00:00:00";
       }
       // 声卡采集

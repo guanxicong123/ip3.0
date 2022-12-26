@@ -41,7 +41,7 @@ export class MeidaService {
   }
 
   static async getDownloadOneMeida(id: number): Promise<any> {
-    return $http("/medias/download/" + id, {
+    return $http("/medias/client-download/" + id, {
       method: "get",
       responseType: "json",
     });

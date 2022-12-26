@@ -210,7 +210,7 @@
                   <el-button
                     link
                     type="primary"
-                    @click="handleDownloadOneFile(scope.row.id)"
+                    @click="handleDownloadOneFile(scope.row)"
                   >
                     <template #icon>
                       <i class="iconfont icon-download" title="下载"></i>
@@ -543,19 +543,18 @@ const handleGetAllBellsGroups = async () => {
     });
 };
 // 处理下载一个文件
-const handleDownloadOneFile = (id: number) => {
+const handleDownloadOneFile = (item: { id: number; name: string }) => {
   form.downloading = true;
-  MeidaService.getDownloadOneMeida(id)
+  MeidaService.getDownloadOneMeida(item.id)
     .then((result) => {
       form.downloading = false;
       const isHasURL = Object.prototype.hasOwnProperty.call(result?.data, "url");
       if (isHasURL) {
-        const url = "http:/" + result.data.url;
-        const index = result.data.url.lastIndexOf("/");
-        const fileName = result.data.url.substring(index + 1, url.length);
+        const serverIP = localStorage.get("serverIP");
+        const url = "http://" + serverIP + ":81" + result.data.url;
         window.electronAPI.send("download", {
           downloadPath: url, // 下载链接
-          fileName: fileName, // 下载文件名，需要包含后缀名
+          fileName: item.name, // 下载文件名，需要包含后缀名
         });
       } else {
         ElMessage({
@@ -587,7 +586,8 @@ const handlePackageDownloadFile = () => {
       form.downloading = false;
       const isHasURL = Object.prototype.hasOwnProperty.call(result?.data, "url");
       if (isHasURL) {
-        const url = "http:/" + result.data.url;
+        const serverIP = localStorage.get("serverIP");
+        const url = "http://" + serverIP + ":81" + result.data.url;
         const index = result.data.url.lastIndexOf("/");
         const fileName = result.data.url.substring(index + 1, url.length);
         window.electronAPI.send("download", {
@@ -662,6 +662,7 @@ onMounted(() => {
       message: message,
       grouping: true,
     });
+    multipleTableRef.value?.clearSelection();
     console.log(data);
   });
   // 下载失败
@@ -707,6 +708,7 @@ onMounted(() => {
       .folder-name {
         flex: 1;
         width: calc(100% - 152px);
+        line-height: 18px;
         span {
           display: block;
           overflow: hidden;

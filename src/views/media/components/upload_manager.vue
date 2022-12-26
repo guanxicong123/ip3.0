@@ -237,6 +237,7 @@ const inputFilter = (
   prevent: (prevent?: boolean) => boolean
 ) => {
   if (newFile && !oldFile) {
+    console.log(newFile);
     const size = newFile.size || 0;
     // 自定义当前文件 body 或 query 附加内容
     newFile.data = {
@@ -247,8 +248,8 @@ const inputFilter = (
       form.isFileLarge = true;
     }
     // 去掉重名文件
-    form.files.forEach((file: { name: string | undefined }) => {
-      if (file.name === newFile.name) {
+    form.files.forEach((file: { name: string | undefined; postAction: string }) => {
+      if (file.postAction === newFile.postAction && file.name === newFile.name) {
         form.isDuplicateName = true;
       }
     });
@@ -556,6 +557,7 @@ onMounted(() => {
           }
           span {
             width: calc(100% - 70px);
+            line-height: 18px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
