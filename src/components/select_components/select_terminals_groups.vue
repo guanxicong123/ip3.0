@@ -902,18 +902,37 @@ const handleEditGroupsData = () => {
   const group = [...form.selectedGroupsData, ...selectedData];
   form.selectedGroupsData = handleUnique(group);
   handleUpdateOpenGroupsVolume(selectedData);
-  form.allGroupsData = allData;
+  // 处理需过滤分组
+  handleExcludeGroups(allData);
   handleUpdateSelectedGroups();
 };
 // 处理excludeTerminalsIDS传递回来需过滤终端
 const handleExcludeTerminals = (data: any) => {
+  const arrayIDS: number[] = [];
+  form.selectedTerminalsData.map((item: { id: number }) => {
+    arrayIDS.push(item.id);
+  });
   if (parentData.excludeTerminalsIDS?.length > 0) {
     form.allTerminalsData = data.filter((item: { id: number }) => {
-      return !parentData.excludeTerminalsIDS.includes(item.id);
+      return (
+        !parentData.excludeTerminalsIDS.includes(item.id) && !arrayIDS.includes(item.id)
+      );
     });
   } else {
-    form.allTerminalsData = data;
+    form.allTerminalsData = data.filter((item: { id: number }) => {
+      return !arrayIDS.includes(item.id);
+    });
   }
+};
+// 处理需过滤分组
+const handleExcludeGroups = (data: any) => {
+  const arrayIDS: number[] = [];
+  form.selectedGroupsData.map((item: { id: number }) => {
+    arrayIDS.push(item.id);
+  });
+  form.allGroupsData = data.filter((item: { id: number }) => {
+    return !arrayIDS.includes(item.id);
+  });
 };
 // 处理更新开启终端的音量数据
 const handleUpdateOpenTerminalsVolume = (selectedData: any[]) => {
