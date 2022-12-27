@@ -565,7 +565,7 @@ const getTerminalGroupAll =  () => {
                 id: 0,
                 GroupID: 0,
                 name: '所有终端',
-                terminals: terminal_data.value
+                terminals: JSON.parse(JSON.stringify(terminal_data.value))
             })
             $useRouter.push("/terminal/terminal_list")
         }

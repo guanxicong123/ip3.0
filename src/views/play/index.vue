@@ -64,7 +64,7 @@
                     <i class="iconfont" :class="playCenterData.TaskID ? 'icon-suspend' : 'icon-play'"
                         :title="playCenterData.TaskID ? '暂停' : '播放'" @click="
                             playCenterData.TaskID
-                                ? handleStopTask(playCenterData)
+                                ? handlePauseTask(playCenterData)
                                 : handlePlayTask(playCenterData)
                         ">
                     </i>
@@ -216,15 +216,21 @@ const form = reactive<any>({
 });
 const tableDataAll: any = ref([])
 const selectTaskData: any = ref({}); //选中的任务数据(http)
+
 const sessionsData: any = computed(() => {
     return store.sessionsArray.filter((item: any) => {
         return [12, 13, 14, 15].includes(item.TaskType);
     });
 });
+//当前任务播放状态
 const playStatusData: any = computed(() => {
-    //当前任务播放状态
     return storePlay.playStatusData;
 });
+//订阅模式数据
+const playSubscriptionTask: any = computed(() => {
+    return storePlay.playSubscriptionTask;
+});
+
 watch(playStatusData, (newVal) => {
     form.current_duration = newVal.CurrentTime;
     form.total_duration = newVal.TotalTime;
@@ -342,20 +348,30 @@ const handleSelectionChange = (val: User[]) => {
 const handleDeleteAll = () => {
     if (multipleSelection.value.length === 0) 
         return proxy.$message.warning('请选择任务')
-    let serverDataID: any[] = []
-    let LocalDataID: any[] = []
-    multipleSelection.value.forEach((item: any)=> {
-        if (item.type < 10) {
-            serverDataID.push(item.id)
-        }else {
-            LocalDataID.push(item.id)
+    ElMessageBox.confirm(
+        '即将删除选中任务,是否继续?',
+        '警告',
+        {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
         }
-    })
-    Promise.all([
-        handelDelServeRask(serverDataID),
-        handelDelLocalRask(LocalDataID)
-    ]).then(()=> {
-        getTaskAll()
+    ).then(() => {
+        let serverDataID: any[] = []
+        let LocalDataID: any[] = []
+        multipleSelection.value.forEach((item: any)=> {
+            if (item.type < 10) {
+                serverDataID.push(item.id)
+            }else {
+                LocalDataID.push(item.id)
+            }
+        })
+        Promise.all([
+            handelDelServeRask(serverDataID),
+            handelDelLocalRask(LocalDataID)
+        ]).then(()=> {
+            getTaskAll()
+        })
     })
 };
 // 编辑
@@ -425,6 +441,24 @@ const handleStopTask = (row: any) => {
     };
     send(data);
 };
+// 暂停任务
+const handlePauseTask = (row: any) => {
+    if (row.TaskID) {
+        let data = {
+            company: "BL",
+            actioncode: "c2ms_control_task",
+            token: "",
+            data: {
+                TaskID: row.TaskID,
+                ControlCode: "pause",
+                ControlValue: "",
+            },
+            result: 0,
+            return_message: "",
+        };
+        send(data);
+    }
+}
 // 播放任务
 const handlePlayTask = (row: any) => {
     if (row.type < 10) {
@@ -640,15 +674,25 @@ const handleEditTask = (row: any) => {
 };
 // 删除播放任务
 const handleDeleteTask = (row: any) => {
-    if (row.type < 10) {
-        handelDelServeRask(row).then(()=> {
-            getTaskAll()
-        })
-    } else {
-        handelDelLocalRask(row).then(()=> {
-            getTaskAll()
-        })
-    }
+    ElMessageBox.confirm(
+        '即将删除任务,是否继续?',
+        '警告',
+        {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+        }
+    ).then(() => {
+        if (row.type < 10) {
+            handelDelServeRask(row).then(()=> {
+                getTaskAll()
+            })
+        } else {
+            handelDelLocalRask(row).then(()=> {
+                getTaskAll()
+            })
+        }
+    })
 };
 // 删除远程任务
 const handelDelServeRask = (row: any) => {

@@ -110,27 +110,27 @@ const send = (data: any) => {
     }
 }
 const reload = () => {
-  reloadInterval = setTimeout(() => {
-    const socketStatus = !socket || socket.readyState !== 1
-    socketStatus && registerWebSocket()
-    // message.error("服务器连接断开")
-  }, 3000)
+    reloadInterval = setTimeout(() => {
+        const socketStatus = !socket || socket.readyState !== 1
+        socketStatus && registerWebSocket()
+        // message.error("服务器连接断开")
+    }, 3000)
 }
 // 初始化ws连接
 const socketLogin = (data: any) => {
-  const myDate = new Date()
-  const a = myDate.getFullYear()
-  const b = myDate.getMonth() + 1
-  const c = myDate.getDate()
-  const d = myDate.getHours()
-  const e = myDate.getMinutes()
-  const f = myDate.getSeconds()
-  data.data.LoginTime = a + '-' + b + '-' + c + ' ' + d + ':' + e + ':' + f
+    const myDate = new Date()
+    const a = myDate.getFullYear()
+    const b = myDate.getMonth() + 1
+    const c = myDate.getDate()
+    const d = myDate.getHours()
+    const e = myDate.getMinutes()
+    const f = myDate.getSeconds()
+    data.data.LoginTime = a + '-' + b + '-' + c + ' ' + d + ':' + e + ':' + f
 
-  loginData = data
-  // return
-  is_login = false
-  registerWebSocket()
+    loginData = data
+    // return
+    is_login = false
+    registerWebSocket()
 }
 
 const initRequest = () => {
@@ -138,71 +138,77 @@ const initRequest = () => {
 }
 // webSocket请求获取XX信息状态
 const requestFunction = (actionCode: string) => {
-  baseParams.actioncode = actionCode
-  baseParams.data = {}
-  return send(baseParams)
+    baseParams.actioncode = actionCode
+    baseParams.data = {}
+    return send(baseParams)
 }
 // 发起远程音乐播放任务
 const startRemotePlay = (row: any) => {
   console.log(remotePlayTaskKey, row.TaskID)
-  if (remotePlayTaskKey.includes(row.TaskID)) {
-    const data = {
-      company: 'BL',
-      actioncode: 'c2ms_control_task',
-      token: '',
-      data: {
-        TaskID: row.TaskID,
-        ControlCode: 'play',
-        ControlValue: '',
-      },
-      result: 0,
-      return_message: '',
+    if (remotePlayTaskKey.includes(row.TaskID)) {
+        const data = {
+            company: 'BL',
+            actioncode: 'c2ms_control_task',
+            token: '',
+            data: {
+                TaskID: row.TaskID,
+                ControlCode: 'play',
+                ControlValue: '',
+            },
+            result: 0,
+            return_message: '',
+        }
+        send(data)
+        remotePlayTaskKey = remotePlayTaskKey.filter((item: any) => {
+            return item !== row.TaskID
+        })
     }
-    send(data)
-    remotePlayTaskKey = remotePlayTaskKey.filter((item: any) => {
-      return item !== row.TaskID
-    })
-  }
 }
 // 登录
 const login = () => {
-  const data = loginData
-  const myDate = new Date()
-  const a = myDate.getFullYear()
-  const b = myDate.getMonth() + 1
-  const c = myDate.getDate()
-  const d = myDate.getHours()
-  const e = myDate.getMinutes()
-  const f = myDate.getSeconds()
-  data.data.LoginTime = a + '-' + b + '-' + c + ' ' + d + ':' + e + ':' + f
-  send(data)
+    const data = loginData
+    const myDate = new Date()
+    const a = myDate.getFullYear()
+    const b = myDate.getMonth() + 1
+    const c = myDate.getDate()
+    const d = myDate.getHours()
+    const e = myDate.getMinutes()
+    const f = myDate.getSeconds()
+    data.data.LoginTime = a + '-' + b + '-' + c + ' ' + d + ':' + e + ':' + f
+    send(data)
 }
 const handlerMsg = (msg: any) => {
   const msgMap = new Map([
-    [
-      'terminal_status',
-      () => {
-        getStore.useTerminalStore().getTerminalData(msg.data)
-      },
-    ],
-    [
-      'terminals_group_info',
-      () => {
-        getStore.useTerminalStore().getTerminalGroup(msg.data)
-      },
-    ],
-    [
-      'task_stop',
-      () => {
-        getStore.useAppStore().taskPushStop(msg.data)
-      },
-    ],
-    [
-      'task_status',
-      () => {
-        getStore.useAppStore().taskDataPush(msg.data.TaskInfoArray)
-      },
-    ],
+        [
+            'task_progress_bar_info', //播放中心订阅模式
+            () => {
+                getStore.useAppStore().taskDataPush(msg.data.TaskInfoArray)
+            },
+        ],
+        [
+            'terminal_status',
+            () => {
+                getStore.useTerminalStore().getTerminalData(msg.data)
+            },
+        ],
+        [
+            'terminals_group_info',
+            () => {
+                getStore.useTerminalStore().getTerminalGroup(msg.data)
+            },
+        ],
+        [
+            'task_stop',
+            () => {
+                getStore.useAppStore().taskPushStop(msg.data)
+            },
+        ],
+        [
+            'task_status',
+            () => {
+                getStore.useAppStore().taskDataPush(msg.data.TaskInfoArray)
+            },
+        ]
   ])
   if (msg.result !== 200) {
     if (msg.actioncode === 'ms2c_user_login') {
@@ -223,37 +229,35 @@ const handlerMsg = (msg: any) => {
   }
   switch (msg.actioncode) {
     case 'ms2c_user_login': //登录返回信息
-      is_login = true
-      localStorage.set('userToken', msg.token)
-      requestFunction('c2ms_get_task_status')
-      requestFunction('c2ms_get_server_terminals_status')
-      return getStore.useAppStore().loginSuccessData(msg)
+        is_login = true
+        localStorage.set('userToken', msg.token)
+        requestFunction('c2ms_get_task_status')
+        requestFunction('c2ms_get_server_terminals_status')
+        return getStore.useAppStore().loginSuccessData(msg)
     case 'ms2c_push_msg':
-      ;[...msgMap].forEach(([key, value]) => {
-        msg.data.EventID === key ? value.call(msg.data) : ''
-      })
-      return
+        [...msgMap].forEach(([key, value]) => {
+            msg.data.EventID === key ? value.call(msg.data) : ''
+        })
+        return
     case 'ms2c_get_task_status': //返回执行中的任务
-      getStore.useAppStore().ROUTER_TASK(msg.data.TaskInfoArray)
-      return
+        getStore.useAppStore().ROUTER_TASK(msg.data.TaskInfoArray)
+        return
     case 'ms2c_get_server_terminals_status': //所有终端状态
-      getStore.useTerminalStore().getTerminalData(msg.data)
-      return
+        getStore.useTerminalStore().getTerminalData(msg.data)
+        return
     case 'ms2c_get_tts_engine_info': //播放语音(TTS引擎)
-      getStore.usePlayStore().setPlayVoice(msg.data.TTSEngineInfo)
-      getStore.useTTSStore().updateTTS(msg.data.TTSEngineInfo)
-      return
+        getStore.usePlayStore().setPlayVoice(msg.data.TTSEngineInfo)
+        getStore.useTTSStore().updateTTS(msg.data.TTSEngineInfo)
+        return
     case 'ms2c_get_server_audiocard_info':
-      getStore.useTTSStore().updateAudioCard(msg.data.AudioCard)
-      break
+        getStore.useTTSStore().updateAudioCard(msg.data.AudioCard)
+        break
     case 'ms2c_get_task_play_status': //客户端任务播放状态
-      getStore.usePlayStore().setPlayStatus(msg.data)
-      return
+        getStore.usePlayStore().setPlayStatus(msg.data)
+        return
     case 'ms2c_create_server_task':
-      startRemotePlay(msg.data)
-      return
-    case 'ms2c_subscribe_task_progress_bar': //订阅模式
-      return
+        startRemotePlay(msg.data)
+        return
   }
 }
 
