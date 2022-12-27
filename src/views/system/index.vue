@@ -206,7 +206,7 @@ const { proxy } = useCurrentInstance.useCurrentInstance();
 
 const form = reactive({
     one_key_alarm: false, // 启用一键报警功能
-    alarm_track: 1, // 报警曲目
+    alarm_track: '', // 报警曲目
     alarmTrackOptions: [
         {
             name: "",
@@ -313,7 +313,7 @@ const getAlarmTask = () => {
 // 数据填充
 const formatData = () => {
     form.one_key_alarm = system_configs.value.EnabledAlarm;
-    form.alarm_track = system_configs.value.AlarmID;
+    form.alarm_track = system_configs.value.AlarmID === 0 ? '' : system_configs.value.AlarmID;
     form.default_terminal_status = system_configs.value.TerminalStateDefaultType;
     form.default_presentation_module = system_configs.value.DefaultDisplayView;
     form.default_terminal_sort = system_configs.value.TerminalOrderbyType;

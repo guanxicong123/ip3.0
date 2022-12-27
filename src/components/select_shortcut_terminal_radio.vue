@@ -185,29 +185,29 @@ const handleClickCloSelectedSesearch = () => {
     form.selectedSearchConfigureVisible = false;
 };
 // 设置tab当前选择状态
-const setCurrentTabSelectStatus = () => {
-    if (!parentData.responseConfigure) {
-        form.selectedConfigureData = form.allConfigureData?.[0];
-        emit("requestConfigure", form.selectedConfigureData);
-        return;
+const setCurrentTabSelectStatus = (data: any) => {
+    if (!data || data.id == 0) {
+        return handleSelectedConfigure(form.allConfigureData?.[0]);
     }
-    form.selectedConfigureData = parentData.responseConfigure;
+    form.allConfigureData.some((item: { id: number }) => {
+        if (item.id == data.id) {
+            return handleSelectedConfigure(item);
+        }
+    });
 };
 // 获取快捷终端
 const getFastTerminals = (current: number, page: number) => {
-    proxy.$http.get("/fast-terminals", {
+    proxy.$http.get("/fast-terminals/all", {
         params: {
-            current_page: current,
-            per_page: page,
             withTerminals: true,
         },
-    }).then((result: { result: number; data: { data: any } }) => {
+    }).then((result: { result: number; data: any }) => {
         if (result.result === 200) {
-            form.allConfigureData = result.data.data.map((item: any) => {
+            form.allConfigureData = result.data.map((item: any) => {
                 item["all_data"] = [...item.terminals, ...item.terminals_groups];
                 return item;
             });
-            setCurrentTabSelectStatus();
+            setCurrentTabSelectStatus(parentData.responseConfigure);
         }
     });
 };

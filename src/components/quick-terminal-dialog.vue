@@ -14,7 +14,10 @@
                 </div>
             </template>
             <div class="com-dialog-components">
-                <select-shortcut-terminal-radio @requestConfigure="handleRequestTerminals" />
+                <select-shortcut-terminal-radio
+                    :responseConfigure="props.seleQuickTerminal"
+                    @requestConfigure="handleRequestTerminals"
+                />
             </div>
             <template #footer>
                 <div class="com-dialog-footer">

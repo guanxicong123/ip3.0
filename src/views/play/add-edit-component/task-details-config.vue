@@ -169,13 +169,11 @@
                                 <div class="fast-sound-source">
                                     <div class="fast-sound-source-name">
                                         {{
-                                                taskDataDetailed.fast_terminal
-                                                    ? taskDataDetailed.fast_terminal.name
-                                                    : ""
+                                            taskDataDetailed.fast_terminal
+                                                ? taskDataDetailed.fast_terminal.name
+                                                : ""
                                         }}
                                     </div>
-                                    <span v-if="editStatus" class="iconfont icon-select-file"
-                                        @click="handleShowDialog"></span>
                                 </div>
                             </el-form-item>
                         </el-col>
@@ -200,6 +198,7 @@
         </select-media-dialog>
         <quick-terminal-dialog 
             v-model:dialogVisible="terminaDialogVisible"
+            :seleQuickTerminal="taskDataDetailed.fast_terminal"
             @handleSelectedConfigure="handleSelectedConfigure"
         >
         </quick-terminal-dialog>
@@ -428,10 +427,6 @@ const handleEditButton = () => {
         terminaDialogVisible.value = true;
         return;
     }
-    if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id === 0) {
-        terminaSelectVisible.value = true;
-        return;
-    }
     if (props.playCenterData.TaskID) return proxy.$message.warning('任务正在执行中')
     if (ruleForm.type === 10) {
         iconAdd.value.click();
@@ -555,10 +550,6 @@ const uploadMedia = (data: any) => {
                 handleSelectionData(props.selectTaskData);
             }
         });
-};
-// 弹出快捷终端选择
-const handleShowDialog = () => {
-    terminaDialogVisible.value = true;
 };
 // 选中文件时触发
 const uploadChange: UploadProps["onChange"] = (uploadFile: any) => {
@@ -724,7 +715,7 @@ defineExpose({ handleEditButton });
         margin-left: 10px;
 
         >div {
-            width: 110px;
+            // width: 110px;
             font-size: 12px;
             font-family: MicrosoftYaHei;
             color: #84a2c4;
@@ -733,7 +724,10 @@ defineExpose({ handleEditButton });
 
             &:last-child {
                 border-left: 1px solid #c5d6e8;
-                padding-left: 18px;
+                padding-left: 20px;
+            }
+            &:first-child {
+                padding-right: 20px;
             }
         }
 

@@ -41,7 +41,7 @@
                             @selection-change="handleSelectionChange" :default-sort="sort_condition"
                             @sort-change="sortChange">
                             <el-table-column type="selection" width="44" />
-                            <el-table-column type="index" label="No." show-overflow-tooltip width="60"
+                            <el-table-column type="index" label="序号" show-overflow-tooltip width="60"
                                 :index="typeIndex" />
                             <el-table-column prop="status" label="状态" sortable="custom" show-overflow-tooltip>
                                 <template #default="scope">
@@ -211,7 +211,7 @@ const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 // 当前已选择表格数据
 const handleSelectionChange = (val: User[]) => {
     let terminal_ids = val.map((item: any) => {
-        return item.id;
+        return item.id || item.EndPointID;
     })
     updateCheckedTerminals(terminal_ids);
 };
@@ -335,7 +335,6 @@ const getCurGroupData = () => {
         sort_condition.value.prop,
         sort_condition.value.order
     );
-    console.log(terminal_group_data.value, storage_terminal_data.value,  form.groupData, '终端列表')
 };
 
 // mounted 实例挂载完成后被调用

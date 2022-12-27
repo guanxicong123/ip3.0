@@ -173,6 +173,7 @@ import remotePlayComponent from "../components/remote-play-component.vue";
 import textPlayComponent from "../components/text-play-component.vue";
 import sourceAcquisitionComponent from "../components/source-acquisition-component.vue";
 import quickTerminalDialog from "@/components/quick-terminal-dialog.vue";
+import { onBeforeRouteLeave } from 'vue-router';
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
@@ -321,7 +322,7 @@ const submitTask = () => {
     if (
         executionregiontype &&
         terminals.value.length === 0 &&
-        terminals_groups.value.length
+        terminals_groups.value.length === 0
     )
         return proxy.$message.warning("请选择终端或分组");
 
@@ -555,38 +556,6 @@ const getServeTask = (row: any) => {
         responseGroups.value = result.data.terminals_groups
     });
 };
-// 获取所有分组
-const getGroupsAll = () => {
-    return new Promise((resolve, reject) => {
-        proxy.$http
-            .get("terminals-groups/all", {
-                params: {
-                    withTerminals: true,
-                },
-            })
-            .then((result: { result: number; data: any[] }) => {
-                if (result.result === 200) {
-                    resolve(result.data);
-                }
-            });
-    });
-};
-// 获取所有终端
-const getTerminalsAll = () => {
-    return new Promise((resolve, reject) => {
-        proxy.$http
-            .get("/terminals/all", {
-                params: {
-                    withGroups: true,
-                },
-            })
-            .then((result: { result: number; data: any[] }) => {
-                if (result.result === 200) {
-                    resolve(result.data);
-                }
-            });
-    });
-};
 // mounted 实例挂载完成后被调用
 onMounted(() => {
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
@@ -597,6 +566,23 @@ onMounted(() => {
         }
     }
 });
+onBeforeRouteLeave((to, from, next)=> {
+    if (to.path === '/play' || to.path === '/') {
+        next()
+    }else {
+        ElMessageBox.confirm(
+            '本次修改尚未保存，即将退出页面，是否继续?',
+            '提示',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }
+        ).then(() => {
+            next()
+        })
+    }
+})
 </script>
 
 <style lang="scss">
