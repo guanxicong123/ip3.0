@@ -810,6 +810,7 @@ watch(
         newData.responseType == 2 || newData.responseType == 3
           ? 23
           : newData.responseType;
+      form.sound_source.type = newData.responseType;
       emit("requestType", newData.responseType);
     }
     // 编辑回传的音乐播放数据
@@ -832,7 +833,6 @@ watch(
     }
     // 编辑回传的音源
     if (newData.responseSoundSource) {
-      form.sound_source.type = newData.responseSoundSource.type || newData.responseType;
       Object.keys(form).forEach((item) => {
         Object.keys(newData.responseSoundSource).forEach((row) => {
           if (item === row) {

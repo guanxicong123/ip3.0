@@ -25,20 +25,22 @@
             width="60"
             :index="typeIndex"
           />
-          <el-table-column prop="status" label="任务操作" show-overflow-tooltip />
+          <el-table-column prop="tasks_name" label="任务名称" show-overflow-tooltip />
           <el-table-column prop="launch_terminal" label="发起端" show-overflow-tooltip />
           <el-table-column
             prop="receive_terminal.name"
             label="接收端"
             show-overflow-tooltip
           />
-          <el-table-column prop="time" label="开始时间" show-overflow-tooltip />
+          <el-table-column prop="start_time" label="开始时间" show-overflow-tooltip />
           <el-table-column
             prop="life_time"
             label="结束时间(持续时间)"
             show-overflow-tooltip
           >
-            <template #default="scope"> ({{ scope.row.life_time }}) </template>
+            <template #default="scope">
+              {{ scope.row.end_time }} ({{ scope.row.life_time }})
+            </template>
           </el-table-column>
           <el-table-column prop="remarks" label="备注" show-overflow-tooltip />
           <el-table-column prop="level" label="日志级别" show-overflow-tooltip>
@@ -90,6 +92,7 @@ const form = reactive<any>({
   data: [],
   searchDate: [],
   orderColumn: "id",
+  orderType: "desc",
   currentPage: 1,
   pageSize: 20,
   total: 0,
@@ -121,6 +124,7 @@ const handleGetOnePageData = async () => {
     page: form.currentPage,
     limit: form.pageSize,
     orderColumn: form.orderColumn,
+    orderType: form.orderType,
     withTerminal: true,
     start_date: form.searchDate?.[0],
     end_date: form.searchDate?.[1],

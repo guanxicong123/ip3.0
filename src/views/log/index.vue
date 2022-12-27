@@ -158,7 +158,7 @@
               />
             </template>
             <template v-if="form.activeName == '4' || form.activeName == '5'">
-              <el-select
+              <!-- <el-select
                 v-model="form.selectTaskOperationType"
                 @change="handleStatusChange(form.activeName)"
               >
@@ -168,7 +168,7 @@
                   :label="item.label"
                   :value="item.value"
                 />
-              </el-select>
+              </el-select> -->
               <el-time-picker
                 v-model="form.search_date_time"
                 value-format="HH:mm:ss"
@@ -367,11 +367,11 @@ const taskTypeOptions = [
   ...[{ value: 0, label: "全部类型" }],
   ...useFormatMap.taskTypeOptions,
 ];
-const taskOperationOptions = [
-  { value: -1, label: "全部状态" },
-  { value: 0, label: "发起广播" },
-  { value: 2, label: "结束广播" },
-];
+// const taskOperationOptions = [
+//   { value: -1, label: "全部状态" },
+//   { value: 0, label: "发起广播" },
+//   { value: 2, label: "结束广播" },
+// ];
 // 处理导出日志弹窗的响应展示/关闭
 const handleLogDialogVisible = (value: boolean, src: any) => {
   form.logDialogVisible = value;
@@ -649,16 +649,16 @@ const handleTaskTypeChange = () => {
   taskRef.value.handleDefaultGet();
 };
 // 处理广播/对讲状态选择器
-const handleStatusChange = (name: string) => {
-  if (name == "4") {
-    broadcastRef.value.search.status = form.selectTaskOperationType;
-    broadcastRef.value.handleDefaultGet();
-  }
-  if (name == "5") {
-    intercomRef.value.search.status = form.selectTaskOperationType;
-    intercomRef.value.handleDefaultGet();
-  }
-};
+// const handleStatusChange = (name: string) => {
+//   if (name == "4") {
+//     broadcastRef.value.search.status = form.selectTaskOperationType;
+//     broadcastRef.value.handleDefaultGet();
+//   }
+//   if (name == "5") {
+//     intercomRef.value.search.status = form.selectTaskOperationType;
+//     intercomRef.value.handleDefaultGet();
+//   }
+// };
 // 处理用户选择器改变时
 const handleUserChange = (name: string) => {
   if (name == "1") {

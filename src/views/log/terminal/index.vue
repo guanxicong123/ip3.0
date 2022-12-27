@@ -26,21 +26,13 @@
             :index="typeIndex"
           />
           <el-table-column prop="time" label="时间" show-overflow-tooltip />
-          <el-table-column
-            prop="terminal.name"
-            label="终端名称"
-            show-overflow-tooltip
-          />
+          <el-table-column prop="terminal.name" label="终端名称" show-overflow-tooltip />
           <el-table-column
             prop="terminal.ip_address"
             label="终端IP"
             show-overflow-tooltip
           />
-          <el-table-column
-            prop="terminal.type"
-            label="终端类型"
-            show-overflow-tooltip
-          >
+          <el-table-column prop="terminal.type" label="终端类型" show-overflow-tooltip>
             <template #default="scope">
               {{ formatterTerminalsType(scope.row?.terminal?.type) }}
             </template>
@@ -102,6 +94,7 @@ interface User {
 const form = reactive<any>({
   data: [],
   orderColumn: "id",
+  orderType: "desc",
   currentPage: 1,
   pageSize: 20,
   total: 0,
@@ -133,6 +126,7 @@ const handleGetOnePageData = async () => {
     page: form.currentPage,
     limit: form.pageSize,
     orderColumn: form.orderColumn,
+    orderType: form.orderType,
     withTerminal: true,
     start_date: form.searchDate?.[0],
     end_date: form.searchDate?.[1],

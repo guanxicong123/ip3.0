@@ -84,6 +84,7 @@ const form = reactive<any>({
   exporting: false, // 等待导出状态
   loading: false, // 等待加载数据状态
   orderColumn: "id",
+  orderType: "desc",
   searchDate: [],
   search_ip_address: "",
   search_platform: "",
@@ -114,6 +115,7 @@ const handleGetOnePageData = async () => {
     page: form.currentPage,
     limit: form.pageSize,
     orderColumn: form.orderColumn,
+    orderType: form.orderType,
     withTerminalsNums: true,
     withUser: true,
     search_level: form.search_level,
