@@ -41,9 +41,9 @@
                 <div class="content-center">
                     <p>
                         {{
-                            playCenterData.TaskID !== playStatusData.TaskID
+                            playCenterData.TaskID !== playSubscriptionTask.TaskID
                                 ? playCenterData.name
-                                : playStatusData.MusicName
+                                : playSubscriptionTask.MusicName
                         }}
                     </p>
                     <div class="progress">
@@ -237,6 +237,16 @@ watch(playStatusData, (newVal) => {
     form.song_name = newVal.MusicName;
     form.play_status = newVal.PlayStatus;
 });
+watch(playSubscriptionTask, (newVal)=> {
+    if (newVal.TaskID === playCenterData.value?.TaskID) {
+        form.current_duration = newVal.CurrentTime;
+        form.total_duration = newVal.TotalTime;
+        form.song_name = newVal.MusicName;
+        form.play_status = newVal.PlayStatus;
+    }
+});
+
+
 // 获取当前显示任务的执行数据
 const playCenterShowData = computed(() => {
     return sessionsData.value.filter((item: any) => {
@@ -256,21 +266,25 @@ const playCenterData = computed(() => {
         return selectTaskData.value;
     }
 });
-watch(playCenterData, (newVal) => {
+
+watch(playCenterData, (newVal, oldVal) => {
     form.volume = newVal?.volume
-    if (newVal?.TaskID) {
-        // 获取任务状态
-        let data = {
-            company: "BL",
-            actioncode: "c2ms_get_task_play_status",
-            token: "",
-            data: {
-                TaskID: newVal.TaskID,
-            },
-            result: 0,
-            return_message: "",
-        };
-        send(data);
+    console.log(newVal, oldVal)
+    if (newVal?.TaskID === oldVal?.TaskID) return
+    const newValType = newVal.type === 1 || newVal.type === 10 || (newVal.type === 4 && newVal.sound_source.type === 1)
+    const oldValType = oldVal.type === 1 || oldVal.type === 10 || (oldVal.type === 4 && oldVal.sound_source.type === 1)
+    if (!newValType && oldValType && oldVal?.TaskID) {
+        unsubscribeTask(oldVal)
+    }
+    if (newVal?.TaskID && !oldVal.TaskID) { //新任务详情存在任务,旧任务详情无执行任务
+        if (newValType) subscribeTask(newVal)
+    }
+    if (newVal?.TaskID && oldVal?.TaskID && newVal?.TaskID !== oldVal?.TaskID) { //新旧任务都存在TaskID,但是任务不相同,判断为切换了任务详情
+        if (oldValType) unsubscribeTask(oldVal)
+        if (newValType) subscribeTask(newVal)
+    }
+    if (!newVal?.TaskID && oldVal?.TaskID && newVal?.name !== oldVal?.name) { //判断为切换了任务详情,新的任务详情不存在任务
+        if (oldValType) unsubscribeTask(oldVal)
     }
 });
 const handleFullscreenStatus = () => {
@@ -380,6 +394,7 @@ const handleEditButton = () => {
 };
 // 获取选中任务详情信息
 const handleSelectionClick = (row: any) => {
+    if (selectTaskData.value === row) return
     selectTaskData.value = row;
     let task = sessionsData.value.filter((item: any) => {
         if (selectTaskData.value?.type < 10) {
@@ -389,19 +404,6 @@ const handleSelectionClick = (row: any) => {
             return item.TaskID === selectTaskData.value.taskid;
         }
     })[0]
-    if (task) {
-        let data = {
-            company: "BL",
-            actioncode: "c2ms_subscribe_task_progress_bar",
-            token: "",
-            data: {
-                TaskID: task.TaskID,
-            },
-            result: 0,
-            return_message: "",
-        };
-        send(data);
-    }
 };
 // 判断任务是否执行中
 const handleDecideStatus = (row: any) => {
@@ -461,6 +463,22 @@ const handlePauseTask = (row: any) => {
 }
 // 播放任务
 const handlePlayTask = (row: any) => {
+    if (row.TaskID) { //已存在任务,应为暂停中任务点击继续播放
+        let data = {
+            company: "BL",
+            actioncode: "c2ms_control_task",
+            token: "",
+            data: {
+                TaskID: row.TaskID,
+                ControlCode: "resume",
+                ControlValue: "",
+            },
+            result: 0,
+            return_message: "",
+        };
+        send(data);
+        return
+    }
     if (row.type < 10) {
         proxy.$http
             .get("/details/" + row.id, {
@@ -553,6 +571,35 @@ const handleVolumeTask = (volume: any) => {
         send(data);
     }
 };
+// 订阅任务
+const subscribeTask = (row: any) => {
+    let data = {
+        company: "BL",
+        actioncode: "c2ms_subscribe_task_progress_bar",
+        token: "",
+        data: {
+            TaskID: row.TaskID,
+        },
+        result: 0,
+        return_message: "",
+    };
+    send(data);
+};
+// 取消任务订阅
+const unsubscribeTask = (row: any) => {
+    let data = {
+        company: "BL",
+        actioncode: "c2ms_unsubscribe_task_progress_bar",
+        token: "",
+        data: {
+            TaskID: row.TaskID,
+        },
+        result: 0,
+        return_message: "",
+    };
+    send(data);
+};
+// 生成UUID
 const guid = () => {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
         var r = (Math.random() * 16) | 0,

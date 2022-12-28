@@ -317,19 +317,19 @@ const requestGroups = (data: any) => {
 };
 // 提交任务
 const submitTask = () => {
-    if (!executionregiontype && !fast_terminals_id.value)
+    if (!executionregiontype.value && !fast_terminals_id.value)
         return proxy.$message.warning("请选择快捷终端");
-    if (
-        executionregiontype &&
+    if (executionregiontype.value &&
         terminals.value.length === 0 &&
         terminals_groups.value.length === 0
-    )
+    ) {
         return proxy.$message.warning("请选择终端或分组");
+    }
 
     let data = Object.assign(ruleForm, {
-        fast_terminals_id: !executionregiontype ? "" : fast_terminals_id.value,
-        terminals: executionregiontype ? terminals.value : [],
-        terminals_groups: executionregiontype ? terminals_groups.value : [],
+        fast_terminals_id: executionregiontype.value !== 0 ? 0 : fast_terminals_id.value,
+        terminals: executionregiontype.value ? terminals.value : [],
+        terminals_groups: executionregiontype.value ? terminals_groups.value : [],
     });
 
     if (ruleForm.type === 10) {

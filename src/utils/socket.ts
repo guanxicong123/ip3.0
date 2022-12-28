@@ -144,7 +144,6 @@ const requestFunction = (actionCode: string) => {
 }
 // 发起远程音乐播放任务
 const startRemotePlay = (row: any) => {
-  console.log(remotePlayTaskKey, row.TaskID)
     if (remotePlayTaskKey.includes(row.TaskID)) {
         const data = {
             company: 'BL',
@@ -164,6 +163,22 @@ const startRemotePlay = (row: any) => {
         })
     }
 }
+// 发起本地任务
+const startLocalPlay = (row: any) => {
+    const data = {
+        company: 'BL',
+        actioncode: 'c2ms_control_task',
+        token: '',
+        data: {
+            TaskID: row.TaskID,
+            ControlCode: 'play',
+            ControlValue: '',
+        },
+        result: 0,
+        return_message: '',
+    }
+    send(data)
+}
 // 登录
 const login = () => {
     const data = loginData
@@ -182,7 +197,7 @@ const handlerMsg = (msg: any) => {
         [
             'task_progress_bar_info', //播放中心订阅模式
             () => {
-                getStore.useAppStore().taskDataPush(msg.data.TaskInfoArray)
+                getStore.usePlayStore().setPlayTaskStatus(msg.data.report)
             },
         ],
         [
@@ -258,6 +273,13 @@ const handlerMsg = (msg: any) => {
     case 'ms2c_create_server_task':
         startRemotePlay(msg.data)
         return
+    case 'ms2cs_set_task_display_info':
+        startLocalPlay(msg.data)
+        return
+    case 'ms2c_control_task': //播放中心任务状态改变
+        
+        return
+    
   }
 }
 

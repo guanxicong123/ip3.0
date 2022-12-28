@@ -677,6 +677,7 @@ const handleSelectionData = (row: any) => {
         }
     })
 };
+
 // 获取快捷终端
 const getFastTerminals = () => {
     return new Promise<void>((resolve, reject) => {
