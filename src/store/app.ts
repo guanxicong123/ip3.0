@@ -65,19 +65,19 @@ export const useAppStore = defineStore({
         if (this.sessionsArray.length === 0) {
             this.sessionsArray = data;
         } else {
-        data.forEach((one: any) => {
-            const result = this.sessionsArray.some((two: any) => {
-            if (one.TaskID === two.TaskID) {
-                Object.assign(two, one);
-                return true;
-            } else {
-                return false;
-            }
+            data.forEach((one: any) => {
+                const result = this.sessionsArray.some((two: any) => {
+                if (one.TaskID === two.TaskID) {
+                    Object.assign(two, one);
+                    return true;
+                } else {
+                    return false;
+                }
+                });
+                if (!result) {
+                    this.sessionsArray.push(one);
+                }
             });
-            if (!result) {
-                this.sessionsArray.push(one);
-            }
-        });
         }
     },
     // 会话停止推送
