@@ -232,7 +232,10 @@
           <template v-if="config.musicPlayModel">
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
               <el-form-item label="播放模式" prop="play_model">
-                <el-select v-model="form.play_model" @change="handleSelectedConfigure">
+                <el-select
+                  v-model="form.play_model"
+                  @change="handleTotalStatisticalDuration"
+                >
                   <el-option
                     v-for="(item, keys) in config.setMusicPlayModelOption"
                     :key="keys"
@@ -689,10 +692,12 @@ const handleRequestGroups = (data: any) => {
 const handleTotalSecond = (data: any) => {
   form.totalSecond = data;
   form.life_time = usePublicMethod.convertSongDuration(data);
+  handleSelectedConfigure();
 };
 // 处理统计已选音乐时长
 const handleTotalStatisticalDuration = () => {
   form.life_time = usePublicMethod.convertSongDuration(form.totalSecond);
+  handleSelectedConfigure();
 };
 // 处理已选择音源采集
 const handleRequestSoundSource = (data: any) => {
