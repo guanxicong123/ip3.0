@@ -395,15 +395,22 @@ const handleEditButton = () => {
 // 获取选中任务详情信息
 const handleSelectionClick = (row: any) => {
     if (selectTaskData.value === row) return
-    selectTaskData.value = row;
-    let task = sessionsData.value.filter((item: any) => {
-        if (selectTaskData.value?.type < 10) {
-            return item.RemoteTaskID === selectTaskData.value.id;
-        }
-        if (selectTaskData.value?.type >= 10) {
-            return item.TaskID === selectTaskData.value.taskid;
-        }
-    })[0]
+    if (row.type < 10) {
+        selectTaskData.value = row;
+    }else {
+        getLocalTask(row).then((result: any)=> {
+            selectTaskData.value = result.data
+        })
+    }
+};
+const getLocalTask = (row: any) => {
+    return new Promise((resolve, reject)=> {
+        proxy.$http1.get("/task/" + row.id).then((result: any) => {
+            if (result.result === 200) {
+                resolve(result)
+            }
+        });
+    })
 };
 // 判断任务是否执行中
 const handleDecideStatus = (row: any) => {

@@ -181,8 +181,11 @@
                 </el-form>
             </div>
         </div>
-        <el-upload v-model:file-list="fileList" ref="uploadRef" class="upload-demo" accept=".mp3"
-            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15" :multiple="true" :auto-upload="false"
+        <el-upload
+            v-model:file-list="fileList" ref="uploadRef"
+            class="upload-demo" accept=".mp3"
+            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+            :multiple="true" :auto-upload="false"
             :show-file-list="false" :on-change="uploadChange">
             <template #trigger>
                 <span class="iconfont icon-add" ref="iconAdd" style="display: none"></span>
@@ -220,6 +223,7 @@ import selectMediaDialog from "../dialogComponents/select-media-dialog.vue";
 import terminalsSelectDialog from "../dialogComponents/terminals-select-dialog.vue";
 import { UploadProps } from "element-plus";
 import { send } from "@/utils/socket";
+import usePublicMethod from "@/utils/global/index";
 
 // defineAsyncComponent 异步组件-懒加载子组件
 const acquisitionDeviceComponent = defineAsyncComponent(
@@ -287,18 +291,6 @@ watch(taskDataDetailed, (newVal: any) => {
         ruleForm.data = newVal.content;
     }
 });
-watch(fileList, (newVal: any) => {
-    setTimeout(() => {
-        let data = newVal.map((item: any) => {
-            return {
-                name: item.name,
-                path: item.raw.path,
-                time: item.time,
-            };
-        });
-        ruleForm.data.concat(data);
-    }, 300);
-});
 
 // 切换tabs
 const handleSwitchTabs = (tabsName: string) => {
@@ -326,6 +318,7 @@ const handleSelectedConfigure = (data: any) => {
 };
 //  选择的终端/终端分组
 const handleSelectedTerminals = (data: any) => {
+    console.log(data, ruleForm.type)
     let putData = {
         terminals:  data.terminals,
         terminals_groups: data.terminals_groups.map((item: any) => {
@@ -336,17 +329,16 @@ const handleSelectedTerminals = (data: any) => {
         })
     }
     if (ruleForm.type >= 10) {
-        if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id !== 0) {
-            proxy.$http1
-                .put("/task/terminal/" + props.selectTaskData.id, {
-                    terminals: putData.terminals,
-                    terminals_groups: putData.terminals_groups,
-                })
-                .then((result: any) => {
-                    if (result.result === 200) {
-                        handleChangeTaskTerminals()
-                    }
-                });
+        if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id === 0) {
+            proxy.$http1.put("/task/terminal/" + props.selectTaskData.id, {
+                terminals: putData.terminals,
+                terminals_groups: putData.terminals_groups,
+            })
+            .then((result: any) => {
+                if (result.result === 200) {
+                    handleChangeTaskTerminals()
+                }
+            });
             return;
         }
     } else {
@@ -427,6 +419,10 @@ const handleEditButton = () => {
         terminaDialogVisible.value = true;
         return;
     }
+    if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id === 0) {
+        terminaSelectVisible.value = true;
+        return
+    }
     if (props.playCenterData.TaskID) return proxy.$message.warning('任务正在执行中')
     if (ruleForm.type === 10) {
         iconAdd.value.click();
@@ -452,6 +448,7 @@ const handleEditSava = () => {
             editStatus.value = false;
             handleSelectionData(props.selectTaskData);
         })
+        return
     }
     if (ruleForm.type >= 10) {
         let data;
@@ -459,11 +456,13 @@ const handleEditSava = () => {
             data = tsctFormData.value;
         }
         if (ruleForm.type === 12 || ruleForm.type === 13) {
-            if (ruleForm.type === 12) {
+            ruleForm.type = sourAcquisiFrom.value.type
+            if (sourAcquisiFrom.value.type === 12) {
                 data = {
                     audioQuality: sourAcquisiFrom.value.audioQuality,
                     record: sourAcquisiFrom.value.record,
                     recordpath: sourAcquisiFrom.value.recordpath,
+                    soundcard: sourAcquisiFrom.value.soundcard
                 };
             } else {
                 data = {
@@ -471,20 +470,18 @@ const handleEditSava = () => {
                     terminalID: sourAcquisiFrom.value.terminalID,
                 };
             }
-            proxy.$http1.put(
-                "/task",
-                Object.assign(props.selectTaskData, {
-                    content: data,
-                    type: ruleForm.type,
-                })
-            ).then((result: any) => {
-                if (result.result === 200) {
-                    editStatus.value = false;
-                    handleSelectionData(props.selectTaskData);
-                }
-            });
-            return;
         }
+        proxy.$http1.put("/task",
+            Object.assign(props.selectTaskData, {
+                content: data,
+                type: ruleForm.type,
+            })
+        ).then((result: any) => {
+            if (result.result === 200) {
+                editStatus.value = false;
+                handleSelectionData(props.selectTaskData);
+            }
+        });
     }
 };
 // 更新远程任务
@@ -520,10 +517,41 @@ const handleLocalTaskTermina = () => {
             })
         ).then((result: any) => {
             if (result.result === 200) {
-                resolve()
+                handleSelectionData(props.selectTaskData)
             }
         });
     })
+}
+// 更新本地任务（本地音频添加）
+const handleLocalTaskMusic = () => {
+    if (fileList.value.length > 0) {
+        let data = fileList.value.map((item: any) => {
+            return {
+                name: item.name,
+                path: item.raw.path,
+                time: item.time,
+            };
+        });
+        let newArrPath: any = []
+        let newArrData: any = []
+        ruleForm.data.concat(data).forEach((item: any)=> {
+            if (!newArrPath.includes(item.path)) {
+                newArrPath.push(item.path)
+                newArrData.push(item)
+            }
+        })
+        proxy.$http1.put(
+            "/task",
+            Object.assign(props.selectTaskData, {
+                content: newArrData,
+            })
+        ).then((result: any) => {
+            if (result.result === 200) {
+                fileList.value = []
+                handleSelectionData(props.selectTaskData)
+            }
+        });
+    }
 }
 // 媒体弹框更新保存
 const uploadMedia = (data: any) => {
@@ -552,8 +580,9 @@ const uploadMedia = (data: any) => {
         });
 };
 // 选中文件时触发
-const uploadChange: UploadProps["onChange"] = (uploadFile: any) => {
+const uploadChange: UploadProps["onChange"] = (uploadFile: any, uploadFiles: any) => {
     getTimes(uploadFile);
+    usePublicMethod.debounce(handleLocalTaskMusic, 500)
 };
 // 获取文件时长
 const getTimes = (file: any) => {
@@ -642,7 +671,6 @@ const handleSelectionData = (row: any) => {
                 },
             }).then((restlu: any) => {
                 taskDataDetailed.value = restlu.data;
-                console.log(taskDataDetailed.value.medias)
                 const terminals = restlu.data.terminals ? restlu.data.terminals : [];
                 const terminals_groups = restlu.data.terminals_groups
                     ? restlu.data.terminals_groups

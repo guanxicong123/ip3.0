@@ -104,9 +104,9 @@
                 <el-form-item :label="form.selectedConfigureData.type === 2 ? '选择音源' : '选择终端'">
                     <div class="fast-source">
                         {{
-        form.selectedConfigureData.type === 2
-            ? form.selectedConfigureData?.fast_source?.sound_card
-            : form.selectedConfigureData?.fast_source?.terminals_name
+                            form.selectedConfigureData.type === 2
+                                ? form.selectedConfigureData?.fast_source?.sound_card
+                                : form.selectedConfigureData?.fast_source?.terminals_name
                         }}
                     </div>
                 </el-form-item>
@@ -194,7 +194,7 @@ const handleClickCloSelectedSesearch = () => {
 };
 // 设置tab当前选择状态
 const setCurrentTabSelectStatus = (data: any) => {
-    if (!data) {
+    if (!data || data.id === -1) {
         return handleSelectedConfigure(form.allConfigureData?.[0]);
     }
     form.allConfigureData.some((item: { id: number }) => {
@@ -203,6 +203,7 @@ const setCurrentTabSelectStatus = (data: any) => {
         }
     });
 };
+// 获取所有快捷音源
 const getSoundSource = () => {
     return new Promise<void>((resolve, reject) => {
         proxy.$http

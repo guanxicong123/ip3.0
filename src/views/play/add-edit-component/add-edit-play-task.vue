@@ -517,11 +517,13 @@ const getLocalTask = (row: any) => {
         }
         if (result.data.fast_terminals_id === 0) {
             executionregiontype.value = 1;
+        }else {
+            quickTerminaName.value = result.data.fast_terminals?.name;
         }
-        if (result.data.terminals) {
+        if (result.data.terminals && result.data.fast_terminals_id === 0) {
             responseTerminals.value = result.data.terminals
         }
-        if (result.data.terminals_groups) {
+        if (result.data.terminals_groups && result.data.fast_terminals_id === 0) {
             responseGroups.value = result.data.terminals_groups
         }
     });
