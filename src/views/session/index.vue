@@ -186,7 +186,7 @@ const monitorTerminal: any = ref({})
 const tableDataAll = ref<any[]>([]) //过滤后的数据
 const sessionOptions = [
   ...[{ value: 0, label: "全部类型" }],
-  ...useFormatMap.terminalsOptions,
+  ...useFormatMap.taskTypeOptions,
 ];
 const terminalStatus = new Map([
     [ 1, "icon-on-line" ], //空闲

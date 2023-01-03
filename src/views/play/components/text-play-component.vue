@@ -128,6 +128,7 @@
                 :min="1"
                 controls-position="right"
                 :disabled="!props.isEdit"
+                :value-on-clear="ruleForm.repeattime"
               />
             </el-form-item>
           </el-col>

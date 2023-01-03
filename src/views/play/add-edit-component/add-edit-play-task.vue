@@ -12,10 +12,15 @@
                     <span>基础配置</span>
                 </div>
                 <div class="play-task-basics-content configure-level-content">
-                    <el-form :model="ruleForm" label-position="top" class="play-task-form-inline">
+                    <el-form
+                            ref="ruleFormRef"
+                            :model="ruleForm"
+                            label-position="top"
+                            :rules="rules"
+                            class="play-task-form-inline">
                         <el-row :gutter="80">
                             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                                <el-form-item label="任务名称">
+                                <el-form-item label="任务名称" prop="name">
                                     <el-input
                                         v-model="ruleForm.name"
                                         placeholder="请输入1-100字符"
@@ -46,7 +51,6 @@
                             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                                 <el-form-item
                                     label="优先级"
-                                    prop="priority"
                                     class="custom-form-input"
                                 >
                                     <div class="custom-number red" title="任务优先级-音乐播放">
@@ -165,7 +169,7 @@ import type {
     UploadInstance,
     UploadUserFile,
     UploadProps,
-    UploadFile,
+    FormInstance,
 } from "element-plus";
 import soundSourceComponent from "../components/sound-source-component.vue";
 import musicPlayComponent from "../components/music-play-component.vue";
@@ -211,8 +215,8 @@ const tsctFormData = ref({
 }); //文本播放表单数据
 const quickTerminaName = ref("请选择快捷终端");
 const soundSourceForm = ref({}); //快捷音源表单数据
-const musicPlayForm = ref({}); //音乐播放表单数据
-const remotePlayForm = ref({}); //远程播放表单数据
+const musicPlayForm: any = ref({}); //音乐播放表单数据
+const remotePlayForm: any = ref({}); //远程播放表单数据
 const sourAcquisiFrom: any = ref({}); //音源采集表单数据
 const responseTerminals = ref([]); //已选择的终端数据
 const responseGroups = ref([]); //已选择的终端数组
@@ -229,6 +233,21 @@ const typeOptions = [
     { label: "文本播放", value: 11 },
     { label: "音源采集", value: 12 },
 ];
+const ruleFormRef = ref<FormInstance>()
+// 验证
+const validateName = (rule: any, value: any, callback: any) => {
+    ruleForm.name = value = useRegex.replaceEmojiSpaces(value);
+
+    if (!useRegex.validateEmpty(value)) {
+        return callback(new Error("请输入"));
+    } else if (!useRegex.validateName(value)) {
+        return callback(new Error("该名称不符合规则"));
+    }
+    return callback()
+};
+const rules = reactive({
+    name: [{ validator: validateName, trigger: 'blur' }],
+})
 
 watch(fileList, (newVal: any) => {
     setTimeout(() => {
@@ -346,7 +365,7 @@ const submitTask = () => {
 };
 // 快捷音源任务
 const createQuickSou = (data: any) => {
-    if (ruleForm.fast_sound_id === -1) return proxy.$message.warning("请选择快捷音源");
+    if (!ruleForm.fast_sound_id) return proxy.$message.warning("请选择快捷音源");
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
         proxy.$http.put("/broadcasting/" + $useRoute.query.id,
             Object.assign(data, {
@@ -371,7 +390,12 @@ const createQuickSou = (data: any) => {
 };
 // 音乐播放任务
 const createLocalAudio = (data: any) => {
-    if (ruleForm.content.length === 0) return proxy.$message.warning("请添加音频文件");
+    if (ruleForm.content.length === 0)
+        return proxy.$message.warning("请添加音频文件");
+    if (musicPlayForm.value?.play_model !== 0 && musicPlayForm.value?.life_time === "00:00:00")
+        return proxy.$message.warning("请选择持续时间");
+    if (musicPlayForm.value?.play_model !== 0 && !musicPlayForm.value?.play_number)
+        return proxy.$message.warning("请输入正确播放曲目");
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
         proxy.$http1.put("/task", 
             Object.assign(data, musicPlayForm.value, {
@@ -392,10 +416,14 @@ const createLocalAudio = (data: any) => {
         })
     }
 };
-// 远程任务
+// 远程播放
 const createRemteTask = (data: any) => {
     if (ruleForm.medias.length === 0 && ruleForm.medias_groups.length === 0)
         return proxy.$message.warning("请添加媒体文件或媒体文件夹");
+    if (remotePlayForm.value?.play_model !== 0 && remotePlayForm.value?.life_time === "00:00:00")
+        return proxy.$message.warning("请选择持续时间");
+    if (remotePlayForm.value?.play_model !== 0 && !remotePlayForm.value?.play_number)
+        return proxy.$message.warning("请输入正确播放曲目");
 
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
         proxy.$http.put("/broadcasting/" + $useRoute.query.id, 
@@ -426,7 +454,8 @@ const createTxstPlay = (data: any) => {
         return proxy.$message.warning("请选择文本路径");
     if (!tsctFormData.value.is_txt && tsctFormData.value.ttscontent === "")
         return proxy.$message.warning("请输入文本内容");
-
+    if (!tsctFormData.value.ttsenginename)
+        return proxy.$message.warning("请选择播放语音");
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
         proxy.$http1.put("/task",
             Object.assign(data, {
@@ -456,11 +485,12 @@ const createSoundSourceCollection = (data: any) => {
     let fromData: any = {
         audioQuality: sourAcquisiFrom.value.audioQuality,
     };
+
     if (sourAcquisiFrom.value.type === 1) {
+        if (sourAcquisiFrom.value.selectVal === "" || sourAcquisiFrom.value.selectVal.id || JSON.stringify(sourAcquisiFrom.value.selectVal) === '{}')
+            return proxy.$message.warning("请选择声卡");
         if (sourAcquisiFrom.value.record && sourAcquisiFrom.value.recordpath === "")
             return proxy.$message.warning("请选择录音存放路径");
-        if (sourAcquisiFrom.value.selectVal === "" || sourAcquisiFrom.value.selectVal.id)
-            return proxy.$message.warning("请选择声卡");
         fromData["soundcard"] = sourAcquisiFrom.value.selectVal;
         fromData["record"] = sourAcquisiFrom.value.record;
         fromData["recordpath"] = sourAcquisiFrom.value.recordpath;
