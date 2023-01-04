@@ -63,7 +63,7 @@
             </div>
             <div class="custom-content">
                 <el-scrollbar>
-                    <ul class="scroll-ul">
+                    <ul class="scroll-ul"
                         <template v-for="(item, index) in form.selectedConfigureData?.all_data" :key="item.id">
                             <li v-show="
                                 !form.selectedSearchConfigureVisible ||

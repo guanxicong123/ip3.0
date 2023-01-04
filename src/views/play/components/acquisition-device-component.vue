@@ -83,6 +83,7 @@ const ruleForm: any = reactive({
     record: false,
     audioQuality: 1,
     terminalID: 0,
+    soundcard: ''
 });
 const audioQualityOptions = [
     { label: "初级", value: 1 },
@@ -100,6 +101,7 @@ watch(
         if (ruleForm.type === 12) {
             ruleForm.recordpath = newVal.content.recordpath;
             ruleForm.record = newVal.content.record;
+            ruleForm.soundcard = newVal.content.soundcard
             acquisitionTerminalName.value = newVal.content.soundcard;
         } else {
             ruleForm.terminalID = newVal.content.terminalID;
@@ -114,17 +116,20 @@ watch(ruleForm, (newVal) => {
         record: newVal.record,
         audioQuality: newVal.audioQuality,
         terminalID: newVal.terminalID,
+        soundcard: newVal.soundcard
     };
     emit("update:sourAcquisiFrom", data);
 });
 // 选择音源采集配置
 const requestSourceAcquisition = (data: any) => {
+    console.log(data)
     const isHasID = Object.prototype.hasOwnProperty.call(data, "id");
     ruleForm.type = isHasID ? 13 : 12;
     if (isHasID) {
         ruleForm.terminalID = data.id;
         getTerminalsAll(data.id);
     } else {
+        ruleForm.soundcard = data
         acquisitionTerminalName.value = data;
     }
 };
@@ -170,6 +175,7 @@ onMounted(() => {
     if (ruleForm.type === 12) {
         ruleForm.recordpath = props.selectTaskData.content.recordpath;
         ruleForm.record = props.selectTaskData.content.record;
+        ruleForm.soundcard = props.selectTaskData.content.soundcard
         acquisitionTerminalName.value = props.selectTaskData.content.soundcard;
     } else {
         ruleForm.terminalID = props.selectTaskData.content.terminalID;

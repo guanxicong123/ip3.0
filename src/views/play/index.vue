@@ -46,7 +46,7 @@
                                 : playSubscriptionTask.MusicName
                         }}
                     </p>
-                    <div class="progress">
+                    <div class="progress" v-if="handleTaskProgress()">
                         <el-slider v-model="form.current_duration" :max="form.total_duration"
                             :format-tooltip="formatTooltip" @change="handleSwitchTask(playCenterData, 'progress')" />
                         <span class="fl">{{ formatTooltip(form.current_duration) }}</span>
@@ -80,10 +80,10 @@
                     </el-popover>
                 </div>
                 <div class="content-bottom theme" v-else>
-                    <i class="iconfont" :class="playCenterData.TaskID ? 'icon-suspend' : 'icon-play'"
-                        :title="playCenterData.TaskID ? '暂停' : '播放'" @click="
+                    <i class="iconfont" :class="playCenterData.TaskID ? 'icon-end' : 'icon-play'"
+                        :title="playCenterData.TaskID ? '停止' : '播放'" @click="
                             playCenterData.TaskID
-                                ? handleSwitchTask(playCenterData, 'pause')
+                                ? handleStopTask(playCenterData)
                                 : handlePlayTask(playCenterData)
                         ">
                     </i>
@@ -333,6 +333,21 @@ const multipleSelection = ref<User[]>([]);
 const priorityData = new Map();
 const playConfig = ref();
 
+// 判断是否显示进度条
+const handleTaskProgress = () => {
+    if (selectTaskData.value.type === 1 || selectTaskData.value.type === 10) {
+        return true;
+    }
+    console.log(selectTaskData.value)
+    if (
+        selectTaskData.value.type === 4 &&
+        selectTaskData.value.fast_sound &&
+        selectTaskData.value.fast_sound.type === 1
+    ) {
+        return true;
+    }
+    return false
+}
 // 判断是否显示按钮
 const handleTaskButton = () => {
     if (selectTaskData.value.type === 1) {
@@ -343,7 +358,7 @@ const handleTaskButton = () => {
         selectTaskData.value.fast_sound &&
         selectTaskData.value.fast_sound.type === 1
     ) {
-        return;
+        return true;
     }
     if (selectTaskData.value.type === 10) {
         return true;
@@ -395,15 +410,22 @@ const handleEditButton = () => {
 // 获取选中任务详情信息
 const handleSelectionClick = (row: any) => {
     if (selectTaskData.value === row) return
-    selectTaskData.value = row;
-    let task = sessionsData.value.filter((item: any) => {
-        if (selectTaskData.value?.type < 10) {
-            return item.RemoteTaskID === selectTaskData.value.id;
-        }
-        if (selectTaskData.value?.type >= 10) {
-            return item.TaskID === selectTaskData.value.taskid;
-        }
-    })[0]
+    if (row.type < 10) {
+        selectTaskData.value = row;
+    }else {
+        getLocalTask(row).then((result: any)=> {
+            selectTaskData.value = result.data
+        })
+    }
+};
+const getLocalTask = (row: any) => {
+    return new Promise((resolve, reject)=> {
+        proxy.$http1.get("/task/" + row.id).then((result: any) => {
+            if (result.result === 200) {
+                resolve(result)
+            }
+        });
+    })
 };
 // 判断任务是否执行中
 const handleDecideStatus = (row: any) => {
@@ -546,7 +568,7 @@ const handleSwitchTask = (row: any, type: string) => {
 };
 const handleControlValuev = (type: string) => {
     if (type === "progress") {
-        return form.current_duration
+        return form.current_duration / 1000
     }
     if (type === 'PlayMode') {
         let model = 0
@@ -790,7 +812,11 @@ const getTaskAll = () => {
 // 获取所有播放任务
 const getBroadcastingAll = () => {
     return new Promise((resolve, reject) => {
-        proxy.$http.get("/broadcasting/all").then((restlu: any) => {
+        proxy.$http.get("/broadcasting/all", {
+            params: {
+                withFastSound: true
+            }
+        }).then((restlu: any) => {
             let data = restlu.data.filter((item: { type: number }) => {
                 return item.type === 1 || item.type === 4;
             });
