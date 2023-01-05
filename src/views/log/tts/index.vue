@@ -27,8 +27,8 @@
           />
           <el-table-column prop="time" label="时间" show-overflow-tooltip />
           <el-table-column prop="user.name" label="用户" show-overflow-tooltip />
-          <el-table-column prop="txt" label="文本内容" show-overflow-tooltip />
-          <el-table-column prop="path" label="路径" show-overflow-tooltip />
+          <el-table-column prop="context" label="文本内容" show-overflow-tooltip />
+          <el-table-column prop="relative_path" label="路径" show-overflow-tooltip />
           <el-table-column prop="terminal" label="执行终端" show-overflow-tooltip>
             <template #default="scope">
               <view-components-popover
@@ -41,7 +41,7 @@
           <el-table-column prop="remarks" label="备注" show-overflow-tooltip />
           <el-table-column prop="level" label="日志级别" show-overflow-tooltip>
             <template #default="scope">
-              {{ formatterLevel(scope.row.level) }}
+              {{ formatterLevel(scope.row) }}
             </template>
           </el-table-column>
           <el-table-column label="操作" width="120">
