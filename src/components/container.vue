@@ -60,6 +60,7 @@ watch(
     }
 );
 
+// 定时延长token有效期
 const refreshToken = () => {
     timeoutToken.value = null
     proxy.$http.get('/auth/refresh').then((result: any)=> {

@@ -123,6 +123,7 @@
                                 @cell-click="handleSelectionClick">
                                 <el-table-column prop="name" label="任务" show-overflow-tooltip min-width="280">
                                     <template #default="scope">
+                                        <!-- <span class="icon iconfont" :class=""></span> -->
                                         <svg class="icon" aria-hidden="true">
                                             <use :xlink:href="taskTypeMap.get(scope.row.type)"></use>
                                         </svg>
@@ -268,8 +269,7 @@ const playCenterData = computed(() => {
 });
 
 watch(playCenterData, (newVal, oldVal) => {
-    form.volume = newVal?.volume
-    console.log(newVal, oldVal)
+    form.volume = newVal?.TaskVolume ? newVal?.TaskVolume : newVal?.volume
     if (newVal?.TaskID === oldVal?.TaskID) return
     const newValType = newVal.type === 1 || newVal.type === 10 || (newVal.type === 4 && newVal.sound_source.type === 1)
     const oldValType = oldVal.type === 1 || oldVal.type === 10 || (oldVal.type === 4 && oldVal.sound_source.type === 1)
@@ -295,6 +295,7 @@ const taskTypeMap = new Map([
     [1, "#icon-remote-playback"],
     [11, "#icon-text"],
     [13, "#icon-terminals"],
+    [12, "#icon-terminals"],
     [10, "#icon-music-playback"],
 ]);
 const taskPlayMode = new Map([
@@ -485,22 +486,6 @@ const handlePauseTask = (row: any) => {
 }
 // 播放任务
 const handlePlayTask = (row: any) => {
-    if (row.TaskID) { //已存在任务,应为暂停中任务点击继续播放
-        let data = {
-            company: "BL",
-            actioncode: "c2ms_control_task",
-            token: "",
-            data: {
-                TaskID: row.TaskID,
-                ControlCode: "resume",
-                ControlValue: "",
-            },
-            result: 0,
-            return_message: "",
-        };
-        send(data);
-        return
-    }
     if (row.type < 10) {
         proxy.$http
             .get("/details/" + row.id, {

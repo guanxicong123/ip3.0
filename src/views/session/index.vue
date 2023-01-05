@@ -21,7 +21,7 @@
                     <el-button @click="resetSearch">重置</el-button>
                 </div>
                 <div class="com-button">
-                    <span>监听音响</span>
+                    <span>监听音箱 </span>
                     <el-popover
                             placement="bottom"
                             :width="400"
@@ -122,7 +122,11 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="TaskBeginTime" label="会话进行时间" sortable="custom" width="160"/>
-                    <el-table-column prop="IsMonitor" label="监听状态" />
+                    <el-table-column prop="IsMonitor" label="监听状态">
+                        <template #default="scope">
+                            {{ scope.row.IsMonitor ? "被监听" : "未监听" }}
+                        </template>
+                    </el-table-column>
                     <el-table-column label="操作" width="120">
                         <template #default="scope">
                             <el-button link type="danger" @click="handleStopTask(scope.row)">
@@ -284,7 +288,7 @@ const handleStopTask = (row: any) => {
 const setMonitorTerminal = (row: any) => {
     console.log(row, selectTerminalMac)
     if (!selectTerminalMac.value?.EndPointID) {
-        return ElMessage.warning('请选择监听音响')
+        return ElMessage.warning('请选择监听音箱')
     }
     // if (loading.value)return
     // loading.value = true
@@ -317,7 +321,7 @@ const changeTaskVolume = (row: any) => {
     let func = ()=> {
         let data = {
             "company": "BL",
-            "actioncode": "c2ls_set_task_volume",
+            "actioncode": "c2ms_set_task_volume",
             "token": "",
             "data": {
                 "TaskID": row.TaskID,

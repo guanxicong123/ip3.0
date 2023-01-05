@@ -405,3 +405,15 @@ html {
       }
   }
 }
+.com-data-select-compute {
+  font-size: 14px;
+  padding-bottom: 18px;
+  span {
+      &:nth-child(2),&:nth-child(3) {
+          padding-left: 6px;
+      }
+  }
+  .head-add-color {
+      color: rgb(19, 212, 29);
+  }
+}

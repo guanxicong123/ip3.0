@@ -234,9 +234,6 @@ const $useRouter = useRouter();
 const $useRoute = useRoute();
 const set_dialog = ref(false);
 
-watch($useRoute, (newVal)=> {
-    console.log(newVal.fullPath)
-})
 const select_terminal = ref("3x6");
 
 // 全选
@@ -317,7 +314,7 @@ const cleanOnLineTerminal = () => {
 
 // 确认终端视图模式
 const confirmTerminalSet = () => {
-    axios.put("http://172.16.21.25:9999/api/v1/config/" + basic_configs.value.ID, {
+    proxy.$http1.put("/config/" + basic_configs.value.ID, {
         DisplayType: form.view_value === "list" ? 1 : 0,
         ListDisplaySize:
             form.select_terminal === "3x5"
@@ -326,7 +323,7 @@ const confirmTerminalSet = () => {
                     ? 1
                     : 2,
     }).then((result: any) => {
-        if (result.status === 200) {
+        if (result.result === 200) {
             select_terminal.value = form.select_terminal;
             let data = {
                 DisplayType: form.view_value === "list" ? 1 : 0,
@@ -339,7 +336,7 @@ const confirmTerminalSet = () => {
             };
             systemStore.updateTerminalStatusConfig(data);
             if (form.view_value === "list") {
-                $useRouter.push("/terminal/terminal_list");
+                getTerminalGroupAll()
             } else {
                 $useRouter.push({
                     path: "/terminal/terminal_block",
@@ -430,7 +427,7 @@ const originateBroadcast = (EndPointList: any[]) => {
             TaskName: '客户端广播任务（' + localStorage.get('username') + '）',
             Priority: 100,
             Volume: form.volume,
-            TaskType: 6,
+            TaskType: 5,
             UserID: Number(localStorage.get('LoginUserID')),
             TaskProp: {
                 "TaskAudioType" : 2,
@@ -605,7 +602,6 @@ provide("terminal_group", {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-    getTerminalGroupAll()
     form.search_placeholder = "终端名称";
     cleanOnLineTerminal();
     form.select_terminal =
@@ -615,6 +611,16 @@ onMounted(() => {
                 ? "3x6"
                 : "4x6";
     form.view_value = basic_configs.value.DisplayType === 1 ? "list" : "square";
+    if (form.view_value === "list") {
+        getTerminalGroupAll()
+    } else {
+        $useRouter.push({
+            path: "/terminal/terminal_block",
+            query: {
+                layoutArrange: select_terminal.value,
+            },
+        });
+    }
 });
 </script>
 

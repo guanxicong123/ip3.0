@@ -32,9 +32,9 @@ module.exports = defineConfig({
                 "nsis": {
                     // "oneClick" : false,// 是否一键安装
                     // "allowToChangeInstallationDirectory" : true, // 允许修改安装目录
-                    // "installerIcon": "./icon/icon.ico",// 安装图标
-                    // "uninstallerIcon": "./icon/icon.ico",//卸载图标
-                    // "installerHeaderIcon": "./icon/icon.ico", // 安装时头部图标
+                    // "installerIcon": "public/ip.ico",// 安装图标
+                    // "uninstallerIcon": "public/ip.ico",//卸载图标
+                    // "installerHeaderIcon": "public/ip.ico", // 安装时头部图标
                     "createDesktopShortcut": true, // 创建桌面图标
                     "createStartMenuShortcut": true,// 创建开始菜单图标
                     "shortcutName": "ip-broadcast", // 图标名称
@@ -48,7 +48,7 @@ module.exports = defineConfig({
                 // },
                 "win": {//win相关配置
                     // "requestedExecutionLevel": "highestAvailable", // requireAdministrator: 管理员权限, highestAvailable: 可用的最高权限, asInvoker: 默认配置
-                    "icon": "./icon/icon.ico",//图标，当前图标在icon目录下，注意这里有两个坑
+                    "icon": "public/ip.ico",//图标，当前图标在icon目录下，注意这里有两个坑
                     "target": [
                         {
                             "target": "nsis",// 使用nsis打成安装包，打包成免安装版

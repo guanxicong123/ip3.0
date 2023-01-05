@@ -34,23 +34,9 @@ const registerWebSocket = async () => {
             getStore.useAppStore().changeWsStatus(true)
             //初始化请求数据
             if (is_login) {
-                const token = localStorage.get('userToken')
-                const requestData = [
-                    'c2ms_net_reconnect',
-                    'c2ms_get_register_status',
-                    'c2ms_get_service_status',
-                    'c2ms_get_server_terminals_status',
-                    'c2ms_get_task_status',
-                    'c2ms_get_tts_engine_info',
-                    'c2ms_get_server_audiocard_info',
-                ]
-                if (token) {
-                requestData.forEach((item) => {
-                    requestFunction(item)
-                })
-                }
-            } else {
                 initRequest()
+            } else {
+                login()
             }
         }
         //WebSocket通知
@@ -134,7 +120,21 @@ const socketLogin = (data: any) => {
 }
 
 const initRequest = () => {
-  login()
+    const token = localStorage.get('userToken')
+    const requestData = [
+        'c2ms_net_reconnect',
+        'c2ms_get_register_status',
+        'c2ms_get_service_status',
+        'c2ms_get_server_terminals_status',
+        'c2ms_get_task_status',
+        'c2ms_get_tts_engine_info',
+        'c2ms_get_server_audiocard_info',
+    ]
+    if (token) {
+        requestData.forEach((item) => {
+            requestFunction(item)
+        })
+    }
 }
 // webSocket请求获取XX信息状态
 const requestFunction = (actionCode: string) => {
@@ -248,6 +248,7 @@ const handlerMsg = (msg: any) => {
         localStorage.set('userToken', msg.token)
         requestFunction('c2ms_get_task_status')
         requestFunction('c2ms_get_server_terminals_status')
+        initRequest()
         return getStore.useAppStore().loginSuccessData(msg)
     case 'ms2c_push_msg':
         [...msgMap].forEach(([key, value]) => {

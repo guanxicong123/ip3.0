@@ -155,7 +155,7 @@
                     </el-table-column>
                     <el-table-column prop="type" label="类型" width="100">
                         <template #default="scope">
-                            {{ scope.row.hasOwnProperty("terminals_id") ? scope.row.type : "分组" }}
+                            {{ scope.row.hasOwnProperty("terminals_id") ? formatterTerminalsType(scope.row) : "分组" }}
                         </template>
                     </el-table-column>
                 </el-table>
@@ -730,6 +730,11 @@ const formatSecondNo = (seconds: any) => {
     seconds -= 60 * min;
     let sec = seconds >= 10 ? Math.trunc(seconds) : "0" + Math.trunc(seconds);
     return hour + ":" + min + ":" + sec;
+};
+
+// 格式化终端类型
+const formatterTerminalsType = (row: User) => {
+  return useFormatMap.terminalsMap.get(row.type);
 };
 // mounted 实例挂载完成后被调用
 onMounted(() => { });

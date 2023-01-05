@@ -3,6 +3,7 @@ import { AxiosCanceler } from './axios_cancel'
 // import qs from "qs"; // qs是axios自带的序列化参数方式
 import { ElMessage } from 'element-plus'
 import { isString } from '@/utils/is'
+import router from '@/router'
 
 // const url = localStorage.get("serverIP");
 const axiosCancel = new AxiosCanceler()
@@ -136,6 +137,9 @@ $http.interceptors.response.use(
         }
         if (status === 200 && response.data.result !== 200 ) {
             ElMessage.error(response.data.return_message)
+        }
+        if (status === 401 && response.data.result === 401 ) {
+            router.push('/')
         }
         return response.data
     },

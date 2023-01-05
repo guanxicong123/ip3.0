@@ -35,7 +35,7 @@
             </div>
             <div class="login-header-logo">
                 <img class="logo-imag" src="@/assets/images/logo.png" alt="logo" />
-                <h2>IP广播</h2>
+                <h2>IP网络广播</h2>
             </div>
             <svg viewBox="0 0 120 16" class="svg">
                 <defs>
@@ -58,17 +58,23 @@
         </div>
         <div class="broadcast-login-from">
             <div class="login-from-name">
-                <el-input auto-complete="off" v-model="modelRef.name" :disabled="isLogin" :maxlength="100"
-                    placeholder="请输入账号" clearable :spellcheck="false">
+                <el-input
+                        auto-complete="off" v-model.trim="modelRef.name"
+                        :disabled="isLogin" :maxlength="100"
+                        placeholder="请输入账号" clearable :spellcheck="false">
                     <template #prefix>
                         <i class="iconfont icon-user"></i>
                     </template>
                 </el-input>
             </div>
             <div class="login-from-password">
-                <el-input type="password" v-model="modelRef.password" :disabled="isLogin" :maxlength="20"
-                    placeholder="请输入密码" clearable show-password auto-complete="new-password" oncopy="return false"
-                    ondragstart="return false" onselectstart="return false">
+                <el-input 
+                        type="password" v-model="modelRef.password"
+                        :disabled="isLogin" :maxlength="20"
+                        placeholder="请输入密码" clearable
+                        show-password auto-complete="new-password"
+                        oncopy="return false" ondragstart="return false"
+                        onselectstart="return false" :spellcheck="false">
                     <template #prefix>
                         <i class="iconfont icon-password"></i>
                     </template>

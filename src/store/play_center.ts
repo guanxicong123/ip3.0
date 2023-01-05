@@ -8,7 +8,8 @@ export const usePlayStore = defineStore({
     state: (): playState => ({
         playVoiceData: [],
         playStatusData: {},
-        playSubscriptionTask: {}
+        playSubscriptionTask: {},
+        
     }),
     actions: {
         setPlayVoice(data: any) {

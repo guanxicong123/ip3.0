@@ -6,6 +6,16 @@
 -->
 <template>
     <div class="com-remote-play-component">
+        <div class="com-data-select-compute">
+            <span>选择媒体/媒体库</span>
+            <span>
+                <span class="head-add-color">*</span> 已选媒体:
+                <span class="head-add-color">{{mediaNum}}</span>
+            </span>
+            <span>
+                已选媒体文件夹:
+                <span class="head-add-color">{{mediaGroupsNum}}</span></span>
+        </div>
         <select-media-group :responseMedia="props.responseMedia" :responseGroups="props.responseGroups"
             @requestMedia="requestMedia" @requestGroups="requestMediaGroups" @totalSecond="totalSecond">
         </select-media-group>
@@ -60,6 +70,8 @@ const ruleForm = reactive({
     radioVal: 1,
 });
 
+const mediaNum = ref(0) //已选媒体数量
+const mediaGroupsNum = ref(0) //以选媒体文件夹数量
 const duration = ref(0); //持续时间
 const playmodelOptions = [
     { label: "列表播放", value: 0 },
@@ -77,7 +89,6 @@ watch([ruleForm, duration], () => {
         data["life_time"] =
             ruleForm.play_model === 0 ? formatSecondNo(duration.value) : ruleForm.life_time;
     }
-    console.log(ruleForm)
     emit("requestDispose", data);
 });
 
@@ -88,10 +99,12 @@ watch(()=> props.soundSource, ()=> {
 
 // 选择的媒体文件
 const requestMedia = (data: any) => {
+    mediaNum.value = data?.length
     emit("update:medias", data);
 };
 // 选择的媒体文件夹
 const requestMediaGroups = (data: any) => {
+    mediaGroupsNum.value = data?.length
     emit("update:medias_groups", data);
 };
 const totalSecond = (length: number) => {
