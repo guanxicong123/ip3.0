@@ -152,7 +152,6 @@ watch(seleQuickMusic, (newVal) => {
     ruleForm.id = newVal?.id;
 });
 watch(ruleForm, (newVal) => {
-    console.log(newVal, seleQuickMusic.value)
     let data: any = {
         id: newVal.id,
         type: newVal.type,
@@ -162,7 +161,18 @@ watch(ruleForm, (newVal) => {
     if (newVal.play_model !== 0 && ruleForm.radioVal !== 1) {
         data["play_number"] = newVal?.play_number;
     } else {
-        data["life_time"] = newVal?.life_time;
+        if (newVal.play_model === 0 && props.selectTaskData?.mediasIds) {
+            let all_data = [...props.selectTaskData?.medias, ...props.selectTaskData?.medias_groups]
+            let num = 0;
+            all_data.forEach((item: string | any[]) => {
+                num += Number(item.length);
+            });
+            console.log(num)
+            data["life_time"] = formatSecondNo(num)
+            duration.value = formatSecondNo(num)
+        }else {
+            data["life_time"] = newVal?.life_time;
+        }
     }
     emit("requestSoundSource", data);
 });
@@ -208,6 +218,7 @@ onMounted(() => {
         if (props.selectTaskData?.fast_sound) {
             seleQuickMusic.value = props.selectTaskData.fast_sound;
         }
+        ruleForm.radioVal = props.selectTaskData.sound_source?.life_time ? 1 : 2
     }
 });
 </script>

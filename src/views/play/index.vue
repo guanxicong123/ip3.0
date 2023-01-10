@@ -74,8 +74,9 @@
                         <template #reference>
                             <i class="iconfont icon-volume2" title="音量"></i>
                         </template>
+                        <span class="play-volume-number">{{ form.volume }}</span>
                         <el-slider v-model="form.volume" vertical height="200px"
-                            @change="handleVolumeTask">
+                            @change="handleVolumeTask" :show-tooltip="false">
                         </el-slider>
                     </el-popover>
                 </div>
@@ -91,8 +92,9 @@
                         <template #reference>
                             <i class="iconfont icon-volume2" title="音量"></i>
                         </template>
+                        <span class="play-volume-number">{{ form.volume }}</span>
                         <el-slider v-model="form.volume" vertical height="200px"
-                            @change="handleVolumeTask">
+                            @change="handleVolumeTask" :show-tooltip="false">
                         </el-slider>
                     </el-popover>
                 </div>
@@ -107,8 +109,14 @@
                                 <div class="play-table-title theme">
                                     <span>任务列表</span>
                                 </div>
-                                <el-input v-model="form.search" placeholder="任务名称" @keyup.enter="handleSearch"/>
-                                <el-button :icon="Search" @click="handleSearch"></el-button>
+                                <el-input v-model="form.search" placeholder="任务名称" :prefix-icon="Search" @input="handleSearch"/>
+                                <el-button
+                                    :disabled="form.search == ''"
+                                    @click="form.search = '', handleSearch()"
+                                    style="margin-left: 12px;"
+                                >
+                                    重置
+                                </el-button>
                             </div>
                             <div class="com-button">
                                 <i class="iconfont icon-add" title="添加" @click="addPlayTask"></i>
@@ -123,6 +131,7 @@
                                 @cell-click="handleSelectionClick">
                                 <el-table-column prop="name" label="任务" show-overflow-tooltip min-width="280">
                                     <template #default="scope">
+                                        <!-- <span class="icon iconfont" :class=""></span> -->
                                         <svg class="icon" aria-hidden="true">
                                             <use :xlink:href="taskTypeMap.get(scope.row.type)"></use>
                                         </svg>
@@ -268,8 +277,7 @@ const playCenterData = computed(() => {
 });
 
 watch(playCenterData, (newVal, oldVal) => {
-    form.volume = newVal?.volume
-    console.log(newVal, oldVal)
+    form.volume = newVal?.TaskVolume ? newVal?.TaskVolume : newVal?.volume
     if (newVal?.TaskID === oldVal?.TaskID) return
     const newValType = newVal.type === 1 || newVal.type === 10 || (newVal.type === 4 && newVal.sound_source.type === 1)
     const oldValType = oldVal.type === 1 || oldVal.type === 10 || (oldVal.type === 4 && oldVal.sound_source.type === 1)
@@ -293,8 +301,10 @@ const handleFullscreenStatus = () => {
 };
 const taskTypeMap = new Map([
     [1, "#icon-remote-playback"],
+    [4, "#icon-view-collection-terminal"],
     [11, "#icon-text"],
     [13, "#icon-terminals"],
+    [12, "#icon-terminals"],
     [10, "#icon-music-playback"],
 ]);
 const taskPlayMode = new Map([
@@ -338,7 +348,6 @@ const handleTaskProgress = () => {
     if (selectTaskData.value.type === 1 || selectTaskData.value.type === 10) {
         return true;
     }
-    console.log(selectTaskData.value)
     if (
         selectTaskData.value.type === 4 &&
         selectTaskData.value.fast_sound &&
@@ -485,22 +494,6 @@ const handlePauseTask = (row: any) => {
 }
 // 播放任务
 const handlePlayTask = (row: any) => {
-    if (row.TaskID) { //已存在任务,应为暂停中任务点击继续播放
-        let data = {
-            company: "BL",
-            actioncode: "c2ms_control_task",
-            token: "",
-            data: {
-                TaskID: row.TaskID,
-                ControlCode: "resume",
-                ControlValue: "",
-            },
-            result: 0,
-            return_message: "",
-        };
-        send(data);
-        return
-    }
     if (row.type < 10) {
         proxy.$http
             .get("/details/" + row.id, {
@@ -515,7 +508,9 @@ const handlePlayTask = (row: any) => {
             .then((result: any) => {
                 let row = result.data;
                 let TaskProp = handleTaskAttribute(row);
-                if (TaskProp) {
+                console.log(row.terminalsIds)
+                if (row.terminalsIds.length === 0) return proxy.$message.warning("未找到播放终端，请重新配置")
+                if (TaskProp?.TaskAudioType) {
                     let data = {
                         company: "BL",
                         actioncode: "c2ms_create_server_task",
@@ -653,6 +648,7 @@ const handleTaskAttribute = (row: any) => {
     let data = null;
     if (row.type === 1) {
         //远程任务-音乐播放
+        if (row.mediasIds.length === 0) return proxy.$message.warning("未找到媒体信息，请重新配置")
         data = {
             TaskAudioType: 6,
             RemoteID: row.id,
@@ -668,6 +664,7 @@ const handleTaskAttribute = (row: any) => {
     if (row.type === 4) {
         //快捷音源
         if (row.sound_source.type === 1) {
+            if (row.mediasIds.length === 0) return proxy.$message.warning("未找到媒体信息，请重新配置")
             //音乐播放
             data = {
                 TaskAudioType: 6,
@@ -698,7 +695,7 @@ const handleTaskAttribute = (row: any) => {
                     },
                 };
             } else {
-                proxy.message.warning("未找到采集声卡设备，请重新配置");
+                proxy.$message.warning("未找到采集声卡设备，请重新配置");
             }
         }
         if (row.sound_source.type === 3) {
@@ -717,7 +714,7 @@ const handleTaskAttribute = (row: any) => {
                     },
                 };
             } else {
-                proxy.message.warning("未找到采集终端设备，请重新配置");
+                proxy.$message.warning("未找到采集终端设备，请重新配置");
             }
         }
     }
@@ -784,7 +781,6 @@ const handelDelServeRask = (row: any) => {
 }
 // 删除本地任务
 const handelDelLocalRask = (row: any) => {
-    console.log(row)
     return new Promise((resolve, reject)=> {
         if (Array.isArray(row) && row.length === 0) return resolve()
         proxy.$http1.delete("/task", {
@@ -880,10 +876,6 @@ const filterData = () => {
         return item.name.indexOf(form.search) !== -1
     })
 }
-// 序号
-// const typeIndex = (index: number) => {
-//   return index + (form.currentPage - 1) * form.pageSize + 1;
-// };
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {

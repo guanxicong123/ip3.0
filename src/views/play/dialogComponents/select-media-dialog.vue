@@ -21,6 +21,7 @@
         </select-media-group>
         <template #footer>
             <span class="dialog-footer">
+                <el-button @click="handleClose">取消</el-button>
                 <el-button type="primary" @click="handleSubmit">确定</el-button>
             </span>
         </template>

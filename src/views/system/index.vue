@@ -333,7 +333,6 @@ const saveSet = () => {
         switch_form.value
     ).then((result: any) => {
         if (result.result === 200) {
-            // ElMessage.success('配置成功')
             $useRouter.push("/");
         }
     });
@@ -394,6 +393,9 @@ const updateConfigData = (model: string) => {
 
 // 更改模块配置
 const changeConfig = (model: string) => {
+    if (model === 'alarm' && form.alarm_track === '') {
+        return ElMessage.error('请选择报警曲目')
+    }
     let send_data = updateConfigData(model);
     proxy.$http1.put("/config/" + basic_configs.value.ID, 
         send_data

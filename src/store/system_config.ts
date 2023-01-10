@@ -1,4 +1,5 @@
 import router from '../router'
+import $http from "@/utils/axios/index";
 import $http1 from "@/utils/axios/local_index";
 
 export interface systemState {
@@ -13,6 +14,8 @@ export interface systemState {
     basic_configs: any
     router_data: any
     opcodes: string
+    pageSize: any
+    priorityData: any
 }
 
 const sidebarData = [
@@ -99,145 +102,160 @@ export const useSystemStore = defineStore({
         system_configs: {},
         // 基本设置
         basic_configs: {},
+        // 分页
+        pageSize: {
+            Terminal_PageSize: 20,
+            Session_PageSize: 20,
+            Timer_PageSize: 20,
+            Medias_PageSize: 20,
+            Log_PageSize: 20
+        },
         router_data: [],
         opcodes: '',
+        priorityData: new Map() //
     }),
 
     actions: {
         // 获取所有的系统配置数据
         getConfigInfo() {
-            console.log(axios)
-            $http1.get('/config', {
-                params: {
-                    username: localStorage.get('username'),
-                    serverip: localStorage.get('serverIP'),
-                },
-            }).then((result: any) => {
+            return new Promise((resolve, reject)=> {
+                $http1.get('/config', {
+                    params: {
+                        username: localStorage.get('username'),
+                        serverip: localStorage.get('serverIP'),
+                    },
+                }).then((result: any) => {
+                    if (result.result === 200) {
+                        let data = result.data
+                        // 功能管理相关数据
+                        this.functional_configs = {
+                            FolderDisplay: data.FolderDisplay,
+                            GroupDisplay: data.GroupDisplay,
+                            remoteTaskDisplay: data.remoteTaskDisplay,
+                            TerminalStateEnabled: data.TerminalStateEnabled,
+                            PlayCenterEnabled: data.PlayCenterEnabled,
+                            SessionEnabled: data.SessionEnabled,
+                            TimingEnabled: data.TimingEnabled,
+                            MediasEnabled: data.MediasEnabled,
+                        }
+                        // 系统配置数据
+                        this.system_configs = {
+                            EnabledAlarm: data.EnabledAlarm,
+                            AlarmID: data.AlarmID,
+                            TerminalOrderbyType: data.TerminalOrderbyType,
+                            TerminalStateDefaultType: data.TerminalStateDefaultType,
+                            DefaultDisplayView: data.DefaultDisplayView,
+                            EnabledFireAlert: data.EnabledFireAlert,
+                            EnabledPersonAlert: data.EnabledPersonAlert,
+                            EnabledTerminalOffAlert: data.EnabledTerminalOffAlert,
+                            EnabledTerminalOffRingfAlert: data.EnabledTerminalOffRingfAlert,
+                        }
+                        // 基本配置：如主讲终端、主题等
+                        this.basic_configs = {
+                            MainEndpointID: data.MainEndpointID,
+                            Theme: data.Theme,
+                            Language: data.Language,
+                            DisplayType: data.DisplayType,
+                            ListDisplaySize: data.ListDisplaySize,
+                            ID: data.ID,
+                        }
+                        // 模块分页
+                        this.pageSize = {
+                            Terminal_PageSize: data.Terminal_PageSize ? data.Terminal_PageSize : 20,
+                            Session_PageSize: data.Session_PageSize ? data.Session_PageSize : 20,
+                            Timer_PageSize: data.Timer_PageSize ? data.Timer_PageSize : 20,
+                            Medias_PageSize: data.Medias_PageSize ? data.Medias_PageSize : 20,
+                            Log_PageSize: data.Log_PageSize ? data.Log_PageSize : 20
+                        }
+                        this.setRouterPermission()
+                    }
+                    resolve({
+                        functional_configs: this.functional_configs,
+                        system_configs: this.system_configs
+                    })
+                })
+            })
+        },
+        // 获取机器码
+        getProductKey() {
+            $http1.get('/register').then((result: any) => {
                 if (result.result === 200) {
-                    // 功能管理相关数据
-                    const {
-                        FolderDisplay,
-                        GroupDisplay,
-                        remoteTaskDisplay,
-                        TerminalStateEnabled,
-                        PlayCenterEnabled,
-                        SessionEnabled,
-                        TimingEnabled,
-                        MediasEnabled,
-                    } = result.data
-                    this.functional_configs = {
-                        FolderDisplay,
-                        GroupDisplay,
-                        remoteTaskDisplay,
-                        TerminalStateEnabled,
-                        PlayCenterEnabled,
-                        SessionEnabled,
-                        TimingEnabled,
-                        MediasEnabled,
-                    }
-                    // 系统配置数据
-                    const {
-                        EnabledAlarm,
-                        AlarmID,
-                        TerminalOrderbyType,
-                        TerminalStateDefaultType,
-                        DefaultDisplayView,
-                        EnabledFireAlert,
-                        EnabledPersonAlert,
-                        EnabledTerminalOffAlert,
-                        EnabledTerminalOffRingfAlert,
-                    } = result.data
-                    this.system_configs = {
-                        EnabledAlarm,
-                        AlarmID,
-                        TerminalOrderbyType,
-                        TerminalStateDefaultType,
-                        DefaultDisplayView,
-                        EnabledFireAlert,
-                        EnabledPersonAlert,
-                        EnabledTerminalOffAlert,
-                        EnabledTerminalOffRingfAlert,
-                    }
-                    // 基本配置：如主讲终端、主题等
-                    const {
-                        MainEndpointID,
-                        Theme,
-                        Language,
-                        DisplayType,
-                        ListDisplaySize,
-                        ID,
-                    } = result.data
-                    this.basic_configs = {
-                        MainEndpointID,
-                        Theme,
-                        Language,
-                        DisplayType,
-                        ListDisplaySize,
-                        ID,
-                    }
-                    this.setRouterPermission()
+                    this.opcodes = result.data.ProductKey
+                    this.opcodes = '14827-67853-39229-50676-09802-52491-53438'
                 }
             })
         },
 
-    // 获取机器码
-    getProductKey() {
-        $http1.get('/register').then((result: any) => {
-            if (result.result === 200) {
-                this.opcodes = result.data.ProductKey
-                this.opcodes = '14827-67853-39229-50676-09802-52491-53438'
+        // 获取所有系统优先级
+        getPrioritySetting() {
+            return new Promise((resolve, reject) => {
+                $http.get("/priority-setting").then((restlu: any) => {
+                    restlu.data.forEach((item: { task_type: any; priority: any }) => {
+                        this.priorityData.set(item.task_type, item.priority);
+                    });
+                    resolve(restlu.data)
+                });
+            })
+        },
+
+        // 处理登录成功后，路由权限数据
+        setRouterPermission() {
+            this.router_data = []
+            sidebarData.forEach((item) => {
+                if (item.name === '终端状态') {
+                    item.permission = this.functional_configs.TerminalStateEnabled
+                } else if (item.name === '播放中心') {
+                    item.permission = this.functional_configs.PlayCenterEnabled
+                } else if (item.name === '会话状态') {
+                    item.permission = this.functional_configs.SessionEnabled
+                } else if (item.name === '定时任务') {
+                    item.permission = this.functional_configs.TimingEnabled
+                } else if (item.name === '媒体库') {
+                    item.permission = this.functional_configs.MediasEnabled
+                } else {
+                    item.permission = true
+                }
+                this.router_data.push(item)
+            })
+            const default_view = permission_map.get(
+                this.system_configs.DefaultDisplayView
+            )
+            const index = this.router_data.findIndex((item: any) => {
+                return item.name === default_view
+            })
+            const next_path = this.router_data[index].permission
+            ? this.router_data[index].path
+            : this.router_data[0].path
+            const time_id = setInterval(() => {
+            // if (getStore.getStore.useTerminalStore().terminal_data.length > 0 && getStore.getStore.useTerminalStore().terminal_group.length > 0) {
+            // router.push('/terminal')
+            clearInterval(time_id)
+            // }
+            }, 100)
+        },
+
+        // 更新终端状态模块基础配置
+        updateTerminalStatusConfig(data: any) {
+            this.basic_configs.ListDisplaySize = data.ListDisplaySize
+            this.basic_configs.DisplayType = data.DisplayType
+        },
+        // 更新系统配置数据
+        updateSystemConfig(data: any) {
+            for (const [key, value] of Object.entries(data)) {
+                this.system_configs[key] = value
             }
-        })
+        },
+        // 更新系统配置数据
+        updateSystemSize(data: any) {
+            const key = data.key
+            const val = data.val
+            $http1.put('/config/' + this.basic_configs.ID, {
+                [key]: val
+            }).then((result: any) => {
+                if (result.result === 200) {
+                    this.pageSize[key] = val
+                }
+            })
+        },
     },
-
-    // 处理登录成功后，路由权限数据
-    setRouterPermission() {
-        this.router_data = []
-        sidebarData.forEach((item) => {
-            if (item.name === '终端状态') {
-                item.permission = this.functional_configs.TerminalStateEnabled
-            } else if (item.name === '播放中心') {
-                item.permission = this.functional_configs.PlayCenterEnabled
-            } else if (item.name === '会话状态') {
-                item.permission = this.functional_configs.SessionEnabled
-            } else if (item.name === '定时任务') {
-                item.permission = this.functional_configs.TimingEnabled
-            } else if (item.name === '媒体库') {
-                item.permission = this.functional_configs.MediasEnabled
-            } else {
-                item.permission = true
-            }
-            this.router_data.push(item)
-        })
-        const default_view = permission_map.get(
-            this.system_configs.DefaultDisplayView
-        )
-        const index = this.router_data.findIndex((item: any) => {
-            return item.name === default_view
-        })
-        const next_path = this.router_data[index].permission
-        ? this.router_data[index].path
-        : this.router_data[0].path
-        const time_id = setInterval(() => {
-        // if (getStore.getStore.useTerminalStore().terminal_data.length > 0 && getStore.getStore.useTerminalStore().terminal_group.length > 0) {
-        // router.push('/terminal')
-        clearInterval(time_id)
-        // }
-        }, 100)
-    },
-
-    // 更新终端状态模块基础配置
-    updateTerminalStatusConfig(data: any) {
-        this.basic_configs.ListDisplaySize = data.ListDisplaySize
-        this.basic_configs.DisplayType = data.DisplayType
-    },
-
-    // 更新系统配置数据
-    updateSystemConfig(data: any) {
-        console.log(data)
-        for (const [key, value] of Object.entries(data)) {
-            this.system_configs[key] = value
-        }
-    },
-  },
 })

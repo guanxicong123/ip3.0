@@ -214,11 +214,11 @@ const uploadChange: UploadProps["onChange"] = (uploadFile: any, uploadFiles) => 
 const formatterSpeed = (row: number) => {
   switch (row) {
     case 1:
-      return row + " ( 最快 )";
+      return row + " ( 最慢 )";
     case 5:
       return row + " ( 推荐 )";
-    case 8:
-      return row + " ( 最慢 )";
+    case 10:
+      return row + " ( 最快 )";
     default:
       return row;
   }
@@ -237,7 +237,7 @@ onMounted(() => {
   if (props.selectTaskData) {
     Object.assign(ruleForm, props.selectTaskData.content);
   }
-  for (let i = 1; i < 9; i++) {
+  for (let i = 1; i <= 10; i++) {
     playSpeedOption.value.push(i);
   }
 });

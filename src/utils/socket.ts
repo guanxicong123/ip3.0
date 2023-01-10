@@ -1,7 +1,7 @@
 // import { message } from '@/utils/resetMessage'
 
 import router from '../router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 
 let loginData: any = '' //用于储存登录时请求信息
 let socket: any
@@ -9,7 +9,7 @@ let reloadInterval: any
 let connected = false
 let connecting = false
 let remotePlayTaskKey: any[] = []
-let is_login = true
+let is_login = true //s是否处于登录状态
 const baseParams = {
     company: 'BL',
     actioncode: 'c2ms_net_reconnect',
@@ -34,23 +34,11 @@ const registerWebSocket = async () => {
             getStore.useAppStore().changeWsStatus(true)
             //初始化请求数据
             if (is_login) {
-                const token = localStorage.get('userToken')
-                const requestData = [
-                    'c2ms_net_reconnect',
-                    'c2ms_get_register_status',
-                    'c2ms_get_service_status',
-                    'c2ms_get_server_terminals_status',
-                    'c2ms_get_task_status',
-                    'c2ms_get_tts_engine_info',
-                    'c2ms_get_server_audiocard_info',
-                ]
-                if (token) {
-                requestData.forEach((item) => {
-                    requestFunction(item)
-                })
-                }
-            } else {
                 initRequest()
+                getStore.useSystemStore().getConfigInfo() //获取系统配置
+                getStore.useSystemStore().getPrioritySetting() //获取系统优先级3333
+            } else {
+                login()
             }
         }
         //WebSocket通知
@@ -134,7 +122,21 @@ const socketLogin = (data: any) => {
 }
 
 const initRequest = () => {
-  login()
+    const token = localStorage.get('userToken')
+    const requestData = [
+        'c2ms_net_reconnect',
+        'c2ms_get_register_status',
+        'c2ms_get_service_status',
+        'c2ms_get_server_terminals_status',
+        'c2ms_get_task_status',
+        'c2ms_get_tts_engine_info',
+        'c2ms_get_server_audiocard_info',
+    ]
+    if (token) {
+        requestData.forEach((item) => {
+            requestFunction(item)
+        })
+    }
 }
 // webSocket请求获取XX信息状态
 const requestFunction = (actionCode: string) => {
@@ -144,7 +146,7 @@ const requestFunction = (actionCode: string) => {
 }
 // 发起远程音乐播放任务
 const startRemotePlay = (row: any) => {
-    if (remotePlayTaskKey.includes(row.TaskID)) {
+    if (remotePlayTaskKey.includes(row.TaskID) && row.RemoteType !== "manual_alarm") {
         const data = {
             company: 'BL',
             actioncode: 'c2ms_control_task',
@@ -163,22 +165,6 @@ const startRemotePlay = (row: any) => {
         })
     }
 }
-// 发起本地任务
-const startLocalPlay = (row: any) => {
-    const data = {
-        company: 'BL',
-        actioncode: 'c2ms_control_task',
-        token: '',
-        data: {
-            TaskID: row.TaskID,
-            ControlCode: 'play',
-            ControlValue: '',
-        },
-        result: 0,
-        return_message: '',
-    }
-    send(data)
-}
 // 登录
 const login = () => {
     const data = loginData
@@ -193,7 +179,7 @@ const login = () => {
     send(data)
 }
 const handlerMsg = (msg: any) => {
-  const msgMap = new Map([
+    const msgMap = new Map([
         [
             'task_progress_bar_info', //播放中心订阅模式
             () => {
@@ -224,30 +210,33 @@ const handlerMsg = (msg: any) => {
                 getStore.useAppStore().taskDataPush(msg.data.TaskInfoArray)
             },
         ]
-  ])
-  if (msg.result !== 200) {
-    if (msg.actioncode === 'ms2c_user_login') {
-      //登录失败
-      getStore.useAppStore().changeLoginStatus(false)
-      socket.close()
+    ])
+    if (msg.result !== 200) {
+        if (msg.actioncode === 'ms2c_user_login') {
+            //登录失败
+            getStore.useAppStore().changeLoginStatus(false)
+            socket.close()
+        }
+            return ElMessage.error(msg.return_message)
     }
-    return ElMessage.error(msg.return_message)
-  }
-  if (msg.actioncode === 'cs2ms_net_disconnect') {
-    return ElMessage.error('服务器连接失败')
-  }
-  if (msg.actioncode === 'ls2c_set_terminal_volume') {
-    getStore.useTerminalStore().setTerminalVolume(msg.data)
-  }
-  if (msg.actioncode === 'ls2c_broadcast_task') {
-    //
-  }
+    if (msg.actioncode === 'cs2ms_net_disconnect') {
+        return ElNotification({
+            title: "",
+            message: "正在尝试重新连接逻辑服务器",
+            type: "error",
+            position: "bottom-right",
+        })
+    }
+    if (msg.actioncode === 'ls2c_set_terminal_volume') {
+        getStore.useTerminalStore().setTerminalVolume(msg.data)
+    }
   switch (msg.actioncode) {
     case 'ms2c_user_login': //登录返回信息
         is_login = true
         localStorage.set('userToken', msg.token)
         requestFunction('c2ms_get_task_status')
         requestFunction('c2ms_get_server_terminals_status')
+        initRequest()
         return getStore.useAppStore().loginSuccessData(msg)
     case 'ms2c_push_msg':
         [...msgMap].forEach(([key, value]) => {
@@ -273,13 +262,12 @@ const handlerMsg = (msg: any) => {
     case 'ms2c_create_server_task':
         startRemotePlay(msg.data)
         return
-    case 'ms2cs_set_task_display_info':
-        startLocalPlay(msg.data)
-        return
     case 'ms2c_control_task': //播放中心任务状态改变
         
         return
-    
+    case 'cs2ms_net_reconnect': //服务器重连
+        initRequest()
+        return
   }
 }
 

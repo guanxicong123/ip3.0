@@ -21,7 +21,7 @@
                     <el-button @click="resetSearch">重置</el-button>
                 </div>
                 <div class="com-button">
-                    <span>监听音响</span>
+                    <span>监听音箱 </span>
                     <el-popover
                             placement="bottom"
                             :width="400"
@@ -29,7 +29,7 @@
                             popper-class="select-monitor-terminal"
                         >
                         <template #reference>
-                            <el-button style="margin-right: 16px">{{selectTerminalMac.EndPointIP ? selectTerminalMac.EndPointIP : '请选择监听终端'}}</el-button>
+                            <el-button style="margin-right: 16px">{{ selectTerminalMac.EndPointName ? selectTerminalMac.EndPointName : '请选择监听终端'}}</el-button>
                         </template>
                         <div>
                             <div class="monitor-terminal-header">
@@ -46,7 +46,11 @@
                                 <el-table-column label="名称">
                                     <template #default="scope">
                                         <div class="monitor-terminal-name">
-                                            <span class="iconfont" :class="terminalStatus.get(scope.row.Status)"></span>
+                                            <span class="iconfont">
+                                                <svg class="icon" aria-hidden="true">
+                                                    <use :xlink:href="terminalStatus.get(scope.row.Status)"></use>
+                                                </svg>
+                                            </span>
                                             <span class="terminal-name">{{scope.row.EndPointName}}</span>
                                             <span class="iconfont" :class="{'icon-selected': selectTerminalMac.EndPointMac === scope.row.EndPointMac}"></span>
                                         </div>
@@ -65,6 +69,7 @@
                     ref="multipleTableRef"
                     :data="form.data" border
                     style="width: 100%" height="100%"
+                    :cell-class-name="cellClassName"
                     @selection-change="handleSelectionChange"
                     :default-sort="{ prop: 'TaskBeginTime', order: 'descending' }">
                     <el-table-column type="index" label="序号" show-overflow-tooltip :width="60" :index="typeIndex" />
@@ -74,8 +79,8 @@
                             {{formatterTaskType(scope.row)}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="TaskIniator" label="发起方" />
-                    <el-table-column label="响应方">
+                    <el-table-column prop="TaskIniator" label="发起方" show-overflow-tooltip/>
+                    <el-table-column label="响应方" show-overflow-tooltip class="dangqianlie">
                         <template #default="scope">
                             <el-dropdown
                                 v-if="scope.row.EndPointList && scope.row.EndPointList.length > 1"
@@ -122,7 +127,11 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="TaskBeginTime" label="会话进行时间" sortable="custom" width="160"/>
-                    <el-table-column prop="IsMonitor" label="监听状态" />
+                    <el-table-column prop="IsMonitor" label="监听状态">
+                        <template #default="scope">
+                            {{ scope.row.IsMonitor ? "被监听" : "未监听" }}
+                        </template>
+                    </el-table-column>
                     <el-table-column label="操作" width="120">
                         <template #default="scope">
                             <el-button link type="danger" @click="handleStopTask(scope.row)">
@@ -172,14 +181,19 @@ interface User {
 // const terminalStore = useTerminalStore()
 const store = getStore.useAppStore();
 const terminalStore = getStore.useTerminalStore();
+const systemStore = getStore.useSystemStore();
 const { proxy } = useCurrentInstance.useCurrentInstance();
+
+const systemPageSize = computed(() => {
+    return systemStore.pageSize?.Session_PageSize;
+});
 
 const form: any = reactive({
     search: "",
     selectType: 0,
     data: [],
     currentPage: 1,
-    pageSize: 20,
+    pageSize: systemPageSize.value,
 });
 const loading = ref(false)
 const monitorTerminal: any = ref({})
@@ -189,11 +203,11 @@ const sessionOptions = [
   ...useFormatMap.taskTypeOptions,
 ];
 const terminalStatus = new Map([
-    [ 1, "icon-on-line" ], //空闲
-    [ 2, "icon-executing" ], //忙碌
-    [ 3, "icon-freeze" ], //冻结
-    [ 4, "icon-fault" ], //故障
-    [ 0, "icon-off-line" ], //离线
+    [ 1, "#icon-on-line" ], //空闲
+    [ 2, "#icon-executing" ], //忙碌
+    [ 3, "#icon-freeze" ], //冻结
+    [ 4, "#icon-fault" ], //故障
+    [ 0, "#icon-off-line" ], //离线
 ])
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
@@ -215,11 +229,17 @@ const terminal_data = computed(() => {
 
 watch(() => sessionsData.value, ()=> {
     tableDataAll.value = filterData()
-    console.log(tableDataAll.value)
+    if (tableDataAll.value.length > 0 && tableDataAll.value.length < form.currentPage) {
+        form.currentPage = 1
+    }else if (form.pageSize * (form.currentPage-1) > tableDataAll.value.length) {
+        form.currentPage--
+    }
     form.data = tableDataAll.value.slice(
         form.pageSize * (form.currentPage-1),
         form.pageSize * form.currentPage
     )
+}, {
+    deep: true
 })
 
 // 搜索
@@ -236,12 +256,7 @@ const resetSearch = () => {
     tableDataAll.value = sessionsData.value
     form.data = tableDataAll.value.slice(0, form.pageSize)
 }
-// 获取触发选项
-const getTriggerOptions = () => {
-    form.currentPage = 1
-    tableDataAll.value = filterData()
-    form.data = tableDataAll.value.slice(0,  form.pageSize)
-}
+
 // 选中表格行
 const handelSelectRow = (row: any) => {
     if (row.Status === 1) {
@@ -284,7 +299,7 @@ const handleStopTask = (row: any) => {
 const setMonitorTerminal = (row: any) => {
     console.log(row, selectTerminalMac)
     if (!selectTerminalMac.value?.EndPointID) {
-        return ElMessage.warning('请选择监听音响')
+        return ElMessage.warning('请选择监听音箱')
     }
     // if (loading.value)return
     // loading.value = true
@@ -317,7 +332,7 @@ const changeTaskVolume = (row: any) => {
     let func = ()=> {
         let data = {
             "company": "BL",
-            "actioncode": "c2ls_set_task_volume",
+            "actioncode": "c2ms_set_task_volume",
             "token": "",
             "data": {
                 "TaskID": row.TaskID,
@@ -360,12 +375,22 @@ const formatterTaskType = (row: any) => {
   return useFormatMap.taskTypeMap.get(row.TaskType);
 };
 
+const cellClassName = (row: any) => {
+    if (row.columnIndex === 4 && row.row.EndPointList.length > 0) {
+        return 'com-table-task-response'
+    }
+}
+
 // 序号
 const typeIndex = (index: number) => {
     return index + (form.currentPage - 1) * form.pageSize + 1;
 };
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
+    systemStore.updateSystemSize({
+        key: 'Session_PageSize',
+        val
+    })
     form.pageSize = val;
     form.currentPage = 1;
     form.data = tableDataAll.value.slice((form.currentPage - 1) * form.pageSize,  form.currentPage * form.pageSize)

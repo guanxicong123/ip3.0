@@ -249,6 +249,12 @@ html {
       vertical-align: middle;
     }
   }
+  .com-table-task-response { //表格响应方, 多设备出现下拉减头,减少右间距,避免减头占用原有文字位置出现省略号.
+    .cell {
+      vertical-align: middle;
+      padding-right: 3px;
+    }
+  }
 }
 .el-table--enable-row-hover .el-table__body tr:hover>td {
   background-color: $c-f2;
@@ -327,9 +333,19 @@ html {
     }
 }
 .el-popover.el-popper.play-volume-popper{
-  min-width: 80px;
-  width: 80px !important;
+  min-width: 50px;
+  width: 50px !important;
+  padding: 0px;
   text-align: center;
+  .el-slider {
+    padding: 3px 0 10px 0;
+  }
+  .play-volume-number {
+    display: block;
+    line-height: 28px;
+    font-size: 16px;
+    color: #000;
+  }
 }
 // 默认弹框dialog样式
 .com-default-dialog {
@@ -403,5 +419,17 @@ html {
       &:hover {
           color: #00ECFF;
       }
+  }
+}
+.com-data-select-compute {
+  font-size: 14px;
+  padding-bottom: 18px;
+  span {
+      &:nth-child(2),&:nth-child(3) {
+          padding-left: 6px;
+      }
+  }
+  .head-add-color {
+      color: rgb(19, 212, 29);
   }
 }

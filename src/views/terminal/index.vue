@@ -26,6 +26,12 @@
                     </el-select>
                     <el-input v-model="form.search" :placeholder="form.search_placeholder"  clearable/>
                     <el-button :icon="Search" @click="handleFilter"></el-button>
+                    <el-button
+                        :disabled="form.search == '' && form.terminal_status == -1"
+                        @click="handleReset"
+                    >
+                        重置
+                    </el-button>
                 </div>
                 <div class="com-button">
                     <span>主讲终端</span>
@@ -40,7 +46,7 @@
             <router-view />
         </div>
         <div class="com-footer">
-            <div class="footer-button">
+            <div class="footer-button" v-if="$useRoute.name != 'terminal'">
                 <el-checkbox v-model="checked_all" label="全选" @change="handleCheckedAll"
                     v-if="$useRoute.name != 'terminal_list'" />
                 <el-button
@@ -48,14 +54,14 @@
                     :loading="startButton.status && startButton.type === 1"
                     @click="functronButtonTask(1)"
                 >
-                    全区广播
+                    {{judgeButtonStatus(5) && sessionsData[0]?.TaskName.indexOf('全区广播') !== -1 ? '结束广播' : '全区广播'}}
                 </el-button>
                 <el-button
                     type="primary" color="#467CF7"
-                    @click="functronButtonTask(6)"
-                    :loading="startButton.status && startButton.type === 6"
+                    @click="functronButtonTask(5)"
+                    :loading="startButton.status && startButton.type === 5"
                 >
-                    {{judgeButtonStatus(6) ? '结束广播' : '广播'}}
+                    {{judgeButtonStatus(5) && sessionsData[0]?.TaskName.indexOf('全区广播') === -1 ? '结束广播' : '广播'}}
                 </el-button>
                 <el-button
                     type="primary" color="#00A1CC"
@@ -68,7 +74,7 @@
                 <el-button
                     type="primary" color="#06BA7D"
                     v-if="$useRoute.name != 'group'"
-                    @click="functronButtonTask(19)"
+                    @click="functronButtonTask(17)"
                     :loading="startButton.status && startButton.type === 19"
                 >
                     {{judgeButtonStatus(19) ? '结束监听' : '监听'}}
@@ -79,7 +85,7 @@
                     @click="alarmTalkTask"
                     :loading="startButton.status && startButton.type === 3"
                 >
-                    报警
+                    {{judgeButtonStatus(3) ? '结束报警' : '报警'}}
                 </el-button>
             </div>
             <div class="footer-volume">
@@ -176,6 +182,10 @@ const basic_configs = computed(() => {
     return systemStore.basic_configs;
 });
 
+const priorityData = computed(() => {
+    return systemStore.priorityData;
+});
+
 const terminal_data = computed(() => {
     return storeTerminal.terminal_data;
 });
@@ -186,7 +196,12 @@ const sessionsLocalKey = computed(()=> { //当前客户端发起任务
 
 const sessionsData: any = computed(()=> {
     return store.sessionsArray.filter((item: any)=> {
-        return [3, 4, 6, 19].includes(item.TaskType) && sessionsLocalKey.value.includes(item.TaskID)
+        if ([4, 5].includes(item.TaskType) && sessionsLocalKey.value.includes(item.TaskID)) {
+            return item
+        }
+        if (item.TaskType === 3 && item.SubTaskTypeName === 'manual_alarm' && item.RemoteTaskID === system_configs.value.AlarmID) {
+            return item
+        }
     })
 })
 
@@ -195,6 +210,7 @@ const system_configs = computed(() => {
 });
 
 watch(sessionsData, ()=> {
+    console.log(sessionsData.value)
     startButton.value.status = false
 })
 watch(() => terminal_data.value, () => {
@@ -234,9 +250,6 @@ const $useRouter = useRouter();
 const $useRoute = useRoute();
 const set_dialog = ref(false);
 
-watch($useRoute, (newVal)=> {
-    console.log(newVal.fullPath)
-})
 const select_terminal = ref("3x6");
 
 // 全选
@@ -293,6 +306,11 @@ const handleFilter = () => {
     };
     storeTerminal.updateFiltrateCondition(conditions);
 };
+const handleReset = () => {
+    form.search = "";
+    form.terminal_status = -1;
+    handleFilter();
+};
 
 // 过滤在线设备组成主讲终端可选项
 const cleanOnLineTerminal = () => {
@@ -317,7 +335,7 @@ const cleanOnLineTerminal = () => {
 
 // 确认终端视图模式
 const confirmTerminalSet = () => {
-    axios.put("http://172.16.21.25:9999/api/v1/config/" + basic_configs.value.ID, {
+    proxy.$http1.put("/config/" + basic_configs.value.ID, {
         DisplayType: form.view_value === "list" ? 1 : 0,
         ListDisplaySize:
             form.select_terminal === "3x5"
@@ -326,7 +344,7 @@ const confirmTerminalSet = () => {
                     ? 1
                     : 2,
     }).then((result: any) => {
-        if (result.status === 200) {
+        if (result.result === 200) {
             select_terminal.value = form.select_terminal;
             let data = {
                 DisplayType: form.view_value === "list" ? 1 : 0,
@@ -339,7 +357,7 @@ const confirmTerminalSet = () => {
             };
             systemStore.updateTerminalStatusConfig(data);
             if (form.view_value === "list") {
-                $useRouter.push("/terminal/terminal_list");
+                getTerminalGroupAll()
             } else {
                 $useRouter.push({
                     path: "/terminal/terminal_block",
@@ -357,7 +375,7 @@ const confirmTerminalSet = () => {
 // 已勾选终端筛选出在线终端数据
 const filterCheckedTerminals = () => {
     let checked_online_terminals = form.speakerTerminalOptions.filter((item: { EndPointID: any; Status: number; })=> {
-        return checked_terminals.value.includes(item.EndPointID) && item.Status === 1
+        return checked_terminals.value.includes(item.EndPointID) && item.Status !== 0
     }).map((two: { EndPointID: any; })=> {
         return two.EndPointID
     })
@@ -368,7 +386,8 @@ const filterCheckedTerminals = () => {
 const functronButtonTask = (type: number) => {
     startButton.value.type = type
     startButton.value.status = true
-    if (judgeButtonStatus(type)) { //存在任务且点击是当前任务按钮，结束任务
+    let taskType = type === 1 ? 5 : type
+    if (judgeButtonStatus(taskType)) { //存在任务且点击是当前任务按钮，结束任务
         let data = {
             "company": "BL",
             "actioncode": "c2ms_stop_task",
@@ -382,9 +401,13 @@ const functronButtonTask = (type: number) => {
         send(data)
         return
     }
-    if (!judgeButtonStatus(type) && sessionsData.value.length > 0) {
+    if (!judgeButtonStatus(taskType) && sessionsData.value.length > 0) {
         startButton.value.status = false
         return proxy.$message.warning('主讲终端忙碌中')
+    }
+    if (type === 1) {
+        regionalBroadcasting()
+        return
     }
     if (!form.speaker_terminal) {
         startButton.value.status = false
@@ -403,7 +426,7 @@ const functronButtonTask = (type: number) => {
         startButton.value.status = false
         return proxy.$message.error("选中终端中不存在可执行任务终端");
     }
-    if (type === 6) {
+    if (type === 5) {
         originateBroadcast(filter_initiator_terminals)
     }
     if (type === 4) {
@@ -413,11 +436,44 @@ const functronButtonTask = (type: number) => {
         }
         initiatedTalkTask(filter_initiator_terminals)
     }
-    if (type === 19) {
+    if (type === 17) {
         monitorTalkTask(filter_initiator_terminals)
     }
 }
-
+// 全区广播任务
+const regionalBroadcasting = () => {
+    let data = terminal_data.value.filter((item: any)=> {
+        return item.Status !== 0 && item.EndPointID !== form.speaker_terminal
+    }).map((item: { EndPointID: any; })=> {
+        return item.EndPointID
+    })
+    if (data.length) {
+        let send_data = {
+            company: "BL",
+            actioncode: "c2ms_create_server_task",
+            data: {
+                EndPointsAdditionalProp: {},
+                EndPointList: data,
+                TaskID: guid(),
+                TaskName: '客户端全区广播任务（' + localStorage.get('username') + '）',
+                Priority: priorityData.value.get(5),
+                Volume: form.volume,
+                TaskType: 5,
+                UserID: Number(localStorage.get('LoginUserID')),
+                TaskProp: {
+                    "TaskAudioType" : 2,
+                    "CollectID" : form.speaker_terminal,
+                    "SelfCheck" : 0
+                }
+            },
+            result: 0,
+            return_message: "",
+        };
+        send(send_data);
+    }else {
+        proxy.$message.error("不存在可执行任务终端");
+    }
+};
 // 发起广播任务
 const originateBroadcast = (EndPointList: any[]) => {
     let send_data = {
@@ -428,9 +484,9 @@ const originateBroadcast = (EndPointList: any[]) => {
             EndPointList: EndPointList,
             TaskID: guid(),
             TaskName: '客户端广播任务（' + localStorage.get('username') + '）',
-            Priority: 100,
+            Priority: priorityData.value.get(5),
             Volume: form.volume,
-            TaskType: 6,
+            TaskType: 5,
             UserID: Number(localStorage.get('LoginUserID')),
             TaskProp: {
                 "TaskAudioType" : 2,
@@ -454,7 +510,7 @@ const initiatedTalkTask = (EndPointList: any[]) => {
             EndPointList: EndPointList,
             TaskID: guid(),
             TaskName: '客户端对讲任务（' + localStorage.get('username') + '）',
-            Priority: 100,
+            Priority: priorityData.value.get(4),
             Volume: form.volume,
             TaskType: 4,
             UserID: Number(localStorage.get('LoginUserID')),
@@ -480,9 +536,9 @@ const monitorTalkTask = (EndPointList: any[]) => {
             EndPointList: EndPointList,
             TaskID: guid(),
             TaskName: '客户端监听任务（' + localStorage.get('username') + '）',
-            Priority: 100,
+            Priority: priorityData.value.get(17),
             Volume: form.volume,
-            TaskType: 19,
+            TaskType: 17,
             UserID: Number(localStorage.get('LoginUserID')),
             TaskProp: {
                 "TaskAudioType" : 0,
@@ -498,6 +554,22 @@ const monitorTalkTask = (EndPointList: any[]) => {
 
 // 发起报警任务
 const alarmTalkTask = () => {
+    startButton.value.type = 3
+    startButton.value.status = true
+    if (judgeButtonStatus(3)) { //存在任务且点击是当前任务按钮，结束任务
+        let data = {
+            "company": "BL",
+            "actioncode": "c2ms_stop_task",
+            "token": "",
+            "data": {
+                "TaskID": sessionsData.value[0].TaskID
+            },
+            "result": 0,
+            "return_message": ""
+        }
+        send(data)
+        return
+    }
     proxy.$http.get("/details/" + system_configs.value.AlarmID, {
         params: {
             tag: 'OneButtonAlarm',
@@ -507,36 +579,39 @@ const alarmTalkTask = () => {
             withTerminal: true
         }
     }).then((result: any) => {
-        let row = result.data
-        let send_data = {
-            company: "BL",
-            actioncode: "c2ms_create_server_task",
-            data: {
-                EndPointsAdditionalProp: {},
-                EndPointList: row.terminalsIds,
-                TaskID: guid(),
-                TaskName: row.name,
-                Priority: row.priority,
-                Volume: row.volume,
-                TaskType: 3,
-                UserID: Number(localStorage.get('LoginUserID')),
-                TaskProp: {
-                    "TaskAudioType" : 6,
-                    "RemoteID" : 0,
-                    "RemoteType" : "manual_alarm",
-                    "RemoteAudioProp" : {
-                        "MusicIDs" : row.mediasIds,
-                        "LimitTime" : row.sound_source.life_time ? timeToSec(row.sound_source.life_time, 1) : 0,
-                        "PlayMode" : taskPlayMode.get(row.sound_source.play_model),
-                        "PlayTimes" : row.sound_source.play_times ? timeToSec(row.sound_source.play_times, 1) : 0
+        if (result.result === 200) {
+            let row = result.data
+            let send_data = {
+                company: "BL",
+                actioncode: "c2ms_create_server_task",
+                data: {
+                    EndPointsAdditionalProp: {},
+                    EndPointList: row.terminalsIds,
+                    TaskID: guid(),
+                    TaskName: row.name,
+                    Priority: row.priority,
+                    Volume: row.volume,
+                    TaskType: 15,
+                    UserID: Number(localStorage.get('LoginUserID')),
+                    TaskProp: {
+                        "TaskAudioType" : 6,
+                        "RemoteID" : system_configs.value.AlarmID,
+                        "RemoteType" : "manual_alarm",
+                        "RemoteAudioProp" : {
+                            "MusicIDs" : row.mediasIds,
+                            "LimitTime" : row.sound_source.life_time ? timeToSec(row.sound_source.life_time, 1) : 0,
+                            "PlayMode" : taskPlayMode.get(row.sound_source.play_model),
+                            "PlayTimes" : row.sound_source.play_times ? timeToSec(row.sound_source.play_times, 1) : 0
+                        }
                     }
-                }
-            },
-            result: 0,
-            return_message: "",
-        };
-        // console.log(send_data)
-        send(send_data);
+                },
+                result: 0,
+                return_message: "",
+            };
+            send(send_data);
+        }else {
+            startButton.value.status = false
+        }
     }).catch(()=> {
         startButton.value.status = false
     })
@@ -550,29 +625,39 @@ const timeToSec = (time: any, num = 1) => {
     var s = Number(hour * 3600) + Number(min * 60) + Number(sec)
     return s * num
 }
-
+// 获取所有终端
+const getTerminalAll = () => {
+    return new Promise((resolve, reject)=> {
+        proxy.$http.get('/terminals/all').then((result:any) => {
+            if (result.result === 200) {
+                resolve(result.data)
+            }
+        })
+    })
+}
 // 获取所有分组
 const getTerminalGroupAll =  () => {
-    proxy.$http.get('/terminals-groups/all', {
-        params: {
-            withTerminals: true,
-            withTerminalsNums: true,
-        }
-    }).then((result:any) => {
-        if (result.result === 200) {
-            terminal_group_data.value = result.data
-            terminal_group_data.value.unshift({
-                id: 0,
-                GroupID: 0,
-                name: '所有终端',
-                terminals: JSON.parse(JSON.stringify(terminal_data.value))
-            })
-            $useRouter.push("/terminal/terminal_list")
-        }
+    getTerminalAll().then((terminal_data)=> {
+        proxy.$http.get('/terminals-groups/all', {
+            params: {
+                withTerminals: true,
+                withTerminalsNums: true,
+            }
+        }).then((result:any) => {
+            if (result.result === 200) {
+                terminal_group_data.value = result.data
+                terminal_group_data.value.unshift({
+                    id: 0,
+                    GroupID: 0,
+                    name: '所有终端',
+                    terminals: JSON.parse(JSON.stringify(terminal_data))
+                })
+                $useRouter.push("/terminal/terminal_list")
+            }
+        })
     })
 }
 
-// Judge button status
 const judgeButtonStatus = (type: Number) => {
     let status = sessionsData.value.some((item: any) => {
         return item.TaskType === type
@@ -605,16 +690,32 @@ provide("terminal_group", {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-    getTerminalGroupAll()
-    form.search_placeholder = "终端名称";
     cleanOnLineTerminal();
-    form.select_terminal =
-        basic_configs.value.ListDisplaySize === 0
-            ? "3x5"
-            : basic_configs.value.ListDisplaySize === 1
-                ? "3x6"
-                : "4x6";
-    form.view_value = basic_configs.value.DisplayType === 1 ? "list" : "square";
+    // console.log(system_configs.value.TerminalStateDefaultType)
+    // if (system_configs.value.TerminalStateDefaultType === 1) {
+    //     $useRouter.push("/terminal/group");
+    //     form.search_placeholder = "分组名称";
+    //     storeTerminal.changeFilterStatus(false);
+    // }else {
+        form.search_placeholder = "终端名称";
+        form.select_terminal =
+            basic_configs.value.ListDisplaySize === 0
+                ? "3x5"
+                : basic_configs.value.ListDisplaySize === 1
+                    ? "3x6"
+                    : "4x6";
+        form.view_value = basic_configs.value.DisplayType === 1 ? "list" : "square";
+        if (form.view_value === "list") {
+            getTerminalGroupAll()
+        } else {
+            $useRouter.push({
+                path: "/terminal/terminal_block",
+                query: {
+                    layoutArrange: select_terminal.value,
+                },
+            });
+        }
+    // }
 });
 </script>
 

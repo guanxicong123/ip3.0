@@ -60,6 +60,7 @@ watch(
     }
 );
 
+// 定时延长token有效期
 const refreshToken = () => {
     timeoutToken.value = null
     proxy.$http.get('/auth/refresh').then((result: any)=> {
@@ -79,7 +80,6 @@ onMounted(() => {
     if (!isWebsocekt.value) {
         registerWebSocket();
     }
-    getStore.useSystemStore().getConfigInfo()
     timeToken.value = setInterval(refreshToken, 90*60*1000)
 });
 

@@ -4,6 +4,7 @@ import router from "./router";
 import store from "./store";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 import { Md5 } from "ts-md5";
+import "@/assets/font/iconfont.js"
 // 引入全局样式
 import "element-plus/dist/index.css";
 import "@/assets/css/theme.scss";

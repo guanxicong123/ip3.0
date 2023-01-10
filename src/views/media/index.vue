@@ -278,9 +278,13 @@ interface User {
 
 const user = getStore.useUserStore();
 const upload = getStore.useUploadStore();
+const systemStore = getStore.useSystemStore();
 // 计算属性 computed
 const userStore = computed(() => user.user);
 const uploadUploadCompletedStore = computed(() => upload.isUploadCompleted);
+const systemPageSize = computed(() => {
+    return systemStore.pageSize?.Medias_PageSize;
+});
 
 const form = reactive<any>({
   search: "",
@@ -288,7 +292,7 @@ const form = reactive<any>({
   folderData: [],
   data: [],
   currentPage: 1,
-  pageSize: 20,
+  pageSize: systemPageSize.value,
   total: 0,
   orderColumn: "id",
   orderType: "desc",
@@ -413,6 +417,10 @@ const handleSortChange = (row: { prop: any; order: string | string[] }) => {
 };
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
+  systemStore.updateSystemSize({
+    key: 'Medias_PageSize',
+    val
+  })
   form.pageSize = val;
   handleDefaultGet();
   multipleTableRef.value?.setScrollTop(0);
