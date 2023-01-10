@@ -33,7 +33,7 @@
           <el-table-column prop="remarks" label="备注" show-overflow-tooltip />
           <el-table-column prop="level" label="日志级别" show-overflow-tooltip>
             <template #default="scope">
-              {{ formatterLevel(scope.row.level) }}
+              {{ formatterLevel(scope.row) }}
             </template>
           </el-table-column>
           <el-table-column label="操作" width="120">

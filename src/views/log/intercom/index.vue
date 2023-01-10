@@ -45,7 +45,7 @@
           <el-table-column prop="remarks" label="备注" show-overflow-tooltip />
           <el-table-column prop="level" label="日志级别" show-overflow-tooltip>
             <template #default="scope">
-              {{ formatterLevel(scope.row.level) }}
+              {{ formatterLevel(scope.row) }}
             </template>
           </el-table-column>
           <el-table-column label="操作" width="120">
@@ -133,7 +133,7 @@ const handleGetOnePageData = async () => {
     limit: form.pageSize,
     orderColumn: form.orderColumn,
     orderType: form.orderType,
-    withTerminal: true,
+    withReceiveTerminal: true,
     start_date: form.searchDate?.[0],
     end_date: form.searchDate?.[1],
     search_life_time: form.search_life_time,
