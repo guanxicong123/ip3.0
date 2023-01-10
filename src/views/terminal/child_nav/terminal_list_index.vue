@@ -88,12 +88,20 @@ interface User {
     name: string;
     address: string;
 }
+const systemStore = getStore.useSystemStore();
+
+const system_configs = computed(() => {
+    return systemStore.system_configs;
+});
+const systemPageSize = computed(() => {
+    return systemStore.pageSize?.Terminal_PageSize;
+});
 const form = reactive<any>({
     search: "",
     groupData: [],
     data: [],
     currentPage: 1,
-    pageSize: 20,
+    pageSize: systemPageSize.value,
     total: 0,
     currentGroupTitle: "所有终端",
     isShowNavBar: true, // 是否显示左侧导航栏
@@ -111,11 +119,7 @@ const { terminal_group_data }: any = inject("terminal_group");
 const { updateCheckedTerminals }: any = inject("checkedAll");
 
 const store = getStore.useTerminalStore();
-const systemStore = getStore.useSystemStore();
 
-const system_configs = computed(() => {
-    return systemStore.system_configs;
-});
 const terminal_data = computed(() => { // 终端状态数据
     return store.terminal_data;
 });
@@ -295,16 +299,27 @@ const sortChange = (column: any, prop: any, order: any) => {
             cacheTerminalData.value.sort((a: any, b: any) => a.code - b.code);
         }
     }
-    handleSizeChange(form.pageSize);
+    handlefilterData(form.pageSize);
 };
 
 // 序号
 const typeIndex = (index: number) => {
     return index + (form.currentPage - 1) * form.pageSize + 1;
 };
-
+// 处理XXX条/页更改
+const handlefilterData = (val: number) => {
+    form.currentPage = 1;
+    form.data = cacheTerminalData.value.slice(
+        0,
+        form.pageSize * form.currentPage
+    );
+};
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
+    systemStore.updateSystemSize({
+        key: 'Terminal_PageSize',
+        val
+    })
     form.pageSize = val;
     form.currentPage = 1;
     form.data = cacheTerminalData.value.slice(

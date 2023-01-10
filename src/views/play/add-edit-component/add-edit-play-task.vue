@@ -168,7 +168,7 @@
         <div class="add-edit-bottom-button">
             <div class="button button-cancel" @click="$useRouter.push('/play')">返回</div>
             <div class="button button-submit" @click="submitTask">保存</div>
-            <div class="button button-submit">保存并播放</div>
+            <div class="button button-submit" @click="submitTaskPlay">保存并播放</div>
         </div>
         <quick-terminal-dialog v-model:dialogVisible="dialogVisible" @handleSelectedConfigure="handleSelectedConfigure">
         </quick-terminal-dialog>
@@ -198,7 +198,7 @@ const $useRoute: any = useRoute();
 const uploadRef = ref<UploadInstance>();
 const fileList = ref<UploadUserFile[]>();
 const musicSelect: any = ref([]); //播放配置选中的音频文件
-const priorityData = new Map(); //优先级
+const priorityData = ref(new Map()); //优先级
 const ruleForm = reactive({
     type: 4, //任务类型；快捷音源&远程播放走非本地http协议；其余本地http协议。
     name: "", //任务名称
@@ -346,6 +346,10 @@ const requestTerminals = (data: any) => {
 const requestGroups = (data: any) => {
     terminals_groups.value = data;
 };
+// 提交任务并播放
+const submitTaskPlay = () => {
+
+}
 // 提交任务
 const submitTask = () => {
     if (!executionregiontype.value && !fast_terminals_id.value)
@@ -605,7 +609,7 @@ const getPrioritySetting = () => {
     return new Promise((resolve, reject) => {
         proxy.$http.get("/priority-setting").then((restlu: any) => {
             restlu.data.forEach((item: { task_type: any; priority: any }) => {
-                priorityData.set(item.task_type, item.priority);
+                priorityData.value.set(item.task_type, item.priority);
             });
             resolve(restlu.data)
         });

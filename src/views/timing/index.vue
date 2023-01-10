@@ -360,12 +360,18 @@ interface User {
   name: string;
   repeat_weeks: number;
 }
+
+const systemStore = getStore.useSystemStore();
+const systemPageSize = computed(() => {
+    return systemStore.pageSize?.Timer_PageSize;
+});
+
 const form = reactive({
   search: "",
   selectType: 0,
   data: [],
   currentPage: 1,
-  pageSize: 20,
+  pageSize: systemPageSize.value,
   total: 0,
   orderColumn: "execute_time",
   orderType: "asc",
@@ -441,6 +447,10 @@ const handleSortChange = (row: { prop: any; order: string | string[] }) => {
 };
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
+  systemStore.updateSystemSize({
+    key: 'Timer_PageSize',
+    val
+  })
   form.pageSize = val;
   handleDefaultGet();
   multipleTableRef.value?.setScrollTop(0);

@@ -34,7 +34,7 @@
                 </el-icon>
             </div>
             <div class="login-header-logo">
-                <img class="logo-imag" src="@/assets/images/logo.png" alt="logo" />
+                <img class="logo-imag" src="@/assets/images/logo-login.png" alt="logo" />
                 <h2>IP网络广播</h2>
             </div>
             <svg viewBox="0 0 120 16" class="svg">
@@ -116,12 +116,18 @@ const isLogin = computed(() => {
 
 // 表单值
 const modelRef = reactive({
-    name: "",
+    name: localStorage.get("username") || "",
     password: "",
-    server_ip_address: "",
+    server_ip_address: localStorage.get("serverIP") || "",
 });
 // 记住密码
 const is_checked = ref(false);
+
+watch(()=>modelRef.name, ()=> {
+    modelRef.password = ""
+    is_checked.value = false
+})
+
 // 隐藏
 const handleMinimize = () => {
     window.electronAPI.send("minimize");
@@ -135,6 +141,9 @@ const close = () => {
 };
 // 提交
 const submit = () => {
+    if (!modelRef.name) return proxy.$message.warning("请输入账号")
+    if (!modelRef.password) return proxy.$message.warning("请输入密码")
+    if (!modelRef.server_ip_address) return proxy.$message.warning("请输入服务器地址")
     let data = {
         company: "BL",
         actioncode: "c2ms_user_login",
@@ -162,20 +171,15 @@ onMounted(() => {
         socket.close();
     }
     window.electronAPI.send("login-window");
-    if (localStorage.get("username")) {
-        modelRef.name = localStorage.get("username");
-        modelRef.server_ip_address = localStorage.get("serverIP");
-    }
     if (localStorage.get("password")) {
         modelRef.password = localStorage.get("password");
         is_checked.value = true;
     }
     // 获取机器码
-    // systemStore.getProductKey()
+    systemStore.getProductKey()
 });
 onBeforeUnmount(() => {
     if (isWebsocekt) {
-        localStorage.set("username", modelRef.name);
         localStorage.set("serverIP", modelRef.server_ip_address);
     }
     if (is_checked.value) {
@@ -268,6 +272,8 @@ onBeforeUnmount(() => {
         .logo-imag {
             width: 70px;
             height: 70px;
+            border-radius: 50%;
+            background-color: #fff;
         }
 
         h2 {

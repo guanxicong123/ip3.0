@@ -117,7 +117,7 @@
             <div class="com-default-dialog-test">
                 <div class="com-default-dialog-content">
                     <p>名称：IP网络广播系统分控软件</p>
-                    <p>软件 版本：3.0（内部版本3.0.1）</p>
+                    <p>软件版本：3.0（内部版本3.0.2）</p>
                 </div>
             </div>
         </el-dialog>

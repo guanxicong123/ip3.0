@@ -84,13 +84,21 @@ interface User {
   level: number;
 }
 
+const systemStore = getStore.useSystemStore();
+const systemPageSize = computed(() => {
+  return systemStore.pageSize?.Log_PageSize;
+});
+watch(()=>systemPageSize.value, ()=> {
+  form.pageSize = systemPageSize.value
+})
+
 const form = reactive<any>({
   data: [],
   searchDate: [],
   orderColumn: "id",
   orderType: "desc",
   currentPage: 1,
-  pageSize: 20,
+  pageSize: systemPageSize.value,
   total: 0,
   search_level: 0,
   search_users_ids: -1,
@@ -160,6 +168,10 @@ const handleReset = () => {
 };
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
+  systemStore.updateSystemSize({
+    key: 'Log_PageSize',
+    val
+  })
   form.pageSize = val;
   handleDefaultGet();
   multipleTableRef.value?.setScrollTop(0);

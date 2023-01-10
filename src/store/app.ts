@@ -41,12 +41,33 @@ export const useAppStore = defineStore({
     loginSuccessData(data: any) {
         this.is_login = false;
         localStorage.set("LoginUserID", data.data.UserID);
-        // if (router.options.history.location === '/') {
-        //     router.push("/terminal")
-        // }
         // 登录成功获取路由权限数据
-        router.push("/terminal")
-        getStore.useSystemStore().getConfigInfo(); //获取系统配置
+        getStore.useSystemStore().getConfigInfo().then((result: any)=> {
+            let data = new Map([
+                [0, {isShow: result?.functional_configs?.TerminalStateEnabled, path: '/terminal'}],
+                [1, {isShow: result?.functional_configs?.PlayCenterEnabled, path: '/play'}],
+                [2, {isShow: result?.functional_configs?.SessionEnabled, path: '/session'}],
+                [3, {isShow: result?.functional_configs?.TimingEnabled, path: '/timing'}],
+                [4, {isShow: result?.functional_configs?.MediasEnabled, path: '/media'}]
+            ])
+            let defaultModule = data.get(result.system_configs.DefaultDisplayView)
+            if (defaultModule?.isShow) {
+                router.push(defaultModule?.path)
+            }else {
+                [0,1,2,3,4].some((item: number) => {
+                    const defaultData = data.get(item)
+                    if (defaultData?.isShow) {
+                        router.push(defaultData?.path)
+                        return true
+                    }
+                    return false
+                })
+            }
+            
+            // router.push("/terminal")
+        });
+        // 获取系统优先级
+        getStore.useSystemStore().getPrioritySetting()
     },
     // 会话状态
     ROUTER_TASK(data: any) {
@@ -67,12 +88,12 @@ export const useAppStore = defineStore({
         } else {
             data.forEach((one: any) => {
                 const result = this.sessionsArray.some((two: any) => {
-                if (one.TaskID === two.TaskID) {
-                    Object.assign(two, one);
-                    return true;
-                } else {
-                    return false;
-                }
+                    if (one.TaskID === two.TaskID) {
+                        Object.assign(two, one);
+                        return true;
+                    } else {
+                        return false;
+                    }
                 });
                 if (!result) {
                     this.sessionsArray.push(one);
