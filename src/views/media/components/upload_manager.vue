@@ -480,7 +480,7 @@ onMounted(() => {
   width: 600px;
   height: 600px;
   z-index: 2000;
-  right: 0;
+  right: 4px;
   background-color: $c-fff;
   border-left: 1px solid #ddd;
   border-top: 1px solid #ddd;
@@ -519,6 +519,10 @@ onMounted(() => {
       color: $c-fff;
       .left {
         padding-left: 20px;
+        width: 68%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .right {
         i {
@@ -595,11 +599,11 @@ onMounted(() => {
           height: 40px;
           margin: 8px;
           .list {
-            width: calc(100% - 26px);
+            width: calc(100% - 38px);
             text-align: left;
             padding-right: 10px;
             .txt {
-              width: 92%;
+              width: 100%;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;

@@ -40,10 +40,10 @@
         </template>
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item label="快捷音源" prop="sound_source.name">
+            <el-form-item label="快捷音源" prop="sound_source_name">
               <div class="com-add-select-components">
                 <el-input
-                  v-model="form.sound_source.name"
+                  v-model="form.sound_source_name"
                   placeholder="请选择"
                   disabled
                   @change="handleSelectedConfigure"
@@ -508,13 +508,13 @@
       <template #header="{ titleId, titleClass }">
         <div class="com-dialog-header">
           <span :id="titleId" :class="titleClass">选择音乐文件</span>
-          <span>
+          <span style="color: #fff">
             &nbsp;( 已选文件 :
-            <span class="theme">
+            <span>
               {{ form.medias.length }}
             </span>
             &nbsp; 已选文件夹 :
-            <span class="theme">
+            <span>
               {{ form.medias_groups.length }}
             </span>
             )
@@ -530,6 +530,7 @@
         @totalSecond="handleTotalSecond"
         :responseMedia="parentData.responseMedia"
         :responseGroups="parentData.responseGroups"
+        :showSearch="form.mediaDialogVisible"
       />
       <template #footer>
         <div class="com-dialog-footer">
@@ -553,6 +554,7 @@ const emit = defineEmits([
   "requestSoundSource", // 更新传递已选择的音源数据，用于父组件进行数据交互
   "requestType", // 更新传递已选择的音源数据类型，用于父组件进行数据交互
   "requestSoundSourceID", // 更新传递已选择的快捷音源id，用于父组件进行数据交互
+  "requestSoundSourceType", // 更新传递已选择的快捷音源类型，用于父组件进行数据交互
 ]);
 // 声明父组件传值
 const parentData = defineProps([
@@ -587,6 +589,7 @@ const form = reactive<any>({
     name: "",
     type: 0,
   }, // 快捷音源
+  sound_source_name: "", // 快捷音源名称
   old_sound_source_data: {}, // 存储快捷音源
   fase_life_time: "00:00:00", // 快捷音源-持续时间
   media: {
@@ -705,7 +708,6 @@ const handleRequestSoundSource = (data: any) => {
   form.sound_source.id = data.id;
   form.sound_source.name = data.name;
   form.sound_source.type = data.type ? data.type : 2;
-  emit("requestSoundSourceID", form.sound_source.id);
   handleSelectedConfigure();
 };
 // 处理已选择音源采集的类型
@@ -726,8 +728,10 @@ const handleRequestConfigure = (data: any) => {
   form.sound_source.id = data.id;
   form.sound_source.name = data.name;
   form.sound_source.type = data.type;
+  form.sound_source_name = data.name;
   form.fase_life_time = usePublicMethod.convertSongDuration(data.length);
   emit("requestSoundSourceID", form.sound_source.id);
+  emit("requestSoundSourceType", form.sound_source.type);
   handleSelectedConfigure();
 };
 // 音源选择插件配置
@@ -877,6 +881,7 @@ watch(
       form.sound_source.id = newData.responseFastSoundSource.id;
       form.sound_source.name = newData.responseFastSoundSource.name;
       form.sound_source.type = newData.responseFastSoundSource.type;
+      form.sound_source_name = newData.responseFastSoundSource.name;
       form.fase_life_time = usePublicMethod.convertSongDuration(
         newData.responseFastSoundSource.length
       );

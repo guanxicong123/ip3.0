@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "25081179",
+      "name": "execution-failed",
+      "font_class": "execution-failed",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "32962817",
+      "name": "qiyong",
+      "font_class": "play1",
+      "unicode": "e7b4",
+      "unicode_decimal": 59316
+    },
+    {
       "icon_id": "25081163",
       "name": "disable-task",
       "font_class": "disable-task",

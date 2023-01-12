@@ -215,9 +215,11 @@
               <!-- 音源采集 -->
               <template v-if="scope.row.type === 23">
                 <!-- 声卡采集 or 终端采集 -->
-                <i
-                  class="iconfont icon-view-collection-terminal"
-                  :title="
+                <el-popover
+                  placement="bottom"
+                  trigger="click"
+                  popper-class="curstom-el-popper"
+                  :content="
                     scope.row.sound_source?.sound_card ||
                     scope.row.sound_source?.terminals_name
                   "
@@ -225,7 +227,11 @@
                     scope.row.sound_source?.sound_card ||
                     scope.row.sound_source?.terminals_name
                   "
-                ></i>
+                >
+                  <template #reference>
+                    <i class="iconfont icon-view-collection-terminal"></i>
+                  </template>
+                </el-popover>
                 <span
                   class="red"
                   v-if="
@@ -239,9 +245,11 @@
               <!-- 快捷音源 -->
               <template v-if="scope.row.type === 4">
                 <!-- 声卡采集 or 终端采集 -->
-                <i
-                  class="iconfont icon-view-collection-terminal"
-                  :title="
+                <el-popover
+                  placement="bottom"
+                  trigger="click"
+                  popper-class="curstom-el-popper"
+                  :content="
                     scope.row.fast_sound?.fast_source?.sound_card ||
                     scope.row.fast_sound?.fast_source?.terminals_name
                   "
@@ -249,7 +257,11 @@
                     scope.row.fast_sound?.fast_source?.sound_card ||
                     scope.row.fast_sound?.fast_source?.terminals_name
                   "
-                ></i>
+                >
+                  <template #reference>
+                    <i class="iconfont icon-view-collection-terminal"></i>
+                  </template>
+                </el-popover>
                 <span
                   class="red"
                   v-if="
@@ -363,7 +375,7 @@ interface User {
 
 const systemStore = getStore.useSystemStore();
 const systemPageSize = computed(() => {
-    return systemStore.pageSize?.Timer_PageSize;
+  return systemStore.pageSize?.Timer_PageSize;
 });
 
 const form = reactive({
@@ -448,9 +460,9 @@ const handleSortChange = (row: { prop: any; order: string | string[] }) => {
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
   systemStore.updateSystemSize({
-    key: 'Timer_PageSize',
-    val
-  })
+    key: "Timer_PageSize",
+    val,
+  });
   form.pageSize = val;
   handleDefaultGet();
   multipleTableRef.value?.setScrollTop(0);
@@ -514,7 +526,7 @@ const handleEnableOrDisable = (row: any) => {
   const status = row.is_done === 0 ? 1 : 0;
   TasksService.putTasks(
     {
-      type: row.type,
+      type: row.true_type,
       is_done: status,
     },
     row.id

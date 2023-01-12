@@ -35,7 +35,10 @@
                     clearable
                     @input="handleMediaSearch"
                   />
-                  <i class="iconfont icon-clear" @click="handleClickClosePopover"></i>
+                  <i
+                    class="iconfont icon-execution-failed"
+                    @click="handleClickClosePopover"
+                  ></i>
                 </div>
               </el-popover>
               <span>{{ config.mediaTitle }}</span>
@@ -97,7 +100,10 @@
                     clearable
                     @input="handleGroupsSearch"
                   />
-                  <i class="iconfont icon-clear" @click="handleClickClosePopover"></i>
+                  <i
+                    class="iconfont icon-execution-failed"
+                    @click="handleClickClosePopover"
+                  ></i>
                 </div>
               </el-popover>
               <span>{{ config.groupsTitle }}</span>
@@ -166,7 +172,7 @@
               @input="handleSelectedMediaSearch"
             />
             <i
-              class="iconfont icon-clear delete"
+              class="iconfont icon-execution-failed delete"
               @click="handleClickCloSesearchInput"
             ></i>
           </span>
@@ -201,7 +207,7 @@
                   </div>
                   <div class="icon-font-delete">
                     <i
-                      class="iconfont icon-clear delete"
+                      class="iconfont icon-execution-failed delete"
                       @click="deleteTerminal(item)"
                     ></i>
                   </div>
@@ -249,7 +255,7 @@
               @input="handleSelectedGroupsSearch"
             />
             <i
-              class="iconfont icon-clear delete"
+              class="iconfont icon-execution-failed delete"
               @click="handleClickCloSesearchInput"
             ></i>
           </span>
@@ -277,7 +283,10 @@
                     </span>
                   </div>
                   <div class="icon-font-delete">
-                    <i class="iconfont icon-clear delete" @click="deleteGroup(item)"></i>
+                    <i
+                      class="iconfont icon-execution-failed delete"
+                      @click="deleteGroup(item)"
+                    ></i>
                   </div>
                 </div>
               </li>
@@ -313,6 +322,7 @@ const parentData = defineProps([
   "myConfig", // config 配置,将对应覆盖 config
   "responseMedia", // 编辑界面传递回来的媒体数据，用于展示组件的已选择状态
   "responseGroups", // 编辑界面传递回来的媒体文件夹数据，用于展示组件的已选择状态
+  "showSearch", // 控制显示搜索弹出框-popover
 ]);
 
 const form = reactive<any>({
@@ -751,12 +761,18 @@ const handleEditGroupsData = () => {
 // 监听变化
 watch(
   () => [parentData],
-  ([newData]) => {
-    if (config.isSelectMedia && newData.responseMedia.length > 0) {
-      handleEditMediaData();
+  ([newData], [oldData]) => {
+    if (newData || newData != oldData) {
+      if (config.isSelectMedia && newData.responseMedia.length > 0) {
+        handleEditMediaData();
+      }
+      if (config.isSelectGroups && newData.responseGroups.length > 0) {
+        handleEditGroupsData();
+      }
     }
-    if (config.isSelectGroups && newData.responseGroups.length > 0) {
-      handleEditGroupsData();
+    if (!newData.showSearch) {
+      form.searchMediaVisible = false;
+      form.searchGroupsVisible = false;
     }
   },
   {

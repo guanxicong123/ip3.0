@@ -149,7 +149,10 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
           .then((result) => {
             if (result.data?.id) {
               emit("show", false);
-              emit("success");
+              emit("success", {
+                id: form.id,
+                name: ruleForm.name,
+              });
               ElMessage({
                 type: "success",
                 message: "新建成功",

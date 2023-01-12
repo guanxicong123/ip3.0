@@ -100,7 +100,7 @@
               @input="handleSelectedTerminalsSearch"
             />
             <i
-              class="iconfont icon-clear delete"
+              class="iconfont icon-execution-failed delete"
               @click="handleClickCloSesearchInput"
             ></i>
           </span>
@@ -349,6 +349,7 @@ onMounted(() => {
           align-items: center;
           padding: 0 20px 0 40px;
           > div {
+            overflow: hidden;
             span {
               display: block;
               width: 100%;

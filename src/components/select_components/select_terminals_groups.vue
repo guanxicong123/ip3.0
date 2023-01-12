@@ -35,7 +35,10 @@
                     clearable
                     @input="handleTerminalsSearch"
                   />
-                  <i class="iconfont icon-clear" @click="handleClickClosePopover"></i>
+                  <i
+                    class="iconfont icon-execution-failed"
+                    @click="handleClickClosePopover"
+                  ></i>
                 </div>
               </el-popover>
               <span>{{ config.terminalsTitle }}</span>
@@ -98,7 +101,10 @@
                     clearable
                     @input="handleGroupsSearch"
                   />
-                  <i class="iconfont icon-clear" @click="handleClickClosePopover"></i>
+                  <i
+                    class="iconfont icon-execution-failed"
+                    @click="handleClickClosePopover"
+                  ></i>
                 </div>
               </el-popover>
               <span>{{ config.groupsTitle }}</span>
@@ -170,7 +176,7 @@
               @input="handleSelectedTerminalsSearch"
             />
             <i
-              class="iconfont icon-clear delete"
+              class="iconfont icon-execution-failed delete"
               @click="handleClickCloSesearchInput"
             ></i>
           </span>
@@ -228,7 +234,7 @@
                   </div>
                   <div class="icon-font-delete">
                     <i
-                      class="iconfont icon-clear delete"
+                      class="iconfont icon-execution-failed delete"
                       @click="deleteTerminal(item)"
                     ></i>
                   </div>
@@ -307,7 +313,7 @@
               @input="handleSelectedGroupsSearch"
             />
             <i
-              class="iconfont icon-clear delete"
+              class="iconfont icon-execution-failed delete"
               @click="handleClickCloSesearchInput"
             ></i>
           </span>
@@ -350,7 +356,10 @@
                     </span>
                   </div>
                   <div class="icon-font-delete">
-                    <i class="iconfont icon-clear delete" @click="deleteGroup(item)"></i>
+                    <i
+                      class="iconfont icon-execution-failed delete"
+                      @click="deleteGroup(item)"
+                    ></i>
                   </div>
                 </div>
               </li>
@@ -385,6 +394,7 @@ const parentData = defineProps([
   "excludeGroupsIDS", // 分组id集合 选择分组时可以排除不选这里面的id
   "openTerminalsVolume", // 配置任务时，是否开启改变终端音量
   "changeTerminalsVolume", // 配置任务时，实时改变终端音量
+  "showSearch", // 控制显示搜索弹出框-popover
 ]);
 
 const form = reactive<any>({
@@ -977,20 +987,26 @@ const handleUnique = (arr: any[]) => {
 // 监听变化
 watch(
   () => [parentData],
-  ([newData]) => {
+  ([newData], [oldData]) => {
     handleSetShowColumn(newData);
-    // 开启并修改终端音量
-    if (parentData.openTerminalsVolume && newData.changeTerminalsVolume) {
-      setChangeTerminalsVolume(newData.changeTerminalsVolume);
+    if (newData || newData != oldData) {
+      // 开启并修改终端音量
+      if (parentData.openTerminalsVolume && newData.changeTerminalsVolume) {
+        setChangeTerminalsVolume(newData.changeTerminalsVolume);
+      }
+      if (config.isSelectTerminals && newData.responseTerminals?.length > 0) {
+        handleEditTerminalsData();
+      }
+      if (config.isSelectGroups && newData.responseGroups?.length > 0) {
+        handleEditGroupsData();
+      }
+      if (newData.excludeTerminalsIDS) {
+        handleExcludeTerminals(form.allTerminalsData);
+      }
     }
-    if (config.isSelectTerminals && newData.responseTerminals?.length > 0) {
-      handleEditTerminalsData();
-    }
-    if (config.isSelectGroups && newData.responseGroups?.length > 0) {
-      handleEditGroupsData();
-    }
-    if (newData.excludeTerminalsIDS) {
-      handleExcludeTerminals(form.allTerminalsData);
+    if (newData != oldData && !newData.showSearch) {
+      form.searchTerminalsVisible = false;
+      form.searchGroupsVisible = false;
     }
   },
   {

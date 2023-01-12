@@ -9,9 +9,7 @@
     <div class="com-select-left">
       <div class="custom-title">
         <template v-if="!form.searchConfigureVisible">
-          <el-icon
-            @click="form.searchConfigureVisible = !form.searchConfigureVisible"
-          >
+          <el-icon @click="form.searchConfigureVisible = !form.searchConfigureVisible">
             <Search />
           </el-icon>
           <span> 配置名称 </span>
@@ -26,7 +24,7 @@
             @input="handleConfigureSearch"
           />
           <i
-            class="iconfont icon-clear delete"
+            class="iconfont icon-execution-failed delete"
             @click="handleClickCloSesearchInput"
           ></i>
         </span>
@@ -56,10 +54,7 @@
         </el-scrollbar>
       </div>
     </div>
-    <div
-      class="com-select-right"
-      v-show="form.selectedConfigureData.type === 1"
-    >
+    <div class="com-select-right" v-show="form.selectedConfigureData.type === 1">
       <div class="custom-title">
         {{ config.musicTitle }}
       </div>
@@ -77,8 +72,7 @@
           >
             <el-icon
               @click="
-                form.selectedSearchConfigureVisible =
-                  !form.selectedSearchConfigureVisible
+                form.selectedSearchConfigureVisible = !form.selectedSearchConfigureVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -96,7 +90,7 @@
               @input="handleSelectedConfigureSearch"
             />
             <i
-              class="iconfont icon-clear delete"
+              class="iconfont icon-execution-failed delete"
               @click="handleClickCloSelectedSesearch"
             ></i>
           </span>
@@ -112,9 +106,7 @@
               <li
                 v-show="
                   !form.selectedSearchConfigureVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchConfigureReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchConfigureReg)
                 "
               >
                 <div
@@ -123,26 +115,20 @@
                   :style="row.style"
                   :title="item[row.column]"
                 >
-                  <span
-                    :class="{
-                      'iconfont icon-terminals1':
-                        row.column === 'list' &&
-                        !item.hasOwnProperty('medias_id'),
-                    }"
-                    :title="
-                      row.column === 'list' && !item.hasOwnProperty('medias_id')
-                        ? '点击查看'
-                        : ''
-                    "
-                  >
+                  <span>
                     {{
                       row.column === "key"
                         ? index + 1
-                        : row.column === "list" &&
-                          item.hasOwnProperty("medias_id")
+                        : row.column === "list" && item.hasOwnProperty("medias_id")
                         ? "-"
                         : item[row.column]
                     }}
+                    <view-components-popover
+                      v-if="row.column === 'list' && !item.hasOwnProperty('medias_id')"
+                      :myConfig="mediaConfig"
+                      :url="'/medias'"
+                      :mediasGroupsID="item.id"
+                    />
                   </span>
                 </div>
               </li>
@@ -151,10 +137,7 @@
         </el-scrollbar>
       </div>
     </div>
-    <div
-      class="com-select-right"
-      v-show="form.selectedConfigureData.type !== 1"
-    >
+    <div class="com-select-right" v-show="form.selectedConfigureData.type !== 1">
       <div class="custom-title">
         {{ config.soundSourceTitle }}
       </div>
@@ -294,13 +277,18 @@ const handleGetAllFastSound = async () => {
     });
   setCurrentTabSelectStatus(parentData.responseConfigure);
 };
+// 查看组件插件配置
+const mediaConfig = {
+  iconfont: "icon-music", // 字体图标
+  iconTitle: "查看媒体文件", // icon title
+  tableTitle: "媒体文件", // 表格顶部 title
+  searchPlaceholder: "名称", // 搜索框 placeholder
+  showTableColumn: [{ prop: "name", label: "名称" }], // 显示的表格列
+};
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   handleGetAllFastSound();
 });
 </script>
@@ -358,6 +346,7 @@ onMounted(() => {
           display: flex;
           align-items: center;
           > div {
+            overflow: hidden;
             span {
               display: block;
               width: 100%;

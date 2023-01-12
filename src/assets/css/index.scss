@@ -58,6 +58,12 @@ html {
           width: 200px;
         }
       }
+      >.el-input {
+        width: 200px;
+      }
+      >.el-button.is-disabled i {
+        cursor: not-allowed;
+      }
     }
     .com-button {
       flex: 1;
@@ -432,4 +438,8 @@ html {
   .head-add-color {
       color: rgb(19, 212, 29);
   }
+}
+.icon-execution-failed {
+  color: #fa6b5a;
+  font-weight: 600;
 }

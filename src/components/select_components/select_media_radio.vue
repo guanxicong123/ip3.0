@@ -10,10 +10,7 @@
       <div class="custom-title">
         <template v-if="!form.selectedSearchGroupsVisible">
           <el-icon
-            @click="
-              form.selectedSearchGroupsVisible =
-                !form.selectedSearchGroupsVisible
-            "
+            @click="form.selectedSearchGroupsVisible = !form.selectedSearchGroupsVisible"
           >
             <Search />
           </el-icon>
@@ -29,7 +26,7 @@
             @input="handleGourpsSearch"
           />
           <i
-            class="iconfont icon-clear delete"
+            class="iconfont icon-execution-failed delete"
             @click="handleClickCloGroupSearch"
           ></i>
         </span>
@@ -43,9 +40,7 @@
                 :class="{ selected: form.currentGroupsID === item.id }"
                 v-show="
                   !form.selectedSearchGroupsVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchGroupsReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchGroupsReg)
                 "
               >
                 {{ item.name }}
@@ -64,15 +59,11 @@
         >
           <template
             v-if="
-              item.column !== config.searchColumnName ||
-              !form.selectedSearchMediaVisible
+              item.column !== config.searchColumnName || !form.selectedSearchMediaVisible
             "
           >
             <el-icon
-              @click="
-                form.selectedSearchMediaVisible =
-                  !form.selectedSearchMediaVisible
-              "
+              @click="form.selectedSearchMediaVisible = !form.selectedSearchMediaVisible"
               v-if="item.column === config.searchColumnName"
             >
               <Search />
@@ -91,7 +82,7 @@
               @input="handleSelectedMediaSearch"
             />
             <i
-              class="iconfont icon-clear delete"
+              class="iconfont icon-execution-failed delete"
               @click="handleClickCloSearchTerminals"
             ></i>
           </span>
@@ -108,9 +99,7 @@
                 }"
                 v-show="
                   !form.selectedSearchMediaVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchMediaReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchMediaReg)
                 "
               >
                 <div
@@ -251,10 +240,7 @@ const handleGetAllGroups = async () => {
     .then((result) => {
       if (result.data) {
         if (isArray(result.data)) {
-          form.allGroupsData = [
-            ...[{ id: 0, name: "所有媒体文件" }],
-            ...result.data,
-          ];
+          form.allGroupsData = [...[{ id: 0, name: "所有媒体文件" }], ...result.data];
         }
       } else {
         ElMessage({
@@ -271,10 +257,7 @@ const handleGetAllGroups = async () => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   handleGetAllGroups();
   handleGetAllMeida();
   setCurrentTabSelectStatus();
@@ -323,6 +306,7 @@ onMounted(() => {
           align-items: center;
           padding: 0 20px 0 40px;
           > div {
+            overflow: hidden;
             span {
               display: block;
               width: 100%;

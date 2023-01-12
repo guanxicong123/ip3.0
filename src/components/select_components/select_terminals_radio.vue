@@ -26,7 +26,7 @@
             @input="handleGourpsSearch"
           />
           <i
-            class="iconfont icon-clear delete"
+            class="iconfont icon-execution-failed delete"
             @click="handleClickCloGroupSearch"
           ></i>
         </span>
@@ -85,7 +85,7 @@
               @input="handleSelectedTerminalsSearch"
             />
             <i
-              class="iconfont icon-clear delete"
+              class="iconfont icon-execution-failed delete"
               @click="handleClickCloSearchTerminals"
             ></i>
           </span>
@@ -323,6 +323,7 @@ onMounted(() => {
           align-items: center;
           padding: 0 20px 0 40px;
           > div {
+            overflow: hidden;
             span {
               display: block;
               width: 100%;

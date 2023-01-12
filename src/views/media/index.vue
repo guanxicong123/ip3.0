@@ -46,7 +46,12 @@
           </div>
         </div>
         <div class="com-main">
-          <div class="com-two-main">
+          <div
+            class="com-two-main"
+            v-loading="form.loadingGroups"
+            element-loading-text="Loading..."
+            element-loading-background="rgba(0, 0, 0, 0.7)"
+          >
             <el-scrollbar>
               <ul class="folder-ul">
                 <li
@@ -116,7 +121,9 @@
         <div class="com-head">
           <div class="com-head-content">
             <div class="com-breadcrumb">
-              <span class="title">{{ form.currentFolderTitle }}</span>
+              <span class="title" :title="form.currentFolder.name">
+                {{ form.currentFolder.name }}
+              </span>
             </div>
             <div class="com-button"></div>
           </div>
@@ -283,7 +290,7 @@ const systemStore = getStore.useSystemStore();
 const userStore = computed(() => user.user);
 const uploadUploadCompletedStore = computed(() => upload.isUploadCompleted);
 const systemPageSize = computed(() => {
-    return systemStore.pageSize?.Medias_PageSize;
+  return systemStore.pageSize?.Medias_PageSize;
 });
 
 const form = reactive<any>({
@@ -305,6 +312,7 @@ const form = reactive<any>({
   editInfor: {}, // 编辑信息
   firstLoad: true, // 第一次进入界面加载
   downloading: false, // 等待下载状态
+  loadingGroups: false, // 等待加载分组状态
 });
 // 处理点击切换文件夹
 const handleClickFolder = (item: any) => {
@@ -418,9 +426,9 @@ const handleSortChange = (row: { prop: any; order: string | string[] }) => {
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
   systemStore.updateSystemSize({
-    key: 'Medias_PageSize',
-    val
-  })
+    key: "Medias_PageSize",
+    val,
+  });
   form.pageSize = val;
   handleDefaultGet();
   multipleTableRef.value?.setScrollTop(0);
@@ -460,12 +468,16 @@ const handleDelete = (type: string, row: any) => {
               form.currentPage--;
             }
             handleGetOnePageData();
-            form.folderData.some((item: { id: number; medias_count: number }) => {
-              if (item.id == form.currentFolder.id) {
-                return (item.medias_count -= ids.length);
-              }
-            });
-            form.folderData[0].medias_count -= ids.length;
+            if (form.currentFolder.id === 0) {
+              handleGetAllBellsGroups();
+            } else {
+              form.folderData.some((item: { id: number; medias_count: number }) => {
+                if (item.id == form.currentFolder.id) {
+                  return (item.medias_count -= ids.length);
+                }
+              });
+              form.folderData[0].medias_count -= ids.length;
+            }
             ElMessage({
               type: "success",
               message: "删除成功",
@@ -500,8 +512,13 @@ const handleDialogVisible = (value: boolean) => {
   form.dialogVisible = value;
 };
 // 处理编辑弹窗的成功回调
-const handleSuccessCallback = () => {
+const handleSuccessCallback = (data: any) => {
   handleGetAllBellsGroups();
+  // 更新当前选中的文件夹展示数据
+  if (data.id == form.currentFolder.id) {
+    form.currentFolder.name = data.name;
+    localStorage.setItem("folder", JSON.stringify(data));
+  }
 };
 // 处理重置
 const handleResetMeidaGroup = () => {
@@ -691,10 +708,17 @@ onMounted(() => {
   flex-direction: row;
 }
 .com-index-right {
+  .com-breadcrumb {
+    width: 100%;
+    box-sizing: border-box;
+  }
   .title {
     font-size: 18px;
     font-weight: bold;
     color: #6f95c1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 .com-two-main {

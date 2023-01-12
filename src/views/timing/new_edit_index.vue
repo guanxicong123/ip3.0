@@ -84,7 +84,9 @@
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                   <el-form-item label="优先级" prop="priority" class="custom-form-input">
-                    <div class="custom-number red" title="任务优先级-定时任务">70</div>
+                    <div class="custom-number red" title="任务优先级-定时任务">
+                      {{ form.maxPriority }}
+                    </div>
                     <el-input-number
                       v-model="ruleForm.priority"
                       :min="1"
@@ -125,7 +127,17 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="form.type !== 1">
+                <el-col
+                  :xs="12"
+                  :sm="8"
+                  :md="8"
+                  :lg="8"
+                  :xl="6"
+                  v-if="
+                    (form.fast_sound_type != 1 && form.type == 4) ||
+                    (form.type > 1 && form.type < 4)
+                  "
+                >
                   <el-form-item label="执行时间" prop="execute_time">
                     <el-time-picker
                       v-model="ruleForm.execute_time"
@@ -136,7 +148,10 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-              <el-row :gutter="60" v-if="form.type === 1">
+              <el-row
+                :gutter="60"
+                v-if="form.type === 1 || (form.type === 4 && form.fast_sound_type === 1)"
+              >
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                   <el-form-item label="执行时间" prop="multiple_execute_time">
                     <div class="com-add-select-components">
@@ -150,7 +165,7 @@
                       />
                       <div class="select-button">
                         <i
-                          class="iconfont icon-clear"
+                          class="iconfont icon-execution-failed"
                           title="清除全部执行时间"
                           @click="handleClearAllExecutionTime"
                         ></i>
@@ -263,6 +278,7 @@
                 @requestMedia="handleRequestSoundMedia"
                 @requestGroups="handleRequestSoundMediaGroups"
                 @requestSoundSourceID="handleRequestSoundSourceID"
+                @requestSoundSourceType="handleRequestSoundSourceType"
                 :responseType="ruleForm.type"
                 :responseSoundSource="ruleForm.sound_source"
                 :responseFastSoundSource="ruleForm.fast_sound"
@@ -351,7 +367,8 @@ import { ValidatorService } from "@/utils/api/validator/index";
 import { TasksService } from "@/utils/api/task/index";
 import { TerminalsLightService } from "@/utils/api/light_config";
 import { LEDService } from "@/utils/api/led_config";
-import { onBeforeRouteLeave } from 'vue-router';
+import { PriorityService } from "@/utils/api/priority_config";
+import { onBeforeRouteLeave } from "vue-router";
 
 const form = reactive<any>({
   title: "",
@@ -373,8 +390,10 @@ const form = reactive<any>({
   quick_terminal: { id: 0, name: "" }, // 快捷终端
   id: 0, // 路由id
   sound_source: {}, // 音源设置
+  maxPriority: 0, // 最大优先级
   lightData: [], // 灯光配置数据
   ledData: [], // LED配置数据
+  fast_sound_type: 0, // 快捷音源类型
 });
 // 提交表单字段
 const ruleForm = reactive<any>({
@@ -384,7 +403,7 @@ const ruleForm = reactive<any>({
   volume: 70, // 任务音量
   priority: 60, // 优先级
   terminals_light_id: 0, // 灯光配置
-  led_config_id: 0, // LED配置
+  led_config_id: "", // LED配置
   execute_time: "", // 执行时间
   time_type: 0, // 日期设置-类型
   type: 4, // 音源设置tab类型
@@ -455,11 +474,19 @@ const validateEmpty = (rule: any, value: any, callback: any) => {
     callback();
   }
 };
+const validateLed = (rule: any, value: any, callback: any) => {
+  if (value < 1) {
+    return callback(new Error("请选择"));
+  } else {
+    callback();
+  }
+};
 // 表单验证规则
 const rules = reactive({
   name: [{ validator: validateName, trigger: "blur", required: true }],
   start_date: [{ validator: validateEmpty, trigger: "blur", required: true }],
   execute_time: [{ validator: validateEmpty, trigger: "change", required: true }],
+  led_config_id: [{ validator: validateLed, trigger: "change", required: true }],
 });
 // 处理音源设置返回的数据
 const handleRequestSoundType = (data: number) => {
@@ -467,6 +494,9 @@ const handleRequestSoundType = (data: number) => {
 };
 const handleRequestSoundSourceID = (data: number) => {
   ruleForm.fast_sound_id = data;
+};
+const handleRequestSoundSourceType = (data: number) => {
+  form.fast_sound_type = data;
 };
 const handleRequestSoundSource = (data: any) => {
   form.sound_source = data;
@@ -608,7 +638,10 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
   await formEl.validate((valid, fields) => {
     if (valid) {
       // 执行时间
-      if (form.type === 1 && form.executionTimeData.length < 1) {
+      if (
+        (form.type === 1 || (form.type === 4 && form.fast_sound_type === 1)) &&
+        form.executionTimeData.length < 1
+      ) {
         return handleReturnError("请选择执行时间");
       }
       // 音源设置 - 快捷音源
@@ -652,7 +685,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
         }
       }
       // 音乐播放
-      if (form.type === 1) {
+      if (form.type === 1 || (form.type === 4 && form.fast_sound_type === 1)) {
         const time: any[] = [];
         form.executionTimeData.forEach((item: { value: any }) => {
           time.push(item.value);
@@ -769,6 +802,9 @@ const handleGetEditData = async () => {
             });
           });
         }
+        if (result.result.type === 4) {
+          form.fast_sound_type = result.result.sound_source.type;
+        }
         if (result.data.end_date === "0000-00-00") {
           ruleForm.end_date = "";
         }
@@ -834,11 +870,24 @@ const getAllLED = async () => {
       console.log(error);
     });
 };
+// 处理获取优先级配置
+const handleGetOnePriority = async () => {
+  await PriorityService.getOnePriority(7)
+    .then((result) => {
+      if (result.data?.id) {
+        form.maxPriority = Number.parseInt(result.data.priority);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   getAllTerminalsLight();
   getAllLED();
+  handleGetOnePriority();
   form.id = Number($useRoute.params?.id);
   form.title = form.id > 0 ? "编辑" : "新建";
   if (form.id > 0) {
@@ -850,23 +899,20 @@ onMounted(() => {
     );
   }
 });
-onBeforeRouteLeave((to, from, next)=> {
-    if (to.path === '/timing' || to.path === '/') {
-        next()
-    }else {
-        ElMessageBox.confirm(
-            '本次修改尚未保存，即将退出页面，是否继续?',
-            '提示',
-            {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning',
-            }
-        ).then(() => {
-            next()
-        })
-    }
-})
+
+onBeforeRouteLeave((to, from, next) => {
+  if (to.path === "/timing" || to.path === "/") {
+    next();
+  } else {
+    ElMessageBox.confirm("本次修改尚未保存，即将退出页面，是否继续?", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    }).then(() => {
+      next();
+    });
+  }
+});
 </script>
 
 <style lang="scss" scoped>

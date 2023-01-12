@@ -52,6 +52,7 @@ export class MeidaService {
       method: "post",
       responseType: "json",
       data: params,
+      timeout: 0, // 默认值是 `0` (永不超时)
     });
   }
 
