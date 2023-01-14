@@ -185,6 +185,9 @@
                   {{ scope.row.sound_source.play_number }} 首
                 </template>
               </span>
+              <span v-else-if="scope.row.type == 23">
+                {{ scope.row.sound_source.life_time }}
+              </span>
               <span v-else>--</span>
             </template>
           </el-table-column>
