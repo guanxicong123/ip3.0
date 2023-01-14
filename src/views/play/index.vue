@@ -46,15 +46,15 @@
                                 : playSubscriptionTask.MusicName
                         }}
                     </p>
-                    <div class="progress" v-if="handleTaskProgress()">
+                    <div class="progress" v-if="handleTaskProgress() && playCenterData.TaskID">
                         <el-slider v-model="form.current_duration" :max="form.total_duration"
                             :format-tooltip="formatTooltip" @change="handleSwitchTask(playCenterData, 'progress')" />
                         <span class="fl">{{ formatTooltip(form.current_duration) }}</span>
                         <span class="fr">{{ formatTooltip(form.total_duration) }}</span>
                     </div>
                 </div>
-                <div class="content-bottom theme" v-if="handleTaskButton()">
-                    <i class="iconfont icon-list-play" title="播放列表"
+                <div class="content-bottom theme" v-if="handleTaskButton() && playCenterData.TaskID">
+                    <i class="iconfont" :class="form.playlist_status ? 'icon-shrink' : 'icon-order' " title="音频列表"
                         @click="form.playlist_status = !form.playlist_status" v-if="form.fullscreen_satus"></i>
                     <i class="iconfont" :class="playModeIcon.get(form.play_model)?.icon"
                         :title="playModeIcon.get(form.play_model)?.title"
@@ -80,7 +80,7 @@
                         </el-slider>
                     </el-popover>
                 </div>
-                <div class="content-bottom theme" v-else>
+                <div class="content-bottom theme com-show-button" v-else>
                     <i class="iconfont" :class="playCenterData.TaskID ? 'icon-end' : 'icon-play'"
                         :title="playCenterData.TaskID ? '停止' : '播放'" @click="
                             playCenterData.TaskID
@@ -563,7 +563,7 @@ const handleSwitchTask = (row: any, type: string) => {
 };
 const handleControlValuev = (type: string) => {
     if (type === "progress") {
-        return form.current_duration / 1000
+        return form.current_duration
     }
     if (type === 'PlayMode') {
         let model = 0
@@ -1063,6 +1063,9 @@ onMounted(() => {
                 .icon-suspend {
                     font-size: 46px;
                 }
+            }
+            .com-show-button {
+                padding-top: calc(64px + 4vh + 2vh);
             }
         }
     }

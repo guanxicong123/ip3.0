@@ -48,6 +48,7 @@ const useFormatMap = {
     { value: 15, label: "音乐播放" },
     { value: 16, label: "终端点播" },
     { value: 17, label: "环境监听" },
+    { value: 18, label: "定时巡更" },
     { value: 19, label: "任务监听" },
     { value: 20, label: "网络优先" }
   ],

@@ -110,10 +110,6 @@
                     </el-table-column>
                     <el-table-column prop="TaskVolume" label="任务音量">
                         <template #default="scope">
-                            <!-- <div class="com-table-task-volume" v-if="selectTerminaVolume?.TaskID !== scope.row.TaskID">
-                                <span class="volume">{{scope.row.TaskVolume}}</span>
-                                <span class="iconfont icon-edit1" @click="handelSelectVolume(scope.row)"></span>
-                            </div> -->
                             <div class="com-table-task-volume">
                                 <el-input-number
                                     v-model="scope.row.TaskVolume"
@@ -139,14 +135,14 @@
                                     <i class="iconfont icon-end" title="结束任务"></i>
                                 </template>
                             </el-button>
-                            <el-button link type="primary"  v-if="scope.row.IsMonitor < 1" @click="setMonitorTerminal(scope.row)">
+                            <el-button link type="primary"  v-if="scope.row.IsMonitor < 1" @click="handleMonitorTask(scope.row)">
                                 <template #icon>
                                     <i class="iconfont icon-headset" title="点击监听"></i>
                                 </template>
                             </el-button>
-                            <el-button link type="danger" v-else>
+                            <el-button link type="danger" v-else @click="handleStopMonitorTask(scope.row)">
                                 <template #icon>
-                                <i class="iconfont icon-headphones-disabled" title="取消监听"></i>
+                                    <i class="iconfont icon-headphones-disabled" title="取消监听"></i>
                                 </template>
                             </el-button>
                         </template>
@@ -296,8 +292,7 @@ const handleStopTask = (row: any) => {
     })
 }
 // 开启监听
-const setMonitorTerminal = (row: any) => {
-    console.log(row, selectTerminalMac)
+const handleMonitorTask = (row: any) => {
     if (!selectTerminalMac.value?.EndPointID) {
         return ElMessage.warning('请选择监听音箱')
     }
@@ -306,7 +301,7 @@ const setMonitorTerminal = (row: any) => {
     let func = ()=> {
         let data = {
             "company": "BL",
-            "actioncode": "ms2c_monitor_task",
+            "actioncode": "c2ms_monitor_task",
             "token": "",
             "data": {
                 "TaskID": usePublicMethod.guid(),
@@ -320,9 +315,19 @@ const setMonitorTerminal = (row: any) => {
     }
     usePublicMethod.debounce(func, 500)
 }
-// 选中音量
-const handelSelectVolume = (row: any) => {
-    selectTerminaVolume.value = row
+// 结束监听
+const handleStopMonitorTask = (row: any) => {
+    let data = {
+        company: "BL",
+        actioncode: "c2ms_stop_task",
+        token: "",
+        data: {
+            'TaskID': row.MonitorTaskID
+        },
+        result: 0,
+        return_message: ""
+    }
+    send(data)
 }
 // 改变任务音量
 const changeTaskVolume = (row: any) => {
