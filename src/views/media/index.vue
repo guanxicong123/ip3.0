@@ -313,6 +313,7 @@ const form = reactive<any>({
   firstLoad: true, // 第一次进入界面加载
   downloading: false, // 等待下载状态
   loadingGroups: false, // 等待加载分组状态
+  allSongsTotal: 0, // 缓存全部歌曲数目
 });
 // 处理点击切换文件夹
 const handleClickFolder = (item: any) => {
@@ -477,6 +478,7 @@ const handleDelete = (type: string, row: any) => {
                 }
               });
               form.folderData[0].medias_count -= ids.length;
+              form.allSongsTotal -= ids.length;
             }
             ElMessage({
               type: "success",
@@ -552,7 +554,12 @@ const handleGetAllBellsGroups = async () => {
           const item = result.data[index];
           num = num + item.medias_count;
         }
-        form.folderData[0].medias_count = num;
+        if (result.result.length > 1) {
+          form.folderData[0].medias_count = num;
+          form.allSongsTotal = num;
+        } else {
+          form.folderData[0].medias_count = form.allSongsTotal;
+        }
       } else {
         ElMessage({
           type: "error",
