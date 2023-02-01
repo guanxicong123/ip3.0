@@ -24,7 +24,7 @@
             </el-form-item>
             <el-form-item label="录音路径" v-if="ruleForm.record && ruleForm.type === 12">
                 <div class="recording-evt">
-                    <div @click="handleSelectedfolder" class="recording-evt-select">浏览</div>
+                    <el-button @click="handleSelectedfolder" type="primary" :disabled="!props.isEdit">浏览</el-button>
                     <p class="recording-evt-path" :title="ruleForm.recordpath">
                         {{ ruleForm.recordpath }}
                     </p>
@@ -67,7 +67,7 @@ const props: any = defineProps({
     isEdit: {
         type: Boolean,
         default: false,
-    },
+    }, //是否处于编辑状态
     selectTaskData: Object,
 });
 const emit = defineEmits(["update:sourAcquisiFrom"]);

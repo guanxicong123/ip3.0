@@ -660,7 +660,7 @@ const getTerminalGroupAll =  () => {
 
 const judgeButtonStatus = (type: Number) => {
     let status = sessionsData.value.some((item: any) => {
-        return item.TaskType === type
+        return item.TaskType === type && Number(localStorage.get('LoginUserID')) === item.TaskIniatorID
     })
     if (sessionsData.value.length > 0 && status) {
         return true

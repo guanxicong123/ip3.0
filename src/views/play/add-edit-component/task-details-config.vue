@@ -47,7 +47,7 @@
                 v-model:sourAcquisiFrom="sourAcquisiFrom" :isEdit="editStatus" :selectTaskData="taskDataDetailed">
             </acquisition-device-component>
             <div class="com-table" v-if="ruleForm.type === 10">
-                <el-table :data="ruleForm.data" height="100%">
+                <el-table :data="ruleForm.data" height="100%" @row-dblclick="handelRowDblclick">
                     <el-table-column type="index" label="序号" width="80" />
                     <el-table-column prop="path" label="名称" show-overflow-tooltip>
                         <template #default="scope">
@@ -65,12 +65,12 @@
                     </el-table-column>
                     <el-table-column width="120">
                         <template #default="scope">
-                            <el-button link type="primary" @click="handleMoveUp(scope.row, scope.$index)">
+                            <el-button link type="primary" @click="handleMoveUp(scope.row, scope.$index)" :disabled="scope.$index === 0">
                                 <template #icon>
                                     <i class="iconfont icon-move-up" title="上移"></i>
                                 </template>
                             </el-button>
-                            <el-button link type="primary" @click="handleMoveDown(scope.row, scope.$index)">
+                            <el-button link type="primary" @click="handleMoveDown(scope.row, scope.$index)" :disabled="scope.$index + 1 === ruleForm.data.length">
                                 <template #icon>
                                     <i class="iconfont icon-move-down" title="下移"></i>
                                 </template>
@@ -292,6 +292,10 @@ watch(taskDataDetailed, (newVal: any) => {
     }
 });
 
+const handelRowDblclick = (row: any, column, event) => {
+    console.log(row, column, event, props.playCenterData)
+}
+
 // 切换tabs
 const handleSwitchTabs = (tabsName: string) => {
     if (editStatus.value) return;
@@ -318,7 +322,6 @@ const handleSelectedConfigure = (data: any) => {
 };
 //  选择的终端/终端分组
 const handleSelectedTerminals = (data: any) => {
-    console.log(data, ruleForm.type)
     let putData = {
         terminals:  data.terminals,
         terminals_groups: data.terminals_groups.map((item: any) => {

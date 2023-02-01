@@ -275,12 +275,14 @@ onMounted(() => {
 
         .custom-title {
             height: 40px;
-            margin: 10px 30px;
+            margin: 10px 0px;
             padding: 0;
             justify-content: center;
-            background-color: #0070ee;
+            // background-color: #0070ee;
             border-radius: 6px;
-            color: #ffffff;
+            color: #333;
+            font-weight: bold;
+            // color: #ffffff;
         }
     }
 

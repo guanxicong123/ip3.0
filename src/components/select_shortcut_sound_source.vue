@@ -255,7 +255,7 @@ onMounted(() => {
             justify-content: center;
 
             .title-search-input {
-                width: 90%;
+                width: 88%;
             }
 
             .el-icon {
@@ -264,6 +264,9 @@ onMounted(() => {
 
             .span {
                 width: 100%;
+            }
+            .iconfont {
+                vertical-align: middle;
             }
         }
 
