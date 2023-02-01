@@ -1,10 +1,13 @@
 import { createApp } from "vue";
 import App from "./App.vue";
+import i18n from "@/utils/language";
 import router from "./router";
 import store from "./store";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 import { Md5 } from "ts-md5";
-import "@/assets/font/iconfont.js"
+import language from "@/utils/global/language";
+import routerBefore from "@/utils/global/router_before";
+import "@/assets/font/iconfont.js";
 // 引入全局样式
 import "element-plus/dist/index.css";
 import "@/assets/css/theme.scss";
@@ -43,6 +46,9 @@ global.$http1 = reactive($http1);
 
 app
   .use(store)
+  .use(i18n)
   .use(router as any)
+  .use(language)
+  .use(routerBefore)
   .use(registerComponents)
   .mount("#app");

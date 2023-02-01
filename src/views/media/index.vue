@@ -302,7 +302,7 @@ const form = reactive<any>({
   pageSize: systemPageSize.value,
   total: 0,
   orderColumn: "id",
-  orderType: "desc",
+  orderType: "asc",
   loading: false, // 等待加载数据状态
   currentFolder: {
     id: 0,
@@ -317,6 +317,7 @@ const form = reactive<any>({
 });
 // 处理点击切换文件夹
 const handleClickFolder = (item: any) => {
+  form.currentPage = 1;
   form.currentFolder = item;
   const folder = {
     id: item.id,
@@ -554,7 +555,7 @@ const handleGetAllBellsGroups = async () => {
           const item = result.data[index];
           num = num + item.medias_count;
         }
-        if (result.result.length > 1) {
+        if (result.data.length > 1) {
           form.folderData[0].medias_count = num;
           form.allSongsTotal = num;
         } else {

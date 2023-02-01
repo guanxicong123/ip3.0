@@ -5,9 +5,9 @@
   @Describe: 根组件
 -->
 <template>
-    <el-config-provider :locale="locale" :size="size">
-        <router-view />
-    </el-config-provider>
+  <el-config-provider :locale="locale" size="default">
+    <router-view />
+  </el-config-provider>
 </template>
 
 <script lang="ts" setup>
@@ -19,11 +19,14 @@ import fr from "element-plus/es/locale/lang/fr";
 import ko from "element-plus/es/locale/lang/ko";
 import ru from "element-plus/es/locale/lang/ru";
 import pt from "element-plus/es/locale/lang/pt";
+import { useI18n } from "vue-i18n";
 
-const app = getStore.useAppStore();
+const { locale: localeLanguage } = useI18n();
+const lang = getStore.useLanguageStore();
 // 计算属性 computed
-const language = computed(() => app.language);
-const size: any = computed(() => app.size);
+const langStore = computed(() => {
+  return lang.language;
+});
 
 // Element Plus 框架的多语言映射
 const languageMap = new Map([
@@ -35,16 +38,18 @@ const languageMap = new Map([
   ["pt", pt],
   ["ko", ko],
 ]);
-const locale = ref(zhCn);
+const locale = ref();
 
-// watch(
-//   language,
-//   (newLang) => {
-//       locale.value = languageMap.get(newLang.language);
-//   },
-//   {
-//     // 初始化立即执行
-//     immediate: true,
-//   }
-// );
+watch(
+  langStore,
+  (newLang) => {
+    locale.value = languageMap.get(newLang.language);
+    localeLanguage.value = newLang.language;
+  },
+  {
+    // 初始化立即执行
+    immediate: true,
+    deep: true,
+  }
+);
 </script>

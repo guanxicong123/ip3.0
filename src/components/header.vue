@@ -35,9 +35,14 @@
           </el-icon>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="simplified">中文简体</el-dropdown-item>
-              <el-dropdown-item command="character">中文繁体</el-dropdown-item>
-              <el-dropdown-item command="singGion">English</el-dropdown-item>
+              <template v-for="(item, index) in form.languagesList" :key="item">
+                <el-dropdown-item
+                  :command="index"
+                  :class="{ theme: form.selectedLang == index }"
+                >
+                  {{ item }}
+                </el-dropdown-item>
+              </template>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -55,7 +60,7 @@
           <template #default>
             <span
               class="iconfont"
-              :class="data.isShowMaximize ? 'icon-win' : 'icon-enlarge'"
+              :class="form.isShowMaximize ? 'icon-win' : 'icon-enlarge'"
             ></span>
           </template>
         </el-icon>
@@ -192,7 +197,9 @@
       <div class="com-default-dialog-test">
         <div class="com-default-dialog-content">
           <p>名称：IP网络广播系统分控软件</p>
-          <p>软件版本：3.0（内部版本3.0.2）</p>
+          <p>
+            {{ $t("Current version") }} : V3.0 ( {{ $t("Build") }} : V{{ form.version }} )
+          </p>
         </div>
       </div>
     </el-dialog>
@@ -226,10 +233,19 @@ import { UsersService } from "@/utils/api/users/index";
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
+const lang = getStore.useLanguageStore();
+// 计算属性 computed
+const langStore = computed(() => {
+  return lang.language;
+});
+
 const $useRouter = useRouter();
 
-const data = reactive({
-  isShowMaximize: false,
+const form = reactive({
+  isShowMaximize: false, // 是否最大化
+  version: "3.0.1", // 版本
+  languagesList: {}, // 多语言列表
+  selectedLang: "zh-cn", // 选中语言
 });
 const username = localStorage.get("username");
 const dialogUserName = ref(false); //修改用户弹框
@@ -274,8 +290,14 @@ const handleCommandUser = (command: string | number | object) => {
   }
 };
 // 切换语言文本
-const handleCommand = (command: string | number | object) => {
-  console.log(command);
+const handleCommand = (command: string) => {
+  console.log(form.selectedLang, command);
+  if (form.selectedLang != command) {
+    form.selectedLang = command;
+    localStorage.set("lang", command);
+    getStore.useLanguageStore().updateLanguage(command);
+    window.location.reload();
+  }
 };
 // 隐藏
 const handleMinimize = () => {
@@ -283,12 +305,12 @@ const handleMinimize = () => {
 };
 // 最大化、最小化
 const handleMaxMin = () => {
-  if (data.isShowMaximize) {
+  if (form.isShowMaximize) {
     window.electronAPI.send("unmaximize");
-    data.isShowMaximize = false;
+    form.isShowMaximize = false;
   } else {
     window.electronAPI.send("maximize");
-    data.isShowMaximize = true;
+    form.isShowMaximize = true;
   }
 };
 // 关闭
@@ -426,6 +448,24 @@ const getUserMe = () => {
     .catch(() => {});
 };
 
+// 监听变化
+watch(
+  [langStore],
+  ([newLang], [oldLang]) => {
+    if (newLang != oldLang) {
+      form.languagesList = newLang.languagesMap;
+      form.selectedLang = newLang.language;
+      form.version = newLang.version;
+    }
+  },
+  {
+    // 初始化立即执行
+    immediate: true,
+    deep: true,
+  }
+);
+
+// mounted 实例挂载完成后被调用
 onMounted(() => {
   getUserMe();
 });
