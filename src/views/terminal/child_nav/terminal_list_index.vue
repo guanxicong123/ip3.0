@@ -299,6 +299,7 @@ const sortChange = (column: any, prop: any, order: any) => {
             cacheTerminalData.value.sort((a: any, b: any) => a.code - b.code);
         }
     }
+    console.log(sort_condition.value, cacheTerminalData.value)
     handlefilterData(form.pageSize);
 };
 

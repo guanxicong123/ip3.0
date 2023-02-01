@@ -1066,6 +1066,9 @@ onMounted(() => {
             }
             .com-show-button {
                 padding-top: calc(64px + 4vh + 2vh);
+                .icon-end {
+                    font-size: 46px;
+                }
             }
         }
     }

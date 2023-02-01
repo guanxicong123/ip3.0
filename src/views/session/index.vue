@@ -122,7 +122,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="TaskBeginTime" label="会话进行时间" sortable="custom" width="160"/>
+                    <el-table-column prop="TaskBeginTime" label="会话进行时间" sortable="custom" width="170"/>
                     <el-table-column prop="IsMonitor" label="监听状态">
                         <template #default="scope">
                             {{ scope.row.IsMonitor ? "被监听" : "未监听" }}
