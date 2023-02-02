@@ -210,7 +210,6 @@ const system_configs = computed(() => {
 });
 
 watch(sessionsData, ()=> {
-    console.log(sessionsData.value)
     startButton.value.status = false
 })
 watch(() => terminal_data.value, () => {

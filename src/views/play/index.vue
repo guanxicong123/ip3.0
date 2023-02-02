@@ -6,30 +6,11 @@
 -->
 <template>
     <div class="com-play-index">
-        <div class="play-left" v-if="form.playlist_status">
-            <h2 class="theme">播放列表 (22)</h2>
-            <ul class="left-ul">
-                <li>
-                    <span class="order">序号</span>
-                    <span class="name">名称</span>
-                </li>
-            </ul>
-            <div class="left-list">
-                <el-scrollbar>
-                    <ul class="left-ul">
-                        <li v-for="(item, index) in form.play_list_data" :key="item.id">
-                            <span class="order">
-                                <template v-if="item.name == form.song_name">
-                                    <i class="iconfont icon-playing theme"></i>
-                                </template>
-                                <template v-else>{{ index + 1 }}</template>
-                            </span>
-                            <span class="name">{{ item.name }}</span>
-                        </li>
-                    </ul>
-                </el-scrollbar>
-            </div>
-        </div>
+        <list-musoc-component
+            v-if="form.playlist_status"
+            :selectTaskData="selectTaskData"
+            :playCenterData="playCenterData"
+        />
         <div class="play-center">
             <i class="iconfont theme" :class="form.fullscreen_satus ? 'icon-narrow' : 'icon-enlarge'"
                 :title="form.fullscreen_satus ? '缩小' : '放大'" @click="handleFullscreenStatus"></i>
@@ -191,6 +172,9 @@ import { Search } from "@element-plus/icons-vue";
 // defineAsyncComponent 异步组件-懒加载子组件
 const taskDetailsConfig = defineAsyncComponent(
     () => import("./add-edit-component/task-details-config.vue")
+);
+const listMusocComponent = defineAsyncComponent(
+    () => import("./components/list-musoc-component.vue")
 );
 
 // 全局属性
@@ -900,56 +884,6 @@ onMounted(() => {
     .play-left {
         width: 320px;
         background: #f3f9ff;
-
-        h2 {
-            padding: 18px 0;
-            margin: 0 30px;
-            font-size: 14px;
-            font-weight: bold;
-            border-bottom: 1px solid #e7f1fb;
-        }
-
-        .left-ul {
-            margin: 0 30px;
-
-            li {
-                border-bottom: 1px solid #e7f1fb;
-
-                span {
-                    display: inline-block;
-                    line-height: 40px;
-                    padding: 0 15px;
-                    box-sizing: border-box;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                }
-
-                .order {
-                    width: 30%;
-                }
-
-                .name {
-                    width: 70%;
-                }
-            }
-        }
-
-        .left-list {
-            height: calc(100% - 94px);
-
-            .left-ul {
-                padding-bottom: 10px;
-
-                li {
-                    cursor: pointer;
-
-                    &:hover {
-                        background: #e4f0ff;
-                    }
-                }
-            }
-        }
     }
 
     .play-center {
