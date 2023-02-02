@@ -3,8 +3,6 @@ export interface AppState {
   is_websocekt: boolean;
   is_login: boolean;
   is_login_status: number;
-  sessionsArray: Array<[]>;
-  sessionsLocalKey: Array<[]>;
 }
 export const useAppStore = defineStore({
   id: "app",
@@ -12,8 +10,6 @@ export const useAppStore = defineStore({
     is_websocekt: false, //是否连接
     is_login: false, //是否登录中
     is_login_status: 0,
-    sessionsArray: [], //会话数据（时实任务）
-    sessionsLocalKey: [], //基本本机发起任务key
   }),
   actions: {
     // 改变webscoet连接状态
@@ -90,47 +86,6 @@ export const useAppStore = defineStore({
         });
       // 获取系统优先级
       getStore.useSystemStore().getPrioritySetting();
-    },
-    // 会话状态
-    ROUTER_TASK(data: any) {
-      if (data) {
-        this.sessionsArray = data;
-      } else {
-        this.sessionsArray = [];
-      }
-    },
-    // 本地任务key记录
-    taskLocalKeyRecord(row: any) {
-      this.sessionsLocalKey.push(row);
-    },
-    // 会话数据推送
-    taskDataPush(data: any) {
-      if (this.sessionsArray.length === 0) {
-        this.sessionsArray = data;
-      } else {
-        data.forEach((one: any) => {
-          const result = this.sessionsArray.some((two: any) => {
-            if (one.TaskID === two.TaskID) {
-              Object.assign(two, one);
-              return true;
-            } else {
-              return false;
-            }
-          });
-          if (!result) {
-            this.sessionsArray.push(one);
-          }
-        });
-      }
-    },
-    // 会话停止推送
-    taskPushStop(row: any) {
-      this.sessionsArray = this.sessionsArray.filter((item: any) => {
-        return item.TaskID !== row.TaskID;
-      });
-      this.sessionsLocalKey = this.sessionsLocalKey.filter((item: any) => {
-        return item !== row.TaskID;
-      });
     },
   },
 });

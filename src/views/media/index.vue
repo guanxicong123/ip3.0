@@ -520,7 +520,7 @@ const handleSuccessCallback = (data: any) => {
   // 更新当前选中的文件夹展示数据
   if (data.id == form.currentFolder.id) {
     form.currentFolder.name = data.name;
-    localStorage.setItem("folder", JSON.stringify(data));
+    localStorage.set("folder", data);
   }
 };
 // 处理重置

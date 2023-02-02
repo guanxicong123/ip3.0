@@ -43,6 +43,14 @@ const usePublicMethod = {
 
     return h + ":" + m + ":" + s;
   },
+  // 00:00:00 时间格式转换为秒
+  timeToSec(time: any, num = 1) {
+    const hour = time.split(":")[0];
+    const min = time.split(":")[1];
+    const sec = time.split(":")[2];
+    const s = Number(hour * 3600) + Number(min * 60) + Number(sec);
+    return s * num;
+  },
   // 数据容量单位转换
   bytesConversionToSize(bytes: number) {
     if (bytes === 0) {
@@ -113,6 +121,18 @@ const usePublicMethod = {
 
     return time;
   },
+  // 二进制选择
+  binarySelection(decimal: number, number: number) {
+    const array = [];
+    for (let i = 0; i < number; i++) {
+      const dec = Math.pow(2, i);
+      if ((decimal & dec) === dec) {
+        array.push(i + 1);
+      }
+    }
+
+    return array;
+  },
   // base64 转二进制
   dataURLtoFile(dataurl: string, filename: string) {
     // 将base64转换为文件
@@ -173,20 +193,20 @@ const usePublicMethod = {
     }
     return canvas.toDataURL(type || "image/jpeg", 0.5);
   },
+  // 生成UUID
+  generateUUID() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0,
+        v = c == "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  },
   debounce(fn: () => void, wait: number | undefined) {
     // 清除上一次延时器
     clearTimeout($timer);
     $timer = setTimeout(function () {
       fn();
     }, wait);
-  },
-  // 生成UUID
-  guid() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-      const r = (Math.random() * 16) | 0,
-        v = c == "x" ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
   },
 };
 
