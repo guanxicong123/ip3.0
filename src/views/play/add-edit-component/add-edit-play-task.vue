@@ -199,7 +199,7 @@ const uploadRef = ref<UploadInstance>();
 const fileList = ref<UploadUserFile[]>();
 const musicSelect: any = ref([]); //播放配置选中的音频文件
 const priorityData = ref(new Map()); //优先级
-const ruleForm = reactive({
+const ruleForm: any = reactive({
     type: 4, //任务类型；快捷音源&远程播放走非本地http协议；其余本地http协议。
     name: "", //任务名称
     serverIP: localStorage.get("serverIP"), //服务器IP

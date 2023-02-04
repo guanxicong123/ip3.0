@@ -250,6 +250,9 @@
 
 <script lang="ts" setup>
 import { TabsPaneContext } from "element-plus";
+
+const systemStore = getStore.useSystemStore();
+
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 // 声明触发事件
@@ -348,7 +351,7 @@ let config = reactive<any>({
     amplifierTitle: "功率分区", // 八分区的标题
     amplifierValue: [1, 2, 3, 4, 5, 6, 7, 8], // 功率分区数据
     isSelectTerminals: true, // 是否可以选择终端
-    isSelectGroups: true, // 是否可以选择分组
+    isSelectGroups: systemStore.functional_configs.GroupDisplay, // 是否可以选择分组
     selectAmplifier: false, // 是否可以选择功率分区
 });
 // 监听变化

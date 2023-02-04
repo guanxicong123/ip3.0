@@ -21,7 +21,13 @@
       <div class="center-content">
         <div class="content-top" :class="playCenterData.TaskID ? 'playing' : ''">
           <img class="record-arm" src="@/assets/images/record-arm.png" alt="" />
-          <img class="record" src="@/assets/images/record.png" alt="" />
+          <img 
+            class="record"
+            src="@/assets/images/record.png" handleStopTask
+            @dblclick="playCenterData.TaskID
+            ? handleTaskButton() ? handlePauseTask(playCenterData) : handleStopTask(playCenterData)
+            : handlePlayTask(playCenterData)"
+          />
         </div>
         <div class="content-center">
           <p>
@@ -33,10 +39,10 @@
           </p>
           <div class="progress" v-if="handleTaskProgress() && playCenterData.TaskID">
             <el-slider
-              v-model="form.current_duration"
-              :max="form.total_duration"
-              :format-tooltip="formatTooltip"
-              @change="handleSwitchTask(playCenterData, 'progress')"
+                v-model="form.current_duration"
+                :max="form.total_duration"
+                :format-tooltip="formatTooltip"
+                @change="handleSwitchTask(playCenterData, 'progress')"
             />
             <span class="fl">{{ formatTooltip(form.current_duration) }}</span>
             <span class="fr">{{ formatTooltip(form.total_duration) }}</span>
@@ -67,10 +73,10 @@
           ></i>
           <i
             class="iconfont"
-            :class="playCenterData.TaskID ? 'icon-suspend' : 'icon-play'"
-            :title="playCenterData.TaskID ? '暂停' : '播放'"
+            :class="playCenterData.TaskID && playSubscriptionTask?.PlayStatus === 'play' ? 'icon-suspend' : 'icon-play'"
+            :title="playCenterData.TaskID && playSubscriptionTask?.PlayStatus === 'play' ? '暂停' : '播放'"
             @click="
-              playCenterData.TaskID
+              playCenterData.TaskID  && playSubscriptionTask?.PlayStatus === 'play'
                 ? handlePauseTask(playCenterData)
                 : handlePlayTask(playCenterData)
             "
@@ -113,7 +119,7 @@
             "
           >
           </i>
-          <el-popover trigger="click" popper-class="play-volume-popper">
+          <el-popover trigger="click" popper-class="f">
             <template #reference>
               <i class="iconfont icon-volume2" title="音量"></i>
             </template>
@@ -266,6 +272,7 @@ const listMusocComponent = defineAsyncComponent(
 const { proxy } = useCurrentInstance.useCurrentInstance();
 const session = getStore.useSessionStore();
 const storePlay = getStore.usePlayStore();
+const systemStore = getStore.useSystemStore();
 // 计算属性 computed
 const sessionStoreAll = computed(() => {
   return session.allSession;
@@ -519,6 +526,22 @@ const handlePauseTask = (row: any) => {
 };
 // 播放任务
 const handlePlayTask = (row: any) => {
+  if (row.TaskID) {
+    let data = {
+      company: "BL",
+      actioncode: "c2ms_control_task",
+      token: "",
+      data: {
+        TaskID: row.TaskID,
+        ControlCode: "play",
+        ControlValue: "",
+      },
+      result: 0,
+      return_message: "",
+    };
+    send(data);
+    return
+  }
   if (row.type < 10) {
     proxy.$http
       .get("/details/" + row.id, {
@@ -832,6 +855,7 @@ const getTaskAll = () => {
 // 获取所有播放任务
 const getBroadcastingAll = () => {
   return new Promise((resolve, reject) => {
+    if (!systemStore.functional_configs.remoteTaskDisplay) return resolve([])
     proxy.$http
       .get("/broadcasting/all", {
         params: {

@@ -71,7 +71,7 @@
                                 !form.selectedSearchConfigureVisible ||
                                 item[config.searchColumnName].match(form.selectedSearchConfigureReg)
                             ">
-                                <div v-for="(row, key) in config.showMediaColumn" :key="key" :style="row.style"
+                                <!-- <div v-for="(row, key) in config.showMediaColumn" :key="key" :style="row.style"
                                     :title="item[row.column]">
                                     <span :class="{
                                         'iconfont icon-terminals1':
@@ -88,6 +88,28 @@
                                                     ? "-"
                                                     : item[row.column]
                                         }}
+                                    </span>
+                                </div> -->
+                                <div
+                                    v-for="(row, key) in config.showMediaColumn"
+                                    :key="key"
+                                    :style="row.style"
+                                    :title="item[row.column]"
+                                    >
+                                    <span>
+                                        {{
+                                        row.column === "key"
+                                            ? index + 1
+                                            : row.column === "list" && item.hasOwnProperty("medias_id")
+                                            ? "-"
+                                            : item[row.column]
+                                        }}
+                                        <view-components-popover
+                                        v-if="row.column === 'list' && !item.hasOwnProperty('medias_id')"
+                                        :myConfig="mediaConfig"
+                                        :url="'/medias'"
+                                        :mediasGroupsID="item.id"
+                                        />
                                     </span>
                                 </div>
                             </li>
@@ -167,6 +189,14 @@ let config = reactive<any>({
     searchColumnName: "name", // 搜索的列名
     musicTitle: "音乐播放", // 标题名
 });
+// 查看组件插件配置
+const mediaConfig = {
+  iconfont: "icon-music", // 字体图标
+  iconTitle: "查看媒体文件", // icon title
+  tableTitle: "媒体文件", // 表格顶部 title
+  searchPlaceholder: "名称", // 搜索框 placeholder
+  showTableColumn: [{ prop: "name", label: "名称" }], // 显示的表格列
+};
 // 处理已选择的配置数据
 const handleSelectedConfigure = (item: any) => {
     form.selectedConfigureData = item;
