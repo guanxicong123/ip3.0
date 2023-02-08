@@ -179,6 +179,7 @@
                 highlight-current-row
                 @selection-change="handleSelectionChange"
                 @cell-click="handleSelectionClick"
+                @row-dblclick="handleRowDblclick"
               >
                 <el-table-column
                   prop="name"
@@ -187,7 +188,6 @@
                   min-width="280"
                 >
                   <template #default="scope">
-                    <!-- <span class="icon iconfont" :class=""></span> -->
                     <svg class="icon" aria-hidden="true">
                       <use :xlink:href="taskTypeMap.get(scope.row.type)"></use>
                     </svg>
@@ -338,6 +338,7 @@ const tableDataAll: any = ref([]);
 const selectTaskData: any = ref({}); //选中的任务数据(http)
 // 路由
 const $useRouter = useRouter();
+const $useRoute = useRoute();
 const handleFullscreenStatus = () => {
   form.fullscreen_satus = !form.fullscreen_satus;
   form.playlist_status = false;
@@ -459,6 +460,7 @@ const handleSelectionClick = (row: any) => {
     });
   }
 };
+// 获取本地任务
 const getLocalTask = (row: any) => {
   return new Promise((resolve, reject) => {
     proxy.$http1.get("/task/" + row.id).then((result: any) => {
@@ -467,6 +469,14 @@ const getLocalTask = (row: any) => {
       }
     });
   });
+};
+// 任务被双击
+const handleRowDblclick = (row: any) => {
+  if (handleDecideStatus(row)) {
+    handleStopTask(row)
+  } else {
+    handlePlayTask(row)
+  }
 };
 // 判断任务是否执行中
 const handleDecideStatus = (row: any) => {
@@ -556,7 +566,6 @@ const handlePlayTask = (row: any) => {
       .then((result: any) => {
         let row = result.data;
         let TaskProp = handleTaskAttribute(row);
-        console.log(row.terminalsIds);
         if (row.terminalsIds.length === 0)
           return proxy.$message.warning("未找到播放终端，请重新配置");
         if (TaskProp?.TaskAudioType) {
@@ -997,6 +1006,9 @@ onMounted(() => {
       }
     }
   );
+  if (JSON.stringify($useRoute.params) != "{}") {
+    handlePlayTask($useRoute.params)
+  }
 });
 </script>
 

@@ -10,14 +10,19 @@
             <Menu></Menu>
         </div>
         <el-container>
-        <el-header class="broadcast-home-header">
-            <Header></Header>
-        </el-header>
-        <el-main class="broadcast-home-main">
-            <router-view />
-            <!-- 上传管理器 -->
-            <upload-manager v-if="showUploadManager" />
-        </el-main>
+            <el-header class="broadcast-home-header">
+                <Header></Header>
+            </el-header>
+            <el-main class="broadcast-home-main">
+                <router-view />
+                <!-- 上传管理器 -->
+                <upload-manager v-if="showUploadManager" />
+                <dialongWarningMessage
+                    v-model:dialogVisible="dialogVisibleTerminal"
+                    :dialogAlertData="terminalAlertData"
+                    @requestDispose="clearTerminalWarning"
+                    dialogTitle="以下终端离线，请检查离线原因！"/>
+            </el-main>
         </el-container>
     </el-container>
 </template>
@@ -30,21 +35,29 @@ import { send } from "@/utils/socket";
 const uploadManager = defineAsyncComponent(
     () => import("@/views/media/components/upload_manager.vue")
 );
+const dialongWarningMessage = defineAsyncComponent(
+    () => import("./dialong_warning_message.vue")
+);
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 const upload = getStore.useUploadStore();
 const store = getStore.useAppStore();
+const storeTerminal = getStore.useTerminalStore();
 
 const timeToken: any = ref(null)
 const timeoutToken: any = ref(null)
 // 是否展示上传管理器
 const showUploadManager = ref(false);
-
+// 是否显示终端警告对话框
+const dialogVisibleTerminal = ref(false)
 // 计算属性 computed
 const uploadStore = computed(() => upload.showUploadManager);
 const isWebsocekt = computed(() => {
     return store.is_websocekt;
+});
+const terminalAlertData = computed(() => {
+  return storeTerminal.terminal_Alert_data;
 });
 
 // 监听变化
@@ -59,7 +72,21 @@ watch(
         deep: true,
     }
 );
+watch(
+    () => terminalAlertData.value,
+    (newData) => {
+        if (newData.length > 0) {
+            dialogVisibleTerminal.value = true
+        }
+    },
+    {
+        deep: true,
+    }
+);
 
+const clearTerminalWarning = () => {
+    storeTerminal.clearAlertData()
+}
 // 定时延长token有效期
 const refreshToken = () => {
     timeoutToken.value = null

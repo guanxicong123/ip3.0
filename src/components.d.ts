@@ -7,6 +7,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Container: typeof import('./components/container.vue')['default']
     Date_setting: typeof import('./components/configura_components/date_setting.vue')['default']
+    Dialong_warning_message: typeof import('./components/dialong_warning_message.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
