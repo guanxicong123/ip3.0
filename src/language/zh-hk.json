@@ -585,6 +585,7 @@
   "Matters needing attention 1": "1.配置考试模式规则前必须确认终端为带100V模拟音频输入的终端；",
   "Matters needing attention 2": "2.必须确认开启时间段内是有模拟音频输入+数字音频的,例如高考听力通过CD机播放,时间设置为:06-0814: 45~06-08 15: 30；",
   "Matters needing attention 3": "3.考试模式下,请保持终端采集或声卡采集的数字任务运行,否则会优先切换到模拟备份系统,低于15秒的数字音频可能播放不完整,请合理设置考试模式生效时间。",
+  "Matters needing attention 4": "4.删除正在执行的考试模式，则自动结束该考试模式策略",
   "Priority logic": "优先级逻辑",
   "Priority logic prompt description": "修改优先级配置会改变系统各任务执行的抢占逻辑，请谨慎修改",
   "Logical server priority": "逻辑服务器优先级",

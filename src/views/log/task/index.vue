@@ -100,9 +100,12 @@ const systemStore = getStore.useSystemStore();
 const systemPageSize = computed(() => {
   return systemStore.pageSize?.Log_PageSize;
 });
-watch(()=>systemPageSize.value, ()=> {
-  form.pageSize = systemPageSize.value
-})
+watch(
+  () => systemPageSize.value,
+  () => {
+    form.pageSize = systemPageSize.value;
+  }
+);
 
 const form = reactive<any>({
   data: [],
@@ -184,9 +187,9 @@ const handleReset = () => {
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
   systemStore.updateSystemSize({
-    key: 'Log_PageSize',
-    val
-  })
+    key: "Log_PageSize",
+    val,
+  });
   form.pageSize = val;
   handleDefaultGet();
   multipleTableRef.value?.setScrollTop(0);

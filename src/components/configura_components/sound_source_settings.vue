@@ -826,6 +826,7 @@ watch(
     if (parentData.responseMedia.length > 0 || parentData.responseGroups.length > 0) {
       let media_name = "";
       let group_name = "";
+      form.totalSecond = 0;
       for (let index = 0; index < parentData.responseMedia.length; index++) {
         const media = parentData.responseMedia[index];
         media_name += media.name + ",";
@@ -839,6 +840,7 @@ watch(
       form.media.name = media_name + group_name;
       emit("requestMedia", parentData.responseMedia);
       emit("requestGroups", parentData.responseGroups);
+      handleTotalStatisticalDuration();
     }
     // 编辑回传的音源
     if (newData.responseSoundSource) {

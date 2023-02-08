@@ -585,6 +585,7 @@
   "Matters needing attention 1": "1. Before configuring the examination mode rules, it must be confirmed that the terminal is a terminal with 100V analog audio input;",
   "Matters needing attention 2": "2. It must be confirmed that there is analog audio input+digital audio within the opening period, for example, the college entrance examination listening is played through the CD player, and the time setting is 06-0814: 45~06-08 15: 30；",
   "Matters needing attention 3": "3. In the examination mode, please keep the digital tasks collected by the terminal or sound card running, otherwise, the analog backup system will be switched first. The digital audio below 15 seconds may not be played completely. Please set the effective time of the examination mode reasonably.",
+  "Matters needing attention 4": "4. Delete the running exam mode, and the exam mode policy will be automatically ended",
   "Priority logic": "Priority logic",
   "Priority logic prompt description": "Modifying the priority configuration will change the preemption logic for each task in the system. Please modify it carefully",
   "Logical server priority": "Logical server priority",

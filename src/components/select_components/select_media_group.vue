@@ -725,52 +725,46 @@ const setEditDataIDS = (data: any[]) => {
 const handleEditMediaData = () => {
   form.selectedMediaID = setEditDataIDS(parentData.responseMedia);
   let allData = [];
-  let selectedData = [];
   for (let index = 0; index < form.allMediaData.length; index++) {
     const item = form.allMediaData[index];
     // 根据编辑界面返回的媒体ids，直接做对应处理
-    if (form.selectedMediaID.includes(item.id)) {
-      selectedData.push(item);
-    } else {
+    if (!form.selectedMediaID.includes(item.id)) {
       allData.push(item);
     }
   }
   form.allMediaData = allData;
-  form.selectedMediaData = selectedData;
+  // 按返回的顺序展示
+  form.selectedMediaData = parentData.responseMedia || [];
   handleUpdateSelectedMedia();
 };
 // 处理编辑界面传递回来的已选择分组数据
 const handleEditGroupsData = () => {
   form.selectedGroupsID = setEditDataIDS(parentData.responseGroups);
   let allData = [];
-  let selectedData = [];
   for (let index = 0; index < form.allGroupsData.length; index++) {
     const item = form.allGroupsData[index];
     // 根据编辑界面返回的分组ids，直接做对应处理
-    if (form.selectedGroupsID.includes(item.id)) {
-      selectedData.push(item);
-    } else {
+    if (!form.selectedGroupsID.includes(item.id)) {
       allData.push(item);
     }
   }
   form.allGroupsData = allData;
-  form.selectedGroupsData = selectedData;
+  // 按返回的顺序展示
+  form.selectedGroupsData = parentData.responseGroups || [];
   handleUpdateSelectedGroups();
 };
 
 // 监听变化
 watch(
-  () => [parentData],
-  ([newData], [oldData]) => {
-    if (newData || newData != oldData) {
-      if (config.isSelectMedia && newData.responseMedia.length > 0) {
-        handleEditMediaData();
-      }
-      if (config.isSelectGroups && newData.responseGroups.length > 0) {
-        handleEditGroupsData();
-      }
+  () => [parentData.responseMedia, parentData.responseGroups, parentData.showSearch],
+  ([newMedia, newGroups, newSearch], [oldMedia, oldGroups, oldSearch]) => {
+    if (config.isSelectMedia && newMedia != oldMedia) {
+      handleEditMediaData();
     }
-    if (!newData.showSearch) {
+    if (config.isSelectGroups && newGroups != oldGroups) {
+      handleEditGroupsData();
+    }
+    if (newSearch != oldSearch) {
       form.searchMediaVisible = false;
       form.searchGroupsVisible = false;
     }

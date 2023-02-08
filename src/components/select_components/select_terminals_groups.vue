@@ -881,6 +881,13 @@ const handleEditTerminalsData = () => {
   let selectedData = [];
   for (let index = 0; index < form.oldAllTerminalsData.length; index++) {
     const item = form.oldAllTerminalsData[index];
+    // 更新开启终端音量后的锁住状态
+    for (let index = 0; index < parentData.responseTerminals.length; index++) {
+      const row = parentData.responseTerminals[index];
+      if (row.id == item.id) {
+        item.is_lock = row.is_lock;
+      }
+    }
     // 根据编辑界面返回的终端ids，直接做对应处理
     if (form.selectedTerminalsID.includes(item.id)) {
       selectedData.push(item);
@@ -969,11 +976,11 @@ const handleUpdateOpenGroupsVolume = (selectedData: any[]) => {
   }
 };
 // 处理设置展示列
-const handleSetShowColumn = (newData: any) => {
+const handleSetShowColumn = (openTerminalsVolume: boolean) => {
   // 开启终端音量
   config = Object.assign(
     config,
-    newData.openTerminalsVolume ? changeTerminalsVolumeConfig : defaultConfig
+    openTerminalsVolume ? changeTerminalsVolumeConfig : defaultConfig
   );
 };
 // 数组对象去重
@@ -986,25 +993,33 @@ const handleUnique = (arr: any[]) => {
 
 // 监听变化
 watch(
-  () => [parentData],
-  ([newData], [oldData]) => {
-    handleSetShowColumn(newData);
-    if (newData || newData != oldData) {
-      // 开启并修改终端音量
-      if (parentData.openTerminalsVolume && newData.changeTerminalsVolume) {
-        setChangeTerminalsVolume(newData.changeTerminalsVolume);
-      }
-      if (config.isSelectTerminals && newData.responseTerminals?.length > 0) {
-        handleEditTerminalsData();
-      }
-      if (config.isSelectGroups && newData.responseGroups?.length > 0) {
-        handleEditGroupsData();
-      }
-      if (newData.excludeTerminalsIDS) {
-        handleExcludeTerminals(form.allTerminalsData);
-      }
+  () => [
+    parentData.excludeTerminalsIDS,
+    parentData.responseTerminals,
+    parentData.responseGroups,
+    parentData.showSearch,
+    parentData.openTerminalsVolume,
+    parentData.changeTerminalsVolume,
+  ],
+  (
+    [newExcludeTerminals, newTerminals, newGroups, newSearch, newOpenVolume, newVolume],
+    [oldExcludeTerminals, oldTerminals, oldGroups, oldSearch, oldOpenVolume, oldVolume]
+  ) => {
+    handleSetShowColumn(newOpenVolume);
+    // 开启并修改终端音量
+    if (parentData.openTerminalsVolume && newVolume != oldVolume) {
+      setChangeTerminalsVolume(newVolume);
     }
-    if (newData != oldData && !newData.showSearch) {
+    if (config.isSelectTerminals && newTerminals != oldTerminals) {
+      handleEditTerminalsData();
+    }
+    if (config.isSelectGroups && newGroups != oldGroups) {
+      handleEditGroupsData();
+    }
+    if (newExcludeTerminals != oldExcludeTerminals) {
+      handleExcludeTerminals(form.allTerminalsData);
+    }
+    if (newSearch != oldSearch) {
       form.searchTerminalsVisible = false;
       form.searchGroupsVisible = false;
     }
@@ -1022,7 +1037,7 @@ onMounted(() => {
     config,
     parentData.myConfig ? parentData.myConfig : defaultConfig
   );
-  handleSetShowColumn(parentData);
+  handleSetShowColumn(parentData.openTerminalsVolume);
   setCurrentTabSelectStatus();
   config.isSelectTerminals && handleGetAllTerminals();
   handleGetAllGroups();
