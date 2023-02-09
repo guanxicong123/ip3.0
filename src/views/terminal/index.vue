@@ -646,27 +646,25 @@ const getTerminalAll = () => {
 };
 // 获取所有分组
 const getTerminalGroupAll = () => {
-  getTerminalAll().then((terminal_data) => {
-    proxy.$http
-      .get("/terminals-groups/all", {
-        params: {
-          withTerminals: true,
-          withTerminalsNums: true,
-        },
-      })
-      .then((result: any) => {
-        if (result.result === 200) {
-          terminal_group_data.value = result.data;
-          terminal_group_data.value.unshift({
-            id: 0,
-            GroupID: 0,
-            name: "所有终端",
-            terminals: JSON.parse(JSON.stringify(terminal_data)),
-          });
-          $useRouter.push("/terminal/terminal_list");
-        }
-      });
-  });
+  proxy.$http
+    .get("/terminals-groups/all", {
+      params: {
+        withTerminals: true,
+        withTerminalsNums: true,
+      },
+    })
+    .then((result: any) => {
+      if (result.result === 200) {
+        terminal_group_data.value = result.data;
+        terminal_group_data.value.unshift({
+          id: 0,
+          GroupID: 0,
+          name: "所有终端",
+          terminals: JSON.parse(JSON.stringify(terminal_data.value)),
+        });
+        $useRouter.push("/terminal/terminal_list");
+      }
+    });
 };
 
 const judgeButtonStatus = (type: number) => {

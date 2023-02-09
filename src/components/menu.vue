@@ -150,9 +150,9 @@ const handleMouseleave = (item: { hover: boolean }) => {
 };
 
 onMounted(() => {
-  // sidebarData.value = router_data.value.filter((item: any) => {
-  //   return item.permission !== false;
-  // });
+  sidebarData.value = router_data.value.filter((item: any) => {
+    return item.permission !== false;
+  });
 });
 </script>
 

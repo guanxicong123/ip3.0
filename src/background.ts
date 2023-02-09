@@ -43,6 +43,7 @@ async function createWindow() {
     autoHideMenuBar: true, //是否隐藏菜单
     frame: false, //false为无边框窗口
     transparent: true, //使窗口 透明。 默认值为 false. 在Windows上，仅在无边框窗口下起作用。
+    icon: path.join(__dirname,'../public/icons/ip.ico'),
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -53,7 +54,6 @@ async function createWindow() {
       webSecurity: false,
     },
   });
-
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);

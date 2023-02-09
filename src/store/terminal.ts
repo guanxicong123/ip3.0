@@ -39,7 +39,7 @@ export const useTerminalStore = defineStore({
                 item.name = item.EndPointName
                 item.volume = item.Volume
                 item.ip_address = item.EndPointIP
-                item.code = item.CallCode
+                item['code'] = item.CallCode
                 item.task = {
                     name: item.TaskName,
                     type: item.TaskType,

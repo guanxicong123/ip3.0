@@ -11,6 +11,14 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
+  "win": {
+    "icon": "public/icons/ip.ico",
+    "target": [
+      {
+        "target": "nsis"
+      }
+    ]
+  },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.4",
     "axios": "^1.2.0",
