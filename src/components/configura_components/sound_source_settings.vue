@@ -391,7 +391,7 @@
                 maxlength="1000"
                 show-word-limit
                 clearable
-                @change="handleSelectedConfigure"
+                @change="changeTextPlayEstimatedTime"
               />
             </el-form-item>
           </el-col>
@@ -430,7 +430,7 @@
                 :max="9999"
                 :value-on-clear="form.broadcast_number"
                 controls-position="right"
-                @change="handleSelectedConfigure"
+                @change="changeTextPlayEstimatedTime"
               />
               <span class="tip-text tip" v-if="form.broadcast_number > 0">
                 预估时间: {{ form.estimated_time }}
@@ -459,7 +459,7 @@
             </el-col>
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
               <el-form-item label="播放语速" prop="speed">
-                <el-select v-model="form.speed" @change="handleSelectedConfigure">
+                <el-select v-model="form.speed" @change="changeTextPlayEstimatedTime">
                   <el-option
                     v-for="item in playSpeedOption"
                     :key="item"
@@ -636,7 +636,8 @@ let config = reactive<any>({
   setMusicPlayModelOption: useFormatMap.playModelOption, // 设置音乐播放-播放模式选项类型
   setSoundQualityOption: useFormatMap.qualityOption, // 采集音质选项
 });
-
+// 路由
+const $useRoute = useRoute();
 // 显示属性
 const ledDisplayOption = ref<any[]>([]);
 // 播放语音
@@ -656,6 +657,19 @@ const formatterSpeed = (row: number) => {
       return row;
   }
 };
+// 文本播放预估时间-左：语速，右：ms/字
+const textPlayEstimatedTimeMap = new Map([
+  [1, 572],
+  [2, 460],
+  [3, 366],
+  [4, 294],
+  [5, 235],
+  [6, 190],
+  [7, 151],
+  [8, 120],
+  [9, 100],
+  [10, 80],
+]);
 // 处理tab点击
 const handleTabClick = (tab: TabsPaneContext) => {
   // 23:音源采集
@@ -808,46 +822,68 @@ const getAllDisplayAttribute = async () => {
       console.log(error);
     });
 };
+// 设置文本播放预估时间
+const setTextPlayEstimatedTime = () => {
+  const oneTime = textPlayEstimatedTimeMap.get(form.speed) || 0;
+  const allTime = oneTime * form.txt.length * form.broadcast_number;
+  const second = allTime / 1000;
+  form.estimated_time = usePublicMethod.convertSongDuration(
+    second > 0 && second < 1 ? 1 : Math.round(second)
+  );
+};
+// 改变播报次数时更新
+const changeTextPlayEstimatedTime = () => {
+  setTextPlayEstimatedTime();
+  handleSelectedConfigure();
+};
 
 // 监听变化
 watch(
-  () => [parentData, userStore.value?.user.users_config, TTSStore.value],
-  ([newData, newMode, newTTS]) => {
+  () => [
+    parentData.responseType,
+    parentData.responseMedia,
+    parentData.responseGroups,
+    parentData.responseSoundSource,
+    parentData.responseFastSoundSource,
+    userStore.value?.user?.users_config,
+    TTSStore.value,
+  ],
+  (
+    [newType, newMedia, newGroups, newSoundSource, newFastSoundSource, newMode, newTTS],
+    [oldType, oldMedia, oldGroups, oldSoundSource, oldFastSoundSource, oldMode, oldTTS]
+  ) => {
     // 编辑回传的音源类型
-    if (newData.responseType) {
-      form.activeName =
-        newData.responseType == 2 || newData.responseType == 3
-          ? 23
-          : newData.responseType;
-      form.sound_source.type = newData.responseType;
-      emit("requestType", newData.responseType);
+    if (newType != oldType) {
+      form.activeName = newType == 2 || newType == 3 ? 23 : newType;
+      form.sound_source.type = newType;
+      emit("requestType", newType);
     }
     // 编辑回传的音乐播放数据
-    if (parentData.responseMedia.length > 0 || parentData.responseGroups.length > 0) {
+    if (newMedia != oldMedia || newGroups != oldGroups) {
       let media_name = "";
       let group_name = "";
       form.totalSecond = 0;
-      for (let index = 0; index < parentData.responseMedia.length; index++) {
-        const media = parentData.responseMedia[index];
+      for (let index = 0; index < newMedia.length; index++) {
+        const media = newMedia[index];
         media_name += media.name + ",";
         form.totalSecond += media.length;
       }
-      for (let index = 0; index < parentData.responseGroups.length; index++) {
-        const group = parentData.responseGroups[index];
+      for (let index = 0; index < newGroups.length; index++) {
+        const group = newGroups[index];
         group_name += group.name + ",";
         form.totalSecond += group.length;
       }
       form.media.name = media_name + group_name;
-      emit("requestMedia", parentData.responseMedia);
-      emit("requestGroups", parentData.responseGroups);
+      emit("requestMedia", newMedia);
+      emit("requestGroups", newGroups);
       handleTotalStatisticalDuration();
     }
     // 编辑回传的音源
-    if (newData.responseSoundSource) {
+    if (newSoundSource != oldSoundSource) {
       Object.keys(form).forEach((item) => {
-        Object.keys(newData.responseSoundSource).forEach((row) => {
+        Object.keys(newSoundSource).forEach((row) => {
           if (item === row) {
-            form[item] = newData.responseSoundSource[row];
+            form[item] = newSoundSource[row];
           }
         });
       });
@@ -858,41 +894,39 @@ watch(
         form.life_time = "00:00:00";
       }
       // 声卡采集
-      if (
-        Object.prototype.hasOwnProperty.call(newData.responseSoundSource, "sound_card")
-      ) {
+      if (Object.prototype.hasOwnProperty.call(newSoundSource, "sound_card")) {
         form.old_sound_source_type = 2;
         form.sound_source_acquisition = {
-          sound_card: newData.responseSoundSource.sound_card,
+          sound_card: newSoundSource.sound_card,
         };
       } else {
         // 终端采集
         form.old_sound_source_type = 3;
         form.sound_source_acquisition = {
-          terminals_id: newData.responseSoundSource.terminals_id,
-          terminals_name: newData.responseSoundSource.terminals_name,
+          terminals_id: newSoundSource.terminals_id,
+          terminals_name: newSoundSource.terminals_name,
         };
       }
       // 文本播放
       if (form.sound_source.type == 5) {
-        form.broadcast_number = newData.responseSoundSource.play_number;
+        form.broadcast_number = newSoundSource.play_number;
       }
     }
     // 编辑回传的快捷音源
-    if (newData.responseFastSoundSource?.id) {
-      form.sound_source.id = newData.responseFastSoundSource.id;
-      form.sound_source.name = newData.responseFastSoundSource.name;
-      form.sound_source.type = newData.responseFastSoundSource.type;
-      form.sound_source_name = newData.responseFastSoundSource.name;
+    if (newFastSoundSource != oldFastSoundSource) {
+      form.sound_source.id = newFastSoundSource.id;
+      form.sound_source.name = newFastSoundSource.name;
+      form.sound_source.type = newFastSoundSource.type;
+      form.sound_source_name = newFastSoundSource.name;
       form.fase_life_time = usePublicMethod.convertSongDuration(
-        newData.responseFastSoundSource.length
+        newFastSoundSource.length
       );
-      form.old_sound_source_data.type = newData.responseFastSoundSource.type;
+      form.old_sound_source_data.type = newFastSoundSource.type;
     }
     // 界面模式
-    if (newMode) {
-      form.view_mode = newMode.view_mode;
-      if (newMode.view_mode == 2) {
+    if (newMode != oldMode) {
+      form.view_mode = newMode?.view_mode;
+      if (newMode?.view_mode == 2 && !form.notLimitedMode.includes($useRoute.name)) {
         emit("requestSoundSourceID", 0);
         if (form.activeName == 1 || form.activeName == 23) {
           form.activeName = 4;
@@ -902,7 +936,7 @@ watch(
       }
     }
     // 播放语音
-    if (newTTS) {
+    if (newTTS != oldTTS) {
       playVoiceOption.value = newTTS;
     }
     handleSelectedConfigure();
@@ -931,7 +965,7 @@ onMounted(() => {
     form.play_model = parentData.responsePlayModel;
   }
   // 播放语速
-  for (let i = 1; i < 9; i++) {
+  for (let i = 1; i < 11; i++) {
     playSpeedOption.value.push(i);
   }
   // 播放语音
@@ -940,7 +974,7 @@ onMounted(() => {
     form.sound = playVoiceOption.value[0].name;
   }
   getAllDisplayAttribute();
-  form.view_mode = userStore.value?.user.users_config.view_mode;
+  form.view_mode = userStore.value?.user?.users_config?.view_mode;
 });
 </script>
 
