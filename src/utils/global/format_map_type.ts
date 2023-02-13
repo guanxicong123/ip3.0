@@ -17,6 +17,7 @@ const useFormatMap = {
     { value: 11, label: $t.t("Virtual terminal") },
     { value: 12, label: $t.t("LED terminal") },
     { value: 13, label: $t.t("Monitoring terminal") },
+    { value: 14, label: $t.t("Amplifier terminal") },
   ],
   terminalsMap: new Map([
     [1, $t.t("Common terminal")],
@@ -32,6 +33,7 @@ const useFormatMap = {
     [11, $t.t("Virtual terminal")],
     [12, $t.t("LED terminal")],
     [13, $t.t("Monitoring terminal")],
+    [14, $t.t("Amplifier terminal")],
   ]),
   terminalStatusOptions: [
     { value: -1, label: $t.t("All status") },
@@ -42,10 +44,10 @@ const useFormatMap = {
     { value: 0, label: $t.t("Offline") },
   ],
   terminalsStatusMap: new Map([
-    [0, { name: $t.t("Offline"), class: "icon-off-line offline" }],
-    [1, { name: $t.t("Idle"), class: "icon-on-line online" }],
-    [2, { name: $t.t("Busy"), class: "icon-executing busy" }],
-    [3, { name: $t.t("Fault"), class: "icon-fault red" }],
+    [0, { name: $t.t("Offline"), class: "icon-offline offline" }],
+    [1, { name: $t.t("Idle"), class: "icon-online online" }],
+    [2, { name: $t.t("Busy"), class: "icon-busy busy" }],
+    [3, { name: $t.t("Fault"), class: "icon-offline-1 red" }],
     [4, { name: $t.t("Freeze"), class: "icon-freeze freeze" }],
   ]),
   platformMap: new Map([
@@ -95,6 +97,7 @@ const useFormatMap = {
     [17, $t.t("Environmental monitoring")],
     [18, $t.t("Timing patrol")],
     [19, $t.t("Task monitoring")],
+    [20, $t.t("Local task")],
   ]),
   // 状态标识图标
   iconOptions: [
@@ -149,6 +152,7 @@ const useFormatMap = {
     { value: "0X10", label: $t.t("Scheduled service") },
     { value: "0X20", label: $t.t("Voice service") },
     { value: "0X40", label: $t.t("Client service") },
+    { value: "0X80", label: $t.t("Recording service") },
   ],
   serversTypeMap: new Map([
     ["0X00", $t.t("Control service")],
@@ -159,6 +163,18 @@ const useFormatMap = {
     ["0X10", $t.t("Scheduled service")],
     ["0X20", $t.t("Voice service")],
     ["0X40", $t.t("Client service")],
+    ["0X80", $t.t("Recording service")],
+  ]),
+  serversStatusOptions: [
+    { value: -1, label: $t.t("All status") },
+    { value: 1, label: $t.t("Online") },
+    { value: 0, label: $t.t("Offline") },
+    { value: 2, label: $t.t("Abnormal") },
+  ],
+  serversStatusMap: new Map([
+    [0, $t.t("Offline")],
+    [1, $t.t("Online")],
+    [2, $t.t("Abnormal")],
   ]),
   playModelOption: [
     { value: 0, label: $t.t("List play") },
@@ -223,6 +239,11 @@ const useFormatMap = {
     [0, "normal_play"],
     [1, "loop_play"],
     [2, "random_play"],
+  ]),
+  WSTaskPlayModeWeb: new Map([
+    ["normal_play", 0],
+    ["loop_play", 1],
+    ["random_play", 2],
   ]),
   registerMap: new Map([
     [-1, "操作失败"],

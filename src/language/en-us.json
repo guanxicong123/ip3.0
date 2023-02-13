@@ -176,9 +176,11 @@
   "Terminal on-demand": "Terminal on-demand",
   "Environmental monitoring": "Environmental monitoring",
   "Task monitoring": "Task monitoring",
+  "Local task": "Local task",
   "All terminals": "All terminals",
   "Common terminal": "Common terminal",
   "Intercom terminal": "Intercom terminal",
+  "Amplifier terminal": "Amplifier terminal",
   "Backup terminal": "Backup terminal",
   "Scheduled task backup terminal": "Scheduled task backup terminal",
   "Server terminal": "Server terminal",
@@ -195,6 +197,7 @@
   "Busy": "Busy",
   "Freeze": "Freeze",
   "Offline": "Offline",
+  "Online": "Online",
   "Fault": "Fault",
   "List play": "List play",
   "Loop play": "Loop play",
@@ -214,6 +217,7 @@
   "Scheduled service": "Scheduled service",
   "Voice service": "Voice service",
   "Client service": "Client service",
+  "Recording service": "Recording service",
   "Information": "Information",
   "Warning": "Warning",
   "Error": "Error",
@@ -443,6 +447,7 @@
   "Holiday mode": "Holiday mode",
   "Holiday days": "Holiday days",
   "Holiday date": "Holiday date",
+  "Holiday mode is enabled": "Holiday mode is enabled",
   "Open holiday tips": "When the holiday mode is enabled, all scheduled tasks will not be executed during the holiday period",
   "One click export": "One click export",
   "Regular patrol record": "Regular patrol record",
@@ -917,5 +922,6 @@
   "Upload filter non bin prompt": "Non compliant files have been automatically filtered (greater than 500MB/non Bin format)",
   "Recording save prompt": "The recording saving path cannot contain Chinese, please select again",
   "Software registration": "Software registration",
-  "Unregistered": "Unregistered"
+  "Unregistered": "Unregistered",
+  "On-demand type": "On-demand type"
 }
