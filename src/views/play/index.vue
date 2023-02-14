@@ -21,12 +21,17 @@
       <div class="center-content">
         <div class="content-top" :class="playCenterData.TaskID ? 'playing' : ''">
           <img class="record-arm" src="@/assets/images/record-arm.png" alt="" />
-          <img 
+          <img
             class="record"
-            src="@/assets/images/record.png" handleStopTask
-            @dblclick="playCenterData.TaskID
-            ? handleTaskButton() ? handlePauseTask(playCenterData) : handleStopTask(playCenterData)
-            : handlePlayTask(playCenterData)"
+            src="@/assets/images/record.png"
+            handleStopTask
+            @dblclick="
+              playCenterData.TaskID
+                ? handleTaskButton()
+                  ? handlePauseTask(playCenterData)
+                  : handleStopTask(playCenterData)
+                : handlePlayTask(playCenterData)
+            "
           />
         </div>
         <div class="content-center">
@@ -39,10 +44,10 @@
           </p>
           <div class="progress" v-if="handleTaskProgress() && playCenterData.TaskID">
             <el-slider
-                v-model="form.current_duration"
-                :max="form.total_duration"
-                :format-tooltip="formatTooltip"
-                @change="handleSwitchTask(playCenterData, 'progress')"
+              v-model="form.current_duration"
+              :max="form.total_duration"
+              :format-tooltip="formatTooltip"
+              @change="handleSwitchTask(playCenterData, 'progress')"
             />
             <span class="fl">{{ formatTooltip(form.current_duration) }}</span>
             <span class="fr">{{ formatTooltip(form.total_duration) }}</span>
@@ -73,10 +78,18 @@
           ></i>
           <i
             class="iconfont"
-            :class="playCenterData.TaskID && playSubscriptionTask?.PlayStatus === 'play' ? 'icon-suspend' : 'icon-play'"
-            :title="playCenterData.TaskID && playSubscriptionTask?.PlayStatus === 'play' ? '暂停' : '播放'"
+            :class="
+              playCenterData.TaskID && playSubscriptionTask?.PlayStatus === 'play'
+                ? 'icon-suspend'
+                : 'icon-play'
+            "
+            :title="
+              playCenterData.TaskID && playSubscriptionTask?.PlayStatus === 'play'
+                ? '暂停'
+                : '播放'
+            "
             @click="
-              playCenterData.TaskID  && playSubscriptionTask?.PlayStatus === 'play'
+              playCenterData.TaskID && playSubscriptionTask?.PlayStatus === 'play'
                 ? handlePauseTask(playCenterData)
                 : handlePlayTask(playCenterData)
             "
@@ -473,9 +486,9 @@ const getLocalTask = (row: any) => {
 // 任务被双击
 const handleRowDblclick = (row: any) => {
   if (handleDecideStatus(row)) {
-    handleStopTask(row)
+    handleStopTask(row);
   } else {
-    handlePlayTask(row)
+    handlePlayTask(row);
   }
 };
 // 判断任务是否执行中
@@ -550,7 +563,7 @@ const handlePlayTask = (row: any) => {
       return_message: "",
     };
     send(data);
-    return
+    return;
   }
   if (row.type < 10) {
     proxy.$http
@@ -864,7 +877,7 @@ const getTaskAll = () => {
 // 获取所有播放任务
 const getBroadcastingAll = () => {
   return new Promise((resolve, reject) => {
-    if (!systemStore.functional_configs.remoteTaskDisplay) return resolve([])
+    if (!systemStore.functional_configs.remoteTaskDisplay) return resolve([]);
     proxy.$http
       .get("/broadcasting/all", {
         params: {
@@ -1007,7 +1020,7 @@ onMounted(() => {
     }
   );
   if (JSON.stringify($useRoute.params) != "{}") {
-    handlePlayTask($useRoute.params)
+    handlePlayTask($useRoute.params);
   }
 });
 </script>

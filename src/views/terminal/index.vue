@@ -458,7 +458,7 @@ const regionalBroadcasting = (currentTableRow: any) => {
   }
 };
 // 发起广播任务
-const originateBroadcast = (EndPointList: any[], EndPointID: Number) => {
+const originateBroadcast = (EndPointList: any[], EndPointID: number) => {
   let send_data = {
     company: "BL",
     actioncode: "c2ms_create_server_task",
@@ -484,7 +484,7 @@ const originateBroadcast = (EndPointList: any[], EndPointID: Number) => {
 };
 
 // 发起对讲
-const initiatedTalkTask = (EndPointList: any[], EndPointID: Number) => {
+const initiatedTalkTask = (EndPointList: any[], EndPointID: number) => {
   let send_data = {
     company: "BL",
     actioncode: "c2ms_create_server_task",
@@ -510,7 +510,7 @@ const initiatedTalkTask = (EndPointList: any[], EndPointID: Number) => {
 };
 
 // 发起监听任务
-const monitorTalkTask = (EndPointList: any[], EndPointID: Number) => {
+const monitorTalkTask = (EndPointList: any[], EndPointID: number) => {
   let send_data = {
     company: "BL",
     actioncode: "c2ms_create_server_task",
@@ -735,6 +735,12 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+.monitor-speaker {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
 .com-head-content {
   .el-input,
   .el-select {

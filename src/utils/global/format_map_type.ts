@@ -44,10 +44,10 @@ const useFormatMap = {
     { value: 0, label: $t.t("Offline") },
   ],
   terminalsStatusMap: new Map([
-    [0, { name: $t.t("Offline"), class: "icon-offline offline" }],
-    [1, { name: $t.t("Idle"), class: "icon-online online" }],
-    [2, { name: $t.t("Busy"), class: "icon-busy busy" }],
-    [3, { name: $t.t("Fault"), class: "icon-offline-1 red" }],
+    [0, { name: $t.t("Offline"), class: "icon-off-line offline" }],
+    [1, { name: $t.t("Idle"), class: "icon-on-line online" }],
+    [2, { name: $t.t("Busy"), class: "icon-executing busy" }],
+    [3, { name: $t.t("Fault"), class: "icon-fault red" }],
     [4, { name: $t.t("Freeze"), class: "icon-freeze freeze" }],
   ]),
   platformMap: new Map([
