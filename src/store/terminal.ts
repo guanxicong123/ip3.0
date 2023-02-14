@@ -1,3 +1,6 @@
+import usePublicMethod from "@/utils/global/index";
+import $http from "@/utils/axios/index";
+
 export interface terminalState {
     terminal_data: any
     terminal_group: Array<any>
@@ -6,6 +9,7 @@ export interface terminalState {
     terminal_status: number
     search_value: string
     filter_status: boolean
+    terminal_Alert_data: Array<any>
 }
 
 export const useTerminalStore = defineStore({
@@ -18,6 +22,7 @@ export const useTerminalStore = defineStore({
         // 终端分组数据 -> GroupInfo.EndpointArray
         group_terminal: [],
 
+        terminal_Alert_data: [], //离线警告信息
         single_group_data: [],
         // 筛选框终端状态
         terminal_status: -1,
@@ -28,13 +33,13 @@ export const useTerminalStore = defineStore({
     actions: {
         // 获取终端信息
         getTerminalData(data: any) {
+            let alertMessage = JSON.parse(localStorage.get("alertMessage")) //警告消息（离线提醒是否开启）
             data.EndPointsArray.forEach((item: any) => {
                 item.status = item.Status
                 item.name = item.EndPointName
                 item.volume = item.Volume
                 item.ip_address = item.EndPointIP
-                item.code = item.CallCode
-                // item.type = item.EndPointType
+                item['code'] = item.CallCode
                 item.task = {
                     name: item.TaskName,
                     type: item.TaskType,
@@ -45,6 +50,21 @@ export const useTerminalStore = defineStore({
                 if (index < 0) {
                     this.terminal_data.push(item)
                 } else {
+                    // 开启终端离线提醒，数据状态由非离线状态转换为离线状态触发
+                    if (alertMessage?.EnabledTerminalOffAlert && this.terminal_data[index]?.Status !== 0 && item.Status === 0) {
+                        let data = {
+                            EndPointName: item.EndPointName,
+                            EndPointIP: item.EndPointIP,
+                            OfflineTime: usePublicMethod.formatDate(
+                                new Date().toLocaleString(),
+                                "YYYY-MM-DD HH:mm:ss"
+                            )
+                        }
+                        this.terminal_Alert_data.push(data)
+                        if (alertMessage?.EnabledTerminalOffRingfAlert) {
+                            $http.get('/tools/palyring')
+                        }
+                    }
                     this.terminal_data[index] = item
                 }
             })
@@ -52,13 +72,13 @@ export const useTerminalStore = defineStore({
 
         // 获取终端分组信息
         getTerminalGroup(data: any) {
-        this.terminal_group = [
-            {
-            GroupID: 0,
-            GroupName: '所有终端',
-            },
-        ].concat(data.GroupInfo.GroupArray)
-        this.group_terminal = data.GroupInfo.EndpointArray
+            this.terminal_group = [
+                {
+                GroupID: 0,
+                GroupName: '所有终端',
+                },
+            ].concat(data.GroupInfo.GroupArray)
+            this.group_terminal = data.GroupInfo.EndpointArray
         },
 
         // 更新过滤条件
@@ -114,5 +134,9 @@ export const useTerminalStore = defineStore({
         setTerminalVolume(data: any) {
             console.log('set terminal volume', data)
         },
+
+        clearAlertData() {
+            this.terminal_Alert_data = []
+        }
     },
 })

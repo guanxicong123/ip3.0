@@ -303,7 +303,6 @@ const switch_form = ref();
 
 const getAlarmTask = () => {
     proxy.$http.get("/one-button-alarm/all").then((result: any) => {
-        console.log(result)
         if (result.result === 200) {
             form.alarmTrackOptions = result.data;
         }

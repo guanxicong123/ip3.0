@@ -153,6 +153,11 @@ watch([terminal_data, storage_terminal_data], ()=> {
         })
     })
     cacheTerminalData.value = filterData()
+    sortChange(
+        sort_condition.value,
+        sort_condition.value.prop,
+        sort_condition.value.order
+    );
     form.data = cacheTerminalData.value.slice(
         form.pageSize * (form.currentPage - 1),
         form.pageSize * form.currentPage
@@ -294,12 +299,13 @@ const sortChange = (column: any, prop: any, order: any) => {
         }
     } else {
         if (column.order === "descending") {
-            cacheTerminalData.value.sort((a: any, b: any) => b.code - a.code);
+            cacheTerminalData.value.sort((a: any, b: any) => {
+                return b.code - a.code
+            });
         } else if (column.order === "ascending") {
             cacheTerminalData.value.sort((a: any, b: any) => a.code - b.code);
         }
     }
-    console.log(sort_condition.value, cacheTerminalData.value)
     handlefilterData(form.pageSize);
 };
 
@@ -346,11 +352,6 @@ const getCurGroupData = () => {
         );
         storage_terminal_data.value = terminal_group_data.value[index]?.terminals;
     }
-    sortChange(
-        sort_condition.value,
-        sort_condition.value.prop,
-        sort_condition.value.order
-    );
 };
 
 // mounted 实例挂载完成后被调用

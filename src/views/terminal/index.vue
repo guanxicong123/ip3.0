@@ -52,19 +52,8 @@
           </el-button>
         </div>
         <div class="com-button">
-          <span>主讲终端</span>
-          <el-select
-            v-model="form.speaker_terminal"
-            style="margin-left: 10px"
-            :disabled="sessionsData.length > 0"
-          >
-            <el-option
-              v-for="(item, keys) in form.speakerTerminalOptions"
-              :key="keys"
-              :label="item.name"
-              :value="item.EndPointID"
-            />
-          </el-select>
+          <span class="monitor-speaker">主讲终端</span>
+          <select-monitoring-speaker />
         </div>
       </div>
     </div>
@@ -172,7 +161,10 @@
 <script lang="ts" setup>
 import { Search } from "@element-plus/icons-vue";
 import { send } from "@/utils/socket";
-
+// defineAsyncComponent 异步组件-懒加载子组件
+const selectMonitoringSpeaker = defineAsyncComponent(
+  () => import("../session/components/select_monitoring_speaker.vue")
+);
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 const storeTerminal = getStore.useTerminalStore();
@@ -318,23 +310,11 @@ const handleReset = () => {
   handleFilter();
 };
 
-// 过滤在线设备组成主讲终端可选项
+// 过滤出在线终端
 const cleanOnLineTerminal = () => {
   form.speakerTerminalOptions = terminal_data.value.filter((item: { status: number }) => {
     return item.status === 1 || item.status === 2;
   });
-  // 设置默认主讲终端
-  let online_ids = form.speakerTerminalOptions.map((item: any) => {
-    return item.EndPointID;
-  });
-  if (online_ids.includes(basic_configs.value.MainEndpointID)) {
-    form.speaker_terminal = basic_configs.value.MainEndpointID;
-  } else {
-    form.speaker_terminal =
-      form.speakerTerminalOptions.length > 0
-        ? form.speakerTerminalOptions[0].EndPointID
-        : "";
-  }
 };
 
 // 确认终端视图模式
@@ -402,48 +382,50 @@ const functronButtonTask = (type: number) => {
     send(data);
     return;
   }
-  if (!judgeButtonStatus(taskType) && sessionsData.value.length > 0) {
+  // 存在任务时
+  if (sessionsData.value.length > 0) {
     startButton.value.status = false;
     return proxy.$message.warning("主讲终端忙碌中");
   }
-  if (type === 1) {
-    regionalBroadcasting();
-    return;
-  }
-  if (!form.speaker_terminal) {
+  const currentTableRow = JSON.parse(localStorage.get("monitoringSpeaker")) || "";
+  if (!currentTableRow) {
     startButton.value.status = false;
     return proxy.$message.error("未选择主讲终端或主讲终端未在线");
   }
+  if (type === 1) {
+    regionalBroadcasting(currentTableRow);
+    return;
+  }
   let filter_initiator_terminals = filterCheckedTerminals().filter((item: number) => {
-    return item !== form.speaker_terminal;
+    return item !== currentTableRow.EndPointID;
   });
   if (checked_terminals.value.length === 0) {
     startButton.value.status = false;
     return proxy.$message.error("请选择终端");
   }
-  if (filter_initiator_terminals.length < 1 && checked_terminals.value.length > 0) {
+  if (filter_initiator_terminals.length === 0 && checked_terminals.value.length > 0) {
     startButton.value.status = false;
     return proxy.$message.error("选中终端中不存在可执行任务终端");
   }
   if (type === 5) {
-    originateBroadcast(filter_initiator_terminals);
+    originateBroadcast(filter_initiator_terminals, currentTableRow.EndPointID);
   }
   if (type === 4) {
     startButton.value.status = false;
     if (filter_initiator_terminals.length > 1) {
       return proxy.$message.error("对讲接收终端只能选一个");
     }
-    initiatedTalkTask(filter_initiator_terminals);
+    initiatedTalkTask(filter_initiator_terminals, currentTableRow.EndPointID);
   }
   if (type === 17) {
-    monitorTalkTask(filter_initiator_terminals);
+    monitorTalkTask(filter_initiator_terminals, currentTableRow.EndPointID);
   }
 };
 // 全区广播任务
-const regionalBroadcasting = () => {
+const regionalBroadcasting = (currentTableRow: any) => {
   let data = terminal_data.value
     .filter((item: any) => {
-      return item.Status !== 0 && item.EndPointID !== form.speaker_terminal;
+      return item.Status !== 0 && item.EndPointID !== currentTableRow.EndPointID;
     })
     .map((item: { EndPointID: any }) => {
       return item.EndPointID;
@@ -463,7 +445,7 @@ const regionalBroadcasting = () => {
         UserID: Number(localStorage.get("LoginUserID")),
         TaskProp: {
           TaskAudioType: 2,
-          CollectID: form.speaker_terminal,
+          CollectID: currentTableRow.EndPointID,
           SelfCheck: 0,
         },
       },
@@ -476,7 +458,7 @@ const regionalBroadcasting = () => {
   }
 };
 // 发起广播任务
-const originateBroadcast = (EndPointList: any[]) => {
+const originateBroadcast = (EndPointList: any[], EndPointID: Number) => {
   let send_data = {
     company: "BL",
     actioncode: "c2ms_create_server_task",
@@ -491,7 +473,7 @@ const originateBroadcast = (EndPointList: any[]) => {
       UserID: Number(localStorage.get("LoginUserID")),
       TaskProp: {
         TaskAudioType: 2,
-        CollectID: form.speaker_terminal,
+        CollectID: EndPointID,
         SelfCheck: 0,
       },
     },
@@ -502,7 +484,7 @@ const originateBroadcast = (EndPointList: any[]) => {
 };
 
 // 发起对讲
-const initiatedTalkTask = (EndPointList: any[]) => {
+const initiatedTalkTask = (EndPointList: any[], EndPointID: Number) => {
   let send_data = {
     company: "BL",
     actioncode: "c2ms_create_server_task",
@@ -517,7 +499,7 @@ const initiatedTalkTask = (EndPointList: any[]) => {
       UserID: Number(localStorage.get("LoginUserID")),
       TaskProp: {
         TaskAudioType: 2,
-        CollectID: form.speaker_terminal,
+        CollectID: EndPointID,
         SelfCheck: 0,
       },
     },
@@ -528,7 +510,7 @@ const initiatedTalkTask = (EndPointList: any[]) => {
 };
 
 // 发起监听任务
-const monitorTalkTask = (EndPointList: any[]) => {
+const monitorTalkTask = (EndPointList: any[], EndPointID: Number) => {
   let send_data = {
     company: "BL",
     actioncode: "c2ms_create_server_task",
@@ -543,7 +525,7 @@ const monitorTalkTask = (EndPointList: any[]) => {
       UserID: Number(localStorage.get("LoginUserID")),
       TaskProp: {
         TaskAudioType: 0,
-        CollectID: form.speaker_terminal,
+        CollectID: EndPointID,
         SelfCheck: 0,
       },
     },
@@ -646,27 +628,25 @@ const getTerminalAll = () => {
 };
 // 获取所有分组
 const getTerminalGroupAll = () => {
-  getTerminalAll().then((terminal_data) => {
-    proxy.$http
-      .get("/terminals-groups/all", {
-        params: {
-          withTerminals: true,
-          withTerminalsNums: true,
-        },
-      })
-      .then((result: any) => {
-        if (result.result === 200) {
-          terminal_group_data.value = result.data;
-          terminal_group_data.value.unshift({
-            id: 0,
-            GroupID: 0,
-            name: "所有终端",
-            terminals: JSON.parse(JSON.stringify(terminal_data)),
-          });
-          $useRouter.push("/terminal/terminal_list");
-        }
-      });
-  });
+  proxy.$http
+    .get("/terminals-groups/all", {
+      params: {
+        withTerminals: true,
+        withTerminalsNums: true,
+      },
+    })
+    .then((result: any) => {
+      if (result.result === 200) {
+        terminal_group_data.value = result.data;
+        terminal_group_data.value.unshift({
+          id: 0,
+          GroupID: 0,
+          name: "所有终端",
+          terminals: JSON.parse(JSON.stringify(terminal_data.value)),
+        });
+        $useRouter.push("/terminal/terminal_list");
+      }
+    });
 };
 
 const judgeButtonStatus = (type: number) => {
@@ -733,14 +713,6 @@ watch(
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  cleanOnLineTerminal();
-  // console.log(system_configs.value.TerminalStateDefaultType)
-  // if (system_configs.value.TerminalStateDefaultType === 1) {
-  //     $useRouter.push("/terminal/group");
-  //     form.search_placeholder = "分组名称";
-  //     storeTerminal.changeFilterStatus(false);
-  // }else {
-  // }
   form.search_placeholder = "终端名称";
   form.select_terminal =
     basic_configs.value.ListDisplaySize === 0

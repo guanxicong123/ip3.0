@@ -377,6 +377,8 @@ import { TerminalsService } from "@/utils/api/device/index";
 import { GroupsService } from "@/utils/api/groups/inedx";
 import { isArray } from "@/utils/is";
 
+const systemStore = getStore.useSystemStore();
+
 // 声明触发事件
 const emit = defineEmits([
   "requestTerminals", // 更新传递已选择的终端数据，用于父组件进行数据交互
@@ -482,7 +484,7 @@ let config = reactive<any>({
   amplifierTitle: "功率分区", // 八分区的标题
   amplifierValue: [1, 2, 3, 4, 5, 6, 7, 8], // 功率分区数据
   isSelectTerminals: true, // 是否可以选择终端
-  isSelectGroups: true, // 是否可以选择分组
+  isSelectGroups: systemStore.functional_configs.GroupDisplay, // 是否可以选择分组
   selectAmplifier: true, // 是否可以选择功率分区
 });
 // 处理tab点击

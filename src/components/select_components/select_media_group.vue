@@ -308,6 +308,8 @@ import usePublicMethod from "@/utils/global/index";
 import { MeidaService } from "@/utils/api/media";
 import { isArray } from "@/utils/is";
 
+const systemStore = getStore.useSystemStore();
+
 // 声明触发事件
 const emit = defineEmits([
   "requestMedia", // 更新传递已选择的媒体数据，用于父组件进行数据交互
@@ -391,7 +393,7 @@ let config = reactive<any>({
   mediaOtherData: {}, // 关联媒体的其他数据
   groupsOtherData: {}, // 关联媒体文件夹的其他数据
   isSelectMedia: true, // 是否可以选择媒体
-  isSelectGroups: true, // 是否可以选择媒体文件夹
+  isSelectGroups: systemStore.functional_configs.FolderDisplay, // 是否可以选择媒体文件夹
 });
 // 处理tab点击
 const handleTabClick = (tab: TabsPaneContext) => {

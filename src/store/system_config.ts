@@ -1,4 +1,3 @@
-import router from "../router";
 import $http from "@/utils/axios/index";
 import $http1 from "@/utils/axios/local_index";
 import i18n from "@/utils/language";
@@ -132,6 +131,13 @@ export const useSystemStore = defineStore({
           .then((result: any) => {
             if (result.result === 200) {
               const data = result.data;
+              const alertMessage = {
+                EnabledFireAlert: data.EnabledFireAlert, //启用火警报警提醒
+                EnabledPersonAlert: data.EnabledPersonAlert, //启用人工报警提醒
+                EnabledTerminalOffAlert: data.EnabledTerminalOffAlert, //启用终端离线提醒
+                EnabledTerminalOffRingfAlert: data.EnabledTerminalOffRingfAlert, //启用终端离线铃声提醒
+              }
+              localStorage.set("alertMessage", JSON.stringify(alertMessage)) //储存提醒配置
               // 功能管理相关数据
               this.functional_configs = {
                 FolderDisplay: data.FolderDisplay,

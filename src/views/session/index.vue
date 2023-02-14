@@ -355,7 +355,7 @@ const handleStopTask = (row: any) => {
 };
 // 开启监听
 const handleMonitorTask = (row: any) => {
-  const currentTableRow = localStorage.get("monitoringSpeaker") || "";
+  const currentTableRow = JSON.parse(localStorage.get("monitoringSpeaker")) || "";
   if (currentTableRow) {
     let func = () => {
       let data = {
@@ -365,7 +365,7 @@ const handleMonitorTask = (row: any) => {
         data: {
           TaskID: usePublicMethod.generateUUID(),
           MonitorTaskID: row.TaskID,
-          EndPointList: [currentTableRow],
+          EndPointList: [currentTableRow.EndPointID],
         },
         result: 0,
         return_message: "",
