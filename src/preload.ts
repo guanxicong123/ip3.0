@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer, ipcMain } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 const validChannels = [
   "login-window",
   "main-window",

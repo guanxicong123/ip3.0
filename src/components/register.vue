@@ -62,17 +62,17 @@ const gitRegisterStatus = () => {
 };
 // 提交
 const submit = () => {
-    window.electronAPI.send("register-success")
-    // if (code.value === '') {
-    //     return proxy.$message.warning('请输入注册码')
-    // }
-    // proxy.$http1.post('/register', {
-    //     code: code.value
-    // }).then((result: any)=> {
-    //     if (result.result === 200) {
-    //         close()
-    //     }
-    // })
+    // window.electronAPI.send("register-success")
+    if (code.value === '') {
+        return proxy.$message.warning('请输入注册码')
+    }
+    proxy.$http1.post('/register', {
+        code: code.value
+    }).then((result: any)=> {
+        if (result.result === 200) {
+            close()
+        }
+    })
 };
 // 关闭
 const close = () => {
