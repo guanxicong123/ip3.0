@@ -173,6 +173,9 @@ async function createWindow() {
       win.isMaximized()
     );
   });
+  ipcMain.on("register-success", ()=> {
+    win.webContents.send("register-success-two", -1)
+  })
   // 监听渲染进程发出的download事件
   ipcMain.on("download", (evt, args) => {
     downloadObj.downloadPath = args.downloadPath;
@@ -202,9 +205,6 @@ async function createWindow() {
         console.log(error);
       });
   });
-  ipcMain.on("register-success", ()=> {
-    win.webContents.send("register-success-two")
-  })
   // will-download
   win.webContents.session.on("will-download", (event, item) => {
     // 无需对话框提示， 直接将文件保存到路径
