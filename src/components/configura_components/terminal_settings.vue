@@ -194,7 +194,6 @@ watch(
     handleSetEditData();
     // 界面模式
     if (newMode) {
-      console.log(newMode.view_mode, "00");
       form.view_mode = newMode.view_mode;
       if (form.activeName == 2 && form.view_mode == 2) {
         form.activeName = 1;

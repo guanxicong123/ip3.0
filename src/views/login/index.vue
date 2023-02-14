@@ -16,7 +16,7 @@
                         </svg> -->
                     </template>
                 </el-icon>
-                <el-icon @click="register">
+                <el-icon>
                     <template #default>
                         <span class="iconfont icon-set-up"></span>
                         <!-- <svg class="icon" aria-hidden="true">
@@ -91,6 +91,17 @@
                 </el-input>
             </div>
         </div>
+        <div class="broadcast-login-register">
+            <span v-if="!registerStatus?.isRegister && registerStatus?.freeTime === 0" class="register-no">
+                未注册
+            </span>
+            <span v-if="!registerStatus?.isRegister && registerStatus?.freeTime > 0" class="register-lifespan">
+                有效期：{{ usePublicMethod.specifyDate(registerStatus?.freeTime) }}
+            </span>
+            <span v-if="registerStatus?.isRegister" class="register-lifespan">
+                有效期：0000-00-00
+            </span>
+        </div>
         <div class="broadcast-login-sign">
             <el-button type="primary" @click="submit" :loading="isLogin">登录</el-button>
         </div>
@@ -100,6 +111,7 @@
 
 <script lang="ts" setup>
 import { socketLogin, socket } from "@/utils/socket";
+import usePublicMethod from "@/utils/global/index";
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
@@ -122,6 +134,7 @@ const modelRef = reactive({
 });
 // 记住密码
 const is_checked = ref(false);
+const registerStatus = ref({})
 
 watch(()=>modelRef.name, ()=> {
     modelRef.password = ""
@@ -133,14 +146,30 @@ const handleMinimize = () => {
     window.electronAPI.send("minimize");
 };
 const register = () => {
-    window.electronAPI.send("register-window");
+    window.electronAPI.send("register-window", 666);
 };
 // 关闭
 const close = () => {
     window.electronAPI.send("close");
 };
+// 注册触发事件
+window.electronAPI.on("register-success-two", ()=> {
+    gitRegisterStatus()
+})
+// 获取注册状态
+const gitRegisterStatus = () => {
+    proxy.$http1.get('/register').then((result: any)=> {
+        if (result.result === 200) {
+            registerStatus.value = result.data
+            if (!registerStatus.value.isRegister) {
+                register()
+            }
+        }
+    })
+}
 // 提交
 const submit = () => {
+    if (!registerStatus.value?.isRegister && registerStatus.value?.freeTime === 0) return proxy.$message.warning("请进行注册")
     if (!modelRef.name) return proxy.$message.warning("请输入账号")
     if (!modelRef.password) return proxy.$message.warning("请输入密码")
     if (!modelRef.server_ip_address) return proxy.$message.warning("请输入服务器地址")
@@ -167,6 +196,7 @@ const submit = () => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
+    gitRegisterStatus()
     if (socket) {
         socket.close();
     }
@@ -293,7 +323,7 @@ onBeforeUnmount(() => {
             width: 240px;
 
             .el-input__wrapper {
-                height: 36px;
+                height: 28px;
                 border-bottom: 1px solid #ddd;
                 border-radius: 0;
                 box-shadow: 0 0 0 0 var(--el-input-border-color, var(--el-border-color)) inset;
@@ -315,9 +345,23 @@ onBeforeUnmount(() => {
         }
     }
 
+    .broadcast-login-register {
+        width: 240px;
+        margin: 0 auto;
+        padding: 9px 0;
+        text-align: right;
+        font-size: 12px;
+        .register-no {
+            color: #CE6245;
+        }
+        .register-lifespan {
+            color: #018CEE;
+        }
+    }
+
     .broadcast-login-sign {
         text-align: center;
-        padding-top: 24px;
+        padding-top: 12px;
 
         .el-button {
             width: 240px;

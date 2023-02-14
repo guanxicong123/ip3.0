@@ -447,7 +447,6 @@ const handleUpdateSelectedGroups = () => {
             form.selectedGroupsID.push(item.id);
             request.name = item.name;
             selectedName += item.name + ",";
-            console.log(parentData.isTerminalGroups, item)
             if (parentData.isTerminalGroups) {
                 request.terminalIds = item.terminals.map((one: any) => {
                     return one.terminals_id

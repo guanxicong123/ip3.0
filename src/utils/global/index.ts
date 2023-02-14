@@ -121,6 +121,12 @@ const usePublicMethod = {
 
     return time;
   },
+  // 获取当前日期指定天数后得日期
+  specifyDate(num: number) {
+    const date = new Date()
+    date.setDate(date.getDate() + num)
+    return date.getFullYear() +"-"+ (date.getMonth()+1) +"-"+ date.getDate()
+  },
   // 二进制选择
   binarySelection(decimal: number, number: number) {
     const array = [];

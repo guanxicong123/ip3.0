@@ -68,7 +68,6 @@ const getToolsDir = (params: any) => {
                 },
             })
             .then((result: any) => {
-                console.log(result);
                 if (result.result === 200) {
                     if (result.data) {
                         let data = result.data.map((item: any) => {

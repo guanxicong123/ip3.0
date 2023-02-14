@@ -51,7 +51,6 @@ const ruleFormRef = ref<FormInstance>();
 
 // 处理选择终端/分组组件的数据
 const handleRequestTerminals = (data: any) => {
-    console.log(data)
     selectConfigure.value = data;
 };
 // 保存

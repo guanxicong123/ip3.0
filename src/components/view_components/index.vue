@@ -184,7 +184,6 @@ const handleGetOnePageData = async () => {
     },
   })
     .then((result: any) => {
-      console.log(result);
       if (result?.data) {
         form.data = result.data.data;
         form.total = result.data.total;

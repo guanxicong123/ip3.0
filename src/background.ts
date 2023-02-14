@@ -27,7 +27,7 @@ const resetDownloadObj = () => {
 
 const isDevelopment =
   process.env.NODE_ENV !== "production"
-    ? "http://172.16.21.10:8003"
+    ? "http://127.0.0.1:8010"
     : `file://${__dirname}/index.html`;
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -64,24 +64,32 @@ async function createWindow() {
     win.loadURL("app://./index.html");
   }
   // 定义calendar窗体
-  let calendarWin;
+  let calendarWin: any = null;
   // 创建calendar窗口方法
-  function openCalendarWindow() {
+  const openCalendarWindow = () => {
     calendarWin = new BrowserWindow({
       width: 450,
       height: 260,
       parent: win, // win是主窗口
       resizable: false, //窗口是否可以由用户手动调整大小的属性
       autoHideMenuBar: true, //是否隐藏菜单
-      // frame: false, //false为无边框窗口
+      frame: false, //false为无边框窗口
+      transparent: true, //使窗口 透明。 默认值为 false. 在Windows上，仅在无边框窗口下起作用。
+      icon: path.join(__dirname,'../public/icons/ip.ico'),
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),
+        webSecurity: false,
       },
     });
-    calendarWin.loadURL(isDevelopment + "/register");
+    calendarWin.loadURL(isDevelopment + '#/register');
+
     calendarWin.on("closed", () => {
       calendarWin = null;
     });
+
+    calendarWin.on("imgUploadMsgFromMain", (event: any, message: any) => {
+      console.log(message)
+    })
   }
 
   ipcMain.on("register-window", () => {
@@ -103,6 +111,11 @@ async function createWindow() {
   // maximize
   ipcMain.on("maximize", () => {
     win.maximize();
+  });
+
+   // close
+  ipcMain.on("register-close", () => {
+    calendarWin.close();
   });
   /**
    *   unmaximize
@@ -189,6 +202,9 @@ async function createWindow() {
         console.log(error);
       });
   });
+  ipcMain.on("register-success", ()=> {
+    win.webContents.send("register-success-two")
+  })
   // will-download
   win.webContents.session.on("will-download", (event, item) => {
     // 无需对话框提示， 直接将文件保存到路径

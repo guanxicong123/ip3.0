@@ -362,7 +362,7 @@ const submitTaskPlay = () => {
     if (ruleForm.type === 10) {
         createLocalAudio(data).then((result: any)=> {
             let taskData = {
-                TaskID: result?.taskid,
+                taskid: result?.taskid,
                 content: data.content
             }
             $useRouter.push({
@@ -373,7 +373,7 @@ const submitTaskPlay = () => {
     } else if (ruleForm.type === 11) {
         createTxstPlay(data).then((result: any)=> {
             let taskData = {
-                TaskID: result?.taskid,
+                taskid: result?.taskid,
                 content: data.content
             }
             $useRouter.push({
@@ -391,7 +391,7 @@ const submitTaskPlay = () => {
     } else if (ruleForm.type === 12) {
         createSoundSourceCollection(data).then((result: any)=> {
             let taskData = {
-                TaskID: result?.taskid,
+                taskid: result?.taskid,
                 content: data.content
             }
             $useRouter.push({
@@ -408,10 +408,6 @@ const submitTaskPlay = () => {
         })
     }
 }
-// 播放任务
-const handlePlayTask = (row: any) => {
-    
-};
 // 提交任务
 const submitTask = () => {
     if (!executionregiontype.value && !fast_terminals_id.value)
