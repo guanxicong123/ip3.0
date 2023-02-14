@@ -121,7 +121,15 @@
         </el-button>
       </div>
       <div class="footer-volume">
-        <i class="iconfont icon-volume1 theme"></i>
+        <i
+          class="iconfont theme"
+          :class="{
+            'icon-mute': form.volume == 0,
+            'icon-volume-level-1': form.volume > 0 && form.volume < 31,
+            'icon-volume-level-2': form.volume > 30 && form.volume < 61,
+            'icon-volume-level-3': form.volume > 60 && form.volume < 101,
+          }"
+        ></i>
         <el-slider v-model="form.volume" />
         <span>{{ form.volume }}</span>
       </div>
@@ -796,12 +804,18 @@ onMounted(() => {
     align-items: center;
     justify-content: right;
     flex: 1;
-    padding-right: 60px;
+    padding-right: 10px;
 
     .el-slider {
       width: 140px;
       margin-left: 20px;
       margin-right: 12px;
+    }
+
+    > span {
+      display: inline-block;
+      width: 26px;
+      margin-left: 5px;
     }
   }
 }

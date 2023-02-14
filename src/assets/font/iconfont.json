@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "34102899",
+      "name": "一级音量",
+      "font_class": "volume-level-1",
+      "unicode": "e7c0",
+      "unicode_decimal": 59328
+    },
+    {
+      "icon_id": "34102900",
+      "name": "三级音量",
+      "font_class": "volume-level-3",
+      "unicode": "e7c1",
+      "unicode_decimal": 59329
+    },
+    {
+      "icon_id": "34102901",
+      "name": "二级音量",
+      "font_class": "volume-level-2",
+      "unicode": "e7c2",
+      "unicode_decimal": 59330
+    },
+    {
+      "icon_id": "34102902",
+      "name": "静音",
+      "font_class": "mute",
+      "unicode": "e7c3",
+      "unicode_decimal": 59331
+    },
+    {
       "icon_id": "25081179",
       "name": "execution-failed",
       "font_class": "execution-failed",
