@@ -42,6 +42,7 @@
 </template>
 
 <script lang="ts" setup>
+import { contextBridge, ipcRenderer } from "electron";
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
@@ -62,7 +63,7 @@ const gitRegisterStatus = () => {
 };
 // 提交
 const submit = () => {
-    // window.electronAPI.send("register-success")
+    window.electronAPI.send("register-success")
     if (code.value === '') {
         return proxy.$message.warning('请输入注册码')
     }
@@ -70,7 +71,7 @@ const submit = () => {
         code: code.value
     }).then((result: any)=> {
         if (result.result === 200) {
-            close()
+            window.electronAPI.send("register-success")
         }
     })
 };

@@ -243,7 +243,7 @@ const $useRouter = useRouter();
 
 const form = reactive({
   isShowMaximize: false, // 是否最大化
-  version: "3.0.1", // 版本
+  version: "3.0.2", // 版本
   languagesList: {}, // 多语言列表
   selectedLang: "zh-cn", // 选中语言
 });

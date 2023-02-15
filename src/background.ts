@@ -71,6 +71,7 @@ async function createWindow() {
       width: 450,
       height: 260,
       parent: win, // win是主窗口
+      modal: false,
       resizable: false, //窗口是否可以由用户手动调整大小的属性
       autoHideMenuBar: true, //是否隐藏菜单
       frame: false, //false为无边框窗口
@@ -174,7 +175,7 @@ async function createWindow() {
     );
   });
   ipcMain.on("register-success", ()=> {
-    win.webContents.send("register-success-two", -1)
+    win.webContents.send("register-refresh", 1)
   })
   // 监听渲染进程发出的download事件
   ipcMain.on("download", (evt, args) => {

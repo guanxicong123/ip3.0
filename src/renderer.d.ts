@@ -4,6 +4,7 @@ export interface IElectronAPI {
   once: (channel, callback?) => Promise<void>;
   sendToHost: (channel, data?) => Promise<void>;
   postMessage: (channel, message?) => Promise<void>;
+  handleRegisterRefresh: (channel) => Promise<void>;
 }
 
 declare global {
