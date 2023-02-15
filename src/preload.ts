@@ -52,5 +52,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
         ipcRenderer.postMessage(channel, message);
       }
     }
-  }
+  },
+  handleRegisterRefresh: (callback: any) => ipcRenderer.on('register-refresh', callback)
 });

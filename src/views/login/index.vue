@@ -105,7 +105,7 @@
         <div class="broadcast-login-sign">
             <el-button type="primary" @click="submit" :loading="isLogin">登录</el-button>
         </div>
-        <div class="broadcast-login-edition">V3.0.1</div>
+        <div class="broadcast-login-edition">V3.0.2</div>
     </div>
 </template>
 
@@ -145,26 +145,25 @@ watch(()=>modelRef.name, ()=> {
 const handleMinimize = () => {
     window.electronAPI.send("minimize");
 };
-const register = () => {
-    window.electronAPI.send("register-window", 666);
-};
 // 关闭
 const close = () => {
     window.electronAPI.send("close");
 };
 // 注册触发事件
-window.electronAPI.on("register-success-two", ()=> {
+window.electronAPI.handleRegisterRefresh((event: any, value: any) => {
     gitRegisterStatus()
 })
 // 获取注册状态
 const gitRegisterStatus = () => {
-    proxy.$http1.get('/register').then((result: any)=> {
-        if (result.result === 200) {
-            registerStatus.value = result.data
-            if (!registerStatus.value.isRegister) {
-                register()
+    return new Promise<void>((resolve, reject) => {
+        proxy.$http1.get('/register').then((result: any)=> {
+            if (result.result === 200) {
+                registerStatus.value = result.data
+                if (!registerStatus.value.isRegister) {
+                    resolve()
+                }
             }
-        }
+        })
     })
 }
 // 提交
@@ -196,7 +195,9 @@ const submit = () => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-    gitRegisterStatus()
+    gitRegisterStatus().then(()=> {
+        window.electronAPI.send("register-window")
+    })
     if (socket) {
         socket.close();
     }
