@@ -136,8 +136,8 @@ export const useSystemStore = defineStore({
                 EnabledPersonAlert: data.EnabledPersonAlert, //启用人工报警提醒
                 EnabledTerminalOffAlert: data.EnabledTerminalOffAlert, //启用终端离线提醒
                 EnabledTerminalOffRingfAlert: data.EnabledTerminalOffRingfAlert, //启用终端离线铃声提醒
-              }
-              localStorage.set("alertMessage", JSON.stringify(alertMessage)) //储存提醒配置
+              };
+              localStorage.set("alertMessage", JSON.stringify(alertMessage)); //储存提醒配置
               // 功能管理相关数据
               this.functional_configs = {
                 FolderDisplay: data.FolderDisplay,

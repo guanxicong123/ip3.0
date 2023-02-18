@@ -10,7 +10,10 @@
       <div class="custom-title">
         <template v-if="!form.selectedSearchGroupsVisible">
           <el-icon
-            @click="form.selectedSearchGroupsVisible = !form.selectedSearchGroupsVisible"
+            @click="
+              form.selectedSearchGroupsVisible =
+                !form.selectedSearchGroupsVisible
+            "
           >
             <Search />
           </el-icon>
@@ -40,7 +43,9 @@
                 :class="{ selected: form.currentGroupsID === item.id }"
                 v-show="
                   !form.selectedSearchGroupsVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchGroupsReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchGroupsReg
+                  )
                 "
               >
                 {{ item.name }}
@@ -65,7 +70,8 @@
           >
             <el-icon
               @click="
-                form.selectedSearchTerminalsVisible = !form.selectedSearchTerminalsVisible
+                form.selectedSearchTerminalsVisible =
+                  !form.selectedSearchTerminalsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -94,7 +100,10 @@
       <div class="custom-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template v-for="(item, index) in form.allTerminalData" :key="item.id">
+            <template
+              v-for="(item, index) in form.allTerminalData"
+              :key="item.id"
+            >
               <li
                 @click="handleSelectedSoundSource(item)"
                 :class="{
@@ -102,8 +111,12 @@
                 }"
                 v-show="
                   !form.selectedSearchTerminalsVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
-                  item[config.searchColumnIP].match(form.selectedSearchTerminalsReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchTerminalsReg
+                  ) ||
+                  item[config.searchColumnIP].match(
+                    form.selectedSearchTerminalsReg
+                  )
                 "
               >
                 <div
@@ -231,7 +244,10 @@ const handleGetAllGroups = async () => {
       if (result.result) {
         // 组装数据结构
         if (isArray(result.result)) {
-          form.allGroupsData = [...[{ id: 0, name: "全部终端" }], ...result.result];
+          form.allGroupsData = [
+            ...[{ id: 0, name: "全部终端" }],
+            ...result.result,
+          ];
         }
       } else {
         ElMessage({
@@ -275,7 +291,10 @@ const handleGetAllTerminals = async () => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
   handleGetAllGroups();
   handleGetAllTerminals();
 });

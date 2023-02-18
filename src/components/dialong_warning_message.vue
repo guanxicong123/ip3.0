@@ -23,7 +23,12 @@
       @sort-change="handleSortChange"
       :default-sort="{ prop: 'EndPointName', order: 'descending' }"
     >
-      <el-table-column property="EndPointName" label="终端" width="150" sortable />
+      <el-table-column
+        property="EndPointName"
+        label="终端"
+        width="150"
+        sortable
+      />
       <el-table-column property="EndPointIP" label="IP地址" width="200" />
       <el-table-column property="OfflineTime" label="离线时间" sortable />
     </el-table>
@@ -50,9 +55,13 @@ watch(
 const handleSortChange = (row: { prop: any; order: string | string[] }) => {
   if (row.prop == "name") {
     if (row.order === "descending") {
-      tableData.value.sort((a: any, b: any) => b.name.localeCompare(a.name, "zh"));
+      tableData.value.sort((a: any, b: any) =>
+        b.name.localeCompare(a.name, "zh")
+      );
     } else if (row.order === "ascending") {
-      tableData.value.sort((a: any, b: any) => a.name.localeCompare(b.name, "zh"));
+      tableData.value.sort((a: any, b: any) =>
+        a.name.localeCompare(b.name, "zh")
+      );
     }
   }
 };

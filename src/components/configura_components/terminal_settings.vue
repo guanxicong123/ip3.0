@@ -74,7 +74,9 @@
       />
       <template #footer>
         <div class="com-dialog-footer">
-          <el-button plain @click="form.quickDialogVisible = false"> 关闭 </el-button>
+          <el-button plain @click="form.quickDialogVisible = false">
+            关闭
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -167,7 +169,8 @@ const handleRequestConfigure = (data: any) => {
 const handleSetEditData = () => {
   if (
     (!parentData?.responseTerminals && !parentData?.responseGroups) ||
-    (parentData?.responseTerminals?.length < 1 && parentData?.responseGroups?.length < 1)
+    (parentData?.responseTerminals?.length < 1 &&
+      parentData?.responseGroups?.length < 1)
   ) {
     form.activeName = 1;
     handleRequestConfigure(parentData?.responseQuickTerminals);
@@ -211,7 +214,10 @@ watch(
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
   myConfigTerminal.selectAmplifier = config.selectAmplifier;
   form.view_mode = userStore.value?.user.users_config.view_mode;
 });

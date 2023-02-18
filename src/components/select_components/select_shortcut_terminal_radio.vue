@@ -9,7 +9,9 @@
     <div class="com-select-left">
       <div class="custom-title">
         <template v-if="!form.searchConfigureVisible">
-          <el-icon @click="form.searchConfigureVisible = !form.searchConfigureVisible">
+          <el-icon
+            @click="form.searchConfigureVisible = !form.searchConfigureVisible"
+          >
             <Search />
           </el-icon>
           <span> 配置名称 </span>
@@ -69,7 +71,8 @@
           >
             <el-icon
               @click="
-                form.selectedSearchConfigureVisible = !form.selectedSearchConfigureVisible
+                form.selectedSearchConfigureVisible =
+                  !form.selectedSearchConfigureVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -103,7 +106,9 @@
               <li
                 v-show="
                   !form.selectedSearchConfigureVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchConfigureReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchConfigureReg
+                  )
                 "
               >
                 <div
@@ -116,7 +121,8 @@
                     {{
                       row.column === "key" // 序号
                         ? index + 1
-                        : row.column === "list" && item.hasOwnProperty("ip_address") // 终端列表
+                        : row.column === "list" &&
+                          item.hasOwnProperty("ip_address") // 终端列表
                         ? "-"
                         : row.column === "ip_address" &&
                           !item.hasOwnProperty("ip_address") // IP地址
@@ -124,7 +130,10 @@
                         : item[row.column]
                     }}
                     <view-components-popover
-                      v-if="row.column === 'list' && !item.hasOwnProperty('ip_address')"
+                      v-if="
+                        row.column === 'list' &&
+                        !item.hasOwnProperty('ip_address')
+                      "
                       :url="'/terminals-groups/' + item.id + '/terminals'"
                     />
                   </span>
@@ -238,7 +247,11 @@ const handleGetAllData = async () => {
     .then((result) => {
       if (result.data) {
         result.data?.forEach(
-          (item: { all_data: any[]; terminals: any; terminals_groups: any }) => {
+          (item: {
+            all_data: any[];
+            terminals: any;
+            terminals_groups: any;
+          }) => {
             item.all_data = [...item.terminals, ...item.terminals_groups];
           }
         );
@@ -259,7 +272,10 @@ const handleGetAllData = async () => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
   handleGetAllData();
 });
 </script>
