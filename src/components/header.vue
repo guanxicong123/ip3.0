@@ -198,7 +198,10 @@
         <div class="com-default-dialog-content">
           <p>名称：IP网络广播系统分控软件</p>
           <p>
-            {{ $t("Current version") }} : V3.0 ( {{ $t("Build") }} : V{{ form.version }} )
+            {{ $t("Current version") }} : V3.0 ( {{ $t("Build") }} : V{{
+              form.version
+            }}
+            )
           </p>
         </div>
       </div>
@@ -424,7 +427,9 @@ const validateUserName = (rule: any, value: any, callback: any) => {
   callback();
 };
 const rules = reactive<FormRules>({
-  old_password: [{ validator: validateOldPassword, trigger: "blur", required: true }],
+  old_password: [
+    { validator: validateOldPassword, trigger: "blur", required: true },
+  ],
   password: [{ validator: validatePassword, trigger: "blur", required: true }],
   confirm_password: [
     { validator: validateConfirmPassword, trigger: "blur", required: true },

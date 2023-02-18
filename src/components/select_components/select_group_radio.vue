@@ -10,7 +10,10 @@
       <div class="custom-title">
         <template v-if="!form.selectedSearchGroupsVisible">
           <el-icon
-            @click="form.selectedSearchGroupsVisible = !form.selectedSearchGroupsVisible"
+            @click="
+              form.selectedSearchGroupsVisible =
+                !form.selectedSearchGroupsVisible
+            "
           >
             <Search />
           </el-icon>
@@ -25,7 +28,10 @@
             clearable
             @input="handleGourpsSearch"
           />
-          <i class="iconfont icon-clear delete" @click="handleClickCloGroupSearch"></i>
+          <i
+            class="iconfont icon-clear delete"
+            @click="handleClickCloGroupSearch"
+          ></i>
         </span>
       </div>
       <div class="custom-content">
@@ -37,10 +43,15 @@
                 :class="{ selected: form.currentGroupsID === item.id }"
                 v-show="
                   !form.selectedSearchGroupsVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchGroupsReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchGroupsReg
+                  )
                 "
               >
-                <div class="icon-font-select" v-if="form.currentGroupsID === item.id">
+                <div
+                  class="icon-font-select"
+                  v-if="form.currentGroupsID === item.id"
+                >
                   <el-icon class="theme"><Select /></el-icon>
                 </div>
                 {{ item.name }}
@@ -65,7 +76,8 @@
           >
             <el-icon
               @click="
-                form.selectedSearchTerminalsVisible = !form.selectedSearchTerminalsVisible
+                form.selectedSearchTerminalsVisible =
+                  !form.selectedSearchTerminalsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -94,12 +106,19 @@
       <div class="custom-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template v-for="(item, index) in form.allTerminalData" :key="item.id">
+            <template
+              v-for="(item, index) in form.allTerminalData"
+              :key="item.id"
+            >
               <li
                 v-show="
                   !form.selectedSearchTerminalsVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
-                  item[config.searchColumnIP].match(form.selectedSearchTerminalsReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchTerminalsReg
+                  ) ||
+                  item[config.searchColumnIP].match(
+                    form.selectedSearchTerminalsReg
+                  )
                 "
               >
                 <div
@@ -240,7 +259,10 @@ const handleGetAllGroups = async () => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
   handleGetAllGroups();
 });
 </script>

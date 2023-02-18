@@ -38,7 +38,11 @@
           class="repeat-month"
           @change="handleCheckedMonthChange"
         >
-          <el-checkbox-button v-for="item in form.monthOptions" :key="item" :label="item">
+          <el-checkbox-button
+            v-for="item in form.monthOptions"
+            :key="item"
+            :label="item"
+          >
             {{ item }}
           </el-checkbox-button>
         </el-checkbox-group>
@@ -96,12 +100,17 @@
                               :disabled-date="disabledCloneDate"
                             />
 
-                            <el-button type="primary" @click.stop="handleCloneDay(item)">
+                            <el-button
+                              type="primary"
+                              @click.stop="handleCloneDay(item)"
+                            >
                               确认
                             </el-button>
                             <el-button
                               plain
-                              @click.stop="item.cloneDayVisible = !item.cloneDayVisible"
+                              @click.stop="
+                                item.cloneDayVisible = !item.cloneDayVisible
+                              "
                             >
                               关闭
                             </el-button>
@@ -190,9 +199,11 @@ const disabledDate = (time: { getTime: () => number }) => {
   let beginEndDate = parentData.maxDay;
   if (beginStartDate) {
     return (
-      time.getTime() < usePublicMethod.dateConversionToTimestamp(beginStartDate) ||
+      time.getTime() <
+        usePublicMethod.dateConversionToTimestamp(beginStartDate) ||
       (beginEndDate &&
-        time.getTime() > usePublicMethod.dateConversionToTimestamp(beginEndDate))
+        time.getTime() >
+          usePublicMethod.dateConversionToTimestamp(beginEndDate))
     );
   }
   if (!beginStartDate && !beginEndDate) {
@@ -228,13 +239,15 @@ const handleTabClick = (tab: TabsPaneContext) => {
 const handleCheckAllWeekChange = () => {
   form.weekData = form.weekCheckAll ? weekOptions : [];
   let checkedCount = form.weekData.length;
-  form.weekIndeterminate = checkedCount > 0 && checkedCount < weekOptions.length;
+  form.weekIndeterminate =
+    checkedCount > 0 && checkedCount < weekOptions.length;
   emit("requestWeekData", form.weekData);
 };
 // 处理周期单选
 const handleCheckedWeekChange = () => {
   let checkedCount = form.weekData.length;
-  form.weekIndeterminate = checkedCount > 0 && checkedCount < weekOptions.length;
+  form.weekIndeterminate =
+    checkedCount > 0 && checkedCount < weekOptions.length;
   form.weekCheckAll = checkedCount === weekOptions.length;
   emit("requestWeekData", form.weekData);
 };
@@ -242,13 +255,15 @@ const handleCheckedWeekChange = () => {
 const handleCheckAllMonthChange = () => {
   form.monthData = form.monthCheckAll ? form.monthOptions : [];
   let checkedCount = form.monthData.length;
-  form.monthIndeterminate = checkedCount > 0 && checkedCount < form.monthOptions.length;
+  form.monthIndeterminate =
+    checkedCount > 0 && checkedCount < form.monthOptions.length;
   emit("requestMonthData", form.monthData);
 };
 // 处理月期单选
 const handleCheckedMonthChange = () => {
   let checkedCount = form.monthData.length;
-  form.monthIndeterminate = checkedCount > 0 && checkedCount < form.monthOptions.length;
+  form.monthIndeterminate =
+    checkedCount > 0 && checkedCount < form.monthOptions.length;
   form.monthCheckAll = checkedCount === form.monthOptions.length;
   emit("requestMonthData", form.monthData);
 };
@@ -259,7 +274,10 @@ const handleSelectedDate = (data: string) => {
   setAssignDates(name, day);
 };
 // 处理打开克隆弹窗
-const handleOpenClonePopover = (item: { name: string; cloneDayVisible: boolean }) => {
+const handleOpenClonePopover = (item: {
+  name: string;
+  cloneDayVisible: boolean;
+}) => {
   item.cloneDayVisible = !item.cloneDayVisible;
   form.dayOptions.forEach((row: { name: string; cloneDayVisible: boolean }) => {
     if (row.name !== item.name) {
@@ -310,7 +328,10 @@ const handleUpdateRequestDayData = () => {
   emit("requestDayData", assignDates);
 };
 // 处理删除单个日期
-const handleDeleteAssignDay = (item: { days: number[]; name: string }, row: number) => {
+const handleDeleteAssignDay = (
+  item: { days: number[]; name: string },
+  row: number
+) => {
   item.days = item.days.filter((d: number) => {
     return d !== row;
   });
@@ -347,36 +368,38 @@ const handleCloneDay = (item: { days: any[] }) => {
 };
 // 处理过滤不在范围内的日期
 const handleFilterDate = () => {
-  form.dayOptions = form.dayOptions.filter((item: { name: any; days: any[] }) => {
-    let prefix = item.name;
-    item.days = item.days.filter((day: string) => {
-      if (parentData.minDay && parentData.maxDay) {
-        return (
-          usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) >=
-            usePublicMethod.dateConversionToTimestamp(parentData.minDay) &&
-          usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) <=
+  form.dayOptions = form.dayOptions.filter(
+    (item: { name: any; days: any[] }) => {
+      let prefix = item.name;
+      item.days = item.days.filter((day: string) => {
+        if (parentData.minDay && parentData.maxDay) {
+          return (
+            usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) >=
+              usePublicMethod.dateConversionToTimestamp(parentData.minDay) &&
+            usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) <=
+              usePublicMethod.dateConversionToTimestamp(parentData.maxDay)
+          );
+        }
+
+        if (parentData.minDay && !parentData.maxDay) {
+          return (
+            usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) >=
+            usePublicMethod.dateConversionToTimestamp(parentData.minDay)
+          );
+        }
+
+        if (!parentData.minDay && parentData.maxDay) {
+          return (
+            usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) <=
             usePublicMethod.dateConversionToTimestamp(parentData.maxDay)
-        );
-      }
+          );
+        }
+        return !parentData.minDay && !parentData.maxDay;
+      });
 
-      if (parentData.minDay && !parentData.maxDay) {
-        return (
-          usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) >=
-          usePublicMethod.dateConversionToTimestamp(parentData.minDay)
-        );
-      }
-
-      if (!parentData.minDay && parentData.maxDay) {
-        return (
-          usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) <=
-          usePublicMethod.dateConversionToTimestamp(parentData.maxDay)
-        );
-      }
-      return !parentData.minDay && !parentData.maxDay;
-    });
-
-    return item.days.length > 0;
-  });
+      return item.days.length > 0;
+    }
+  );
   handleUpdateRequestDayData();
 };
 // 处理编辑界面传递回来的数据
@@ -443,7 +466,10 @@ watch(
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
   for (let index = 1; index < 32; index++) {
     form.monthOptions.push(index);
   }

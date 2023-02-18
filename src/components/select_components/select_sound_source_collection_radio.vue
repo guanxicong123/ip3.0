@@ -36,7 +36,10 @@
       <div class="custom-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template v-for="(item, index) in form.allSoundCardData" :key="index">
+            <template
+              v-for="(item, index) in form.allSoundCardData"
+              :key="index"
+            >
               <li
                 @click="handleSelectedSoundSource(item)"
                 :class="{
@@ -80,7 +83,8 @@
           >
             <el-icon
               @click="
-                form.selectedSearchAcquisitionVisible = !form.selectedSearchAcquisitionVisible
+                form.selectedSearchAcquisitionVisible =
+                  !form.selectedSearchAcquisitionVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -123,7 +127,9 @@
                   item[config.searchColumnName].match(
                     form.selectedSearchAcquisitionReg
                   ) ||
-                  item[config.searchColumnIP].match(form.selectedSearchAcquisitionReg)
+                  item[config.searchColumnIP].match(
+                    form.selectedSearchAcquisitionReg
+                  )
                 "
               >
                 <div
@@ -254,7 +260,8 @@ const setCurrentTabSelectStatus = () => {
     const data = parentData?.responseSoundSource;
     form.selectedSoundSourceData = {
       id: data.terminals_id,
-      name: parentData?.responseType === 2 ? data.sound_card : data.terminals_name,
+      name:
+        parentData?.responseType === 2 ? data.sound_card : data.terminals_name,
       type: form.currentGroupsID,
     };
     emit("requestType", form.currentGroupsID);
@@ -293,9 +300,11 @@ watch(
       return (form.allSoundCardData = newTTS);
     }
     if (newData.myConfig?.soundSourceSoundCard == false) {
-      form.allSoundSourceData = form.allSoundSourceData.filter((item: { id: number }) => {
-        return item.id !== 2;
-      });
+      form.allSoundSourceData = form.allSoundSourceData.filter(
+        (item: { id: number }) => {
+          return item.id !== 2;
+        }
+      );
       form.currentGroupsID = 3;
     }
     setCurrentTabSelectStatus();
@@ -309,7 +318,10 @@ watch(
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
   form.allSoundCardData = TTSStore.value;
   handleGetAllTerminals();
   setCurrentTabSelectStatus();
