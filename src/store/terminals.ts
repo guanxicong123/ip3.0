@@ -1,5 +1,5 @@
 interface TerminalsParams<T = any> {
-  allTerminals: Array<T>;
+  allTerminalsObj: T;
   onePageTerminals: Array<T>;
   allFilterTerminals: Array<T>;
   sortType: string;
@@ -19,7 +19,7 @@ export const useTerminalsStore = defineStore({
   id: "terminals",
   state: (): TerminalsParams => {
     return {
-      allTerminals: [], // 所有终端数据
+      allTerminalsObj: {}, // 所有终端数据-Obj
       onePageTerminals: [], // 一页终端数据
       allFilterTerminals: [], // 过滤后的所有终端数据
       sortType: "desc", // 默认倒序
@@ -37,7 +37,7 @@ export const useTerminalsStore = defineStore({
   },
   actions: {
     // 更新终端数据
-    updateTerminals(data: any[], isPut?: boolean) {
+    updateTerminals(data: any[]) {
       for (let index = 0; index < data.length; index++) {
         const item = data[index];
         const ipArr = item.EndPointIP.split(".");
@@ -62,26 +62,7 @@ export const useTerminalsStore = defineStore({
             item.EndPointProp.PowerControl.length
           ),
         };
-        // isPut：是否服务器主动推送更新数据
-        if (isPut) {
-          const ids = [];
-          for (let index = 0; index < this.allTerminals.length; index++) {
-            let row = this.allTerminals[index];
-            ids.push(row.EndPointID);
-            // 当含有相同的终端数据，就更新
-            if (item.EndPointID == row.EndPointID) {
-              // 深拷贝 JSON.parse(JSON.stringify(item)
-              row = Object.assign(row, item);
-            }
-          }
-          // 主要为了防止服务器推送重复数据的问题
-          if (!ids.includes(item.EndPointID)) {
-            this.allTerminals.push(item);
-          }
-        }
-      }
-      if (!isPut) {
-        this.allTerminals = data;
+        this.allTerminalsObj[item.EndPointID] = item;
       }
     },
     // 设置服务器id
@@ -128,13 +109,15 @@ export const useTerminalsStore = defineStore({
           : this.allFilterTerminals.length;
       this.onePageTerminals = this.allFilterTerminals.slice(start, end);
     },
-    // 从allTerminals设置过滤后的数据到allFilterTerminals
+    // 从allTerminalsObj设置过滤后的数据到allFilterTerminals
     setFilterTerminalsArray() {
       const terminals = [];
       const string = useRegex.replaceRegString(this.searchString);
       const reg = new RegExp(string, "gmi");
-      for (let index = 0; index < this.allTerminals.length; index++) {
-        const item = this.allTerminals[index];
+      const allTerminals: any[] = Object.values(this.allTerminalsObj);
+      const length = allTerminals.length;
+      for (let index = 0; index < length; index++) {
+        const item = allTerminals[index];
         // 根据中继服务器id为筛选条件
         const relayServerID =
           this.serverID === -1 || item.RelayServerID === this.serverID;
@@ -230,7 +213,7 @@ export const useTerminalsStore = defineStore({
         }
       });
 
-      this.allTerminals.forEach((row) => {
+      this.onePageTerminals.forEach((row) => {
         if (row.EndPointID === EndPointID) {
           row = newValue;
         }
@@ -238,8 +221,8 @@ export const useTerminalsStore = defineStore({
     },
     // 移除已删除的终端数据
     removeTerminals(data: number[]) {
-      this.allTerminals = this.allTerminals.filter((item) => {
-        return !data.includes(item.EndPointID);
+      data.forEach((EndPointID) => {
+        delete this.allTerminalsObj[EndPointID];
       });
       this.onePageTerminals = this.onePageTerminals.filter((item) => {
         return !data.includes(item.EndPointID);
@@ -250,7 +233,7 @@ export const useTerminalsStore = defineStore({
     },
     // 清除终端数据
     clearTerminals() {
-      this.allTerminals = [];
+      this.allTerminalsObj = {};
       this.onePageTerminals = [];
       this.allFilterTerminals = [];
     },

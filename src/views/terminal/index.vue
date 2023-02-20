@@ -193,7 +193,7 @@ const sessionsLocalKey = computed(() => {
   return session.sessionsLocalKey;
 });
 const sessionsData: any = computed(() => {
-  return session.allSession.filter((item: any) => {
+  return Object.values(session.allSessionObj).filter((item: any) => {
     if ([4, 5].includes(item.TaskType) && sessionsLocalKey.value.includes(item.TaskID)) {
       return item;
     }

@@ -94,7 +94,7 @@
           >
             <template #default="scope">
               <el-dropdown
-                v-if="scope.row.EndPointList && scope.row.EndPointList.length > 1"
+                v-if="scope.row.EndPointList?.length > 1"
                 placement="bottom-start"
                 class="dropdown-link-tabel"
               >
@@ -118,7 +118,7 @@
                 </template>
               </el-dropdown>
               <span
-                v-if="scope.row.EndPointList && scope.row.EndPointList.length === 1"
+                v-if="scope.row.EndPointList?.length === 1"
                 class="dropdown-link-defalut"
               >
                 {{ scope.row.EndPointList[0].EndPointName }}
@@ -229,7 +229,7 @@ const session = getStore.useSessionStore();
 const systemStore = getStore.useSystemStore();
 // 计算属性 computed
 const sessionStoreAll = computed(() => {
-  return session.allSession;
+  return session.allSessionObj;
 });
 const sessionStoreTotal = computed(() => {
   return session.allFilterSession.length;

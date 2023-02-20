@@ -1,5 +1,5 @@
 interface SessionParams<T = any> {
-  allSession: Array<T>;
+  allSessionObj: T;
   onePageSession: Array<T>;
   allFilterSession: Array<T>;
   sessionsLocalKey: Array<T>;
@@ -15,7 +15,7 @@ export const useSessionStore = defineStore({
   id: "session",
   state: (): SessionParams => {
     return {
-      allSession: [], // 所有会话数据
+      allSessionObj: {}, // 所有会话数据-Obj
       onePageSession: [], // 一页会话数据
       allFilterSession: [], // 过滤后的所有会话数据
       sessionsLocalKey: [], // 基本本机发起任务key
@@ -29,42 +29,21 @@ export const useSessionStore = defineStore({
   },
   actions: {
     // 更新会话数据
-    updateSession(data: any[], isPut?: boolean) {
+    updateSession(data: any[]) {
       for (let index = 0; index < data.length; index++) {
         const item = data[index];
-        if (item.TaskID) {
-          item.searchString = "";
-          if (Array.isArray(item.EndPointList)) {
-            item.EndPointListArray = item.EndPointList;
-            item.searchString += item.TaskName;
-            item.searchString += " " + item.TaskIniator;
-            item.EndPointListArray.forEach((row: { EndPointName: string }) => {
-              item.searchString += " " + row.EndPointName;
-            });
-          } else {
-            item.EndPointListArray = [];
-          }
+        item.searchString = "";
+        if (Array.isArray(item.EndPointList)) {
+          item.EndPointListArray = item.EndPointList;
+          item.searchString += item.TaskName;
+          item.searchString += " " + item.TaskIniator;
+          item.EndPointListArray.forEach((row: { EndPointName: string }) => {
+            item.searchString += " " + row.EndPointName;
+          });
+        } else {
+          item.EndPointListArray = [];
         }
-        // isPut：是否服务器主动推送更新数据
-        if (isPut) {
-          const ids = [];
-          for (let index = 0; index < this.allSession.length; index++) {
-            let row = this.allSession[index];
-            ids.push(row.TaskID);
-            // 当含有相同的会话数据，就更新
-            if (item.TaskID == row.TaskID) {
-              // 深拷贝 JSON.parse(JSON.Stringfy(item)
-              row = Object.assign(row, item);
-            }
-          }
-          // 主要为了防止服务器推送重复数据的问题
-          if (!ids.includes(item.TaskID)) {
-            this.allSession.push(item);
-          }
-        }
-      }
-      if (!isPut) {
-        this.allSession = data;
+        this.allSessionObj[item.TaskID] = item;
       }
     },
     // 设置任务类型
@@ -94,13 +73,15 @@ export const useSessionStore = defineStore({
           : this.allFilterSession.length;
       this.onePageSession = this.allFilterSession.slice(start, end);
     },
-    // 从allSession设置过滤后的数据到allFilterSession
+    // 从allSessionObj设置过滤后的数据到allFilterSession
     setFilterSessionArray() {
       const session = [];
       const string = useRegex.replaceRegString(this.searchString);
       const reg = new RegExp(string, "gmi");
-      for (let index = 0; index < this.allSession.length; index++) {
-        const item = this.allSession[index];
+      const allSession: any[] = Object.values(this.allSessionObj);
+      const length = allSession.length;
+      for (let index = 0; index < length; index++) {
+        const item = allSession[index];
         // 根据会话类型为筛选条件
         const taskType = this.taskType === 0 || item.TaskType === this.taskType;
         // 根据搜索任务名称，发起方，响应方为筛选条件
@@ -139,7 +120,7 @@ export const useSessionStore = defineStore({
         }
       });
 
-      this.allSession.forEach((row) => {
+      this.onePageSession.forEach((row) => {
         if (row.EndPointID === EndPointID) {
           row = newValue;
         }
@@ -151,11 +132,9 @@ export const useSessionStore = defineStore({
     },
     // 移除已结束的会话数据
     removeSession(data: { TaskID: string }) {
-      this.allSession = this.allSession.filter((item) => {
-        if (Object.prototype.hasOwnProperty.call(item, "TaskID")) {
-          return data.TaskID !== item.TaskID;
-        }
-      });
+      if (Object.prototype.hasOwnProperty.call(data, "TaskID")) {
+        delete this.allSessionObj[data.TaskID];
+      }
       this.onePageSession = this.onePageSession.filter((item) => {
         if (Object.prototype.hasOwnProperty.call(item, "TaskID")) {
           return data.TaskID !== item.TaskID;
@@ -172,7 +151,7 @@ export const useSessionStore = defineStore({
     },
     // 清除会话数据
     clearSession() {
-      this.allSession = [];
+      this.allSessionObj = [];
       this.onePageSession = [];
       this.allFilterSession = [];
       this.sessionsLocalKey = [];

@@ -1019,5 +1019,6 @@
   "Replacing": "复位",
   "Save as template": "保存为模板",
   "Saved templates": "已保存的模板",
-  "Apply to other terminals": "应用到其他终端"
+  "Apply to other terminals": "应用到其他终端",
+  "No files": "没有文件！"
 }

@@ -193,9 +193,7 @@ const handlerMsg = (msg: any) => {
       "terminal_status",
       () => {
         getStore.useTerminalStore().getTerminalData(msg.data);
-        getStore
-          .useTerminalsStore()
-          .updateTerminals(msg.data.EndPointsArray, true);
+        getStore.useTerminalsStore().updateTerminals(msg.data.EndPointsArray);
       },
     ],
     [
@@ -219,7 +217,7 @@ const handlerMsg = (msg: any) => {
     [
       "task_status",
       () => {
-        getStore.useSessionStore().updateSession(msg.data.TaskInfoArray, true);
+        getStore.useSessionStore().updateSession(msg.data.TaskInfoArray);
       },
     ],
   ]);

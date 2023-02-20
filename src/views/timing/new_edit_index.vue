@@ -361,7 +361,6 @@
 <script lang="ts" setup>
 import type { FormInstance } from "element-plus";
 import { ElMessage } from "element-plus";
-import { ArrowRight } from "@element-plus/icons-vue";
 import usePublicMethod from "@/utils/global/index";
 import { ValidatorService } from "@/utils/api/validator/index";
 import { TasksService } from "@/utils/api/task/index";
@@ -369,6 +368,9 @@ import { TerminalsLightService } from "@/utils/api/light_config";
 import { LEDService } from "@/utils/api/led_config";
 import { PriorityService } from "@/utils/api/priority_config";
 import { onBeforeRouteLeave } from "vue-router";
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 const form = reactive<any>({
   title: "",
@@ -474,19 +476,11 @@ const validateEmpty = (rule: any, value: any, callback: any) => {
     callback();
   }
 };
-const validateLed = (rule: any, value: any, callback: any) => {
-  if (value < 1) {
-    return callback(new Error("请选择"));
-  } else {
-    callback();
-  }
-};
 // 表单验证规则
 const rules = reactive({
   name: [{ validator: validateName, trigger: "blur", required: true }],
   start_date: [{ validator: validateEmpty, trigger: "blur", required: true }],
   execute_time: [{ validator: validateEmpty, trigger: "change", required: true }],
-  led_config_id: [{ validator: validateLed, trigger: "change", required: true }],
 });
 // 处理音源设置返回的数据
 const handleRequestSoundType = (data: number) => {
@@ -854,10 +848,7 @@ const getAllLED = async () => {
   await LEDService.getAllLED({})
     .then((result) => {
       if (result.data) {
-        form.ledData = result.data;
-        if (result.data?.length > 0) {
-          ruleForm.led_config_id = result.data?.[0].id;
-        }
+        form.data = [...[{ id: 0, name: proxy.$t("Please select") }], ...result.result];
       } else {
         ElMessage({
           type: "error",

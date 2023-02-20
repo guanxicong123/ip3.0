@@ -145,7 +145,7 @@ const { proxy } = useCurrentInstance.useCurrentInstance();
 const terminals = getStore.useTerminalsStore();
 // 计算属性 computed
 const terminalsStoreAll = computed(() => {
-  return terminals.allTerminals;
+  return terminals.allTerminalsObj;
 });
 const terminalsStoreTotal = computed(() => {
   return terminals.allFilterTerminals.length;
@@ -272,7 +272,7 @@ watch(
   () => terminalsStoreAll.value,
   (newData) => {
     handleGetOnePageData();
-    newData.some((item) => {
+    Object.values(newData).some((item: any) => {
       if (
         item.EndPointID == form.currentTableRow.EndPointID &&
         (item.Status !== 1 || item.Disable)

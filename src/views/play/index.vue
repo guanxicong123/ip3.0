@@ -288,7 +288,7 @@ const storePlay = getStore.usePlayStore();
 const systemStore = getStore.useSystemStore();
 // 计算属性 computed
 const sessionStoreAll = computed(() => {
-  return session.allSession;
+  return session.allSessionObj;
 });
 // 当前任务播放状态
 const playStatusData: any = computed(() => {
@@ -954,7 +954,7 @@ const filterData = () => {
 watch(
   () => sessionStoreAll.value,
   (newData) => {
-    form.sessionsData = newData.filter((item: any) => {
+    form.sessionsData = Object.values(newData).filter((item: any) => {
       return [12, 13, 14, 15].includes(item.TaskType);
     });
   },
