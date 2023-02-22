@@ -1,5 +1,8 @@
 import usePublicMethod from "@/utils/global/index";
 import $http from "@/utils/axios/index";
+import i18n from "@/utils/language";
+
+const $t: any = i18n.global;
 
 export interface terminalState {
   terminal_data: any;
@@ -33,7 +36,7 @@ export const useTerminalStore = defineStore({
   actions: {
     // 获取终端信息
     getTerminalData(data: any) {
-      let alertMessage = JSON.parse(localStorage.get("alertMessage")); //警告消息（离线提醒是否开启）
+      const alertMessage = JSON.parse(localStorage.get("alertMessage")); //警告消息（离线提醒是否开启）
       data.EndPointsArray.forEach((item: any) => {
         item.status = item.Status;
         item.name = item.EndPointName;
@@ -56,7 +59,7 @@ export const useTerminalStore = defineStore({
             this.terminal_data[index]?.Status !== 0 &&
             item.Status === 0
           ) {
-            let data = {
+            const data = {
               EndPointName: item.EndPointName,
               EndPointIP: item.EndPointIP,
               OfflineTime: usePublicMethod.formatDate(
@@ -79,7 +82,7 @@ export const useTerminalStore = defineStore({
       this.terminal_group = [
         {
           GroupID: 0,
-          GroupName: "所有终端",
+          GroupName: $t.t("All terminals"),
         },
       ].concat(data.GroupInfo.GroupArray);
       this.group_terminal = data.GroupInfo.EndpointArray;

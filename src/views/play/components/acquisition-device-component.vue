@@ -75,7 +75,7 @@
       <template #footer>
         <div class="com-dialog-footer">
           <el-button plain @click="folderDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleConfirm">确认</el-button>
+          <el-button type="primary" @click="handleConfirm">{{ $t("Confirm") }}</el-button>
         </div>
       </template>
     </el-dialog>

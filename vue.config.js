@@ -32,9 +32,9 @@ module.exports = defineConfig({
         nsis: {
           // "oneClick" : false,// 是否一键安装
           // "allowToChangeInstallationDirectory" : true, // 允许修改安装目录
-          "installerIcon": "public/ip.ico",// 安装图标
-          "uninstallerIcon": "public/ip.ico",//卸载图标
-          "installerHeaderIcon": "public/ip.ico", // 安装时头部图标
+          installerIcon: "public/ip.ico", // 安装图标
+          uninstallerIcon: "public/ip.ico", //卸载图标
+          installerHeaderIcon: "public/ip.ico", // 安装时头部图标
           createDesktopShortcut: true, // 创建桌面图标
           createStartMenuShortcut: true, // 创建开始菜单图标
           shortcutName: "ip-broadcast", // 图标名称
@@ -145,6 +145,7 @@ module.exports = defineConfig({
             "@/store/get_store": [["default", "getStore"]],
             "@/utils/global/index": [["default", "usePublicMethod"]],
             "@/utils/global/format_map_type": [["default", "useFormatMap"]],
+            "@/utils/global/config": [["default", "useConfig"]],
             "@/utils/global/regex": [["default", "useRegex"]],
             "@/utils/vue/use_current_instance": [
               ["default", "useCurrentInstance"],

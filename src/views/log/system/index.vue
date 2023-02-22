@@ -25,22 +25,34 @@
             width="60"
             :index="typeIndex"
           />
-          <el-table-column prop="time" label="时间" show-overflow-tooltip />
-          <el-table-column prop="user.name" label="用户" show-overflow-tooltip />
-          <el-table-column prop="description" label="用户操作" show-overflow-tooltip />
-          <el-table-column prop="platform.platform" label="平台" show-overflow-tooltip />
-          <el-table-column prop="ip_address" label="登录IP地址" show-overflow-tooltip />
-          <el-table-column prop="remarks" label="备注" show-overflow-tooltip />
-          <el-table-column prop="level" label="日志级别" show-overflow-tooltip>
+          <el-table-column prop="time" :label="$t('Time')" show-overflow-tooltip />
+          <el-table-column prop="user.name" :label="$t('User')" show-overflow-tooltip />
+          <el-table-column
+            prop="description"
+            :label="$t('User action')"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="platform.platform"
+            :label="$t('Platform')"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="ip_address"
+            :label="$t('Login IP address')"
+            show-overflow-tooltip
+          />
+          <el-table-column prop="remarks" :label="$t('Remarks')" show-overflow-tooltip />
+          <el-table-column prop="level" :label="$t('Log level')" show-overflow-tooltip>
             <template #default="scope">
               {{ formatterLevel(scope.row) }}
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="120">
+          <el-table-column :label="$t('Operation')" width="120">
             <template #default="scope">
               <i
                 class="iconfont icon-delete"
-                title="删除"
+                :title="$t('Delete')"
                 @click="handleDelete('single', scope.row)"
               ></i>
             </template>
@@ -53,7 +65,7 @@
       <el-pagination
         v-model:currentPage="form.currentPage"
         v-model:page-size="form.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
+        :page-sizes="proxy.$user?.config?.pageRule"
         layout="total, sizes, prev, pager, next, jumper"
         :total="form.total"
         @size-change="handleSizeChange"
@@ -66,6 +78,9 @@
 <script lang="ts" setup>
 import { ElTable, ElMessage, ElMessageBox } from "element-plus";
 import { SystemLogService } from "@/utils/api/log";
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 // 声明触发事件
 const emit = defineEmits(["dele"]);
@@ -80,9 +95,12 @@ const systemStore = getStore.useSystemStore();
 const systemPageSize = computed(() => {
   return systemStore.pageSize?.Log_PageSize;
 });
-watch(()=>systemPageSize.value, ()=> {
-  form.pageSize = systemPageSize.value
-})
+watch(
+  () => systemPageSize.value,
+  () => {
+    form.pageSize = systemPageSize.value;
+  }
+);
 
 const form = reactive<any>({
   data: [],
@@ -141,7 +159,7 @@ const handleGetOnePageData = async () => {
       } else {
         ElMessage({
           type: "error",
-          message: result.data?.message,
+          message: result.return_message,
           grouping: true,
         });
       }
@@ -164,9 +182,9 @@ const handleReset = () => {
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
   systemStore.updateSystemSize({
-    key: 'Log_PageSize',
-    val
-  })
+    key: "Log_PageSize",
+    val,
+  });
   form.pageSize = val;
   handleDefaultGet();
   multipleTableRef.value?.setScrollTop(0);
@@ -183,9 +201,9 @@ const handleDelete = (type: string, row: any) => {
   if (type != "single" && multipleSelection.value.length == 0) {
     return;
   }
-  ElMessageBox.confirm("即将删除, 是否继续？", "提示", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
+  ElMessageBox.confirm(proxy.$t("Delete prompt"), proxy.$t("Tips"), {
+    confirmButtonText: proxy.$t("Confirm"),
+    cancelButtonText: proxy.$t("Cancel"),
     type: "warning",
     draggable: true,
   })
@@ -208,13 +226,13 @@ const handleDelete = (type: string, row: any) => {
             handleGetOnePageData();
             ElMessage({
               type: "success",
-              message: "删除成功",
+              message: proxy.$t("Delete succeeded"),
               grouping: true,
             });
           } else {
             ElMessage({
               type: "error",
-              message: result.data?.message || "删除失败",
+              message: result.return_message || proxy.$t("Delete failed"),
               grouping: true,
             });
           }

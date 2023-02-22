@@ -25,41 +25,55 @@
             width="60"
             :index="typeIndex"
           />
-          <el-table-column prop="tasks_name" label="任务名称" show-overflow-tooltip />
-          <el-table-column prop="type" label="任务类型" show-overflow-tooltip>
+          <el-table-column
+            prop="tasks_name"
+            :label="$t('Task name')"
+            show-overflow-tooltip
+          />
+          <el-table-column prop="type" :label="$t('Task type')" show-overflow-tooltip>
             <template #default="scope">
               {{ formatterTaskType(scope.row) }}
             </template>
           </el-table-column>
-          <el-table-column prop="user.name" label="用户" show-overflow-tooltip />
-          <el-table-column prop="terminal" label="执行终端" show-overflow-tooltip>
+          <el-table-column prop="user.name" :label="$t('User')" show-overflow-tooltip />
+          <el-table-column
+            prop="terminal"
+            :label="$t('Executive terminal')"
+            show-overflow-tooltip
+          >
             <template #default="scope">
               <view-components-popover
                 :url="'/logs/tasks/' + scope.row.id + '/terminals'"
               />
             </template>
           </el-table-column>
-          <el-table-column prop="start_time" label="开始时间" show-overflow-tooltip />
+          <el-table-column
+            prop="start_time"
+            :label="$t('Start time')"
+            width="180"
+            show-overflow-tooltip
+          />
           <el-table-column
             prop="life_time"
-            label="结束时间(持续时间)"
+            :label="$t('End time') + '(' + $t('Duration') + ')'"
+            width="260"
             show-overflow-tooltip
           >
             <template #default="scope">
               {{ scope.row.end_time }} ({{ scope.row.life_time }})
             </template>
           </el-table-column>
-          <el-table-column prop="remarks" label="备注" show-overflow-tooltip />
-          <el-table-column prop="level" label="日志级别" show-overflow-tooltip>
+          <el-table-column prop="remarks" :label="$t('Remarks')" show-overflow-tooltip />
+          <el-table-column prop="level" :label="$t('Log level')" show-overflow-tooltip>
             <template #default="scope">
               {{ formatterLevel(scope.row) }}
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="120">
+          <el-table-column :label="$t('Operation')" width="120">
             <template #default="scope">
               <i
                 class="iconfont icon-delete"
-                title="删除"
+                :title="$t('Delete')"
                 @click="handleDelete('single', scope.row)"
               ></i>
             </template>
@@ -72,7 +86,7 @@
       <el-pagination
         v-model:currentPage="form.currentPage"
         v-model:page-size="form.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
+        :page-sizes="proxy.$user?.config?.pageRule"
         layout="total, sizes, prev, pager, next, jumper"
         :total="form.total"
         @size-change="handleSizeChange"
@@ -85,6 +99,9 @@
 <script lang="ts" setup>
 import { ElTable, ElMessage, ElMessageBox } from "element-plus";
 import { TaskService } from "@/utils/api/log/task_log";
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 // 声明触发事件
 const emit = defineEmits(["dele"]);
@@ -160,7 +177,7 @@ const handleGetOnePageData = async () => {
       } else {
         ElMessage({
           type: "error",
-          message: result.data?.message,
+          message: result.return_message,
           grouping: true,
         });
       }
@@ -206,9 +223,9 @@ const handleDelete = (type: string, row: any) => {
   if (type != "single" && multipleSelection.value.length == 0) {
     return;
   }
-  ElMessageBox.confirm("即将删除, 是否继续？", "提示", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
+  ElMessageBox.confirm(proxy.$t("Delete prompt"), proxy.$t("Tips"), {
+    confirmButtonText: proxy.$t("Confirm"),
+    cancelButtonText: proxy.$t("Cancel"),
     type: "warning",
     draggable: true,
   })
@@ -231,13 +248,13 @@ const handleDelete = (type: string, row: any) => {
             handleGetOnePageData();
             ElMessage({
               type: "success",
-              message: "删除成功",
+              message: proxy.$t("Delete succeeded"),
               grouping: true,
             });
           } else {
             ElMessage({
               type: "error",
-              message: result.data?.message || "删除失败",
+              message: result.return_message || proxy.$t("Delete failed"),
               grouping: true,
             });
           }

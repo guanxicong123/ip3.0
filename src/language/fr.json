@@ -345,7 +345,7 @@
   "Song": "曲目",
   "No exception task": "没有异常任务",
   "No terminal task": "没有终端任务",
-  "No media task": "没有媒体任务",
+  "No audio source task": "没有音源任务",
   "No terminal": "没有终端",
   "Export terminal": "导出终端",
   "Default volume": "默认音量",
@@ -781,6 +781,7 @@
   "Modification succeeded": "修改成功",
   "Download succeeded": "下载成功",
   "Register succeeded": "注册成功",
+  "Download failed": "下载失败",
   "Delete failed": "删除失败",
   "Upload failed": "上传失败",
   "Add failed": "添加失败",
@@ -1020,5 +1021,7 @@
   "Save as template": "保存为模板",
   "Saved templates": "已保存的模板",
   "Apply to other terminals": "应用到其他终端",
-  "No files": "没有文件！"
+  "No files": "没有文件！",
+  "Play center": "播放中心",
+  "WebSocket connection failed": "WebSocket连接服务器失败"
 }

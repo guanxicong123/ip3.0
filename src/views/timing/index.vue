@@ -16,7 +16,7 @@
           </el-select>
           <el-input
             v-model="form.search"
-            placeholder="任务名称"
+            :placeholder="$t('Task name')"
             clearable
             @clear="handleDefaultGet"
             @keyup.enter="useCommonTable.handleKeyupEnter(form.search, handleDefaultGet)"
@@ -31,36 +31,32 @@
             :disabled="form.search == '' && form.selectType == 0"
             @click="handleReset"
           >
-            重置
+            {{ $t("Reset") }}
           </el-button>
         </div>
         <div class="com-button">
-          <i class="iconfont icon-refresh" title="刷新" @click="handleGetOnePageData"></i>
+          <i
+            class="iconfont icon-refresh"
+            :title="$t('Refresh')"
+            @click="handleGetOnePageData"
+          ></i>
           <i
             class="iconfont icon-add"
-            title="新建"
+            :title="$t('Newly build')"
             @click="usePublicMethod.clickJump($useRoute.path, 0)"
           ></i>
           <i
             class="iconfont icon-clone"
             :class="{ 'icon-disabled': multipleSelection.length == 0 }"
-            title="克隆"
+            :title="$t('Clone')"
             @click="handleCloneTask"
           ></i>
           <i
             class="iconfont icon-delete"
             :class="{ 'icon-disabled': multipleSelection.length == 0 }"
-            title="批量删除"
+            :title="$t('Batch deletion')"
             @click="handleDelete('batch', 0)"
           ></i>
-          <!-- <el-button
-            type="primary"
-            plain
-            :loading="form.exporting"
-            @click="handleExportExcel"
-          >
-            导出任务
-          </el-button> -->
         </div>
       </div>
     </div>
@@ -81,16 +77,20 @@
           <el-table-column type="expand">
             <template #default="props">
               <div class="com-card">
-                <el-card> 开始日期: {{ props.row.start_date }} </el-card>
-                <el-card> 结束日期: {{ props.row.end_date }} </el-card>
-                <el-card> 任务音量: {{ props.row.volume }} </el-card>
-                <el-card> 优先级: {{ props.row.priority }} </el-card>
+                <el-card> {{ $t("Start date") }}: {{ props.row.start_date }} </el-card>
+                <el-card> {{ $t("End date") }}: {{ props.row.end_date }} </el-card>
+                <el-card> {{ $t("Task volume") }}: {{ props.row.volume }} </el-card>
+                <el-card> {{ $t("Priority") }}: {{ props.row.priority }} </el-card>
                 <el-card>
-                  灯光模式:
-                  {{ props.row.light ? props.row.light.name : "全关" }}
+                  {{ $t("Light mode") }}:
+                  {{ props.row.light ? props.row.light.name : $t("Full close") }}
                 </el-card>
                 <el-card>
-                  {{ props.row.type == 1 || props.row.type == 4 ? "播放模式:" : "音质:" }}
+                  {{
+                    props.row.type == 1 || props.row.type == 4
+                      ? $t("Play mode")
+                      : $t("Tone quality")
+                  }}
                   :
                   {{
                     props.row.type == 1 || props.row.type == 4
@@ -108,10 +108,10 @@
             width="60"
             :index="typeIndex"
           />
-          <el-table-column prop="name" label="任务名称" show-overflow-tooltip />
+          <el-table-column prop="name" :label="$t('Task name')" show-overflow-tooltip />
           <el-table-column
             prop="execute_time"
-            label="执行时间"
+            :label="$t('Execution time')"
             sortable="custom"
             show-overflow-tooltip
           >
@@ -138,7 +138,11 @@
               </el-dropdown>
             </template>
           </el-table-column>
-          <el-table-column prop="repeat_weeks" label="重复日期" show-overflow-tooltip>
+          <el-table-column
+            prop="repeat_weeks"
+            :label="$t('Repeat date')"
+            show-overflow-tooltip
+          >
             <template #default="scope">
               <!-- 显示周/日期 -->
               <el-dropdown
@@ -148,7 +152,7 @@
               >
                 <span class="theme">
                   <el-icon class="el-icon--right"><arrow-down /></el-icon>
-                  {{ scope.row.time_type === 0 ? "按周" : "按日期" }}
+                  {{ scope.row.time_type === 0 ? $t("By week") : $t("By date") }}
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -169,7 +173,11 @@
               </el-dropdown>
             </template>
           </el-table-column>
-          <el-table-column prop="life_time" label="播放时间/曲目" show-overflow-tooltip>
+          <el-table-column
+            prop="life_time"
+            :label="$t('Play time') + '/' + $t('Song')"
+            show-overflow-tooltip
+          >
             <template #default="scope">
               <!-- 只有音乐播放 -->
               <span
@@ -182,7 +190,7 @@
                   {{ scope.row.sound_source.life_time }}
                 </template>
                 <template v-if="scope.row.sound_source?.play_number">
-                  {{ scope.row.sound_source.play_number }} 首
+                  {{ scope.row.sound_source.play_number }} {{ $t("Songs") }}
                 </template>
               </span>
               <span v-else-if="scope.row.type == 23">
@@ -191,12 +199,16 @@
               <span v-else>--</span>
             </template>
           </el-table-column>
-          <el-table-column prop="type" label="音源类型" show-overflow-tooltip>
+          <el-table-column prop="type" :label="$t('Sound type')" show-overflow-tooltip>
             <template #default="scope">
               {{ audioSourceMap.get(scope.row.type) }}
             </template>
           </el-table-column>
-          <el-table-column prop="sound_source" label="音源" show-overflow-tooltip>
+          <el-table-column
+            prop="sound_source"
+            :label="$t('Sound source')"
+            show-overflow-tooltip
+          >
             <template #default="scope">
               <template
                 v-if="
@@ -242,7 +254,7 @@
                     !scope.row.sound_source?.terminals_name
                   "
                 >
-                  没有音源
+                  {{ $t("No sound source") }}
                 </span>
               </template>
               <!-- 快捷音源 -->
@@ -273,12 +285,12 @@
                     !scope.row.fast_sound?.fast_source?.terminals_name
                   "
                 >
-                  没有音源
+                  {{ $t("No sound source") }}
                 </span>
               </template>
             </template>
           </el-table-column>
-          <el-table-column prop="area" label="执行区域">
+          <el-table-column prop="area" :label="$t('Execution area')">
             <template #default="scope">
               <view-components-popover
                 :url="'/timing-tasks/' + scope.row.id + '/terminals'"
@@ -291,42 +303,44 @@
               />
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="120">
+          <el-table-column :label="$t('Operation')" width="120">
             <template #default="scope">
-              <el-button
-                link
-                type="primary"
-                v-if="scope.row.is_done === 0"
-                @click="handleEnableOrDisable(scope.row)"
-              >
-                <template #icon>
-                  <i class="iconfont icon-enable-task" title="启用"></i>
-                </template>
-              </el-button>
-              <el-button
-                link
-                type="danger"
-                v-else
-                @click="handleEnableOrDisable(scope.row)"
-              >
-                <template #icon>
-                  <i class="iconfont icon-disable-task" title="禁用"></i>
-                </template>
-              </el-button>
-              <el-button link type="primary">
-                <template #icon>
-                  <i
-                    class="iconfont icon-edit"
-                    title="编辑"
-                    @click="usePublicMethod.clickJump($useRoute.path, scope.row.id)"
-                  ></i>
-                </template>
-              </el-button>
+              <template>
+                <el-button
+                  link
+                  type="primary"
+                  v-if="scope.row.is_done === 0"
+                  @click="handleEnableOrDisable(scope.row)"
+                >
+                  <template #icon>
+                    <i class="iconfont icon-enable-task" :title="$t('Enable')"></i>
+                  </template>
+                </el-button>
+                <el-button
+                  link
+                  type="danger"
+                  v-else
+                  @click="handleEnableOrDisable(scope.row)"
+                >
+                  <template #icon>
+                    <i class="iconfont icon-disable-task" :title="$t('Disable')"></i>
+                  </template>
+                </el-button>
+                <el-button link type="primary">
+                  <template #icon>
+                    <i
+                      class="iconfont icon-edit"
+                      :title="$t('Edit')"
+                      @click="usePublicMethod.clickJump($useRoute.path, scope.row.id)"
+                    ></i>
+                  </template>
+                </el-button>
+              </template>
               <el-button link type="danger">
                 <template #icon>
                   <i
                     class="iconfont icon-delete"
-                    title="删除"
+                    :title="$t('Delete')"
                     @click="handleDelete('single', scope.row)"
                   ></i>
                 </template>
@@ -341,7 +355,7 @@
       <el-pagination
         v-model:currentPage="form.currentPage"
         v-model:page-size="form.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
+        :page-sizes="proxy.$user?.config?.pageRule"
         layout="total, sizes, prev, pager, next, jumper"
         :total="form.total"
         @size-change="handleSizeChange"
@@ -370,6 +384,9 @@ const cloneTimingTask = defineAsyncComponent(
   () => import("./components/clone_timing_task.vue")
 );
 
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
+
 interface User {
   id: number;
   name: string;
@@ -392,7 +409,6 @@ const form = reactive({
   orderType: "asc",
   loading: false, // 等待加载数据状态
   cloneDialogVisible: false, // 是否显示克隆任务弹窗
-  exporting: false, // 等待导出状态
 });
 const sourceTypeOptions = useFormatMap.audioSourceTypeOptions;
 // 表格类型格式转换
@@ -482,9 +498,9 @@ const handleDelete = (type: string, row: any) => {
   if (type === "batch" && multipleSelection.value.length == 0) {
     return;
   }
-  ElMessageBox.confirm("即将删除, 是否继续？", "提示", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
+  ElMessageBox.confirm(proxy.$t("Delete prompt"), proxy.$t("Tips"), {
+    confirmButtonText: proxy.$t("Confirm"),
+    cancelButtonText: proxy.$t("Cancel"),
     type: "warning",
     draggable: true,
   })
@@ -499,7 +515,7 @@ const handleDelete = (type: string, row: any) => {
         ids: ids,
       })
         .then((result) => {
-          if (result.result > 0) {
+          if (result.data) {
             // 假如删除完本页数据，form.currentPage减去一页再更新数据
             if (form.data.length <= ids.length && form.currentPage > 1) {
               form.currentPage--;
@@ -507,13 +523,13 @@ const handleDelete = (type: string, row: any) => {
             handleGetOnePageData();
             ElMessage({
               type: "success",
-              message: "删除成功",
+              message: proxy.$t("Delete succeeded"),
               grouping: true,
             });
           } else {
             ElMessage({
               type: "error",
-              message: result.return_message || "删除失败",
+              message: result.return_message || proxy.$t("Delete failed"),
               grouping: true,
             });
           }
@@ -539,7 +555,8 @@ const handleEnableOrDisable = (row: any) => {
         row.is_done = status;
         ElMessage({
           type: "success",
-          message: status === 1 ? "启用成功" : "禁用成功",
+          message:
+            status === 1 ? proxy.$t("Enabled succeeded") : proxy.$t("Disable succeeded"),
           grouping: true,
         });
       } else {
@@ -570,52 +587,9 @@ const handleCloneSuccessCallback = () => {
   handleDefaultGet();
 };
 // 查看组件插件配置
-const groupConfig = {
-  iconfont: "icon-grade", // 字体图标
-  iconTitle: "查看分组", // icon title
-  tableTitle: "分组", // 表格顶部 title
-  searchPlaceholder: "分组名称", // 搜索框 placeholder
-  showTableColumn: [
-    { prop: "name", label: "分组名称" },
-    { prop: "call_code", label: "呼叫编码" },
-  ], // 显示的表格列
-};
-const mediaConfig = {
-  iconfont: "icon-music", // 字体图标
-  iconTitle: "查看媒体文件", // icon title
-  tableTitle: "媒体文件", // 表格顶部 title
-  searchPlaceholder: "名称", // 搜索框 placeholder
-  showTableColumn: [{ prop: "name", label: "名称" }], // 显示的表格列
-};
-const folderConfig = {
-  iconfont: "icon-media-folder", // 字体图标
-  iconTitle: "查看媒体文件夹", // icon title
-  tableTitle: "媒体文件夹", // 表格顶部 title
-  searchPlaceholder: "名称", // 搜索框 placeholder
-  showTableColumn: [{ prop: "name", label: "名称" }], // 显示的表格列
-};
-// 处理导出表格
-const handleExportExcel = () => {
-  form.exporting = true;
-  TasksService.getExportTasks()
-    .then((result) => {
-      form.exporting = false;
-      const isHasURL = Object.prototype.hasOwnProperty.call(result.result, "url");
-      if (isHasURL) {
-        console.log(result.result.url);
-      } else {
-        ElMessage({
-          type: "error",
-          message: result.return_message,
-          grouping: true,
-        });
-      }
-    })
-    .catch((error) => {
-      form.exporting = false;
-      console.log(error);
-    });
-};
+const groupConfig = useConfig.groupConfig;
+const mediaConfig = useConfig.mediaConfig;
+const folderConfig = useConfig.mediaFolderConfig;
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {

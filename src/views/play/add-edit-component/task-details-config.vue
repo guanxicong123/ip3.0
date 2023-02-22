@@ -110,7 +110,7 @@
               </el-button>
               <el-button link type="primary" @click="handleDelete(scope.row)">
                 <template #icon>
-                  <i class="iconfont icon-delete" title="删除"></i>
+                  <i class="iconfont icon-delete" :title="$t('Delete')"></i>
                 </template>
               </el-button>
             </template>
@@ -134,7 +134,7 @@
                   </span>
                   <!-- <view-components-popover v-if="!scope.row.medias_id"
                                         :url="'/medias'"
-                                        :mediaGroupsID="scope.row.id"
+                                        :mediasGroupsID="scope.row.id"
                                     /> -->
                 </div>
               </div>
@@ -144,7 +144,7 @@
             <template #default="scope">
               <el-button link type="primary" @click="handleDelete(scope.row)">
                 <template #icon>
-                  <i class="iconfont icon-delete" title="删除"></i>
+                  <i class="iconfont icon-delete" :title="$t('Delete')"></i>
                 </template>
               </el-button>
             </template>

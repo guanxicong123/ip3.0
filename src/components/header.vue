@@ -113,7 +113,7 @@
             取消
           </el-button>
           <el-button type="primary" @click="handleChangeUser(ruleFormNameRef)">
-            确认
+            {{ $t("Confirm") }}
           </el-button>
         </span>
       </template>
@@ -182,7 +182,7 @@
         <span class="dialog-footer">
           <el-button @click="dialogUserPass = false">取消</el-button>
           <el-button type="primary" @click="handleChangeUserPass(ruleFormRef)">
-            确认
+            {{ $t("Confirm") }}
           </el-button>
         </span>
       </template>
@@ -198,9 +198,7 @@
         <div class="com-default-dialog-content">
           <p>名称：IP网络广播系统分控软件</p>
           <p>
-            {{ $t("Current version") }} : V3.0 ( {{ $t("Build") }} : V{{
-              form.version
-            }}
+            {{ $t("Current version") }} : V3.0 ( {{ $t("Build") }} : V{{ form.version }}
             )
           </p>
         </div>
@@ -221,7 +219,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogLogOut = false">取消</el-button>
-          <el-button type="primary" @click="handleLogOut">确认</el-button>
+          <el-button type="primary" @click="handleLogOut">{{ $t("Confirm") }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -427,9 +425,7 @@ const validateUserName = (rule: any, value: any, callback: any) => {
   callback();
 };
 const rules = reactive<FormRules>({
-  old_password: [
-    { validator: validateOldPassword, trigger: "blur", required: true },
-  ],
+  old_password: [{ validator: validateOldPassword, trigger: "blur", required: true }],
   password: [{ validator: validatePassword, trigger: "blur", required: true }],
   confirm_password: [
     { validator: validateConfirmPassword, trigger: "blur", required: true },

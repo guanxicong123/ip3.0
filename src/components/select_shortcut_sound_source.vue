@@ -9,9 +9,7 @@
     <div class="com-select-left">
       <div class="custom-title">
         <template v-if="!form.searchConfigureVisible">
-          <el-icon
-            @click="form.searchConfigureVisible = !form.searchConfigureVisible"
-          >
+          <el-icon @click="form.searchConfigureVisible = !form.searchConfigureVisible">
             <Search />
           </el-icon>
           <span> 配置名称 </span>
@@ -25,10 +23,7 @@
             clearable
             @input="handleConfigureSearch"
           />
-          <i
-            class="iconfont icon-clear delete"
-            @click="handleClickCloSesearchInput"
-          ></i>
+          <i class="iconfont icon-clear delete" @click="handleClickCloSesearchInput"></i>
         </span>
       </div>
       <div class="custom-content">
@@ -56,10 +51,7 @@
         </el-scrollbar>
       </div>
     </div>
-    <div
-      class="com-select-right"
-      v-show="form.selectedConfigureData.type === 1"
-    >
+    <div class="com-select-right" v-show="form.selectedConfigureData.type === 1">
       <div class="custom-title">
         {{ config.musicTitle }}
       </div>
@@ -77,8 +69,7 @@
           >
             <el-icon
               @click="
-                form.selectedSearchConfigureVisible =
-                  !form.selectedSearchConfigureVisible
+                form.selectedSearchConfigureVisible = !form.selectedSearchConfigureVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -112,9 +103,7 @@
               <li
                 v-show="
                   !form.selectedSearchConfigureVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchConfigureReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchConfigureReg)
                 "
               >
                 <!-- <div v-for="(row, key) in config.showMediaColumn" :key="key" :style="row.style"
@@ -146,16 +135,12 @@
                     {{
                       row.column === "key"
                         ? index + 1
-                        : row.column === "list" &&
-                          item.hasOwnProperty("medias_id")
+                        : row.column === "list" && item.hasOwnProperty("medias_id")
                         ? "-"
                         : item[row.column]
                     }}
                     <view-components-popover
-                      v-if="
-                        row.column === 'list' &&
-                        !item.hasOwnProperty('medias_id')
-                      "
+                      v-if="row.column === 'list' && !item.hasOwnProperty('medias_id')"
                       :myConfig="mediaConfig"
                       :url="'/medias'"
                       :mediasGroupsID="item.id"
@@ -177,9 +162,7 @@
       </div>
       <div class="custom-content">
         <el-form-item
-          :label="
-            form.selectedConfigureData.type === 2 ? '选择音源' : '选择终端'
-          "
+          :label="form.selectedConfigureData.type === 2 ? '选择音源' : '选择终端'"
         >
           <div class="fast-source">
             {{
@@ -247,13 +230,7 @@ let config = reactive<any>({
   musicTitle: "音乐播放", // 标题名
 });
 // 查看组件插件配置
-const mediaConfig = {
-  iconfont: "icon-music", // 字体图标
-  iconTitle: "查看媒体文件", // icon title
-  tableTitle: "媒体文件", // 表格顶部 title
-  searchPlaceholder: "名称", // 搜索框 placeholder
-  showTableColumn: [{ prop: "name", label: "名称" }], // 显示的表格列
-};
+const mediaConfig = useConfig.mediaConfig;
 // 处理已选择的配置数据
 const handleSelectedConfigure = (item: any) => {
   form.selectedConfigureData = item;
@@ -320,10 +297,7 @@ onMounted(() => {
   getSoundSource().then(() => {
     setCurrentTabSelectStatus(parentData.responseConfigure);
   });
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
 });
 </script>
 
@@ -340,6 +314,7 @@ onMounted(() => {
     border-radius: 2px;
     border: 1px solid #e7e7e7;
     background-color: #f4f9ff;
+    box-sizing: border-box;
 
     .custom-title {
       justify-content: center;
@@ -386,6 +361,7 @@ onMounted(() => {
     border-radius: 2px;
     border: 1px solid #e7e7e7;
     background-color: #f4f9ff;
+    box-sizing: border-box;
 
     .custom-content {
       height: calc(100% - 80px);

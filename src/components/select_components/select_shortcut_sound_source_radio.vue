@@ -9,18 +9,16 @@
     <div class="com-select-left">
       <div class="custom-title">
         <template v-if="!form.searchConfigureVisible">
-          <el-icon
-            @click="form.searchConfigureVisible = !form.searchConfigureVisible"
-          >
+          <el-icon @click="form.searchConfigureVisible = !form.searchConfigureVisible">
             <Search />
           </el-icon>
-          <span> 配置名称 </span>
+          <span> {{ $t("Configuration name") }} </span>
         </template>
         <span v-else :class="{ span: form.searchConfigureVisible }">
           <el-input
             class="title-search-input"
             v-model="form.searchConfigure"
-            placeholder="配置名称"
+            :placeholder="$t('Configuration name')"
             maxlength="100"
             clearable
             @input="handleConfigureSearch"
@@ -56,10 +54,7 @@
         </el-scrollbar>
       </div>
     </div>
-    <div
-      class="com-select-right"
-      v-show="form.selectedConfigureData.type === 1"
-    >
+    <div class="com-select-right" v-show="form.selectedConfigureData.type === 1">
       <div class="custom-title">
         {{ config.musicTitle }}
       </div>
@@ -77,8 +72,7 @@
           >
             <el-icon
               @click="
-                form.selectedSearchConfigureVisible =
-                  !form.selectedSearchConfigureVisible
+                form.selectedSearchConfigureVisible = !form.selectedSearchConfigureVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -90,7 +84,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchConfigure"
-              placeholder="媒体/媒体文件夹"
+              :placeholder="$t('Media') + '/' + $t('Media folder')"
               maxlength="100"
               clearable
               @input="handleSelectedConfigureSearch"
@@ -112,9 +106,7 @@
               <li
                 v-show="
                   !form.selectedSearchConfigureVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchConfigureReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchConfigureReg)
                 "
               >
                 <div
@@ -127,16 +119,12 @@
                     {{
                       row.column === "key"
                         ? index + 1
-                        : row.column === "list" &&
-                          item.hasOwnProperty("medias_id")
+                        : row.column === "list" && item.hasOwnProperty("medias_id")
                         ? "-"
                         : item[row.column]
                     }}
                     <view-components-popover
-                      v-if="
-                        row.column === 'list' &&
-                        !item.hasOwnProperty('medias_id')
-                      "
+                      v-if="row.column === 'list' && !item.hasOwnProperty('medias_id')"
                       :myConfig="mediaConfig"
                       :url="'/medias'"
                       :mediasGroupsID="item.id"
@@ -149,15 +137,12 @@
         </el-scrollbar>
       </div>
     </div>
-    <div
-      class="com-select-right"
-      v-show="form.selectedConfigureData.type !== 1"
-    >
+    <div class="com-select-right" v-show="form.selectedConfigureData.type !== 1">
       <div class="custom-title">
         {{ config.soundSourceTitle }}
       </div>
       <div class="custom-content">
-        <el-form-item label="选择音源">
+        <el-form-item :label="$t('Select sound source')">
           <div class="fast-source">
             {{
               form.selectedConfigureData?.fast_source?.terminals_name ||
@@ -173,6 +158,9 @@
 <script lang="ts" setup>
 import { ElMessage } from "element-plus";
 import { FastSoundService } from "@/utils/api/sound_source";
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 // 声明触发事件
 const emit = defineEmits([
@@ -194,7 +182,7 @@ const form = reactive<any>({
   selectedSearchConfigureReg: /.*/,
   selectedSearchConfigureVisible: false, // 是否显示已选择配置名称-终端/分组的搜索框
   selectedConfigureData: {
-    id: 1,
+    id: 0,
     type: 1,
     medias: [],
     medias_groups: [],
@@ -212,18 +200,18 @@ let config = reactive<any>({
     },
     {
       column: "name",
-      text: "媒体/媒体文件夹",
+      text: proxy.$t("Media") + "/" + proxy.$t("Media folder"),
       style: { width: "55%" },
     },
     {
       column: "list",
-      text: "媒体列表",
+      text: proxy.$t("Media list"),
       style: { width: "30%" },
     },
   ],
   searchColumnName: "name", // 搜索的列名
-  musicTitle: "音乐播放", // 标题名
-  soundSourceTitle: "音源采集", // 标题名
+  musicTitle: proxy.$t("Music play"), // 标题名
+  soundSourceTitle: proxy.$t("Sound source acquisition"), // 标题名
 });
 // 处理已选择的配置数据
 const handleSelectedConfigure = (item: any) => {
@@ -293,20 +281,11 @@ const handleGetAllFastSound = async () => {
   setCurrentTabSelectStatus(parentData.responseConfigure);
 };
 // 查看组件插件配置
-const mediaConfig = {
-  iconfont: "icon-music", // 字体图标
-  iconTitle: "查看媒体文件", // icon title
-  tableTitle: "媒体文件", // 表格顶部 title
-  searchPlaceholder: "名称", // 搜索框 placeholder
-  showTableColumn: [{ prop: "name", label: "名称" }], // 显示的表格列
-};
+const mediaConfig = useConfig.mediaConfig;
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   handleGetAllFastSound();
 });
 </script>
@@ -322,6 +301,7 @@ onMounted(() => {
     height: 100%;
     border-radius: 2px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
     .custom-title {
       justify-content: center;
       .title-search-input {
@@ -357,6 +337,7 @@ onMounted(() => {
     margin-left: 12px;
     border-radius: 2px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
     .custom-content {
       height: calc(100% - 80px);
       .scroll-ul {

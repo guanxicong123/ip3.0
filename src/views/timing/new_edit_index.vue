@@ -20,7 +20,7 @@
             <div class="com-head">
               <div class="com-head-content com-alert-bg">
                 <div class="com-breadcrumb">
-                  <span class="strong">基础配置</span>
+                  <span class="strong">{{ $t("Basic configuration") }}</span>
                 </div>
                 <div class="com-button"></div>
               </div>
@@ -28,10 +28,10 @@
             <div class="com-form">
               <el-row :gutter="60">
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                  <el-form-item label="任务名称" prop="name">
+                  <el-form-item :label="$t('Task name')" prop="name">
                     <el-input
                       v-model="ruleForm.name"
-                      placeholder="请输入1-100字符"
+                      :placeholder="$t('Name placeholder')"
                       maxlength="100"
                       show-word-limit
                       clearable
@@ -39,12 +39,12 @@
                   </el-form-item>
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                  <el-form-item label="开始日期" prop="start_date">
+                  <el-form-item :label="$t('Start date')" prop="start_date">
                     <el-date-picker
                       v-model="ruleForm.start_date"
                       type="date"
                       value-format="YYYY-MM-DD"
-                      placeholder="请选择日期"
+                      :placeholder="$t('Please select a date')"
                       :editable="false"
                       :disabled-date="disabledStartDate"
                     >
@@ -52,12 +52,12 @@
                   </el-form-item>
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                  <el-form-item label="结束日期" prop="end_date">
+                  <el-form-item :label="$t('End date')" prop="end_date">
                     <el-date-picker
                       v-model="ruleForm.end_date"
                       type="date"
                       value-format="YYYY-MM-DD"
-                      placeholder="请选择日期"
+                      :placeholder="$t('Please select a date')"
                       :editable="false"
                       :disabled-date="disabledEndDate"
                     >
@@ -65,7 +65,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                  <el-form-item label="任务音量" prop="volume">
+                  <el-form-item :label="$t('Task volume')" prop="volume">
                     <el-input-number
                       v-model="ruleForm.volume"
                       :min="0"
@@ -75,7 +75,7 @@
                     />
                     <el-tooltip
                       effect="dark"
-                      content="音量为0时，使用终端的默认音量"
+                      :content="$t('Volume prompt description')"
                       placement="right-start"
                     >
                       <i class="iconfont icon-tips theme"></i>
@@ -83,8 +83,15 @@
                   </el-form-item>
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                  <el-form-item label="优先级" prop="priority" class="custom-form-input">
-                    <div class="custom-number red" title="任务优先级-定时任务">
+                  <el-form-item
+                    :label="$t('Priority')"
+                    prop="priority"
+                    class="custom-form-input"
+                  >
+                    <div
+                      class="custom-number red"
+                      :title="$t('Task priority') + '-' + $t('Timing task')"
+                    >
                       {{ form.maxPriority }}
                     </div>
                     <el-input-number
@@ -96,7 +103,7 @@
                     />
                     <el-tooltip
                       effect="dark"
-                      content="自定义优先级数值越高,同类任务中优先级越高"
+                      :content="$t('Priority prompt description')"
                       placement="right-start"
                     >
                       <i class="iconfont icon-tips theme"></i>
@@ -104,8 +111,14 @@
                   </el-form-item>
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                  <el-form-item label="灯光配置" prop="terminals_light_id">
-                    <el-select v-model="ruleForm.terminals_light_id" placeholder="请选择">
+                  <el-form-item
+                    :label="$t('Light configuration')"
+                    prop="terminals_light_id"
+                  >
+                    <el-select
+                      v-model="ruleForm.terminals_light_id"
+                      :placeholder="$t('Please select')"
+                    >
                       <el-option
                         v-for="(item, keys) in form.lightData"
                         :key="keys"
@@ -116,8 +129,11 @@
                   </el-form-item>
                 </el-col>
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                  <el-form-item label="LED配置" prop="led_config_id">
-                    <el-select v-model="ruleForm.led_config_id" placeholder="请选择">
+                  <el-form-item :label="$t('LED configuration')" prop="led_config_id">
+                    <el-select
+                      v-model="ruleForm.led_config_id"
+                      :placeholder="$t('Please select')"
+                    >
                       <el-option
                         v-for="(item, keys) in form.ledData"
                         :key="keys"
@@ -138,12 +154,12 @@
                     (form.type > 1 && form.type < 4)
                   "
                 >
-                  <el-form-item label="执行时间" prop="execute_time">
+                  <el-form-item :label="$t('Execution time')" prop="execute_time">
                     <el-time-picker
                       v-model="ruleForm.execute_time"
                       format="HH:mm:ss"
                       value-format="HH:mm:ss"
-                      placeholder="任意时间点"
+                      :placeholder="$t('Any point in time')"
                     />
                   </el-form-item>
                 </el-col>
@@ -153,20 +169,23 @@
                 v-if="form.type === 1 || (form.type === 4 && form.fast_sound_type === 1)"
               >
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                  <el-form-item label="执行时间" prop="multiple_execute_time">
+                  <el-form-item
+                    :label="$t('Execution time')"
+                    prop="multiple_execute_time"
+                  >
                     <div class="com-add-select-components">
                       <el-time-picker
                         v-model="form.multiple_execute_time"
                         format="HH:mm:ss"
                         value-format="HH:mm:ss"
-                        placeholder="多选执行时间"
+                        :placeholder="$t('Multi-choice execution time')"
                         @change="handleMultiSelectExecutionTime"
                         :clearable="false"
                       />
                       <div class="select-button">
                         <i
                           class="iconfont icon-execution-failed"
-                          title="清除全部执行时间"
+                          :title="$t('Clear all execution time')"
                           @click="handleClearAllExecutionTime"
                         ></i>
                       </div>
@@ -184,24 +203,33 @@
                             form.isShowAdvancedVisible = !form.isShowAdvancedVisible
                           "
                         >
-                          高级>>
+                          {{ $t("Senior") }}>>
                         </el-button>
                       </template>
                       <div class="com-form custom-execute-time-range">
-                        <p style="margin-bottom: 10px">增加固定间隔的执行时间点 :</p>
+                        <p style="margin-bottom: 10px">
+                          {{ $t("Increase execution time at fixed intervals") }}
+                          :
+                        </p>
                         <el-form label-position="top" :model="form">
-                          <el-form-item label="执行时间点范围" prop="execute_time_range">
+                          <el-form-item
+                            :label="$t('Execution time point range')"
+                            prop="execute_time_range"
+                          >
                             <el-time-picker
                               is-range
                               v-model="form.execute_time_range"
                               format="HH:mm:ss"
                               value-format="HH:mm:ss"
-                              range-separator="到"
-                              start-placeholder="开始时间"
-                              end-placeholder="结束时间"
+                              :range-separator="$t('To')"
+                              :start-placeholder="$t('Start time')"
+                              :end-placeholder="$t('End time')"
                             />
                           </el-form-item>
-                          <el-form-item label="间隔时间(分钟)" prop="interval_time">
+                          <el-form-item
+                            :label="$t('Interval time') + '(' + $t('Minute') + ')'"
+                            prop="interval_time"
+                          >
                             <el-input-number
                               v-model="form.interval_time"
                               :min="1"
@@ -218,7 +246,7 @@
                               form.isShowAdvancedVisible = !form.isShowAdvancedVisible
                             "
                           >
-                            关闭
+                            {{ $t("Close") }}
                           </el-button>
                           <el-button
                             type="primary"
@@ -228,7 +256,7 @@
                             "
                             @click="batchAddExecutionTime"
                           >
-                            新增
+                            {{ $t("Add") }}
                           </el-button>
                         </p>
                       </div>
@@ -244,7 +272,7 @@
                             v-model="item.value"
                             format="HH:mm:ss"
                             value-format="HH:mm:ss"
-                            placeholder="任意时间点"
+                            :placeholder="$t('Any point in time')"
                             @change="filterExecutionTimeData()"
                             :clearable="false"
                           />
@@ -252,7 +280,7 @@
                             class="delete-time"
                             @click="handleDeleteExecutionTime(index)"
                           >
-                            <i class="iconfont icon-delete" title="删除"></i>
+                            <i class="iconfont icon-delete" :title="$t('Delete')"></i>
                           </span>
                         </li>
                       </ul>
@@ -264,9 +292,9 @@
             <div class="com-head">
               <div class="com-head-content com-alert-bg">
                 <div class="com-breadcrumb">
-                  <span class="strong">音源设置</span>
+                  <span class="strong">{{ $t("Sound source setting") }}</span>
                   <span class="red">*&nbsp;</span>
-                  <span class="tips">( 只提交保存当前选中项 )</span>
+                  <span class="tips">( {{ $t("Audio source saving prompt") }} )</span>
                 </div>
                 <div class="com-button"></div>
               </div>
@@ -289,9 +317,9 @@
             <div class="com-head">
               <div class="com-head-content com-alert-bg">
                 <div class="com-breadcrumb">
-                  <span class="strong">日期设置</span>
+                  <span class="strong">{{ $t("Date setting") }}</span>
                   <span class="red">*&nbsp;</span>
-                  <span class="tips">( 只提交保存当前选中项 )</span>
+                  <span class="tips">( {{ $t("Audio source saving prompt") }} )</span>
                 </div>
                 <div class="com-button"></div>
               </div>
@@ -312,17 +340,19 @@
             <div class="com-head">
               <div class="com-head-content com-alert-bg">
                 <div class="com-breadcrumb">
-                  <span class="strong">终端选择</span>
+                  <span class="strong">{{ $t("Terminal selection") }}</span>
                   <span class="red">*&nbsp;</span>
                   <span class="tips">
-                    ( <span>只提交保存当前选中项</span>
+                    ( <span>{{ $t("Audio source saving prompt") }}</span>
                     <template v-if="form.terminalSettingsType === 2">
-                      &nbsp;&nbsp;已选终端:
-                      <span class="theme">{{ form.terminals.length }}</span
-                      >&nbsp;&nbsp; 已选分组:
-                      <span class="theme">
-                        {{ form.terminals_groups.length }}
-                      </span>
+                      &nbsp;&nbsp;{{ $t("Selected terminal") }} :
+                      <span class="theme">{{ form.terminals.length }}</span>
+                      <template v-if="systemStore.functional_configs.GroupDisplay">
+                        &nbsp;&nbsp;{{ $t("Selected groups") }} :
+                        <span class="theme">
+                          {{ form.terminals_groups.length }}
+                        </span>
+                      </template>
                     </template>
                     )
                   </span>
@@ -347,9 +377,11 @@
             </div>
           </el-form>
           <div class="com-form-button">
-            <el-button plain @click="usePublicMethod.clickBack()"> 取消 </el-button>
+            <el-button plain @click="usePublicMethod.clickBack()">
+              {{ $t("Cancel") }}
+            </el-button>
             <el-button type="primary" @click="handleSubmitFormSave(ruleFormRef)">
-              保存
+              {{ $t("Save") }}
             </el-button>
           </div>
         </el-scrollbar>
@@ -371,6 +403,8 @@ import { onBeforeRouteLeave } from "vue-router";
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
+
+const systemStore = getStore.useSystemStore();
 
 const form = reactive<any>({
   title: "",
@@ -405,7 +439,7 @@ const ruleForm = reactive<any>({
   volume: 70, // 任务音量
   priority: 60, // 优先级
   terminals_light_id: 0, // 灯光配置
-  led_config_id: "", // LED配置
+  led_config_id: 0, // LED配置
   execute_time: "", // 执行时间
   time_type: 0, // 日期设置-类型
   type: 4, // 音源设置tab类型
@@ -471,7 +505,7 @@ const validateName = (rule: any, value: any, callback: any) => {
 };
 const validateEmpty = (rule: any, value: any, callback: any) => {
   if (!useRegex.validateEmpty(value) || value.length < 1) {
-    return callback(new Error("请选择"));
+    return callback(new Error(proxy.$t("Please select")));
   } else {
     callback();
   }
@@ -796,8 +830,8 @@ const handleGetEditData = async () => {
             });
           });
         }
-        if (result.result.type === 4) {
-          form.fast_sound_type = result.result.sound_source.type;
+        if (result.data.type === 4) {
+          form.fast_sound_type = result.data.sound_source.type;
         }
         if (result.data.end_date === "0000-00-00") {
           ruleForm.end_date = "";
@@ -848,7 +882,7 @@ const getAllLED = async () => {
   await LEDService.getAllLED({})
     .then((result) => {
       if (result.data) {
-        form.data = [...[{ id: 0, name: proxy.$t("Please select") }], ...result.result];
+        form.ledData = [...[{ id: 0, name: proxy.$t("Please select") }], ...result.data];
       } else {
         ElMessage({
           type: "error",
@@ -895,9 +929,9 @@ onBeforeRouteLeave((to, from, next) => {
   if (to.path === "/timing" || to.path === "/") {
     next();
   } else {
-    ElMessageBox.confirm("本次修改尚未保存，即将退出页面，是否继续?", "提示", {
+    ElMessageBox.confirm("本次修改尚未保存，即将退出页面，是否继续?", proxy.$t("Tips"), {
       confirmButtonText: "确定",
-      cancelButtonText: "取消",
+      cancelButtonText: proxy.$t("Cancel"),
       type: "warning",
     }).then(() => {
       next();

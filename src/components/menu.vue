@@ -46,8 +46,7 @@
                   <div
                     class="sidebar-router-child"
                     :class="{
-                      'router-link':
-                        $useRoute.path.includes(item.path) || item.hover,
+                      'router-link': $useRoute.path.includes(item.path) || item.hover,
                     }"
                   >
                     <div class="sidebar-router sidebar-router-title">
@@ -78,7 +77,7 @@ const sidebarData = ref([
     children: [],
   },
   {
-    name: "播放中心",
+    name: proxy.$t("Play center"),
     path: "/play",
     icon: "icon-playback-center",
     hover: false,
@@ -141,9 +140,7 @@ watch(
 // 处理点击路由跳转
 const handleClickRouter = (item: { path: string }) => {
   if ($useRoute.fullPath.indexOf(item.path) !== -1) return;
-  $useRouter.push(
-    item.path == "/system" ? item.path + "/configure" : item.path
-  );
+  $useRouter.push(item.path == "/system" ? item.path + "/configure" : item.path);
 };
 // 处理
 const handleMouseleave = (item: { hover: boolean }) => {

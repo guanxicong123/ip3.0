@@ -321,6 +321,9 @@ html {
   // -moz-appearance: none;
   outline: none;
 }
+.iconfont {
+  cursor: pointer;
+}
 // 图标禁用
 .icon-disabled {
   color: $c-999 !important;

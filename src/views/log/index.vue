@@ -14,9 +14,9 @@
             type="datetimerange"
             unlink-panels
             value-format="YYYY-MM-DD HH:mm:ss"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+            :range-separator="$t('To')"
+            :start-placeholder="$t('Start date')"
+            :end-placeholder="$t('End date')"
             :shortcuts="form.shortcuts"
             :editable="false"
             :default-time="[
@@ -33,29 +33,29 @@
             :disabled="form.searchDate?.length == 0"
             @click="handleRest(form.activeName)"
           >
-            重置
+            {{ $t("Reset") }}
           </el-button>
           <el-button @click="form.isAdvancedSearch = !form.isAdvancedSearch">
-            高级搜索
+            {{ $t("Advanced search") }}
           </el-button>
         </div>
         <div class="com-button">
           <i
             class="iconfont icon-refresh"
-            title="刷新"
+            :title="$t('Refresh')"
             @click="handleRefresh(form.activeName)"
           ></i>
           <i
             class="iconfont icon-delete"
-            title="批量删除"
+            :title="$t('Batch deletion')"
             :class="{ 'icon-disabled': form.multipleSelection.length == 0 }"
             @click="handleDelete(form.activeName)"
           ></i>
           <!-- <el-button type="primary" plain @click="clearAllLog(form.activeName)">
-            清空日志
+            {{ $t("Clear log") }}
           </el-button>
           <el-button type="primary" plain @click="form.logDialogVisible = true">
-            导出日志
+            {{ $t("Export log") }}
           </el-button> -->
         </div>
       </div>
@@ -97,13 +97,13 @@
               </el-select>
               <el-input
                 v-model="form.search_description"
-                placeholder="用户操作"
+                :placeholder="$t('User action')"
                 clearable
                 style="margin-right: 12px"
               />
               <el-input
                 v-model="form.search_ip_address"
-                placeholder="登录IP地址"
+                :placeholder="$t('Login IP address')"
                 clearable
               />
             </template>
@@ -132,7 +132,7 @@
               </el-select>
               <el-input
                 v-model="form.search_terminals"
-                placeholder="终端名称/终端IP"
+                :placeholder="$t('Terminal name') + '/' + $t('Terminal IP')"
                 clearable
               />
             </template>
@@ -148,12 +148,12 @@
               <el-time-picker
                 v-model="form.search_date_time"
                 value-format="HH:mm:ss"
-                placeholder="持续时间"
+                :placeholder="$t('Duration')"
                 style="margin-right: 12px"
               />
               <el-input
                 v-model="form.search_tasks_name"
-                placeholder="任务名称"
+                :placeholder="$t('Task name')"
                 clearable
               />
             </template>
@@ -172,31 +172,31 @@
               <el-time-picker
                 v-model="form.search_date_time"
                 value-format="HH:mm:ss"
-                placeholder="持续时间"
+                :placeholder="$t('Duration')"
                 style="margin-right: 12px"
               />
               <el-input
                 v-model="form.search_launch_terminal"
-                placeholder="发起端"
+                :placeholder="$t('Initiator')"
                 clearable
                 style="margin-right: 12px"
               />
               <el-input
                 v-model="form.search_join_terminal"
-                placeholder="接收端"
+                :placeholder="$t('Receiving end')"
                 clearable
               />
             </template>
             <template v-if="form.activeName == '6'">
               <el-input
                 v-model="form.search_txt"
-                placeholder="文本内容"
+                :placeholder="$t('Text content')"
                 clearable
                 style="margin-right: 12px"
               />
               <el-input
                 v-model="form.search_execution_terminal"
-                placeholder="执行终端"
+                :placeholder="$t('Executive terminal')"
                 clearable
               />
             </template>
@@ -208,17 +208,17 @@
             @click="handleAdvancedSearch(form.activeName)"
             :disabled="handleSeatchButton(form.activeName)"
           >
-            搜索
+            {{ $t("Search") }}
           </el-button>
           <el-button
             round
             @click="handleAdvancedReset(form.activeName)"
             :disabled="handleSeatchButton(form.activeName)"
           >
-            重置
+            {{ $t("Reset") }}
           </el-button>
           <el-button round @click="form.isAdvancedSearch = !form.isAdvancedSearch">
-            关闭
+            {{ $t("Close") }}
           </el-button>
         </div>
       </template>
@@ -226,22 +226,22 @@
     <div class="com-main set-padding">
       <div class="com-table">
         <el-tabs v-model="form.activeName" @tab-click="handleClick">
-          <el-tab-pane label="系统日志" name="1" lazy>
+          <el-tab-pane :label="$t('System log')" name="1" lazy>
             <system-log ref="systemRef" @dele="dele"></system-log>
           </el-tab-pane>
-          <el-tab-pane label="终端日志" name="2" lazy>
+          <el-tab-pane :label="$t('Terminal log')" name="2" lazy>
             <terminal-log ref="terminalRef" @dele="dele"></terminal-log>
           </el-tab-pane>
-          <el-tab-pane label="任务日志" name="3" lazy>
+          <el-tab-pane :label="$t('Task log')" name="3" lazy>
             <task-log ref="taskRef" @dele="dele"></task-log>
           </el-tab-pane>
-          <el-tab-pane label="广播日志" name="4" lazy>
+          <el-tab-pane :label="$t('Broadcast log')" name="4" lazy>
             <broadcast-log ref="broadcastRef" @dele="dele"></broadcast-log>
           </el-tab-pane>
-          <el-tab-pane label="对讲日志" name="5" lazy>
+          <el-tab-pane :label="$t('Intercom log')" name="5" lazy>
             <intercom-log ref="intercomRef" @dele="dele"></intercom-log>
           </el-tab-pane>
-          <el-tab-pane label="TTS转换日志" name="6" lazy>
+          <el-tab-pane :label="$t('TTS log')" name="6" lazy>
             <tts-log ref="TTSRef" @dele="dele"></tts-log>
           </el-tab-pane>
         </el-tabs>
@@ -266,6 +266,9 @@ const broadcastLog = defineAsyncComponent(() => import("./broadcast/index.vue"))
 const intercomLog = defineAsyncComponent(() => import("./intercom/index.vue"));
 const ttsLog = defineAsyncComponent(() => import("./tts/index.vue"));
 const exportLog = defineAsyncComponent(() => import("./components/export_log.vue"));
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 // refs
 const systemRef = ref();
@@ -304,56 +307,28 @@ const form = reactive<any>({
 
   userOptions: [], // 用户数据
   logDialogVisible: false, // 是否显示导出日志弹窗
-  shortcuts: [
-    {
-      text: "最近一周",
-      value: () => {
-        const end = new Date();
-        const start = new Date();
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-        return [start, end];
-      },
-    },
-    {
-      text: "最近一个月",
-      value: () => {
-        const end = new Date();
-        const start = new Date();
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-        return [start, end];
-      },
-    },
-    {
-      text: "最近三个月",
-      value: () => {
-        const end = new Date();
-        const start = new Date();
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-        return [start, end];
-      },
-    },
-  ],
+  shortcuts: useConfig.shortcuts,
 });
 // 下拉框选择数据
 const logTypeOptions = [
-  { value: 0, label: "全部日志级别" },
-  { value: 1, label: "信息" },
-  { value: 2, label: "警告" },
-  { value: 3, label: "错误" },
-  { value: 4, label: "致命" },
+  { value: 0, label: proxy.$t("All log levels") },
+  { value: 1, label: proxy.$t("Information") },
+  { value: 2, label: proxy.$t("Warning") },
+  { value: 3, label: proxy.$t("Error") },
+  { value: 4, label: proxy.$t("Deadly") },
 ];
 const terminalsOptions = [
-  ...[{ value: 0, label: "全部类型" }],
+  ...[{ value: 0, label: proxy.$t("All type") }],
   ...useFormatMap.terminalsOptions,
 ];
 const terminalStatusTypeOptions = [
-  { value: -1, label: "全部状态" },
-  { value: 0, label: "掉线" },
-  { value: 1, label: "上线" },
-  { value: 2, label: "故障" },
+  { value: -1, label: proxy.$t("All status") },
+  { value: 0, label: proxy.$t("Disconnection") },
+  { value: 1, label: proxy.$t("Go online") },
+  { value: 2, label: proxy.$t("Fault") },
 ];
 const platformTypeOptions = [
-  { value: "", label: "全部平台" },
+  { value: "", label: proxy.$t("All platforms") },
   { value: "web", label: "web" },
   { value: "PC", label: "PC" },
   { value: "Android", label: "Android" },
@@ -364,13 +339,13 @@ const platformTypeOptions = [
   // { value: "WebPhone", label: "WebPhone" },
 ];
 const taskTypeOptions = [
-  ...[{ value: 0, label: "全部类型" }],
+  ...[{ value: 0, label: proxy.$t("All type") }],
   ...useFormatMap.taskTypeOptions,
 ];
 // const taskOperationOptions = [
-//   { value: -1, label: "全部状态" },
-//   { value: 0, label: "发起广播" },
-//   { value: 2, label: "结束广播" },
+//   { value: -1, label: proxy.$t("All status") },
+//   { value: 0, label: proxy.$t("Launch broadcast") },
+//   { value: 2, label: proxy.$t("End broadcast") },
 // ];
 // 处理导出日志弹窗的响应展示/关闭
 const handleLogDialogVisible = (value: boolean, src: any) => {
@@ -714,13 +689,13 @@ const clearAllLog = (name: string) => {
   if (dataLength < 1) {
     return ElMessage({
       type: "warning",
-      message: "暂无数据",
+      message: proxy.$t("No data"),
       grouping: true,
     });
   }
-  ElMessageBox.confirm("即将删除当前选择模块的所有日志数据，是否继续？", "提示", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
+  ElMessageBox.confirm(proxy.$t("Delete log prompt"), proxy.$t("Tips"), {
+    confirmButtonText: proxy.$t("Confirm"),
+    cancelButtonText: proxy.$t("Cancel"),
     type: "warning",
     draggable: true,
   }).then(() => {
@@ -733,17 +708,17 @@ const clearAllLog = (name: string) => {
         },
       })
       .then((result: any) => {
-        if (result.result > 0) {
+        if (result.data) {
           ElMessage({
             type: "success",
-            message: "清除日志成功",
+            message: proxy.$t("Log cleared successfully"),
             grouping: true,
           });
           handleRefresh(form.activeName);
         } else {
           ElMessage({
             type: "error",
-            message: "清除失败",
+            message: proxy.$t("Clearing failed"),
             grouping: true,
           });
         }
@@ -827,11 +802,11 @@ const handleAllUsersData = async () => {
   await UsersService.getAllUsers({})
     .then((result) => {
       if (result.data) {
-        form.userOptions = [...[{ id: -1, name: "全部用户" }], ...result.data];
+        form.userOptions = [...[{ id: -1, name: proxy.$t("All users") }], ...result.data];
       } else {
         ElMessage({
           type: "error",
-          message: result.data?.message,
+          message: result.return_message,
           grouping: true,
         });
       }

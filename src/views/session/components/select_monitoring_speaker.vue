@@ -114,7 +114,7 @@ i
           <el-pagination
             v-model:currentPage="form.currentPage"
             v-model:page-size="form.pageSize"
-            :page-sizes="[10, 20, 50, 100]"
+            :page-sizes="proxy.$user?.config?.pageRule"
             layout="total, sizes, prev, pager, next, jumper"
             :total="form.total"
             @size-change="handleSizeChange"
@@ -194,7 +194,7 @@ const handleRowClick = (row: any) => {
   } else {
     ElMessage({
       type: "warning",
-      message: "监听终端必须是空闲的状态",
+      message: proxy.$t("The listening terminal must be idle"),
       grouping: true,
     });
   }

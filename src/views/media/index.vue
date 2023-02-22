@@ -13,7 +13,7 @@
             <div class="com-breadcrumb">
               <el-input
                 v-model="form.searchFolder"
-                placeholder="文件夹名称"
+                :placeholder="$t('Folder name')"
                 clearable
                 @clear="handleResetMeidaGroup"
                 @keyup.enter="
@@ -38,10 +38,14 @@
             <div class="com-button">
               <i
                 class="iconfont icon-refresh theme"
-                title="刷新"
+                :title="$t('Refresh')"
                 @click="handleGetAllBellsGroups"
               ></i>
-              <i class="iconfont icon-add" title="新建" @click="handleNew"></i>
+              <i
+                class="iconfont icon-add"
+                :title="$t('Newly build')"
+                @click="handleNew"
+              ></i>
             </div>
           </div>
         </div>
@@ -69,7 +73,11 @@
                           ? 'icon-media-public-folder'
                           : 'icon-media-private-folder'
                       "
-                      :title="item.is_public > 0 ? '公共资源' : '私有资源'"
+                      :title="
+                        item.is_public > 0
+                          ? $t('Public resources')
+                          : $t('Private resources')
+                      "
                     ></i>
                     <div class="folder-name">
                       <span :title="item.name">{{ item.name }}</span>
@@ -78,13 +86,13 @@
                     <span class="icon-btn" v-if="item.id > 0">
                       <i
                         class="iconfont icon-edit"
-                        title="编辑"
+                        :title="$t('Edit')"
                         v-if="item.id > 2 && userStore?.user.id == item.users_id"
                         @click.stop="handleEdit(item)"
                       ></i>
                       <i
                         class="iconfont icon-upload"
-                        title="上传"
+                        :title="$t('Upload')"
                         v-if="
                           item.is_public < 1
                             ? userStore?.user.id == item.users_id
@@ -94,7 +102,7 @@
                       ></i>
                       <i
                         class="iconfont icon-delete"
-                        title="删除"
+                        :title="$t('Delete')"
                         v-if="
                           item.id > 2 &&
                           (userStore?.user.type != 0
@@ -106,7 +114,7 @@
                     </span>
                   </div>
                   <el-tag v-if="item.id > 2">
-                    <i title="创建用户" class="iconfont icon-gray-user"></i>
+                    <i :title="$t('Create user')" class="iconfont icon-gray-user"></i>
                     {{ item.user?.name }}
                   </el-tag>
                 </li>
@@ -131,7 +139,7 @@
             <div class="com-breadcrumb">
               <el-input
                 v-model="form.search"
-                placeholder="文件名称"
+                :placeholder="$t('File name')"
                 clearable
                 @clear="handleDefaultGet"
                 @keyup.enter="
@@ -145,18 +153,18 @@
                 @click="handleDefaultGet"
               ></el-button>
               <el-button :disabled="form.search == ''" @click="handleReset">
-                重置
+                {{ $t("Reset") }}
               </el-button>
             </div>
             <div class="com-button">
               <i
                 class="iconfont icon-refresh"
-                title="刷新"
+                :title="$t('Refresh')"
                 @click="handleGetOnePageData"
               ></i>
               <i
                 class="iconfont icon-upload"
-                title="开始上传"
+                :title="$t('Start uploading')"
                 v-if="
                   form.currentFolder.is_public < 1
                     ? userStore?.user.id == form.currentFolder.users_id
@@ -167,12 +175,12 @@
               <i
                 class="iconfont icon-download"
                 :class="{ 'icon-disabled': multipleSelection.length == 0 }"
-                title="批量下载"
+                :title="$t('Batch download')"
                 @click="handlePackageDownloadFile"
               ></i>
               <i
                 class="iconfont icon-delete"
-                title="批量删除"
+                :title="$t('Batch deletion')"
                 :class="{ 'icon-disabled': multipleSelection.length == 0 }"
                 @click="handleDelete('batch', 0)"
               ></i>
@@ -202,17 +210,25 @@
               />
               <el-table-column
                 prop="name"
-                label="文件名称"
+                :label="$t('File name')"
                 sortable="custom"
                 show-overflow-tooltip
               />
-              <el-table-column prop="length" label="时长" sortable="custom">
+              <el-table-column
+                prop="length"
+                :label="$t('File duration')"
+                sortable="custom"
+              >
                 <template #default="scope">
                   {{ usePublicMethod.convertSongDuration(scope.row.length) }}
                 </template>
               </el-table-column>
-              <el-table-column prop="user.name" label="上传用户" show-overflow-tooltip />
-              <el-table-column label="操作" width="120">
+              <el-table-column
+                prop="user.name"
+                :label="$t('Upload user')"
+                show-overflow-tooltip
+              />
+              <el-table-column :label="$t('Operation')" width="120">
                 <template #default="scope">
                   <el-button
                     link
@@ -220,7 +236,7 @@
                     @click="handleDownloadOneFile(scope.row)"
                   >
                     <template #icon>
-                      <i class="iconfont icon-download" title="下载"></i>
+                      <i class="iconfont icon-download" :title="$t('Download')"></i>
                     </template>
                   </el-button>
                   <el-button
@@ -234,7 +250,7 @@
                     "
                   >
                     <template #icon>
-                      <i class="iconfont icon-delete" title="删除"></i>
+                      <i class="iconfont icon-delete" :title="$t('Delete')"></i>
                     </template>
                   </el-button>
                 </template>
@@ -247,7 +263,7 @@
           <el-pagination
             v-model:currentPage="form.currentPage"
             v-model:page-size="form.pageSize"
-            :page-sizes="[10, 20, 50, 100]"
+            :page-sizes="proxy.$user?.config?.pageRule"
             layout="total, sizes, prev, pager, next, jumper"
             :total="form.total"
             @size-change="handleSizeChange"
@@ -278,6 +294,9 @@ import useCommonTable from "@/utils/global/common_table_search";
 // defineAsyncComponent 异步组件-懒加载子组件
 const newEdit = defineAsyncComponent(() => import("./new_edit_index.vue"));
 
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
+
 interface User {
   id: number;
   name: string;
@@ -306,7 +325,7 @@ const form = reactive<any>({
   loading: false, // 等待加载数据状态
   currentFolder: {
     id: 0,
-    name: "全部",
+    name: proxy.$t("All"),
   },
   dialogVisible: false, // 新建-编辑弹窗
   editInfor: {}, // 编辑信息
@@ -331,9 +350,9 @@ const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
 // 处理删除媒体文件夹
 const handleDeleteMediaGroup = (row: any) => {
-  ElMessageBox.confirm("即将删除, 是否继续？", "提示", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
+  ElMessageBox.confirm(proxy.$t("Delete prompt"), proxy.$t("Tips"), {
+    confirmButtonText: proxy.$t("Confirm"),
+    cancelButtonText: proxy.$t("Cancel"),
     type: "warning",
     draggable: true,
   })
@@ -342,7 +361,7 @@ const handleDeleteMediaGroup = (row: any) => {
         ids: [row.id],
       })
         .then((result) => {
-          if (result.result > 0) {
+          if (result.data) {
             form.folderData = form.folderData.filter((item: { id: number }) => {
               return item.id != row.id;
             });
@@ -352,13 +371,13 @@ const handleDeleteMediaGroup = (row: any) => {
             }
             ElMessage({
               type: "success",
-              message: "删除成功",
+              message: proxy.$t("Delete succeeded"),
               grouping: true,
             });
           } else {
             ElMessage({
               type: "error",
-              message: result.return_message || "删除失败",
+              message: result.return_message || proxy.$t("Delete failed"),
               grouping: true,
             });
           }
@@ -447,9 +466,9 @@ const handleDelete = (type: string, row: any) => {
   if (type === "batch" && multipleSelection.value.length == 0) {
     return;
   }
-  ElMessageBox.confirm("即将删除, 是否继续？", "提示", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
+  ElMessageBox.confirm(proxy.$t("Delete prompt"), proxy.$t("Tips"), {
+    confirmButtonText: proxy.$t("Confirm"),
+    cancelButtonText: proxy.$t("Cancel"),
     type: "warning",
     draggable: true,
   })
@@ -464,7 +483,7 @@ const handleDelete = (type: string, row: any) => {
         ids: ids,
       })
         .then((result) => {
-          if (result.result > 0) {
+          if (result.data) {
             // 假如删除完本页数据，form.currentPage减去一页再更新数据
             if (form.data.length <= ids.length && form.currentPage > 1) {
               form.currentPage--;
@@ -483,13 +502,13 @@ const handleDelete = (type: string, row: any) => {
             }
             ElMessage({
               type: "success",
-              message: "删除成功",
+              message: proxy.$t("Delete succeeded"),
               grouping: true,
             });
           } else {
             ElMessage({
               type: "error",
-              message: result.return_message || "删除失败",
+              message: result.return_message || proxy.$t("Delete failed"),
               grouping: true,
             });
           }
@@ -543,7 +562,7 @@ const handleGetAllBellsGroups = async () => {
           ...[
             {
               id: 0,
-              name: "全部",
+              name: proxy.$t("All"),
               medias_count: 0,
               is_public: 1,
             },
@@ -666,7 +685,6 @@ watch(
       handleDefaultGet();
       return upload.updateUploadCompleted(false);
     }
-    console.log(userStore.value);
   },
   {
     // 初始化立即执行
@@ -689,7 +707,7 @@ onMounted(() => {
   });
   // 下载成功
   window.electronAPI.on("download-done", (event: any, data: any) => {
-    let message = "下载成功";
+    let message = proxy.$("Download succeeded");
     ElMessage({
       type: "success",
       message: message,
@@ -700,7 +718,7 @@ onMounted(() => {
   });
   // 下载失败
   window.electronAPI.on("download-failed", (event: any, data: any) => {
-    let message = "下载失败";
+    let message = proxy.$("Download failed");
     ElMessage({
       type: "error",
       message: message,

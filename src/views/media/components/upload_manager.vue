@@ -13,17 +13,20 @@
         @click="recoveryMaximize"
       >
         <div class="left">
-          <span>总进度：{{ form.totalProgress }}%</span>
-          <span> 网速：{{ usePublicMethod.bytesConversionToSize(form.speed) }} / S </span>
+          <span>{{ $t("Overall progress") }} : {{ form.totalProgress }}%</span>
+          <span>
+            {{ $t("Internet speed") }} :
+            {{ usePublicMethod.bytesConversionToSize(form.speed) }} / S
+          </span>
         </div>
         <div class="right">
-          <span class="green">成功：{{ form.successFiles }} </span>
-          <span class="red">失败：{{ form.errorFiles }}</span>
+          <span class="green"> {{ $t("Success") }} : {{ form.successFiles }} </span>
+          <span class="red"> {{ $t("Fail") }} : {{ form.errorFiles }} </span>
         </div>
       </div>
       <div class="upload-title theme-bg">
         <div class="left">
-          <span>上传管理器</span>
+          <span>{{ $t("Upload manager") }}</span>
           <span v-if="form.groupData.length > 0">
             - {{ form.currentSelected.name }}
           </span>
@@ -38,12 +41,12 @@
             :multiple="true"
             :accept="form.accept"
             :thread="3"
-            :size="1024 * 1024 * 10"
+            :size="500 * 1024 * 1024"
             name="file"
             ref="uploadRef"
             v-model="form.files"
             :input-id="'upload-group-' + form.currentSelected.id"
-            title="选择文件(单首500M以内)"
+            :title="$t('Select file (tips)')"
           >
             <i
               class="iconfont icon-select-file"
@@ -53,17 +56,19 @@
           </VueUploadComponent>
           <i
             class="iconfont icon-delete"
-            title="清空列表"
+            :title="$t('Clear list')"
             @click="handleClearList"
             v-if="form.showFilesInfo.length > 0"
           ></i>
           <el-icon
-            title="最小化"
+            :title="$t('Minimize')"
             @click.stop="upload.updateUploadManagerIsMinimize(true)"
           >
             <SemiSelect />
           </el-icon>
-          <el-icon title="关闭" @click.stop="handleClose"><CloseBold /></el-icon>
+          <el-icon :title="$t('Close')" @click.stop="handleClose">
+            <CloseBold />
+          </el-icon>
         </div>
       </div>
       <div class="upload-list">
@@ -71,7 +76,7 @@
           <el-scrollbar>
             <ul>
               <li class="no-data" v-if="form.groupData.length < 1">
-                <span>暂无数据</span>
+                <span>{{ $t("No data") }}</span>
               </li>
               <li
                 v-for="item in form.groupData"
@@ -81,7 +86,11 @@
               >
                 <i class="iconfont icon-gray-fine"></i>
                 <span>{{ item.name }}</span>
-                <el-icon class="close" title="移除" @click.stop="handleRemove(item.id)">
+                <el-icon
+                  class="close"
+                  :title="$t('Remove')"
+                  @click.stop="handleRemove(item.id)"
+                >
                   <Close />
                 </el-icon>
               </li>
@@ -92,7 +101,7 @@
           <el-scrollbar>
             <ul>
               <li class="no-data" v-if="form.showFilesInfo.length < 1">
-                <span>暂无数据</span>
+                <span>{{ $t("No data") }}</span>
               </li>
               <li
                 v-for="(item, index) in form.showFilesInfo"
@@ -107,7 +116,11 @@
                     :show-text="false"
                   />
                 </div>
-                <el-icon class="close" title="移除" @click.stop="handleRemoveFiles(item)">
+                <el-icon
+                  class="close"
+                  :title="$t('Remove')"
+                  @click.stop="handleRemoveFiles(item)"
+                >
                   <Close />
                 </el-icon>
               </li>
@@ -127,13 +140,14 @@ import { Md5 } from "ts-md5/dist/md5";
 import { MeidaService } from "@/utils/api/media";
 import usePublicMethod from "@/utils/global/index";
 
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
+
 const upload = getStore.useUploadStore();
 // 计算属性 computed
 const uploadGroupStore = computed(() => upload.groupData);
 const uploadSelectedStore = computed(() => upload.currentSelected);
 const uploadMinimizeStore = computed(() => upload.isMinimize);
-// 全局属性
-const { proxy } = useCurrentInstance.useCurrentInstance();
 
 const form = reactive<any>({
   groupData: [], // 分组数据
@@ -257,7 +271,7 @@ const inputFilter = (
     if (form.isFileLarge || form.accept.split(",").indexOf(newFile.type) < 0) {
       ElMessage({
         type: "error",
-        message: "已自动过滤不符合要求的文件（大于500MB/非mp3/ogg/wav格式）",
+        message: proxy.$t("Upload filter type prompt"),
         grouping: true,
       });
       form.isFileLarge = false;
@@ -267,7 +281,7 @@ const inputFilter = (
     if (form.isDuplicateName) {
       ElMessage({
         type: "error",
-        message: "已自动过滤重名的文件",
+        message: proxy.$t("Upload filter name prompt"),
         grouping: true,
       });
       form.isDuplicateName = false;
@@ -411,7 +425,7 @@ const inputFile = (
                 if (result.data == true) {
                   ElMessage({
                     type: "error",
-                    message: newFile.name + "-文件已存在",
+                    message: newFile.name + "-" + proxy.$t("File already exist"),
                     grouping: true,
                   });
                   handleRemoveFiles(newFile);

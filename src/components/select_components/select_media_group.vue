@@ -30,7 +30,7 @@
                 <div class="custom-popover">
                   <el-input
                     v-model="form.searchMedia"
-                    placeholder="媒体"
+                    :placeholder="$t('Media')"
                     maxlength="100"
                     clearable
                     @input="handleMediaSearch"
@@ -47,7 +47,7 @@
           <div class="custom-scroll-bar">
             <div class="scroll-select">
               <el-select v-model="form.currentGroupsID">
-                <el-option :key="0" label="所有文件" :value="0" />
+                <el-option :key="0" :label="$t('All files')" :value="0" />
                 <el-option
                   v-for="item in form.allGroupsOptions"
                   :key="item.id"
@@ -95,7 +95,7 @@
                 <div class="custom-popover">
                   <el-input
                     v-model="form.searchGroups"
-                    placeholder="媒体文件夹"
+                    :placeholder="$t('Media folder')"
                     maxlength="100"
                     clearable
                     @input="handleGroupsSearch"
@@ -128,10 +128,10 @@
       </el-tabs>
     </div>
     <div class="com-select-center">
-      <span title="全部右移" @click="selectAll">
+      <span :title="$t('Move all right')" @click="selectAll">
         <el-icon><ArrowRight /></el-icon>
       </span>
-      <span title="全部左移" @click="deselectAll">
+      <span :title="$t('Move all left')" @click="deselectAll">
         <el-icon><ArrowLeft /></el-icon>
       </span>
     </div>
@@ -149,15 +149,11 @@
         >
           <template
             v-if="
-              item.column !== config.searchColumnName ||
-              !form.selectedSearchMediaVisible
+              item.column !== config.searchColumnName || !form.selectedSearchMediaVisible
             "
           >
             <el-icon
-              @click="
-                form.selectedSearchMediaVisible =
-                  !form.selectedSearchMediaVisible
-              "
+              @click="form.selectedSearchMediaVisible = !form.selectedSearchMediaVisible"
               v-if="item.column === config.searchColumnName"
             >
               <Search />
@@ -170,7 +166,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchMedia"
-              placeholder="媒体"
+              :placeholder="$t('Media')"
               maxlength="100"
               clearable
               @input="handleSelectedMediaSearch"
@@ -185,16 +181,11 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template
-              v-for="(item, index) in form.selectedMediaData"
-              :key="item.id"
-            >
+            <template v-for="(item, index) in form.selectedMediaData" :key="item.id">
               <li
                 v-show="
                   !form.selectedSearchMediaVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchMediaReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchMediaReg)
                 "
                 class="drag"
                 draggable="true"
@@ -241,14 +232,12 @@
         >
           <template
             v-if="
-              item.column !== config.searchColumnName ||
-              !form.selectedSearchGroupsVisible
+              item.column !== config.searchColumnName || !form.selectedSearchGroupsVisible
             "
           >
             <el-icon
               @click="
-                form.selectedSearchGroupsVisible =
-                  !form.selectedSearchGroupsVisible
+                form.selectedSearchGroupsVisible = !form.selectedSearchGroupsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -260,7 +249,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchGroups"
-              placeholder="媒体文件夹"
+              :placeholder="$t('Media folder')"
               maxlength="100"
               clearable
               @input="handleSelectedGroupsSearch"
@@ -275,16 +264,11 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template
-              v-for="(item, index) in form.selectedGroupsData"
-              :key="item.id"
-            >
+            <template v-for="(item, index) in form.selectedGroupsData" :key="item.id">
               <li
                 v-show="
                   !form.selectedSearchGroupsVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchGroupsReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchGroupsReg)
                 "
               >
                 <div class="item-media">
@@ -312,12 +296,8 @@
       </div>
     </div>
     <p class="com-second-tip">
-      播放时长约:
-      {{
-        usePublicMethod.convertSongDuration(
-          form.mediaSecond + form.groupsSecond
-        )
-      }}
+      {{ $t("Play time is about") }}:
+      {{ usePublicMethod.convertSongDuration(form.mediaSecond + form.groupsSecond) }}
     </p>
   </div>
 </template>
@@ -327,6 +307,9 @@ import { ElMessage, TabsPaneContext } from "element-plus";
 import usePublicMethod from "@/utils/global/index";
 import { MeidaService } from "@/utils/api/media";
 import { isArray } from "@/utils/is";
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 const systemStore = getStore.useSystemStore();
 
@@ -377,8 +360,8 @@ const form = reactive<any>({
 });
 // 插件配置
 let config = reactive<any>({
-  mediaTitle: "媒体", // 媒体选项开的标题
-  groupsTitle: "媒体文件夹", // 媒体文件夹选项卡的标题
+  mediaTitle: proxy.$t("Media"), // 媒体选项开的标题
+  groupsTitle: proxy.$t("Media folder"), // 媒体文件夹选项卡的标题
   showMediaColumn: [
     // 要显示的列(媒体） column列名 text列的别名 style 列的样式
     {
@@ -388,7 +371,7 @@ let config = reactive<any>({
     },
     {
       column: "name",
-      text: "媒体",
+      text: proxy.$t("Media"),
       style: { width: "85%" },
     },
   ],
@@ -401,7 +384,7 @@ let config = reactive<any>({
     },
     {
       column: "name",
-      text: "媒体文件夹",
+      text: proxy.$t("Media folder"),
       style: { width: "85%" },
     },
   ],
@@ -566,18 +549,13 @@ const selectAll = () => {
   if (form.activeName === "first") {
     let selected: any[] = [];
     let noSelect: any[] = [];
-    form.allMediaData.forEach(
-      (item: { [x: string]: string; medias_groups_id: any }) => {
-        (form.currentGroupsID <= 0 ||
-          item.medias_groups_id == form.currentGroupsID) &&
-        item[config.searchColumnName].match(form.searchMediaReg)
-          ? selected.push(item)
-          : noSelect.push(item);
-      }
-    );
-    form.selectedMediaData = Array.from(
-      selected.concat(form.selectedMediaData)
-    );
+    form.allMediaData.forEach((item: { [x: string]: string; medias_groups_id: any }) => {
+      (form.currentGroupsID <= 0 || item.medias_groups_id == form.currentGroupsID) &&
+      item[config.searchColumnName].match(form.searchMediaReg)
+        ? selected.push(item)
+        : noSelect.push(item);
+    });
+    form.selectedMediaData = Array.from(selected.concat(form.selectedMediaData));
     form.allMediaData = Array.from(noSelect);
     handleUpdateSelectedMedia();
   }
@@ -590,9 +568,7 @@ const selectAll = () => {
         ? selected.push(item)
         : noSelect.push(item);
     });
-    form.selectedGroupsData = Array.from(
-      selected.concat(form.selectedGroupsData)
-    );
+    form.selectedGroupsData = Array.from(selected.concat(form.selectedGroupsData));
     form.allGroupsData = Array.from(noSelect);
     handleUpdateSelectedGroups();
   }
@@ -611,11 +587,9 @@ const selectTerminal = (row: { id: number }) => {
 const deleteTerminal = (row: { id: number }) => {
   if (form.selectedMediaID.indexOf(row.id) >= 0) {
     form.allMediaData.unshift(Object.assign({}, row));
-    form.selectedMediaData = form.selectedMediaData.filter(
-      (item: { id: number }) => {
-        return row.id !== item.id;
-      }
-    );
+    form.selectedMediaData = form.selectedMediaData.filter((item: { id: number }) => {
+      return row.id !== item.id;
+    });
     handleUpdateSelectedMedia();
   }
 };
@@ -633,11 +607,9 @@ const selectGroup = (row: { id: number }) => {
 const deleteGroup = (row: { id: number }) => {
   if (form.selectedGroupsID.indexOf(row.id) >= 0) {
     form.allGroupsData.unshift(Object.assign({}, row));
-    form.selectedGroupsData = form.selectedGroupsData.filter(
-      (item: { id: number }) => {
-        return row.id !== item.id;
-      }
-    );
+    form.selectedGroupsData = form.selectedGroupsData.filter((item: { id: number }) => {
+      return row.id !== item.id;
+    });
     handleUpdateSelectedGroups();
   }
 };
@@ -686,6 +658,7 @@ const handleMediasDragEnter = (e: any, item: any) => {
   newMedias.splice(dst, 0, ...newMedias.splice(src, 1));
 
   form.selectedMediaData = newMedias;
+  handleUpdateSelectedMedia();
 };
 // 处理获取全部媒体
 const handleGetAllMeida = async () => {
@@ -717,11 +690,11 @@ const handleGetAllMeida = async () => {
 const handleGetAllGroups = async () => {
   await MeidaService.getAllMeidaGroup({})
     .then((result) => {
-      if (result.result) {
+      if (result.data) {
         // 组装数据结构
-        if (isArray(result.result)) {
-          form.allGroupsData = result.result;
-          form.allGroupsOptions = [...form.allGroupsOptions, ...result.result];
+        if (isArray(result.data)) {
+          form.allGroupsData = result.data;
+          form.allGroupsOptions = [...form.allGroupsOptions, ...result.data];
           // 数据加载完成，抛出去组件
           emit("loaded", ++form.loaded);
         }
@@ -785,11 +758,7 @@ const handleEditGroupsData = () => {
 
 // 监听变化
 watch(
-  () => [
-    parentData.responseMedia,
-    parentData.responseGroups,
-    parentData.showSearch,
-  ],
+  () => [parentData.responseMedia, parentData.responseGroups, parentData.showSearch],
   ([newMedia, newGroups, newSearch], [oldMedia, oldGroups, oldSearch]) => {
     if (config.isSelectMedia && newMedia != oldMedia) {
       handleEditMediaData();
@@ -811,13 +780,10 @@ watch(
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   setCurrentTabSelectStatus();
   config.isSelectMedia && handleGetAllMeida();
-  config.isSelectGroups && handleGetAllGroups();
+  handleGetAllGroups();
 });
 </script>
 
@@ -832,6 +798,7 @@ onMounted(() => {
     height: 100%;
     border-radius: 2px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
     :deep(.select-left-tabs) {
       height: 100%;
       border: none;
@@ -940,6 +907,7 @@ onMounted(() => {
     height: 100%;
     border-radius: 2px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
     .com-right-content {
       width: 100%;
       height: 100%;

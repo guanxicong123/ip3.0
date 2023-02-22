@@ -116,7 +116,7 @@
           <el-pagination
             v-model:currentPage="form.currentPage"
             v-model:page-size="form.pageSize"
-            :page-sizes="[10, 20, 50, 100]"
+            :page-sizes="proxy.$user?.config?.pageRule"
             layout="total, sizes, prev, pager, next, jumper"
             :total="form.total"
             @size-change="handleSizeChange"
@@ -130,6 +130,9 @@
 
 <script lang="ts" setup>
 import { ElTable } from "element-plus";
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 interface User {
   date: string;

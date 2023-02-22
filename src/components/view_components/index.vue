@@ -18,10 +18,7 @@
         popper-class="view-components-popover"
         @show="handleGetOnePageData"
       >
-        <div
-          class="com-index view-components"
-          :style="'height:' + config.height + 'px'"
-        >
+        <div class="com-index view-components" :style="'height:' + config.height + 'px'">
           <div class="com-head">
             <div class="com-head-content com-hc-bg">
               <div class="com-title">{{ config.tableTitle }}</div>
@@ -37,11 +34,8 @@
                   :disabled="paramsConfig.likeName == ''"
                   @click="handleDefaultGet"
                 ></el-button>
-                <el-button
-                  :disabled="paramsConfig.likeName == ''"
-                  @click="handleReset"
-                >
-                  重置
+                <el-button :disabled="paramsConfig.likeName == ''" @click="handleReset">
+                  {{ $t("Reset") }}
                 </el-button>
               </div>
             </div>
@@ -78,7 +72,7 @@
             <el-pagination
               v-model:currentPage="paramsConfig.page"
               v-model:page-size="paramsConfig.limit"
-              :page-sizes="[10, 20, 50, 100]"
+              :page-sizes="proxy.$user?.config?.pageRule"
               layout="total, sizes, prev, pager, next, jumper"
               :total="form.total"
               @size-change="handleSizeChange"
@@ -108,13 +102,12 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ClickOutside as vClickOutside,
-  ElTable,
-  ElMessage,
-} from "element-plus";
+import { ClickOutside as vClickOutside, ElTable, ElMessage } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
 import $http from "@/utils/axios/index";
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 // 声明父组件传值
 const parentData = defineProps([
@@ -123,24 +116,24 @@ const parentData = defineProps([
   "url", // 请求接口的url
   "fastTerminalsID", // 快捷终端id
   "fastSoundID", // 快捷音源id
-  "mediaGroupsID", //媒体分组id
   "zone", // 采集分区
+  "mediasGroupsID", //媒体分组
   "pressKey", // 功能按键
 ]);
 
 // 插件配置
 let config = reactive<any>({
   iconfont: "icon-terminals1", // 字体图标
-  iconTitle: "查看终端", // icon title
-  tableTitle: "终端", // 表格顶部 title
-  width: 448, // 宽度
-  height: 230, // 高度
+  iconTitle: proxy.$t("View terminal"), // icon title
+  tableTitle: proxy.$t("Terminal"), // 表格顶部 title
+  width: 540, // 宽度
+  height: 265, // 高度
   placement: "bottom", // 出现位置
-  searchPlaceholder: "终端名称/终端IP", // 搜索框 placeholder
+  searchPlaceholder: proxy.$t("Terminal name") + "/" + proxy.$t("Terminal IP"), // 搜索框 placeholder
   showTableColumn: [
-    { prop: "name", label: "终端名称" },
-    { prop: "ip_address", label: "终端IP" },
-    { prop: "call_code", label: "呼叫编码" },
+    { prop: "name", label: proxy.$t("Terminal name") },
+    { prop: "ip_address", label: proxy.$t("Terminal IP") },
+    { prop: "call_code", label: proxy.$t("Call code") },
   ], // 显示的表格列
 });
 // 分页参数配置
@@ -152,8 +145,8 @@ let paramsConfig = reactive<any>({
   likeName: "", // 搜索
   fastTerminalsId: parentData.fastTerminalsID, // 快捷终端id
   fastSoundId: parentData.fastSoundID, // 快捷音源id
-  medias_groups_id: parentData.mediaGroupsID, //媒体分组id
   zone: parentData.zone, // 采集分区
+  medias_groups_id: parentData.mediasGroupsID, // 媒体分组
   press_key: parentData.pressKey, // 功能按键
 });
 
@@ -224,8 +217,7 @@ const handleReset = () => {
 // 处理排序
 const handleSortChange = (row: { prop: any; order: string | string[] }) => {
   paramsConfig.orderColumn = row.prop;
-  paramsConfig.orderType =
-    !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
+  paramsConfig.orderType = !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
   handleDefaultGet();
 };
 // 处理XXX条/页更改
@@ -243,10 +235,7 @@ const handleCurrentChange = (val: number) => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   paramsConfig = Object.assign(
     paramsConfig,
     parentData.paramsConfig ? parentData.paramsConfig : {}

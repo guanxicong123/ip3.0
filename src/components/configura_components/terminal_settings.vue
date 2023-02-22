@@ -9,21 +9,23 @@
     <el-tabs v-model="form.activeName" @tab-click="handleTabClick">
       <el-tab-pane :name="1" lazy>
         <template #label>
-          <span class="custom-tabs-label"> 快捷终端 </span>
+          <span class="custom-tabs-label">
+            {{ $t("Fast terminal") }}
+          </span>
         </template>
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item label="快捷终端" prop="quick_terminal.name">
+            <el-form-item :label="$t('Fast terminal')" prop="quick_terminal.name">
               <div class="com-add-select-components">
                 <el-input
                   v-model="form.quick_terminal.name"
-                  placeholder="请选择"
+                  :placeholder="$t('Please select')"
                   disabled
                 />
                 <div class="select-button">
                   <i
                     class="iconfont icon-select-file"
-                    title="选择"
+                    :title="$t('Select')"
                     @click="form.quickDialogVisible = true"
                   ></i>
                 </div>
@@ -32,11 +34,16 @@
           </el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane label="终端选择" :name="2" lazy v-if="form.view_mode == 1">
+      <el-tab-pane
+        :label="$t('Terminal selection')"
+        :name="2"
+        lazy
+        v-if="form.view_mode == 1"
+      >
         <el-checkbox
           v-if="config.isSelectOpenTerminalVolume"
           v-model="form.open_terminal_volume"
-          label="开启终端音量"
+          :label="$t('Turn on terminal volume')"
           size="large"
           style="margin-bottom: 15px"
           @change="emit('requestOpenVolume', form.open_terminal_volume)"
@@ -50,6 +57,7 @@
           :changeTerminalsVolume="parentData?.changeTerminalsVolume"
           :openTerminalsVolume="form.open_terminal_volume"
           :myConfig="myConfigTerminal"
+          :showSearch="form.showSearch"
           style="height: 380px; margin: 1px 0"
         />
       </el-tab-pane>
@@ -64,7 +72,9 @@
     >
       <template #header="{ titleId, titleClass }">
         <div class="com-dialog-header">
-          <span :id="titleId" :class="titleClass">选择快捷终端</span>
+          <span :id="titleId" :class="titleClass">
+            {{ $t("Select shortcut terminal") }}
+          </span>
         </div>
       </template>
       <select-shortcut-terminal-radios
@@ -75,7 +85,7 @@
       <template #footer>
         <div class="com-dialog-footer">
           <el-button plain @click="form.quickDialogVisible = false">
-            关闭
+            {{ $t("Close") }}
           </el-button>
         </div>
       </template>
@@ -105,11 +115,14 @@ const parentData = defineProps([
   "responseTerminals", // 编辑界面传递回来的终端数据，用于展示组件的已选择状态
   "responseGroups", // 编辑界面传递回来的分组数据，用于展示组件的已选择状态
   "responseQuickTerminals", // 编辑界面传递回来的快捷终端数据，用于展示组件的已选择状态
+  "showSearch", // 控制显示搜索弹出框-popover
 ]);
 
 const user = getStore.useUserStore();
 // 计算属性 computed
-const userStore = computed(() => user.user);
+const userStore = computed(() => {
+  return user.user;
+});
 
 const form = reactive({
   activeName: 1,
@@ -124,6 +137,7 @@ const form = reactive({
   terminals_groups: [], // 编辑时传递到子组件的终端分组数据
   selectedTerminals: [], // 已选择的终端，传递到父组件
   selectedTerminalsGroups: [], // 已选择的终端分组，传递到父组件
+  showSearch: false, // 是否显示搜索弹窗
 });
 // 插件配置
 let config = reactive<any>({
@@ -136,6 +150,7 @@ let myConfigTerminal = reactive<any>({
 });
 // 处理tab点击
 const handleTabClick = (tab: TabsPaneContext) => {
+  form.showSearch = form.activeName != 2;
   emit("requestType", tab.paneName);
   if (tab.paneName === 1) {
     emit("requestQuickTerminals", form.quick_terminal.id);
@@ -169,8 +184,7 @@ const handleRequestConfigure = (data: any) => {
 const handleSetEditData = () => {
   if (
     (!parentData?.responseTerminals && !parentData?.responseGroups) ||
-    (parentData?.responseTerminals?.length < 1 &&
-      parentData?.responseGroups?.length < 1)
+    (parentData?.responseTerminals?.length < 1 && parentData?.responseGroups?.length < 1)
   ) {
     form.activeName = 1;
     handleRequestConfigure(parentData?.responseQuickTerminals);
@@ -191,12 +205,22 @@ watch(
     parentData?.responseTerminals,
     parentData?.responseGroups,
     parentData?.responseQuickTerminals,
-    userStore.value?.user.users_config,
+    parentData?.showSearch,
+    userStore.value?.user?.users_config,
   ],
-  ([newTerminals, newGroups, newQuickTerminals, newMode]) => {
-    handleSetEditData();
+  (
+    [newTerminals, newGroups, newQuickTerminals, newSearch, newMode],
+    [oldTerminals, oldGroups, oldQuickTerminals, oldSearch, oldMode]
+  ) => {
+    if (
+      newTerminals != oldTerminals ||
+      newGroups != oldGroups ||
+      newQuickTerminals != oldQuickTerminals
+    ) {
+      handleSetEditData();
+    }
     // 界面模式
-    if (newMode) {
+    if (newMode != oldMode) {
       form.view_mode = newMode.view_mode;
       if (form.activeName == 2 && form.view_mode == 2) {
         form.activeName = 1;
@@ -204,22 +228,22 @@ watch(
         emit("requestQuickTerminals", 0);
       }
     }
+    if (newSearch != oldSearch) {
+      form.showSearch = !form.showSearch;
+    }
   },
   {
     // 设置首次进入执行方法 immediate
-    immediate: true,
+    // immediate: true,
     deep: true,
   }
 );
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   myConfigTerminal.selectAmplifier = config.selectAmplifier;
-  form.view_mode = userStore.value?.user.users_config.view_mode;
+  form.view_mode = userStore.value?.user?.users_config?.view_mode;
 });
 </script>
 

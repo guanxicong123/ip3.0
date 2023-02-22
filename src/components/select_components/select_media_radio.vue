@@ -10,20 +10,17 @@
       <div class="custom-title">
         <template v-if="!form.selectedSearchGroupsVisible">
           <el-icon
-            @click="
-              form.selectedSearchGroupsVisible =
-                !form.selectedSearchGroupsVisible
-            "
+            @click="form.selectedSearchGroupsVisible = !form.selectedSearchGroupsVisible"
           >
             <Search />
           </el-icon>
-          <span> 媒体文件夹 </span>
+          <span> {{ $t("Media folder") }} </span>
         </template>
         <span v-else :class="{ span: form.selectedSearchGroupsVisible }">
           <el-input
             class="title-search-input"
             v-model="form.selectedSearchGroups"
-            placeholder="媒体文件夹"
+            :placeholder="$t('Media folder')"
             maxlength="100"
             clearable
             @input="handleGourpsSearch"
@@ -43,9 +40,7 @@
                 :class="{ selected: form.currentGroupsID === item.id }"
                 v-show="
                   !form.selectedSearchGroupsVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchGroupsReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchGroupsReg)
                 "
               >
                 {{ item.name }}
@@ -64,15 +59,11 @@
         >
           <template
             v-if="
-              item.column !== config.searchColumnName ||
-              !form.selectedSearchMediaVisible
+              item.column !== config.searchColumnName || !form.selectedSearchMediaVisible
             "
           >
             <el-icon
-              @click="
-                form.selectedSearchMediaVisible =
-                  !form.selectedSearchMediaVisible
-              "
+              @click="form.selectedSearchMediaVisible = !form.selectedSearchMediaVisible"
               v-if="item.column === config.searchColumnName"
             >
               <Search />
@@ -85,7 +76,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchMedia"
-              placeholder="媒体名称"
+              :placeholder="$t('Media name')"
               maxlength="100"
               clearable
               @input="handleSelectedMediaSearch"
@@ -108,9 +99,7 @@
                 }"
                 v-show="
                   !form.selectedSearchMediaVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchMediaReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchMediaReg)
                 "
               >
                 <div
@@ -142,6 +131,9 @@
 import { ElMessage } from "element-plus";
 import { MeidaService } from "@/utils/api/media";
 import { isArray } from "@/utils/is";
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 // 声明触发事件
 const emit = defineEmits([
@@ -177,7 +169,7 @@ let config = reactive<any>({
     },
     {
       column: "name",
-      text: "媒体文件夹",
+      text: proxy.$t("Media folder"),
       style: { width: "85%" },
     },
   ],
@@ -252,7 +244,7 @@ const handleGetAllGroups = async () => {
       if (result.data) {
         if (isArray(result.data)) {
           form.allGroupsData = [
-            ...[{ id: 0, name: "所有媒体文件" }],
+            ...[{ id: 0, name: proxy.$t("All media files") }],
             ...result.data,
           ];
         }
@@ -271,10 +263,7 @@ const handleGetAllGroups = async () => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   handleGetAllGroups();
   handleGetAllMeida();
   setCurrentTabSelectStatus();
@@ -292,6 +281,7 @@ onMounted(() => {
     height: 100%;
     border-radius: 2px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
     .custom-title {
       padding: 0 20px;
       justify-content: center;
@@ -315,6 +305,7 @@ onMounted(() => {
     margin-left: 12px;
     border-radius: 2px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
     .custom-content {
       .scroll-ul {
         li {

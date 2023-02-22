@@ -60,6 +60,7 @@
     "triggerRef": true,
     "unref": true,
     "useAttrs": true,
+    "useConfig": true,
     "useCssModule": true,
     "useCssVars": true,
     "useCurrentInstance": true,

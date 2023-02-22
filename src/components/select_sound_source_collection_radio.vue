@@ -36,10 +36,7 @@
       <div class="custom-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template
-              v-for="(item, index) in form.allSoundCardData"
-              :key="item.id"
-            >
+            <template v-for="(item, index) in form.allSoundCardData" :key="item.id">
               <li
                 @click="handleSelectedSoundSource(item)"
                 :class="{
@@ -83,8 +80,7 @@
           >
             <el-icon
               @click="
-                form.selectedSearchAcquisitionVisible =
-                  !form.selectedSearchAcquisitionVisible
+                form.selectedSearchAcquisitionVisible = !form.selectedSearchAcquisitionVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -127,9 +123,7 @@
                   item[config.searchColumnName].match(
                     form.selectedSearchAcquisitionReg
                   ) ||
-                  item[config.searchColumnIP].match(
-                    form.selectedSearchAcquisitionReg
-                  )
+                  item[config.searchColumnIP].match(form.selectedSearchAcquisitionReg)
                 "
               >
                 <div
@@ -328,6 +322,7 @@ onMounted(() => {
     border-radius: 2px;
     border: 1px solid #ddd;
     background-color: #f4f9ff;
+    box-sizing: border-box;
 
     .custom-title {
       height: 40px;
@@ -352,6 +347,7 @@ onMounted(() => {
     border-radius: 2px;
     border: 1px solid #ddd;
     background-color: #f4f9ff;
+    box-sizing: border-box;
 
     .custom-content {
       .scroll-ul {

@@ -30,7 +30,7 @@ const sidebarData = [
     children: [],
   },
   {
-    name: "播放中心",
+    name: $t.t("Play center"),
     path: "/play",
     icon: "icon-playback-center",
     hover: false,
@@ -73,14 +73,6 @@ const sidebarData = [
     ],
   },
 ];
-
-// const permission_map = new Map([
-//   [0, "终端状态"],
-//   [1, "播放中心"],
-//   [2, "会话状态"],
-//   [3, "定时任务"],
-//   [4, "媒体库"],
-// ]);
 
 export const useSystemStore = defineStore({
   id: "system_config",
@@ -221,7 +213,7 @@ export const useSystemStore = defineStore({
       sidebarData.forEach((item) => {
         if (item.name === $t.t("Equipment status")) {
           item.permission = this.functional_configs.TerminalStateEnabled;
-        } else if (item.name === "播放中心") {
+        } else if (item.name === $t.t("Play center")) {
           item.permission = this.functional_configs.PlayCenterEnabled;
         } else if (item.name === $t.t("Session status")) {
           item.permission = this.functional_configs.SessionEnabled;
@@ -234,20 +226,9 @@ export const useSystemStore = defineStore({
         }
         this.router_data.push(item);
       });
-      // const default_view = permission_map.get(
-      //   this.system_configs.DefaultDisplayView
-      // );
-      // const index = this.router_data.findIndex((item: any) => {
-      //   return item.name === default_view;
-      // });
-      // const next_path = this.router_data[index].permission
-      //   ? this.router_data[index].path
-      //   : this.router_data[0].path;
+     
       const time_id = setInterval(() => {
-        // if (getStore.getStore.useTerminalStore().terminal_data.length > 0 && getStore.getStore.useTerminalStore().terminal_group.length > 0) {
-        // router.push('/terminal')
         clearInterval(time_id);
-        // }
       }, 100);
     },
 

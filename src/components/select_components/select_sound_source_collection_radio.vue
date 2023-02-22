@@ -7,7 +7,7 @@
 <template>
   <div class="com-select-sound-source-collection">
     <div class="com-select-left">
-      <div class="custom-title">音源</div>
+      <div class="custom-title">{{ $t("Sound source") }}</div>
       <div class="custom-content">
         <el-scrollbar>
           <ul class="scroll-ul">
@@ -36,10 +36,7 @@
       <div class="custom-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template
-              v-for="(item, index) in form.allSoundCardData"
-              :key="index"
-            >
+            <template v-for="(item, index) in form.allSoundCardData" :key="index">
               <li
                 @click="handleSelectedSoundSource(item)"
                 :class="{
@@ -83,8 +80,7 @@
           >
             <el-icon
               @click="
-                form.selectedSearchAcquisitionVisible =
-                  !form.selectedSearchAcquisitionVisible
+                form.selectedSearchAcquisitionVisible = !form.selectedSearchAcquisitionVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -98,7 +94,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchAcquisition"
-              placeholder="终端名称/终端IP"
+              :placeholder="$t('Terminal name') + '/' + $t('Terminal IP')"
               maxlength="100"
               clearable
               @input="handleSelectedTerminalsSearch"
@@ -127,9 +123,7 @@
                   item[config.searchColumnName].match(
                     form.selectedSearchAcquisitionReg
                   ) ||
-                  item[config.searchColumnIP].match(
-                    form.selectedSearchAcquisitionReg
-                  )
+                  item[config.searchColumnIP].match(form.selectedSearchAcquisitionReg)
                 "
               >
                 <div
@@ -162,6 +156,9 @@ import { ElMessage } from "element-plus";
 import { TerminalsService } from "@/utils/api/device/index";
 import { isArray } from "@/utils/is";
 
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
+
 // 声明触发事件
 const emit = defineEmits([
   "requestSoundSource", // 更新传递已选择的音源数据，用于父组件进行数据交互
@@ -182,8 +179,8 @@ const TTSStore = computed(() => {
 
 const form = reactive<any>({
   allSoundSourceData: [
-    { id: 2, name: "声卡" },
-    { id: 3, name: "采集终端" },
+    { id: 2, name: proxy.$t("Sound card") },
+    { id: 3, name: proxy.$t("Acquisition terminal") },
   ],
   currentGroupsID: 2, // 当前选择的分组id
   selectedSearchAcquisition: "", // 搜索采集终端
@@ -204,7 +201,7 @@ let config = reactive<any>({
     },
     {
       column: "name",
-      text: "声卡",
+      text: proxy.$t("Sound card"),
       style: { width: "85%" },
     },
   ],
@@ -217,12 +214,12 @@ let config = reactive<any>({
     },
     {
       column: "name",
-      text: "终端名称",
+      text: proxy.$t("Terminal name"),
       style: { width: "55%" },
     },
     {
       column: "ip_address",
-      text: "终端IP",
+      text: proxy.$t("Terminal IP"),
       style: { width: "30%" },
     },
   ],
@@ -260,8 +257,7 @@ const setCurrentTabSelectStatus = () => {
     const data = parentData?.responseSoundSource;
     form.selectedSoundSourceData = {
       id: data.terminals_id,
-      name:
-        parentData?.responseType === 2 ? data.sound_card : data.terminals_name,
+      name: parentData?.responseType === 2 ? data.sound_card : data.terminals_name,
       type: form.currentGroupsID,
     };
     emit("requestType", form.currentGroupsID);
@@ -300,11 +296,9 @@ watch(
       return (form.allSoundCardData = newTTS);
     }
     if (newData.myConfig?.soundSourceSoundCard == false) {
-      form.allSoundSourceData = form.allSoundSourceData.filter(
-        (item: { id: number }) => {
-          return item.id !== 2;
-        }
-      );
+      form.allSoundSourceData = form.allSoundSourceData.filter((item: { id: number }) => {
+        return item.id !== 2;
+      });
       form.currentGroupsID = 3;
     }
     setCurrentTabSelectStatus();
@@ -318,10 +312,7 @@ watch(
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   form.allSoundCardData = TTSStore.value;
   handleGetAllTerminals();
   setCurrentTabSelectStatus();
@@ -339,6 +330,7 @@ onMounted(() => {
     height: 100%;
     border-radius: 2px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
     .custom-title {
       padding: 0 20px;
       justify-content: center;
@@ -353,6 +345,7 @@ onMounted(() => {
     margin-left: 12px;
     border-radius: 2px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
     .custom-content {
       .scroll-ul {
         li {

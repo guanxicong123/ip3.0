@@ -35,10 +35,7 @@
                     clearable
                     @input="handleTerminalsSearch"
                   />
-                  <i
-                    class="iconfont icon-clear"
-                    @click="handleClickClosePopover"
-                  ></i>
+                  <i class="iconfont icon-clear" @click="handleClickClosePopover"></i>
                 </div>
               </el-popover>
               <span>{{ config.terminalsTitle }}</span>
@@ -59,20 +56,13 @@
             <div class="scroll-bar">
               <el-scrollbar>
                 <ul class="scroll-ul">
-                  <template
-                    v-for="item in form.allTerminalsData"
-                    :key="item.id"
-                  >
+                  <template v-for="item in form.allTerminalsData" :key="item.id">
                     <li
                       @click="selectTerminal(item)"
                       v-show="
                         !form.searchTerminalsVisible ||
-                        item[config.searchColumnName].match(
-                          form.searchTerminalsReg
-                        ) ||
-                        item[config.searchColumnIP].match(
-                          form.searchTerminalsReg
-                        )
+                        item[config.searchColumnName].match(form.searchTerminalsReg) ||
+                        item[config.searchColumnIP].match(form.searchTerminalsReg)
                       "
                     >
                       {{ item.name }}
@@ -104,10 +94,7 @@
                     clearable
                     @input="handleGroupsSearch"
                   />
-                  <i
-                    class="iconfont icon-clear"
-                    @click="handleClickClosePopover"
-                  ></i>
+                  <i class="iconfont icon-clear" @click="handleClickClosePopover"></i>
                 </div>
               </el-popover>
               <span>{{ config.groupsTitle }}</span>
@@ -132,17 +119,8 @@
       </el-tabs>
     </div>
     <div class="com-select-center">
-      <span
-        title="全部右移"
-        @click="selectAll"
-        class="iconfont icon-shift-right"
-      >
-      </span>
-      <span
-        title="全部左移"
-        @click="deselectAll"
-        class="iconfont icon-shift-left"
-      >
+      <span title="全部右移" @click="selectAll" class="iconfont icon-shift-right"> </span>
+      <span title="全部左移" @click="deselectAll" class="iconfont icon-shift-left">
       </span>
     </div>
     <!-- 已选终端 -->
@@ -165,8 +143,7 @@
           >
             <el-icon
               @click="
-                form.selectedSearchTerminalsVisible =
-                  !form.selectedSearchTerminalsVisible
+                form.selectedSearchTerminalsVisible = !form.selectedSearchTerminalsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -195,19 +172,12 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template
-              v-for="(item, index) in form.selectedTerminalsData"
-              :key="item.id"
-            >
+            <template v-for="(item, index) in form.selectedTerminalsData" :key="item.id">
               <li
                 v-show="
                   !form.selectedSearchTerminalsVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchTerminalsReg
-                  ) ||
-                  item[config.searchColumnIP].match(
-                    form.selectedSearchTerminalsReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
+                  item[config.searchColumnIP].match(form.selectedSearchTerminalsReg)
                 "
               >
                 <div class="item-terminals">
@@ -247,7 +217,7 @@
                       :indeterminate="item.isIndeterminate"
                       @change="handleCheckAllAmplifierChange(item)"
                     >
-                      全选
+                      {{ $t("Select all") }}
                     </el-checkbox>
                     <el-checkbox-group
                       v-model="item[config.amplifierColumnName]"
@@ -283,14 +253,12 @@
         >
           <template
             v-if="
-              item.column !== config.searchColumnName ||
-              !form.selectedSearchGroupsVisible
+              item.column !== config.searchColumnName || !form.selectedSearchGroupsVisible
             "
           >
             <el-icon
               @click="
-                form.selectedSearchGroupsVisible =
-                  !form.selectedSearchGroupsVisible
+                form.selectedSearchGroupsVisible = !form.selectedSearchGroupsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -317,16 +285,11 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template
-              v-for="(item, index) in form.selectedGroupsData"
-              :key="item.id"
-            >
+            <template v-for="(item, index) in form.selectedGroupsData" :key="item.id">
               <li
                 v-show="
                   !form.selectedSearchGroupsVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchGroupsReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchGroupsReg)
                 "
               >
                 <div class="item-terminals group">
@@ -335,9 +298,7 @@
                     :key="key"
                     :style="row.style"
                     :title="
-                      row.column !== config.terminalsColumnVolume
-                        ? item[row.column]
-                        : ''
+                      row.column !== config.terminalsColumnVolume ? item[row.column] : ''
                     "
                   >
                     <el-input-number
@@ -357,10 +318,7 @@
                     </span>
                   </div>
                   <div class="icon-font-delete">
-                    <i
-                      class="iconfont icon-clear delete"
-                      @click="deleteGroup(item)"
-                    ></i>
+                    <i class="iconfont icon-clear delete" @click="deleteGroup(item)"></i>
                   </div>
                 </div>
               </li>
@@ -596,12 +554,10 @@ const handleUpdateSelectedTerminals = () => {
       form.selectedTerminalsID.push(item.id);
       request.name = item.name;
       selectedName += item.name + ",";
-      request[config.terminalsRequestColumnName] =
-        item[config.terminalsColumnName];
+      request[config.terminalsRequestColumnName] = item[config.terminalsColumnName];
 
       if (config.selectAmplifier) {
-        request[config.amplifierRequestColumnName] =
-          item[config.amplifierColumnName];
+        request[config.amplifierRequestColumnName] = item[config.amplifierColumnName];
       }
 
       request = Object.assign(request, config.terminalsOtherData);
@@ -619,9 +575,8 @@ const deselectAll = () => {
     form.selectedTerminalsData.forEach(
       (item: { [x: string]: string; ip_address: string }) => {
         if (form.selectedSearchTerminals) {
-          item[config.searchColumnName].match(
-            form.selectedSearchTerminalsReg
-          ) || item.ip_address.match(form.selectedSearchTerminalsReg)
+          item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
+          item.ip_address.match(form.selectedSearchTerminalsReg)
             ? selected.push(item)
             : noSelect.push(item);
         } else {
@@ -666,9 +621,7 @@ const selectAll = () => {
           : noSelect.push(item);
       }
     );
-    form.selectedTerminalsData = Array.from(
-      selected.concat(form.selectedTerminalsData)
-    );
+    form.selectedTerminalsData = Array.from(selected.concat(form.selectedTerminalsData));
     form.allTerminalsData = Array.from(noSelect);
     handleUpdateSelectedTerminals();
   }
@@ -681,9 +634,7 @@ const selectAll = () => {
         ? selected.push(item)
         : noSelect.push(item);
     });
-    form.selectedGroupsData = Array.from(
-      selected.concat(form.selectedGroupsData)
-    );
+    form.selectedGroupsData = Array.from(selected.concat(form.selectedGroupsData));
     form.allGroupsData = Array.from(noSelect);
     handleUpdateSelectedGroups();
   }
@@ -692,11 +643,9 @@ const selectAll = () => {
 const selectTerminal = (row: { id: number }) => {
   if (form.selectedTerminalsID.indexOf(row.id) < 0) {
     form.selectedTerminalsData.push(Object.assign({}, row));
-    form.allTerminalsData = form.allTerminalsData.filter(
-      (item: { id: number }) => {
-        return row.id !== item.id;
-      }
-    );
+    form.allTerminalsData = form.allTerminalsData.filter((item: { id: number }) => {
+      return row.id !== item.id;
+    });
     handleUpdateSelectedTerminals();
   }
 };
@@ -726,11 +675,9 @@ const selectGroup = (row: { id: number }) => {
 const deleteGroup = (row: { id: number }) => {
   if (form.selectedGroupsID.indexOf(row.id) >= 0) {
     form.allGroupsData.unshift(Object.assign({}, row));
-    form.selectedGroupsData = form.selectedGroupsData.filter(
-      (item: { id: number }) => {
-        return row.id !== item.id;
-      }
-    );
+    form.selectedGroupsData = form.selectedGroupsData.filter((item: { id: number }) => {
+      return row.id !== item.id;
+    });
     handleUpdateSelectedGroups();
   }
 };
@@ -744,8 +691,7 @@ const handleCheckAllAmplifierChange = (item: any) => {
 const handleSelectAmplifierChange = (item: any) => {
   const checkedCount = item[config.amplifierColumnName].length;
   item.checkAll_amplifier = checkedCount === config.amplifierValue.length;
-  item.isIndeterminate =
-    checkedCount > 0 && checkedCount < config.amplifierValue.length;
+  item.isIndeterminate = checkedCount > 0 && checkedCount < config.amplifierValue.length;
   handleUpdateSelectedTerminals();
 };
 // 设置tab当前选择状态
@@ -772,15 +718,13 @@ const getGroupsAll = () => {
     })
     .then((result: { result: number; data: any[] }) => {
       if (result.result === 200) {
-        form.allGroupsData = form.allGroupsOptions = result.data.map(
-          (item: any) => {
-            return {
-              id: item.id,
-              name: item.name,
-              terminals: item.terminals,
-            };
-          }
-        );
+        form.allGroupsData = form.allGroupsOptions = result.data.map((item: any) => {
+          return {
+            id: item.id,
+            name: item.name,
+            terminals: item.terminals,
+          };
+        });
         handleEditGroupsData();
       }
     });
@@ -857,10 +801,7 @@ const handleEditGroupsData = () => {
 onMounted(() => {
   getTerminalsAll();
   getGroupsAll();
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   setCurrentTabSelectStatus();
 });
 </script>
@@ -877,6 +818,7 @@ onMounted(() => {
     height: 100%;
     border-radius: 2px;
     border-right: 1px solid #e7e7e7;
+    box-sizing: border-box;
 
     :deep(.select-left-tabs) {
       height: 100%;
@@ -1010,6 +952,8 @@ onMounted(() => {
     border-radius: 2px;
     border-left: 1px solid #ddd;
     background-color: #f4f9ff;
+    box-sizing: border-box;
+    box-sizing: border-box;
 
     .com-right-content {
       width: 100%;

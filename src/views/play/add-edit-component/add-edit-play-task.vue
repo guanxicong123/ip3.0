@@ -223,6 +223,7 @@ import { onBeforeRouteLeave } from "vue-router";
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
+
 const $useRouter = useRouter();
 const $useRoute: any = useRoute();
 
@@ -780,9 +781,9 @@ onBeforeRouteLeave((to, from, next) => {
   if (to.path === "/play" || to.path === "/") {
     next();
   } else {
-    ElMessageBox.confirm("本次修改尚未保存，即将退出页面，是否继续?", "提示", {
+    ElMessageBox.confirm("本次修改尚未保存，即将退出页面，是否继续?", proxy.$t("Tips"), {
       confirmButtonText: "确定",
-      cancelButtonText: "取消",
+      cancelButtonText: proxy.$t("Cancel"),
       type: "warning",
     }).then(() => {
       next();

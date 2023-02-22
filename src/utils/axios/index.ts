@@ -3,6 +3,9 @@ import { AxiosCanceler } from "./axios_cancel";
 // import qs from "qs"; // qs是axios自带的序列化参数方式
 import { ElMessage } from "element-plus";
 import { isString } from "@/utils/is";
+import i18n from "@/utils/language";
+
+const $t: any = i18n.global;
 
 const axiosCancel = new AxiosCanceler();
 // 处理请求状态码
@@ -10,42 +13,44 @@ const showStatus = (status: number) => {
   let message = "";
   switch (status) {
     case 400:
-      message = "请求错误(400)";
+      message = $t.t("Request error");
       break;
     case 401:
-      message = "未授权，请重新登录(401)";
+      message = $t.t("Unauthorized, please login again");
       break;
     case 403:
-      message = "拒绝访问(403)";
+      message = $t.t("Access denied");
       break;
     case 404:
-      message = "请求出错(404)";
+      message = $t.t("Request page error");
       break;
     case 408:
-      message = "请求超时(408)";
+      message = $t.t("Request timeout");
       break;
     case 500:
-      message = "服务器错误(500)";
+      message = $t.t("Server internal error");
       break;
     case 501:
-      message = "服务未实现(501)";
+      message = $t.t("Service not implemented");
       break;
     case 502:
-      message = "网络错误(502)";
+      message = $t.t("Bad gateway");
       break;
     case 503:
-      message = "服务不可用(503)";
+      message = $t.t("Service not available");
       break;
     case 504:
-      message = "网络超时(504)";
+      message = $t.t("Gateway timeout");
       break;
     case 505:
-      message = "HTTP版本不受支持(505)";
+      message = $t.t("HTTP version is not supported");
       break;
     default:
-      message = `连接出错(${status})!`;
+      message = `${$t.t("Link error")}(${status})!`;
   }
-  return `${message}，请检查网络或联系管理员！`;
+  return `${message}, ${$t.t(
+    "Please check the network or contact the administrator"
+  )}`;
 };
 const url = localStorage.get("serverIP");
 // 创建 axios
@@ -96,7 +101,10 @@ $http.interceptors.request.use(
     // 请求还没有到达服务器，但是报错了,抛到弹窗提示
     ElMessage({
       type: "error",
-      message: "服务器异常，请联系管理员！",
+      message:
+        $t.t("Server exception") +
+        ", " +
+        $t.t("Please check the network or contact the administrator"),
       grouping: true,
     });
     return Promise.reject(error);
@@ -142,7 +150,10 @@ $http.interceptors.response.use(
       // 请求无响应时（超时或服务器挂了）
       ElMessage({
         type: "error",
-        message: "请求超时或服务器异常，请检查网络或联系管理员！",
+        message:
+          $t.t("Request timeout or server exception") +
+          ", " +
+          $t.t("Please check the network or contact the administrator"),
         grouping: true,
       });
     }

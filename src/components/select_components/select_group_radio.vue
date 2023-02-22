@@ -10,28 +10,22 @@
       <div class="custom-title">
         <template v-if="!form.selectedSearchGroupsVisible">
           <el-icon
-            @click="
-              form.selectedSearchGroupsVisible =
-                !form.selectedSearchGroupsVisible
-            "
+            @click="form.selectedSearchGroupsVisible = !form.selectedSearchGroupsVisible"
           >
             <Search />
           </el-icon>
-          <span> 分组 </span>
+          <span>{{ $t("Group") }}</span>
         </template>
         <span v-else :class="{ span: form.selectedSearchGroupsVisible }">
           <el-input
             class="title-search-input"
             v-model="form.selectedSearchGroups"
-            placeholder="分组"
+            :placeholder="$t('Group')"
             maxlength="100"
             clearable
             @input="handleGourpsSearch"
           />
-          <i
-            class="iconfont icon-clear delete"
-            @click="handleClickCloGroupSearch"
-          ></i>
+          <i class="iconfont icon-clear delete" @click="handleClickCloGroupSearch"></i>
         </span>
       </div>
       <div class="custom-content">
@@ -43,15 +37,10 @@
                 :class="{ selected: form.currentGroupsID === item.id }"
                 v-show="
                   !form.selectedSearchGroupsVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchGroupsReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchGroupsReg)
                 "
               >
-                <div
-                  class="icon-font-select"
-                  v-if="form.currentGroupsID === item.id"
-                >
+                <div class="icon-font-select" v-if="form.currentGroupsID === item.id">
                   <el-icon class="theme"><Select /></el-icon>
                 </div>
                 {{ item.name }}
@@ -76,8 +65,7 @@
           >
             <el-icon
               @click="
-                form.selectedSearchTerminalsVisible =
-                  !form.selectedSearchTerminalsVisible
+                form.selectedSearchTerminalsVisible = !form.selectedSearchTerminalsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -91,7 +79,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchTerminals"
-              placeholder="终端名称/终端IP"
+              :placeholder="$t('Terminal name') + '/' + $t('Terminal IP')"
               maxlength="100"
               clearable
               @input="handleSelectedTerminalsSearch"
@@ -106,19 +94,12 @@
       <div class="custom-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template
-              v-for="(item, index) in form.allTerminalData"
-              :key="item.id"
-            >
+            <template v-for="(item, index) in form.allTerminalData" :key="item.id">
               <li
                 v-show="
                   !form.selectedSearchTerminalsVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchTerminalsReg
-                  ) ||
-                  item[config.searchColumnIP].match(
-                    form.selectedSearchTerminalsReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
+                  item[config.searchColumnIP].match(form.selectedSearchTerminalsReg)
                 "
               >
                 <div
@@ -144,6 +125,9 @@
 import { ElMessage } from "element-plus";
 import { GroupsService } from "@/utils/api/groups/inedx";
 import { isArray } from "@/utils/is";
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 // 声明触发事件
 const emit = defineEmits([
@@ -178,12 +162,12 @@ let config = reactive<any>({
     },
     {
       column: "name",
-      text: "终端名称",
+      text: proxy.$t("Terminal name"),
       style: { width: "55%" },
     },
     {
       column: "ip_address",
-      text: "终端IP",
+      text: proxy.$t("Terminal IP"),
       style: { width: "30%" },
     },
   ],
@@ -259,10 +243,7 @@ const handleGetAllGroups = async () => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   handleGetAllGroups();
 });
 </script>
@@ -278,6 +259,7 @@ onMounted(() => {
     height: 100%;
     border-radius: 2px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
     .custom-title {
       justify-content: center;
       .title-search-input {
@@ -310,6 +292,7 @@ onMounted(() => {
     margin-left: 12px;
     border-radius: 2px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
     .custom-content {
       .scroll-ul {
         li {

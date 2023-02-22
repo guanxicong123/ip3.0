@@ -7,51 +7,67 @@
 <template>
   <div class="com-sound-source-settings">
     <el-tabs v-model="form.activeName" @tab-click="handleTabClick">
-      <el-tab-pane label="广播" :name="6" lazy v-if="config.isSelectBroadcast">
+      <el-tab-pane
+        :label="$t('Broadcast')"
+        :name="6"
+        lazy
+        v-if="config.isSelectBroadcast"
+      >
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item label="广播设备">
-              <el-input placeholder="应用终端为发起方" disabled />
+            <el-form-item :label="$t('Broadcasting equipment')">
+              <el-input
+                :placeholder="$t('The application terminal is the initiator')"
+                disabled
+              />
             </el-form-item>
           </el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane label="对讲" :name="7" lazy v-if="config.isSelectIntercom">
+      <el-tab-pane :label="$t('Intercom')" :name="7" lazy v-if="config.isSelectIntercom">
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item label="对讲设备">
-              <el-input placeholder="应用终端为发起方" disabled />
+            <el-form-item :label="$t('Intercom equipment')">
+              <el-input
+                :placeholder="$t('The application terminal is the initiator')"
+                disabled
+              />
             </el-form-item>
           </el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane label="监听" :name="8" lazy v-if="config.isSelectMonitor">
+      <el-tab-pane :label="$t('Monitor')" :name="8" lazy v-if="config.isSelectMonitor">
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item label="监听设备">
-              <el-input placeholder="应用终端为发起方" disabled />
+            <el-form-item :label="$t('Monitoring equipment')">
+              <el-input
+                :placeholder="$t('The application terminal is the initiator')"
+                disabled
+              />
             </el-form-item>
           </el-col>
         </el-row>
       </el-tab-pane>
       <el-tab-pane :name="4" lazy v-if="config.isSelectFastSoundSource">
         <template #label>
-          <span class="custom-tabs-label"> 快捷音源 </span>
+          <span class="custom-tabs-label">
+            {{ $t("Fast sound source") }}
+          </span>
         </template>
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item label="快捷音源" prop="sound_source_name">
+            <el-form-item :label="$t('Fast sound source')" prop="sound_source_name">
               <div class="com-add-select-components">
                 <el-input
                   v-model="form.sound_source_name"
-                  placeholder="请选择"
+                  :placeholder="$t('Please select')"
                   disabled
                   @change="handleSelectedConfigure"
                 />
                 <div class="select-button">
                   <i
                     class="iconfont icon-select-file"
-                    title="选择"
+                    :title="$t('Select')"
                     @click="form.soundSourceDialogVisible = true"
                   ></i>
                 </div>
@@ -67,7 +83,7 @@
             "
           >
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-              <el-form-item label="播放模式" prop="play_model">
+              <el-form-item :label="$t('Play mode')" prop="play_model">
                 <el-select v-model="form.play_model" @change="handleSelectedConfigure">
                   <el-option
                     v-for="(item, keys) in config.setMusicPlayModelOption"
@@ -80,7 +96,7 @@
             </el-col>
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="form.play_model === 0">
               <el-form-item label="&nbsp;" prop="fase_life_time">
-                <span>持续时间 : {{ form.fase_life_time }}</span>
+                <span>{{ $t("Duration") }} : {{ form.fase_life_time }}</span>
               </el-form-item>
             </el-col>
             <template v-if="config.musicPlayModelRandomConfig && form.play_model !== 0">
@@ -91,7 +107,7 @@
                   style="height: 28px"
                   @change="handleSelectedConfigure"
                 >
-                  持续时间
+                  {{ $t("Duration") }}
                 </el-radio>
                 <el-form-item label="" prop="life_time">
                   <div class="com-add-select-components">
@@ -99,7 +115,7 @@
                       v-model="form.life_time"
                       format="HH:mm:ss"
                       value-format="HH:mm:ss"
-                      placeholder="持续时间"
+                      :placeholder="$t('Duration')"
                       :clearable="false"
                       :disabled="form.play_type === 1"
                       @change="handleSelectedConfigure"
@@ -107,7 +123,7 @@
                     <!-- <div class="select-button">
                       <i
                         class="iconfont icon-time"
-                        title="统计已选音乐时长"
+                        :title="$t('Statistics of selected music duration')"
                         @click="handleTotalStatisticalDuration"
                       ></i>
                     </div> -->
@@ -121,7 +137,7 @@
                   style="height: 28px"
                   @change="handleSelectedConfigure"
                 >
-                  播放曲目
+                  {{ $t("Play track") }}
                 </el-radio>
                 <el-form-item label="" prop="play_number">
                   <el-input-number
@@ -152,7 +168,7 @@
               :xl="6"
               v-if="config.soundSourceQuality"
             >
-              <el-form-item label="采集音质" prop="sound_quality">
+              <el-form-item :label="$t('Acquisition sound quality')" prop="sound_quality">
                 <el-select v-model="form.sound_quality" @change="handleSelectedConfigure">
                   <el-option
                     v-for="(item, keys) in config.setSoundQualityOption"
@@ -171,12 +187,12 @@
               :xl="6"
               v-if="config.soundSourceEndTime"
             >
-              <el-form-item label="结束时间" prop="end_time">
+              <el-form-item :label="$t('End time')" prop="end_time">
                 <el-time-picker
                   v-model="form.end_time"
                   format="HH:mm:ss"
                   value-format="HH:mm:ss"
-                  placeholder="结束时间"
+                  :placeholder="$t('End time')"
                   :clearable="false"
                   @change="handleSelectedConfigure"
                 />
@@ -193,7 +209,7 @@
               <el-form-item label="&nbsp;" prop="reset_auto_check">
                 <el-checkbox
                   v-model="form.reset_auto_check"
-                  label="自检"
+                  :label="$t('Self inspection')"
                   :true-label="1"
                   :false-label="0"
                   @change="handleSelectedConfigure"
@@ -204,25 +220,28 @@
         </el-row>
       </el-tab-pane>
       <el-tab-pane
-        label="音乐播放"
+        :label="$t('Music play')"
         :name="1"
         lazy
-        v-if="config.isSelectMusicPlay && form.view_mode == 1"
+        v-if="
+          config.isSelectMusicPlay &&
+          (form.view_mode == 1 || form.notLimitedMode.includes($useRoute.name))
+        "
       >
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item label="音乐文件" prop="media.name">
+            <el-form-item :label="$t('Music files')" prop="media.name">
               <div class="com-add-select-components">
                 <el-input
                   v-model="form.media.name"
-                  placeholder="请选择"
+                  :placeholder="$t('Please select')"
                   disabled
                   @change="handleSelectedConfigure"
                 />
                 <div class="select-button">
                   <i
                     class="iconfont icon-select-file"
-                    title="选择"
+                    :title="$t('Select')"
                     @click="form.mediaDialogVisible = true"
                   ></i>
                 </div>
@@ -231,7 +250,7 @@
           </el-col>
           <template v-if="config.musicPlayModel">
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-              <el-form-item label="播放模式" prop="play_model">
+              <el-form-item :label="$t('Play mode')" prop="play_model">
                 <el-select
                   v-model="form.play_model"
                   @change="handleTotalStatisticalDuration"
@@ -247,7 +266,7 @@
             </el-col>
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="form.play_model === 0">
               <el-form-item label="&nbsp;" prop="life_time">
-                <span>持续时间 : {{ form.life_time }}</span>
+                <span>{{ $t("Duration") }} : {{ form.life_time }}</span>
               </el-form-item>
             </el-col>
             <template v-if="config.musicPlayModelRandomConfig && form.play_model !== 0">
@@ -258,7 +277,7 @@
                   style="height: 28px"
                   @change="handleSelectedConfigure"
                 >
-                  持续时间
+                  {{ $t("Duration") }}
                 </el-radio>
                 <el-form-item label="" prop="life_time">
                   <div class="com-add-select-components">
@@ -266,7 +285,7 @@
                       v-model="form.life_time"
                       format="HH:mm:ss"
                       value-format="HH:mm:ss"
-                      placeholder="持续时间"
+                      :placeholder="$t('Duration')"
                       :clearable="false"
                       :disabled="form.play_type === 1"
                       @change="handleSelectedConfigure"
@@ -274,7 +293,7 @@
                     <div class="select-button">
                       <i
                         class="iconfont icon-time"
-                        title="统计已选音乐时长"
+                        :title="$t('Statistics of selected music duration')"
                         @click="handleTotalStatisticalDuration"
                       ></i>
                     </div>
@@ -288,7 +307,7 @@
                   style="height: 28px"
                   @change="handleSelectedConfigure"
                 >
-                  播放曲目
+                  {{ $t("Play track") }}
                 </el-radio>
                 <el-form-item label="" prop="play_number">
                   <el-input-number
@@ -307,7 +326,7 @@
         </el-row>
       </el-tab-pane>
       <el-tab-pane
-        label="音源采集"
+        :label="$t('Sound source acquisition')"
         :name="23"
         lazy
         v-if="config.isSelectSoundSource && form.view_mode == 1"
@@ -329,7 +348,7 @@
             :xl="6"
             v-if="config.soundSourceQuality"
           >
-            <el-form-item label="采集音质" prop="sound_quality">
+            <el-form-item :label="$t('Acquisition sound quality')" prop="sound_quality">
               <el-select v-model="form.sound_quality" @change="handleSelectedConfigure">
                 <el-option
                   v-for="(item, keys) in config.setSoundQualityOption"
@@ -348,12 +367,12 @@
             :xl="6"
             v-if="config.soundSourceEndTime"
           >
-            <el-form-item label="结束时间" prop="end_time">
+            <el-form-item :label="$t('End time')" prop="end_time">
               <el-time-picker
                 v-model="form.end_time"
                 format="HH:mm:ss"
                 value-format="HH:mm:ss"
-                placeholder="结束时间"
+                :placeholder="$t('End time')"
                 :clearable="false"
                 @change="handleSelectedConfigure"
               />
@@ -370,7 +389,7 @@
             <el-form-item label="&nbsp;" prop="reset_auto_check">
               <el-checkbox
                 v-model="form.reset_auto_check"
-                label="自检"
+                :label="$t('Self inspection')"
                 :true-label="1"
                 :false-label="0"
                 @change="handleSelectedConfigure"
@@ -379,15 +398,15 @@
           </el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane label="文本播放" :name="5" lazy v-if="config.isSelectTextPlay">
+      <el-tab-pane :label="$t('Text play')" :name="5" lazy v-if="config.isSelectTextPlay">
         <el-row :gutter="60">
           <el-col :span="24">
-            <el-form-item label="文本内容" prop="txt" style="width: 100%">
+            <el-form-item :label="$t('Text content')" prop="txt" style="width: 100%">
               <el-input
                 v-model="form.txt"
                 :autosize="{ minRows: 5 }"
                 type="textarea"
-                placeholder="请输入内容"
+                :placeholder="$t('Please enter the content')"
                 maxlength="1000"
                 show-word-limit
                 clearable
@@ -399,7 +418,7 @@
             <el-form-item label="" prop="is_play">
               <el-checkbox
                 v-model="form.is_play"
-                label="开启播放功能(未启用时，终端默认静音)"
+                :label="$t('Enable the play function')"
                 size="large"
                 :true-label="1"
                 :false-label="0"
@@ -408,7 +427,7 @@
             </el-form-item>
           </el-col>
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item label="显示属性" prop="led_display_cfg_id">
+            <el-form-item :label="$t('Display Properties')" prop="led_display_cfg_id">
               <el-select
                 v-model="form.led_display_cfg_id"
                 @change="handleSelectedConfigure"
@@ -423,7 +442,7 @@
             </el-form-item>
           </el-col>
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item label="播报次数" prop="broadcast_number">
+            <el-form-item :label="$t('Number of broadcasts')" prop="broadcast_number">
               <el-input-number
                 v-model="form.broadcast_number"
                 :min="0"
@@ -433,11 +452,11 @@
                 @change="changeTextPlayEstimatedTime"
               />
               <span class="tip-text tip" v-if="form.broadcast_number > 0">
-                预估时间: {{ form.estimated_time }}
+                {{ $t("Estimated time") }}: {{ form.estimated_time }}
               </span>
               <el-tooltip
                 effect="dark"
-                content="播报次数为0时，为循环播放"
+                :content="$t('Description of broadcast times')"
                 placement="right-start"
               >
                 <i class="iconfont icon-gray-item theme"></i>
@@ -446,19 +465,19 @@
           </el-col>
           <template v-if="form.is_play">
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-              <el-form-item label="播放语音" prop="sound">
+              <el-form-item :label="$t('Play voice')" prop="sound">
                 <el-select v-model="form.sound" @change="handleSelectedConfigure">
                   <el-option
                     v-for="(item, keys) in playVoiceOption"
                     :key="keys"
-                    :label="item"
-                    :value="item"
+                    :label="item.name"
+                    :value="item.name"
                   />
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-              <el-form-item label="播放语速" prop="speed">
+              <el-form-item :label="$t('Play speech speed')" prop="speed">
                 <el-select v-model="form.speed" @change="changeTextPlayEstimatedTime">
                   <el-option
                     v-for="item in playSpeedOption"
@@ -481,7 +500,7 @@
       destroy-on-close
       draggable
       class="com-default-dialog"
-      title="选择快捷音源"
+      :title="$t('Select shortcut sound source')"
     >
       <select-shortcut-sound-source-radio
         style="height: 380px"
@@ -492,7 +511,7 @@
       <template #footer>
         <div class="com-dialog-footer">
           <el-button plain @click="form.soundSourceDialogVisible = false">
-            关闭
+            {{ $t("Close") }}
           </el-button>
         </div>
       </template>
@@ -507,16 +526,20 @@
     >
       <template #header="{ titleId, titleClass }">
         <div class="com-dialog-header">
-          <span :id="titleId" :class="titleClass">选择音乐文件</span>
+          <span :id="titleId" :class="titleClass">
+            {{ $t("Select media") }}
+          </span>
           <span style="color: #fff">
-            &nbsp;( 已选文件 :
+            &nbsp;( {{ $t("Selected media") }} :
             <span>
               {{ form.medias.length }}
             </span>
-            &nbsp; 已选文件夹 :
-            <span>
-              {{ form.medias_groups.length }}
-            </span>
+            <template v-if="systemStore.functional_configs.GroupDisplay">
+              &nbsp;&nbsp;{{ $t("Selected folder") }} :
+              <span class="theme">
+                {{ form.medias_groups.length }}
+              </span>
+            </template>
             )
           </span>
         </div>
@@ -534,7 +557,9 @@
       />
       <template #footer>
         <div class="com-dialog-footer">
-          <el-button plain @click="form.mediaDialogVisible = false"> 关闭 </el-button>
+          <el-button plain @click="form.mediaDialogVisible = false">
+            {{ $t("Close") }}
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -546,6 +571,9 @@ import { TabsPaneContext } from "element-plus";
 import { ElMessage } from "element-plus";
 import usePublicMethod from "@/utils/global/index";
 import { DisplayAttributeService } from "@/utils/api/display_attribute/index";
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 // 声明触发事件
 const emit = defineEmits([
@@ -569,6 +597,7 @@ const parentData = defineProps([
   "soundType", // 获取音源类型数据
 ]);
 
+const systemStore = getStore.useSystemStore();
 const user = getStore.useUserStore();
 const TTS = getStore.useTTSStore();
 // 计算属性 computed
@@ -617,6 +646,7 @@ const form = reactive<any>({
   selectedMediaName: "", // 已选媒体名称
   selectedGroupsName: "", // 已选媒体文件夹名称
   totalSecond: 0, // 选择媒体的总时长
+  notLimitedMode: ["new_edit_quick_partition_task"], // 不受界面模式限制展示音乐播放的路由名称
 });
 // 插件配置
 let config = reactive<any>({
@@ -648,11 +678,11 @@ const playSpeedOption = ref<any[]>([]);
 const formatterSpeed = (row: number) => {
   switch (row) {
     case 1:
-      return row + " ( 最快 )";
+      return row + " ( " + proxy.$t("Slowest") + " )";
     case 5:
-      return row + " ( 推荐 )";
-    case 8:
-      return row + " ( 最慢 )";
+      return row + " ( " + proxy.$t("Recommended") + " )";
+    case 10:
+      return row + " ( " + proxy.$t("Fastest") + " )";
     default:
       return row;
   }
@@ -680,6 +710,9 @@ const handleTabClick = (tab: TabsPaneContext) => {
     emit("requestType", tab.paneName);
     form.sound_source.type =
       tab.paneName != 4 ? Number(tab.paneName) : form.old_sound_source_data.type;
+  }
+  if (tab.paneName !== 4) {
+    emit("requestSoundSourceID", 0);
   }
   handleSelectedConfigure();
 };
@@ -757,7 +790,7 @@ const handleSelectedConfigure = () => {
   if (form.sound_source.type === 1) {
     sound_source = {
       play_model: form.play_model,
-      life_time: form.life_time,
+      life_time: form.activeName == 4 ? form.fase_life_time : form.life_time,
       play_number: form.play_number,
       play_type: form.play_type,
       type: form.sound_source.type,
@@ -806,8 +839,8 @@ const getAllDisplayAttribute = async () => {
   form.loading = true;
   await DisplayAttributeService.getAllDisplayAttribute({})
     .then((result) => {
-      if (result.result) {
-        ledDisplayOption.value = result.result;
+      if (result.data) {
+        ledDisplayOption.value = result.data;
       } else {
         ElMessage({
           type: "error",

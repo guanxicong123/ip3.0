@@ -30,16 +30,16 @@
         status-icon
         scroll-to-error
       >
-        <el-form-item label="日期" prop="log_date">
+        <el-form-item :label="$t('Date')" prop="log_date">
           <el-date-picker
             v-model="form.log_date"
             type="datetimerange"
             unlink-panels
             format="YYYY-MM-DD HH:mm:ss"
             value-format="YYYY-MM-DD HH:mm:ss"
-            range-separator="至"
-            start-placeholder="开始日期 "
-            end-placeholder="结束日期 "
+            :range-separator="$t('To')"
+            :start-placeholder="$t('Start date')"
+            :end-placeholder="$t('End date')"
             :editable="false"
             :default-time="[
               new Date(2000, 1, 1, 0, 0, 0),
@@ -48,15 +48,18 @@
             :shortcuts="form.shortcuts"
           />
         </el-form-item>
-        <el-form-item label="类型" prop="log_type" class="log-type">
+        <el-form-item :label="$t('Type')" prop="log_type" class="log-type">
           <el-checkbox
             v-model="form.checkAll"
             :indeterminate="form.indeterminate"
             @change="handleCheckAllChange"
           >
-            全选
+            {{ $t("Select all") }}
           </el-checkbox>
-          <el-checkbox-group v-model="form.log_type" @change="handleCheckedChange">
+          <el-checkbox-group
+            v-model="form.log_type"
+            @change="handleCheckedChange"
+          >
             <el-checkbox
               v-for="item in logTypeOptions"
               :key="item.label"
@@ -70,8 +73,12 @@
     </div>
     <template #footer>
       <div class="com-dialog-footer">
-        <el-button plain @click="emit('show', false)"> 取消 </el-button>
-        <el-button type="primary" @click="handleExportLog(ruleFormRef)"> 导出 </el-button>
+        <el-button plain @click="emit('show', false)">
+          {{ $t("Cancel") }}
+        </el-button>
+        <el-button type="primary" @click="handleExportLog(ruleFormRef)">
+          {{ $t("Export") }}
+        </el-button>
       </div>
     </template>
   </el-dialog>
@@ -90,7 +97,7 @@ const emit = defineEmits(["show"]);
 const parentData = defineProps(["isShow"]);
 
 const form = reactive<any>({
-  title: "导出日志",
+  title: proxy.$t("Export log"),
   dialogVisible: false,
   log_date: "", // 导出日期
   checkAll: false, // 全选
@@ -98,7 +105,7 @@ const form = reactive<any>({
   log_type: [], // 导出类型
   shortcuts: [
     {
-      text: "今天",
+      text: proxy.$t("Today"),
       value: () => {
         const end = new Date();
         const start = new Date(new Date().toLocaleDateString()); //获取当前时间戳（精确到秒）
@@ -107,7 +114,7 @@ const form = reactive<any>({
       },
     },
     {
-      text: "最近一天",
+      text: proxy.$t("Last day"),
       value: () => {
         const end = new Date();
         const start = new Date();
@@ -116,7 +123,7 @@ const form = reactive<any>({
       },
     },
     {
-      text: "最近三天",
+      text: proxy.$t("Last three days"),
       value: () => {
         const end = new Date();
         const start = new Date();
@@ -125,7 +132,7 @@ const form = reactive<any>({
       },
     },
     {
-      text: "最近一周",
+      text: proxy.$t("Last week"),
       value: () => {
         const end = new Date();
         const start = new Date();
@@ -134,7 +141,7 @@ const form = reactive<any>({
       },
     },
     {
-      text: "最近一月",
+      text: proxy.$t("Last month"),
       value: () => {
         const end = new Date();
         const start = new Date();
@@ -143,7 +150,7 @@ const form = reactive<any>({
       },
     },
     {
-      text: "最近三月",
+      text: proxy.$t("Last three month"),
       value: () => {
         const end = new Date();
         const start = new Date();
@@ -155,19 +162,19 @@ const form = reactive<any>({
   loading: false, // 等待加载数据状态
 });
 const logTypeOptions = [
-  { label: "system-logs", name: "系统日志" },
-  { label: "terminals-logs", name: "终端日志" },
-  { label: "tasks-logs", name: "任务日志" },
-  { label: "call-logs", name: "广播日志" },
-  { label: "talk-back-logs", name: "对讲日志" },
-  { label: "tts-log", name: "tts日志" },
+  { label: "system-logs", name: proxy.$t("System log") },
+  { label: "terminals-logs", name: proxy.$t("Terminal log") },
+  { label: "tasks-logs", name: proxy.$t("Task log") },
+  { label: "call-logs", name: proxy.$t("Broadcast log") },
+  { label: "talk-back-logs", name: proxy.$t("Intercom log") },
+  { label: "tts-logs", name: proxy.$t("TTS log") },
 ];
 // 表单ref
 const ruleFormRef = ref<FormInstance>();
 // 验证
 const validateEmpty = (rule: any, value: any, callback: any) => {
   if (!useRegex.validateEmpty(value) || value.length < 1) {
-    return callback(new Error("请选择"));
+    return callback(new Error(proxy.$t("Please select")));
   } else {
     callback();
   }
@@ -210,19 +217,22 @@ const handleExportLog = async (formEl: FormInstance | undefined) => {
       };
       ExportLogService.exprtLog(params)
         .then((result) => {
-          const isHasURL = Object.prototype.hasOwnProperty.call(result.data, "url");
+          const isHasURL = Object.prototype.hasOwnProperty.call(
+            result.data,
+            "url"
+          );
           if (isHasURL) {
             let src = result.data.url;
             emit("show", false, src);
             ElMessage({
               type: "success",
-              message: "导出成功",
+              message: proxy.$t("Export succeeded"),
               grouping: true,
             });
           } else {
             ElMessage({
               type: "error",
-              message: result.data?.message || "导出失败",
+              message: result.return_message || proxy.$t("Export failed"),
               grouping: true,
             });
           }

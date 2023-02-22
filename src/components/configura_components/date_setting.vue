@@ -7,13 +7,13 @@
 <template>
   <div class="com-date-setting">
     <el-tabs v-model="form.activeName" @tab-click="handleTabClick">
-      <el-tab-pane label="周" :name="0" v-if="config.showWeeks">
+      <el-tab-pane :label="$t('Week')" :name="0" v-if="config.showWeeks">
         <el-checkbox
           v-model="form.weekCheckAll"
           :indeterminate="form.weekIndeterminate"
           @change="handleCheckAllWeekChange"
         >
-          全选
+          {{ $t("Select all") }}
         </el-checkbox>
         <el-checkbox-group
           v-model="form.weekData"
@@ -25,29 +25,25 @@
           </el-checkbox>
         </el-checkbox-group>
       </el-tab-pane>
-      <el-tab-pane label="月" :name="1" v-if="config.showMonth">
+      <el-tab-pane :label="$t('Month')" :name="1" v-if="config.showMonth">
         <el-checkbox
           v-model="form.monthCheckAll"
           :indeterminate="form.monthIndeterminate"
           @change="handleCheckAllMonthChange"
         >
-          全选
+          {{ $t("Select all") }}
         </el-checkbox>
         <el-checkbox-group
           v-model="form.monthData"
           class="repeat-month"
           @change="handleCheckedMonthChange"
         >
-          <el-checkbox-button
-            v-for="item in form.monthOptions"
-            :key="item"
-            :label="item"
-          >
+          <el-checkbox-button v-for="item in form.monthOptions" :key="item" :label="item">
             {{ item }}
           </el-checkbox-button>
         </el-checkbox-group>
       </el-tab-pane>
-      <el-tab-pane label="日期" :name="3" v-if="config.showDay">
+      <el-tab-pane :label="$t('Date')" :name="3" v-if="config.showDay">
         <div class="repeat-day">
           <el-date-picker
             class="curstom-date-day"
@@ -60,11 +56,11 @@
           />
           <div class="curstom-date-day-right">
             <div class="right-title">
-              <span>已选日期 :</span>
+              <span>{{ $t("Selected date") }} :</span>
               <span class="icon-font" v-if="form.dayOptions.length > 0">
                 <i
                   class="iconfont icon-delete"
-                  title="清空"
+                  :title="$t('Clear list')"
                   @click="handleClearAssignDay"
                 ></i>
               </span>
@@ -86,7 +82,7 @@
                           <template #reference>
                             <i
                               class="iconfont icon-clone"
-                              title="克隆"
+                              :title="$t('Clone')"
                               @click="handleOpenClonePopover(item)"
                             ></i>
                           </template>
@@ -95,31 +91,26 @@
                               v-model="form.clone_day"
                               type="month"
                               value-format="YYYY-MM"
-                              placeholder="请选择"
+                              :placeholder="$t('Please select')"
                               :teleported="false"
                               :disabled-date="disabledCloneDate"
                             />
 
-                            <el-button
-                              type="primary"
-                              @click.stop="handleCloneDay(item)"
-                            >
-                              确认
+                            <el-button type="primary" @click.stop="handleCloneDay(item)">
+                              {{ $t("Confirm") }}
                             </el-button>
                             <el-button
                               plain
-                              @click.stop="
-                                item.cloneDayVisible = !item.cloneDayVisible
-                              "
+                              @click.stop="item.cloneDayVisible = !item.cloneDayVisible"
                             >
-                              关闭
+                              {{ $t("Close") }}
                             </el-button>
                           </div>
                         </el-popover>
                         <span class="day">
                           <i
                             class="iconfont icon-delete"
-                            title="删除"
+                            :title="$t('Delete')"
                             @click="handleDeleteSingleAssignDay(item)"
                           ></i>
                           <span>{{ item.name }} :</span>
@@ -130,7 +121,7 @@
                       <span class="day" v-for="row in item.days" :key="row">
                         <i
                           class="iconfont icon-delete"
-                          title="删除"
+                          :title="$t('Delete')"
                           @click="handleDeleteAssignDay(item, row)"
                         ></i>
                         <span>{{ row }}</span>
@@ -199,11 +190,9 @@ const disabledDate = (time: { getTime: () => number }) => {
   let beginEndDate = parentData.maxDay;
   if (beginStartDate) {
     return (
-      time.getTime() <
-        usePublicMethod.dateConversionToTimestamp(beginStartDate) ||
+      time.getTime() < usePublicMethod.dateConversionToTimestamp(beginStartDate) ||
       (beginEndDate &&
-        time.getTime() >
-          usePublicMethod.dateConversionToTimestamp(beginEndDate))
+        time.getTime() > usePublicMethod.dateConversionToTimestamp(beginEndDate))
     );
   }
   if (!beginStartDate && !beginEndDate) {
@@ -239,15 +228,13 @@ const handleTabClick = (tab: TabsPaneContext) => {
 const handleCheckAllWeekChange = () => {
   form.weekData = form.weekCheckAll ? weekOptions : [];
   let checkedCount = form.weekData.length;
-  form.weekIndeterminate =
-    checkedCount > 0 && checkedCount < weekOptions.length;
+  form.weekIndeterminate = checkedCount > 0 && checkedCount < weekOptions.length;
   emit("requestWeekData", form.weekData);
 };
 // 处理周期单选
 const handleCheckedWeekChange = () => {
   let checkedCount = form.weekData.length;
-  form.weekIndeterminate =
-    checkedCount > 0 && checkedCount < weekOptions.length;
+  form.weekIndeterminate = checkedCount > 0 && checkedCount < weekOptions.length;
   form.weekCheckAll = checkedCount === weekOptions.length;
   emit("requestWeekData", form.weekData);
 };
@@ -255,15 +242,13 @@ const handleCheckedWeekChange = () => {
 const handleCheckAllMonthChange = () => {
   form.monthData = form.monthCheckAll ? form.monthOptions : [];
   let checkedCount = form.monthData.length;
-  form.monthIndeterminate =
-    checkedCount > 0 && checkedCount < form.monthOptions.length;
+  form.monthIndeterminate = checkedCount > 0 && checkedCount < form.monthOptions.length;
   emit("requestMonthData", form.monthData);
 };
 // 处理月期单选
 const handleCheckedMonthChange = () => {
   let checkedCount = form.monthData.length;
-  form.monthIndeterminate =
-    checkedCount > 0 && checkedCount < form.monthOptions.length;
+  form.monthIndeterminate = checkedCount > 0 && checkedCount < form.monthOptions.length;
   form.monthCheckAll = checkedCount === form.monthOptions.length;
   emit("requestMonthData", form.monthData);
 };
@@ -274,10 +259,7 @@ const handleSelectedDate = (data: string) => {
   setAssignDates(name, day);
 };
 // 处理打开克隆弹窗
-const handleOpenClonePopover = (item: {
-  name: string;
-  cloneDayVisible: boolean;
-}) => {
+const handleOpenClonePopover = (item: { name: string; cloneDayVisible: boolean }) => {
   item.cloneDayVisible = !item.cloneDayVisible;
   form.dayOptions.forEach((row: { name: string; cloneDayVisible: boolean }) => {
     if (row.name !== item.name) {
@@ -328,10 +310,7 @@ const handleUpdateRequestDayData = () => {
   emit("requestDayData", assignDates);
 };
 // 处理删除单个日期
-const handleDeleteAssignDay = (
-  item: { days: number[]; name: string },
-  row: number
-) => {
+const handleDeleteAssignDay = (item: { days: number[]; name: string }, row: number) => {
   item.days = item.days.filter((d: number) => {
     return d !== row;
   });
@@ -368,38 +347,36 @@ const handleCloneDay = (item: { days: any[] }) => {
 };
 // 处理过滤不在范围内的日期
 const handleFilterDate = () => {
-  form.dayOptions = form.dayOptions.filter(
-    (item: { name: any; days: any[] }) => {
-      let prefix = item.name;
-      item.days = item.days.filter((day: string) => {
-        if (parentData.minDay && parentData.maxDay) {
-          return (
-            usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) >=
-              usePublicMethod.dateConversionToTimestamp(parentData.minDay) &&
-            usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) <=
-              usePublicMethod.dateConversionToTimestamp(parentData.maxDay)
-          );
-        }
-
-        if (parentData.minDay && !parentData.maxDay) {
-          return (
-            usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) >=
-            usePublicMethod.dateConversionToTimestamp(parentData.minDay)
-          );
-        }
-
-        if (!parentData.minDay && parentData.maxDay) {
-          return (
-            usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) <=
+  form.dayOptions = form.dayOptions.filter((item: { name: any; days: any[] }) => {
+    let prefix = item.name;
+    item.days = item.days.filter((day: string) => {
+      if (parentData.minDay && parentData.maxDay) {
+        return (
+          usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) >=
+            usePublicMethod.dateConversionToTimestamp(parentData.minDay) &&
+          usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) <=
             usePublicMethod.dateConversionToTimestamp(parentData.maxDay)
-          );
-        }
-        return !parentData.minDay && !parentData.maxDay;
-      });
+        );
+      }
 
-      return item.days.length > 0;
-    }
-  );
+      if (parentData.minDay && !parentData.maxDay) {
+        return (
+          usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) >=
+          usePublicMethod.dateConversionToTimestamp(parentData.minDay)
+        );
+      }
+
+      if (!parentData.minDay && parentData.maxDay) {
+        return (
+          usePublicMethod.dateConversionToTimestamp(prefix + "-" + day) <=
+          usePublicMethod.dateConversionToTimestamp(parentData.maxDay)
+        );
+      }
+      return !parentData.minDay && !parentData.maxDay;
+    });
+
+    return item.days.length > 0;
+  });
   handleUpdateRequestDayData();
 };
 // 处理编辑界面传递回来的数据
@@ -447,29 +424,44 @@ const handleSetEditData = (data: any) => {
 
 // 监听变化
 watch(
-  () => [form.dayData, parentData],
-  ([newData, newParent]) => {
-    if (newData) {
+  () => [
+    form.dayData,
+    parentData.minDay,
+    parentData.maxDay,
+    parentData.responseType,
+    parentData.responseWeekData,
+    parentData.responseMonthData,
+    parentData.responseDayData,
+  ],
+  (
+    [newData, newMin, newMax, newType, newWeek, newMonth, newDay],
+    [oldData, oldMin, oldMax, oldType, oldWeek, oldMonth, oldDay]
+  ) => {
+    if (newData != oldData) {
       handleSelectedDate(newData);
     }
-    if (newParent?.minDay || newParent?.maxDay) {
+    if (newMin != oldMin || newMax != oldMax) {
       handleFilterDate();
     }
-    handleSetEditData(newParent);
+    if (
+      newType != oldType ||
+      newWeek != oldWeek ||
+      newMonth != oldMonth ||
+      newDay != oldDay
+    ) {
+      handleSetEditData(parentData);
+    }
   },
   {
     // 设置首次进入执行方法 immediate
-    immediate: true,
+    // immediate: true,
     deep: true,
   }
 );
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   for (let index = 1; index < 32; index++) {
     form.monthOptions.push(index);
   }

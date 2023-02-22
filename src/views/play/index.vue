@@ -169,7 +169,7 @@
                   @click="(form.search = ''), handleSearch()"
                   style="margin-left: 12px"
                 >
-                  重置
+                  {{ $t("Reset") }}
                 </el-button>
               </div>
               <div class="com-button">
@@ -246,7 +246,7 @@
                       @click.stop="handleDeleteTask(scope.row)"
                     >
                       <template #icon>
-                        <i class="iconfont icon-delete" title="删除"></i>
+                        <i class="iconfont icon-delete" :title="$t('Delete')"></i>
                       </template>
                     </el-button>
                   </template>
@@ -283,6 +283,7 @@ const listMusocComponent = defineAsyncComponent(
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
+
 const session = getStore.useSessionStore();
 const storePlay = getStore.usePlayStore();
 const systemStore = getStore.useSystemStore();
@@ -438,8 +439,8 @@ const handleSelectionChange = (val: User[]) => {
 const handleDeleteAll = () => {
   if (multipleSelection.value.length === 0) return proxy.$message.warning("请选择任务");
   ElMessageBox.confirm("即将删除选中任务,是否继续?", "警告", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
+    confirmButtonText: proxy.$t("Confirm"),
+    cancelButtonText: proxy.$t("Cancel"),
     type: "warning",
   }).then(() => {
     let serverDataID: any[] = [];
@@ -593,7 +594,7 @@ const handlePlayTask = (row: any) => {
               Priority: row.priority, //优先级
               Volume: row.volume, //音量
               TaskType: handleTaskTypeMap(row), //任务类型
-              UserID: row.users_id,
+              UserID: localStorage.get("LoginUserID"), // 操作用户id
               TaskProp: TaskProp,
             },
           };
@@ -808,8 +809,8 @@ const handleEditTask = (row: any) => {
 // 删除播放任务
 const handleDeleteTask = (row: any) => {
   ElMessageBox.confirm("即将删除任务,是否继续?", "警告", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
+    confirmButtonText: proxy.$t("Confirm"),
+    cancelButtonText: proxy.$t("Cancel"),
     type: "warning",
   }).then(() => {
     if (row.type < 10) {

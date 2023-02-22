@@ -9,18 +9,16 @@
     <div class="com-select-left">
       <div class="custom-title">
         <template v-if="!form.searchConfigureVisible">
-          <el-icon
-            @click="form.searchConfigureVisible = !form.searchConfigureVisible"
-          >
+          <el-icon @click="form.searchConfigureVisible = !form.searchConfigureVisible">
             <Search />
           </el-icon>
-          <span> 配置名称 </span>
+          <span> {{ $t("Configuration name") }} </span>
         </template>
         <span v-else :class="{ span: form.searchConfigureVisible }">
           <el-input
             class="title-search-input"
             v-model="form.searchConfigure"
-            placeholder="配置名称"
+            :placeholder="$t('Configuration name')"
             maxlength="100"
             clearable
             @input="handleConfigureSearch"
@@ -71,8 +69,7 @@
           >
             <el-icon
               @click="
-                form.selectedSearchConfigureVisible =
-                  !form.selectedSearchConfigureVisible
+                form.selectedSearchConfigureVisible = !form.selectedSearchConfigureVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -84,7 +81,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchConfigure"
-              placeholder="终端/分组"
+              :placeholder="$t('Terminal') + '/' + $t('Group')"
               maxlength="100"
               clearable
               @input="handleSelectedConfigureSearch"
@@ -106,9 +103,7 @@
               <li
                 v-show="
                   !form.selectedSearchConfigureVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchConfigureReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchConfigureReg)
                 "
               >
                 <div
@@ -121,8 +116,7 @@
                     {{
                       row.column === "key" // 序号
                         ? index + 1
-                        : row.column === "list" &&
-                          item.hasOwnProperty("ip_address") // 终端列表
+                        : row.column === "list" && item.hasOwnProperty("ip_address") // 终端列表
                         ? "-"
                         : row.column === "ip_address" &&
                           !item.hasOwnProperty("ip_address") // IP地址
@@ -130,10 +124,7 @@
                         : item[row.column]
                     }}
                     <view-components-popover
-                      v-if="
-                        row.column === 'list' &&
-                        !item.hasOwnProperty('ip_address')
-                      "
+                      v-if="row.column === 'list' && !item.hasOwnProperty('ip_address')"
                       :url="'/terminals-groups/' + item.id + '/terminals'"
                     />
                   </span>
@@ -150,6 +141,9 @@
 <script lang="ts" setup>
 import { ElMessage } from "element-plus";
 import { FastTerminalsService } from "@/utils/api/quick_terminal/index";
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 // 声明触发事件
 const emit = defineEmits([
@@ -170,7 +164,7 @@ const form = reactive<any>({
   selectedSearchConfigureReg: /.*/,
   selectedSearchConfigureVisible: false, // 是否显示已选择配置名称-终端/分组的搜索框
   selectedConfigureData: {
-    id: 1,
+    id: 0,
     terminals: [],
     terminals_groups: [],
     all_data: [],
@@ -187,17 +181,17 @@ let config = reactive<any>({
     },
     {
       column: "name",
-      text: "终端/分组",
+      text: proxy.$t("Terminal") + "/" + proxy.$t("Group"),
       style: { width: "40%" },
     },
     {
       column: "ip_address",
-      text: "IP地址",
+      text: proxy.$t("IP address"),
       style: { width: "30%" },
     },
     {
       column: "list",
-      text: "终端列表",
+      text: proxy.$t("Terminal list"),
       style: { width: "20%" },
     },
   ],
@@ -230,9 +224,10 @@ const handleClickCloSelectedSesearch = () => {
 };
 // 设置tab当前选择状态
 const setCurrentTabSelectStatus = (data: any) => {
-  if (!data || data.id == 0) {
-    return handleSelectedConfigure(form.allConfigureData?.[0]);
-  }
+  // 默认选中第一个
+  // if (!data || data.id == 0) {
+  //   return handleSelectedConfigure(form.allConfigureData?.[0]);
+  // }
   form.allConfigureData.some((item: { id: number }) => {
     if (item.id == data.id) {
       return handleSelectedConfigure(item);
@@ -247,11 +242,7 @@ const handleGetAllData = async () => {
     .then((result) => {
       if (result.data) {
         result.data?.forEach(
-          (item: {
-            all_data: any[];
-            terminals: any;
-            terminals_groups: any;
-          }) => {
+          (item: { all_data: any[]; terminals: any; terminals_groups: any }) => {
             item.all_data = [...item.terminals, ...item.terminals_groups];
           }
         );
@@ -272,10 +263,7 @@ const handleGetAllData = async () => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   handleGetAllData();
 });
 </script>
@@ -292,6 +280,7 @@ onMounted(() => {
     height: 100%;
     border-radius: 2px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
 
     .custom-title {
       justify-content: center;
@@ -334,6 +323,7 @@ onMounted(() => {
     margin-left: 12px;
     border-radius: 2px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
 
     .custom-content {
       height: calc(100% - 80px);

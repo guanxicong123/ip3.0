@@ -345,7 +345,7 @@
   "Song": "Song",
   "No exception task": "No exception task",
   "No terminal task": "No terminal task",
-  "No media task": "No media task",
+  "No audio source task": "No audio source task",
   "No terminal": "No terminal",
   "Export terminal": "Export terminal",
   "Default volume": "Default volume",
@@ -781,6 +781,7 @@
   "Modification succeeded": "Modification succeeded",
   "Download succeeded": "Download succeeded",
   "Register succeeded": "Register succeeded",
+  "Download failed": "Download failed",
   "Delete failed": "Delete failed",
   "Upload failed": "Upload failed",
   "Add failed": "Add failed",
@@ -1020,5 +1021,7 @@
   "Save as template": "Save as template",
   "Saved templates": "Saved templates",
   "Apply to other terminals": "Apply to other terminals",
-  "No files": "No files!"
+  "No files": "No files!",
+  "Play center": "Playcenter",
+  "WebSocket connection failed": "WebSocket failed to connect to the server"
 }

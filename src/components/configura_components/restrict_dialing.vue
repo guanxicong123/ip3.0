@@ -7,8 +7,8 @@
 <template>
   <div class="com-restrict-dialing">
     <el-tabs v-model="form.activeName">
-      <el-tab-pane label="对讲限制" name="first" lazy>
-        <span> 已选终端: </span>
+      <el-tab-pane :label="$t('Intercom limit')" name="first" lazy>
+        <span> {{ $t("Selected terminal") }} : </span>
         <span class="theme">{{ form.intercomTerminals.length }}</span>
         <select-terminals-groups
           ref="intercomRef"
@@ -19,12 +19,13 @@
           :myConfig="myConfig"
         />
       </el-tab-pane>
-      <el-tab-pane label="广播限制" name="second" lazy>
-        <span> 已选终端: </span>
+      <el-tab-pane :label="$t('Broadcasting restrictions')" name="second" lazy>
+        <span> {{ $t("Selected terminal") }} : </span>
         <span class="theme">{{ form.broadcastTerminals.length }}</span>
-        &nbsp;&nbsp;
-        <span> 已选分组: </span>
-        <span class="theme">{{ form.broadcastTerminalsGroups.length }}</span>
+        <template v-if="systemStore.functional_configs.GroupDisplay">
+          <span>&nbsp;&nbsp;{{ $t("Selected groups") }} : </span>
+          <span class="theme">{{ form.broadcastTerminalsGroups.length }}</span>
+        </template>
         <select-terminals-groups
           ref="broadcastRef"
           style="height: 380px; margin: 15px 0 1px"
@@ -36,8 +37,8 @@
           :myConfig="myConfigBroadcast"
         />
       </el-tab-pane>
-      <el-tab-pane label="监听限制" name="three" lazy>
-        <span> 已选终端: </span>
+      <el-tab-pane :label="$t('Monitoring limit')" name="three" lazy>
+        <span> {{ $t("Selected terminal") }} : </span>
         <span class="theme">{{ form.monitorTerminals.length }}</span>
         <select-terminals-groups
           ref="monitorRef"
@@ -53,6 +54,8 @@
 </template>
 
 <script lang="ts" setup>
+const systemStore = getStore.useSystemStore();
+
 // 声明触发事件
 const emit = defineEmits([
   "requestIntercomTerminals", // 更新传递已选择的对讲限制终端数据，用于父组件进行数据交互

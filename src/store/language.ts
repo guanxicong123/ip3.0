@@ -6,7 +6,7 @@ export const useLanguageStore = defineStore({
         languagesMap: {},
         language: "zh-cn",
         version: "",
-        theme: 1,
+        theme: 0,
       },
     };
   },

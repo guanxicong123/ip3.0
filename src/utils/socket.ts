@@ -1,7 +1,8 @@
-// import { message } from '@/utils/resetMessage'
-
-import router from "../router";
 import { ElMessage, ElNotification } from "element-plus";
+import i18n from "@/utils/language";
+import router from "../router";
+
+const $t: any = i18n.global;
 
 let loginData: any = ""; //用于储存登录时请求信息
 let socket: any;
@@ -66,7 +67,7 @@ const registerWebSocket = async () => {
         connected = false;
         getStore.useAppStore().changeWsStatus(false);
         getStore.useAppStore().changeLoginStatus(false);
-        ElMessage.error("服务连接失败");
+        ElMessage.error($t.t("WebSocket connection failed"));
         return;
       }
       clearInterval(reloadInterval);
@@ -232,7 +233,7 @@ const handlerMsg = (msg: any) => {
   if (msg.actioncode === "cs2ms_net_disconnect") {
     return ElNotification({
       title: "",
-      message: "正在尝试重新连接逻辑服务器",
+      message: $t.t("Attempting to reconnect to logical server"),
       type: "error",
       position: "bottom-right",
     });

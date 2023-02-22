@@ -48,7 +48,7 @@
             :disabled="form.search == '' && form.terminal_status == -1"
             @click="handleReset"
           >
-            重置
+            {{ $t("Reset") }}
           </el-button>
         </div>
         <div class="com-button">
@@ -64,7 +64,7 @@
       <div class="footer-button" v-if="$useRoute.name != 'terminal'">
         <el-checkbox
           v-model="checked_all"
-          label="全选"
+          :label="$t('Select all')"
           @change="handleCheckedAll"
           v-if="$useRoute.name != 'terminal_list'"
         />
@@ -158,7 +158,9 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="confirmTerminalSet"> 确认 </el-button>
+          <el-button type="primary" @click="confirmTerminalSet">
+            {{ $t("Confirm") }}
+          </el-button>
           <el-button @click="set_dialog = false"> 取消 </el-button>
         </span>
       </template>

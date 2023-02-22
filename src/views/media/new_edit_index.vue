@@ -27,16 +27,16 @@
         status-icon
         scroll-to-error
       >
-        <el-form-item label="属性" prop="is_public" required>
+        <el-form-item :label="$t('Attribute')" prop="is_public" required>
           <el-radio-group v-model="ruleForm.is_public" class="radio-group-inline">
-            <el-radio :label="0"> 私有资源 </el-radio>
-            <el-radio :label="1"> 公共资源 </el-radio>
+            <el-radio :label="0">{{ $t("Private resources") }}</el-radio>
+            <el-radio :label="1">{{ $t("Public resources") }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="名称" prop="name">
+        <el-form-item :label="$t('Name')" prop="name">
           <el-input
             v-model="ruleForm.name"
-            placeholder="请输入1-100字符"
+            :placeholder="$t('Name placeholder')"
             maxlength="100"
             show-word-limit
             clearable
@@ -46,9 +46,11 @@
     </div>
     <template #footer>
       <div class="com-dialog-footer">
-        <el-button plain @click="emit('show', false)">取消</el-button>
+        <el-button plain @click="emit('show', false)">
+          {{ $t("Cancel") }}
+        </el-button>
         <el-button type="primary" @click="handleSubmitFormSave(ruleFormRef)">
-          保存
+          {{ $t("Save") }}
         </el-button>
       </div>
     </template>
@@ -60,6 +62,9 @@ import type { FormInstance } from "element-plus";
 import { ElMessage } from "element-plus";
 import { ValidatorService } from "@/utils/api/validator/index";
 import { MeidaService } from "@/utils/api/media/index";
+
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
 
 // 声明触发事件
 const emit = defineEmits(["show", "success"]);
@@ -89,9 +94,9 @@ const validateName = (rule: any, value: any, callback: any) => {
   ruleForm.name = value = useRegex.replaceEmojiSpaces(value);
 
   if (!useRegex.validateEmpty(value)) {
-    return callback(new Error("请输入"));
+    return callback(new Error(proxy.$t("Please enter")));
   } else if (!useRegex.validateName(value)) {
-    return callback(new Error("该名称不符合规则"));
+    return callback(new Error(proxy.$t("The name does not conform to the rule")));
   } else if (form.old_name === value) {
     return callback();
   }
@@ -103,7 +108,7 @@ const validateName = (rule: any, value: any, callback: any) => {
       if (result.data?.status) {
         callback();
       } else {
-        callback(new Error("名称已存在"));
+        callback(new Error(proxy.$t("Name already exists")));
       }
     })
     .catch((error) => {
@@ -128,7 +133,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
               emit("success");
               ElMessage({
                 type: "success",
-                message: "编辑成功",
+                message: proxy.$t("Edit succeeded"),
                 grouping: true,
               });
             } else {
@@ -155,7 +160,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
               });
               ElMessage({
                 type: "success",
-                message: "新建成功",
+                message: proxy.$t("New succeeded"),
                 grouping: true,
               });
             } else {
@@ -200,11 +205,11 @@ watch(
       if (parentData.editInfor?.id > 0) {
         form.id = parentData.editInfor?.id;
         form.loading = true;
-        form.title = "编辑";
+        form.title = proxy.$t("Edit");
         handleGetEditData(parentData.editInfor);
       } else {
         form.id = 0;
-        form.title = "新建";
+        form.title = proxy.$t("Newly build");
       }
     } else {
       // 关闭时，重置表单

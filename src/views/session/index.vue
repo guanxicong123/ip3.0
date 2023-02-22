@@ -154,11 +154,8 @@
             prop="IsMonitor"
             :label="$t('Monitor status')"
             show-overflow-tooltip
-          >
-            <template #default="scope">
-              {{ scope.row.IsMonitor ? $t("Be monitored") : $t("Not monitored") }}
-            </template>
-          </el-table-column>
+            :formatter="handleMonitorTransform"
+          />
           <el-table-column :label="$t('Operation')" width="120">
             <template #default="scope">
               <el-button link type="danger" @click="handleStopTask(scope.row)">
@@ -200,7 +197,7 @@
       <el-pagination
         v-model:currentPage="form.currentPage"
         v-model:page-size="form.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
+        :page-sizes="proxy.$user?.config?.pageRule"
         layout="total, sizes, prev, pager, next, jumper"
         :total="form.total"
         @size-change="handleSizeChange"
@@ -226,6 +223,7 @@ const selectMonitoringSpeaker = defineAsyncComponent(
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
 const session = getStore.useSessionStore();
+const terminals = getStore.useTerminalsStore();
 const systemStore = getStore.useSystemStore();
 // 计算属性 computed
 const sessionStoreAll = computed(() => {
@@ -239,6 +237,9 @@ const sessionStoreOnePage = computed(() => {
 });
 const systemPageSize = computed(() => {
   return systemStore.pageSize?.Session_PageSize;
+});
+const terminalsStoreAll = computed(() => {
+  return terminals.allTerminalsObj;
 });
 
 interface User {
@@ -398,7 +399,7 @@ const handleStopMonitorTask = (row: any) => {
   } else {
     ElMessage({
       type: "warning",
-      message: "没有任务ID",
+      message: proxy.$t("No task ID"),
       grouping: true,
     });
   }
@@ -427,6 +428,17 @@ const changeTaskVolume = (row: any) => {
 const cellClassName = (row: any) => {
   if (row.columnIndex === 4 && row.row.EndPointList.length > 0) {
     return "com-table-task-response";
+  }
+};
+// 处理监听状态的展示信息
+const handleMonitorTransform = (row: { IsMonitor: number; TaskType: number }) => {
+  switch (row.IsMonitor) {
+    case 0:
+      return row.TaskType == 19 ? proxy.$t("Monitor") : proxy.$t("Not monitored");
+    default:
+      return terminalsStoreAll.value[row.IsMonitor] && row.TaskType !== 19
+        ? terminalsStoreAll.value[row.IsMonitor].EndPointName
+        : proxy.$t("Monitor");
   }
 };
 
