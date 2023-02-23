@@ -189,6 +189,7 @@ const submit = () => {
     };
     store.changeLoginStatus(true);
     socketLogin(data);
+    // console.log(proxy.$http.baseURL)
     localStorage.set("serverIP", modelRef.server_ip_address);
     localStorage.set("username", modelRef.name);
 };
@@ -196,7 +197,7 @@ const submit = () => {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
     gitRegisterStatus().then(()=> {
-        window.electronAPI.send("register-window")
+        // window.electronAPI.send("register-window")
     })
     if (socket) {
         socket.close();

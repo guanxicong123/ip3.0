@@ -47,13 +47,12 @@ const showStatus = (status: number) => {
   }
   return `${message}，请检查网络或联系管理员！`;
 };
-const url = localStorage.get("serverIP");
 // 创建 axios
 const $http = axios.create({
   baseURL:
     process.env.NODE_ENV === "development"
       ? "/api/v29+"
-      : "http://" + url + ":81/api/v29+",
+      : "http://" + localStorage.get("serverIP") + ":81/api/v29+",
   headers: { "Content-Type": "application/json;charset=utf-8" },
   withCredentials: true, // 是否跨站点访问控制请求
   timeout: 5 * 1000, // 5s超时
