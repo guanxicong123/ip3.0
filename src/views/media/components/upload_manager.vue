@@ -148,18 +148,19 @@ const upload = getStore.useUploadStore();
 const uploadGroupStore = computed(() => upload.groupData);
 const uploadSelectedStore = computed(() => upload.currentSelected);
 const uploadMinimizeStore = computed(() => upload.isMinimize);
+const uploadShowManagerStore = computed(() => upload.showUploadManager);
 
 const form = reactive<any>({
   groupData: [], // 分组数据
   currentSelected: {}, // 当前选中分组
   showFilesInfo: [], // 缓存目前的文件内容(用于显示)
   // 上传插件
-  url: "/",
+  url: "",
   files: [], // 上传文件数据
   md5Finish: 0,
   accept:
-    "audio/mpeg,audio/mp3,audio/ogg,audio/wav,audio/aac,audio/flac,audio/amr,audio/opus", // 表单的accept属性, MIME type
-  extensions: "mpeg,mp3,ogg,wav,aac,flac,amr,opus", // 允许上传的文件后缀
+    "audio/mpeg,audio/mp3,audio/ogg,audio/wav,audio/aac,audio/flac,audio/amr,audio/opus,audio/vnd.dlna.adts", // 表单的accept属性, MIME type
+  extensions: "mpeg,mp3,ogg,wav,aac,flac,amr,opus,adts", // 允许上传的文件后缀
   hasUploadError: false,
   headers: {
     authorization: localStorage.get("userToken"),
@@ -179,7 +180,14 @@ const uploadRef = ref();
 // 处理点击
 const handleClick = (item: any) => {
   form.currentSelected = item;
-  form.url = "/api/v29+/medias/upload/" + form.currentSelected.id;
+  const developmentUrl = "/api/v29+/medias/upload/" + form.currentSelected.id;
+  const productionUrl =
+    "http://" +
+    localStorage.get("serverIP") +
+    ":81/api/v29+/medias/upload/" +
+    form.currentSelected.id;
+  // 区分开发环境和生产环境的上传路径
+  form.url = process.env.NODE_ENV === "development" ? developmentUrl : productionUrl;
   form.showFilesInfo = form.files.filter((row: { postAction: string | string[] }) => {
     let folderId = row.postAction.slice(row.postAction.lastIndexOf("/") + 1);
     if (folderId == item.id) {
@@ -459,30 +467,36 @@ const autoUpload = () => {
 
 // 监听变化
 watch(
-  () => [uploadGroupStore.value, uploadSelectedStore.value],
-  ([newGroup, newSelected]) => {
-    if (newGroup) {
+  () => [uploadGroupStore.value, uploadSelectedStore.value, uploadShowManagerStore.value],
+  ([newGroup, newSelected, newShowManager], [oldGroup, oldSelected, oldShowManager]) => {
+    if (newGroup != oldGroup) {
       form.groupData = newGroup;
     }
-    // 当没有选中的媒体文件夹并且只有一个文件夹数据时，默认选中第一个
-    if (
-      !Object.prototype.hasOwnProperty.call(form.currentSelected, "id") &&
-      form.groupData.length == 1
-    ) {
-      handleClick(form.groupData[0]);
-    } else {
-      handleClick(newSelected);
+    if (newShowManager != oldShowManager) {
+      handleClose();
+      if (newShowManager) {
+        // 当没有选中的媒体文件夹并且只有一个文件夹数据时，默认选中第一个
+        if (
+          !Object.prototype.hasOwnProperty.call(form.currentSelected, "id") &&
+          form.groupData.length == 1
+        ) {
+          handleClick(form.groupData[0]);
+        } else {
+          handleClick(newSelected);
+        }
+      }
     }
   },
   {
     // 设置首次进入执行方法 immediate
-    immediate: true,
+    // immediate: true,
     deep: true,
   }
 );
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
+  form.groupData = uploadGroupStore.value;
   handleClick(form.groupData[0]);
 });
 </script>

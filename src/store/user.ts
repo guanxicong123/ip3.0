@@ -55,5 +55,9 @@ export const useUserStore = defineStore({
     updateDefalutBellScheme(data: number) {
       this.defaultSchemeID = data;
     },
+    // 清除用户数据
+    clearUser() {
+      this.user = {};
+    },
   },
 });

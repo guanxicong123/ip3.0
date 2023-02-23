@@ -89,7 +89,7 @@
                 <div class="custom-popover">
                   <el-input
                     v-model="form.searchGroups"
-                    placeholder="分组名称"
+                    :placeholder="$t('Group name')"
                     maxlength="100"
                     clearable
                     @input="handleGroupsSearch"
@@ -270,7 +270,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchGroups"
-              placeholder="分组名称"
+              :placeholder="$t('Group name')"
               maxlength="100"
               clearable
               @input="handleSelectedGroupsSearch"
@@ -392,7 +392,7 @@ let config = reactive<any>({
     },
     {
       column: "name",
-      text: "终端名称",
+      text: proxy.$t("Terminal name"),
       style: { width: "55%" },
     },
     {
@@ -410,7 +410,7 @@ let config = reactive<any>({
     },
     {
       column: "name",
-      text: "分组名称",
+      text: proxy.$t("Group name"),
       style: { width: "55%" },
     },
     {

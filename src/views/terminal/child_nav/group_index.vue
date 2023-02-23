@@ -58,7 +58,7 @@
           width="60"
           :index="typeIndex"
         />
-        <el-table-column prop="name" label="终端名称" show-overflow-tooltip />
+        <el-table-column prop="name" :label="$t('Terminal name')" show-overflow-tooltip />
         <el-table-column prop="ip_address" label="终端IP" show-overflow-tooltip />
         <el-table-column prop="code" label="呼叫编码" />
       </el-table>

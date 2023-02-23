@@ -2,6 +2,17 @@ import router from "@/router";
 
 let $timer: any = null;
 const usePublicMethod = {
+  // 退出登录
+  signOut() {
+    router.push("/");
+    localStorage.remove("userToken");
+    localStorage.remove("tokenExpireMonitor");
+    getStore.useUserStore().clearUser();
+    getStore.useTerminalsStore().clearTerminals();
+    getStore.useSessionStore().clearSession();
+    getStore.useTTSStore().clearTTS();
+    getStore.useUploadStore().updateShowUploadManager(false);
+  },
   // 设置一小时刷新一次token
   setTokenMonitorTime() {
     return new Date().getTime() + 3600 * 1000;
@@ -123,9 +134,11 @@ const usePublicMethod = {
   },
   // 获取当前日期指定天数后得日期
   specifyDate(num: number) {
-    const date = new Date()
-    date.setDate(date.getDate() + num)
-    return date.getFullYear() +"-"+ (date.getMonth()+1) +"-"+ date.getDate()
+    const date = new Date();
+    date.setDate(date.getDate() + num);
+    return (
+      date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+    );
   },
   // 二进制选择
   binarySelection(decimal: number, number: number) {

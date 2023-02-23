@@ -930,7 +930,7 @@ onBeforeRouteLeave((to, from, next) => {
     next();
   } else {
     ElMessageBox.confirm("本次修改尚未保存，即将退出页面，是否继续?", proxy.$t("Tips"), {
-      confirmButtonText: "确定",
+      confirmButtonText: proxy.$t("Determine"),
       cancelButtonText: proxy.$t("Cancel"),
       type: "warning",
     }).then(() => {

@@ -217,7 +217,7 @@ let config = reactive<any>({
     },
     {
       column: "name",
-      text: "终端名称",
+      text: proxy.$t("Terminal name"),
       style: { width: "55%" },
     },
     {

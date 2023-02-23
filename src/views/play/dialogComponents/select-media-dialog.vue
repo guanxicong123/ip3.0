@@ -6,34 +6,34 @@
 -->
 <template>
   <el-dialog
-        v-model="props.dialogVisible"
-        class="select-media-dialog"
-        title="选择媒体"
-        width="70%"
-        :before-close="handleClose"
+    v-model="props.dialogVisible"
+    class="select-media-dialog"
+    title="选择媒体"
+    width="70%"
+    :before-close="handleClose"
+  >
+    <select-media-group
+      :responseMedia="props.responseMedia"
+      :responseGroups="props.responseeMediaGroups"
+      @requestMedia="requestMedia"
+      @requestGroups="requestMediaGroups"
     >
-        <select-media-group
-            :responseMedia="props.responseMedia"
-            :responseGroups="props.responseeMediaGroups"
-            @requestMedia="requestMedia"
-            @requestGroups="requestMediaGroups"
-        >
-        </select-media-group>
-        <template #footer>
-            <span class="dialog-footer">
-                <el-button @click="handleClose">取消</el-button>
-                <el-button type="primary" @click="handleSubmit">确定</el-button>
-            </span>
-        </template>
-    </el-dialog>
+    </select-media-group>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="handleClose">{{ $t("Cancel") }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ $t("Determine") }}</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
 import selectMediaGroup from "@/components/select_media_group.vue";
 const props = defineProps({
-    dialogVisible: Boolean,
-    responseMedia: Array,
-    responseeMediaGroups: Array,
+  dialogVisible: Boolean,
+  responseMedia: Array,
+  responseeMediaGroups: Array,
 });
 const emit = defineEmits(["update:dialogVisible", "uploadMedia"]);
 const medias = ref([]);
@@ -53,10 +53,10 @@ const handleClose = () => {
   emit("update:dialogVisible", false);
 };
 const handleSubmit = () => {
-    emit("uploadMedia", {
-        medias: medias.value,
-        medias_groups: medias_groups.value,
-    });
+  emit("uploadMedia", {
+    medias: medias.value,
+    medias_groups: medias_groups.value,
+  });
 };
 // mounted 实例挂载完成后被调用
 onMounted(() => {});

@@ -180,7 +180,7 @@
           :inline="true"
           label-width="97px"
         >
-          <el-form-item label="分组">
+          <el-form-item :label="$t('Group')">
             <el-switch v-model="switch_form.GroupDisplay"></el-switch>
           </el-form-item>
           <el-form-item label="显示远程任务">
@@ -211,7 +211,9 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button type="primary" @click="saveSet"> 保存并重新登录 </el-button>
-          <el-button @click="func_manage_dialog = false"> 取消 </el-button>
+          <el-button @click="func_manage_dialog = false">
+            {{ $t("Cancel") }}
+          </el-button>
         </span>
       </template>
     </el-dialog>
@@ -243,13 +245,15 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="register_manage_dialog = false"> 取消 </el-button>
+          <el-button @click="register_manage_dialog = false">
+            {{ $t("Cancel") }}
+          </el-button>
           <el-button
             type="primary"
             @click="confirmRegister"
             :disabled="form.code.length < 1"
           >
-            确定
+            {{ $t("Determine") }}
           </el-button>
         </span>
       </template>
@@ -275,7 +279,7 @@ const form = reactive({
   default_terminal_status: 0, // 终端状态默认项
   terminalStatusOptions: [
     { value: 0, label: "终端" },
-    { value: 1, label: "分组" },
+    { value: 1, label: proxy.$t("Group") },
   ],
   default_presentation_module: 0, // 默认展示模块
   presentationModuleOptions: [
@@ -289,7 +293,7 @@ const form = reactive({
   terminalSortOptions: [
     { value: 0, label: "终端状态" },
     { value: 1, label: "IP地址" },
-    { value: 2, label: "终端名称" },
+    { value: 2, label: proxy.$t("Terminal name") },
     { value: 3, label: "呼叫编码" },
   ],
   reminder_configuration: [], // 提醒配置
@@ -391,7 +395,7 @@ const saveSet = () => {
     .put("/config/" + basic_configs.value.ID, switch_form.value)
     .then((result: any) => {
       if (result.result === 200) {
-        $useRouter.push("/");
+        usePublicMethod.signOut();
       }
     });
 };

@@ -1023,5 +1023,14 @@
   "Apply to other terminals": "Apply to other terminals",
   "No files": "No files!",
   "Play center": "Playcenter",
-  "WebSocket connection failed": "WebSocket failed to connect to the server"
+  "WebSocket connection failed": "WebSocket failed to connect to the server",
+  "Speaker terminal": "Speaker terminal",
+  "Regional broadcasting": "Regional broadcasting",
+  "End the intercom": "End the intercom",
+  "End listening": "End listening",
+  "End alarm": "End alarm",
+  "Terminal status configuration": "Terminal status configuration",
+  "List view": "List view",
+  "Block view": "Block view",
+  "Number of terminals per screen": "Number of terminals per screen"
 }

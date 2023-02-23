@@ -191,7 +191,7 @@
               {{
                 scope.row.hasOwnProperty("terminals_id")
                   ? formatterTerminalsType(scope.row)
-                  : "分组"
+                  : $t("Group")
               }}
             </template>
           </el-table-column>

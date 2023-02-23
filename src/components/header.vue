@@ -110,7 +110,7 @@
               userNameForm.name = '';
             "
           >
-            取消
+            {{ $t("Cancel") }}
           </el-button>
           <el-button type="primary" @click="handleChangeUser(ruleFormNameRef)">
             {{ $t("Confirm") }}
@@ -180,7 +180,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogUserPass = false">取消</el-button>
+          <el-button @click="dialogUserPass = false">{{ $t("Cancel") }}</el-button>
           <el-button type="primary" @click="handleChangeUserPass(ruleFormRef)">
             {{ $t("Confirm") }}
           </el-button>
@@ -218,7 +218,7 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogLogOut = false">取消</el-button>
+          <el-button @click="dialogLogOut = false">{{ $t("Cancel") }}</el-button>
           <el-button type="primary" @click="handleLogOut">{{ $t("Confirm") }}</el-button>
         </span>
       </template>
@@ -336,7 +336,7 @@ const handleChangeUser = (formEl: FormInstance | undefined) => {
           if (result.result === 200) {
             proxy.$message.success("修改用户名成功,跳转至登录页面");
             setTimeout(() => {
-              $useRouter.push("/");
+              usePublicMethod.signOut();
             }, 1000);
           }
         });
@@ -355,7 +355,7 @@ const handleChangeUserPass = (formEl: FormInstance | undefined) => {
           proxy.$message.success("修改密码成功,将跳转至登录页面");
           loadingUserPass.value = false;
           setTimeout(() => {
-            $useRouter.push("/");
+            usePublicMethod.signOut();
           }, 3000);
         }
       });
@@ -364,7 +364,6 @@ const handleChangeUserPass = (formEl: FormInstance | undefined) => {
 };
 // 退出登录
 const handleLogOut = () => {
-  $useRouter.push("/");
   let data = {
     company: "BL",
     actioncode: "c2ms_user_logout",
@@ -374,7 +373,7 @@ const handleLogOut = () => {
     return_message: "",
   };
   send(data);
-  localStorage.remove("userToken");
+  usePublicMethod.signOut();
 };
 // 验证
 const validateOldPassword = (rule: any, value: any, callback: any) => {

@@ -36,11 +36,15 @@
       </div>
       <div class="broadcast-register-button">
         <span class="button-cancel" v-if="!isRegister" @click="close">试用</span>
-        <span class="button-submit" v-if="!isRegister" @click="isRegister = true"
-          >注册</span
-        >
-        <span class="button-cancel" v-if="isRegister" @click="close">取消</span>
-        <span class="button-submit" v-if="isRegister" @click="submit">确定</span>
+        <span class="button-submit" v-if="!isRegister" @click="isRegister = true">
+          注册
+        </span>
+        <span class="button-cancel" v-if="isRegister" @click="close">
+          {{ $t("Cancel") }}
+        </span>
+        <span class="button-submit" v-if="isRegister" @click="submit">
+          {{ $t("Determine") }}
+        </span>
       </div>
     </div>
   </div>

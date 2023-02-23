@@ -13,16 +13,16 @@
           <div class="play-table-title">
             <span
               :class="{ theme: $useRoute.name != 'group' }"
-              @click="changeRouter('终端')"
+              @click="changeRouter('terminals')"
             >
-              全部终端
+              {{ $t("All terminals") }}
             </span>
             <span class="line"> | </span>
             <span
               :class="{ theme: $useRoute.name == 'group' }"
-              @click="changeRouter('分组')"
+              @click="changeRouter('group')"
             >
-              分组
+              {{ $t("Group") }}
             </span>
           </div>
           <el-select
@@ -52,7 +52,7 @@
           </el-button>
         </div>
         <div class="com-button">
-          <span class="monitor-speaker">主讲终端</span>
+          <span class="monitor-speaker">{{ $t("Speaker terminal") }}</span>
           <select-monitoring-speaker />
         </div>
       </div>
@@ -75,9 +75,10 @@
           @click="functronButtonTask(1)"
         >
           {{
-            judgeButtonStatus(5) && sessionsData[0]?.TaskName.indexOf("全区广播") !== -1
-              ? "结束广播"
-              : "全区广播"
+            judgeButtonStatus(5) &&
+            sessionsData[0]?.TaskName.indexOf($t("Regional broadcasting")) !== -1
+              ? $t("End broadcast")
+              : $t("Regional broadcasting")
           }}
         </el-button>
         <el-button
@@ -87,9 +88,10 @@
           :loading="startButton.status && startButton.type === 5"
         >
           {{
-            judgeButtonStatus(5) && sessionsData[0]?.TaskName.indexOf("全区广播") === -1
-              ? "结束广播"
-              : "广播"
+            judgeButtonStatus(5) &&
+            sessionsData[0]?.TaskName.indexOf($t("Regional broadcasting")) === -1
+              ? $t("End broadcast")
+              : $t("Broadcast")
           }}
         </el-button>
         <el-button
@@ -99,7 +101,7 @@
           @click="functronButtonTask(4)"
           :loading="startButton.status && startButton.type === 4"
         >
-          {{ judgeButtonStatus(4) ? "结束对讲" : "对讲" }}
+          {{ judgeButtonStatus(4) ? $t("End the intercom") : $t("Intercom") }}
         </el-button>
         <el-button
           type="primary"
@@ -108,7 +110,7 @@
           @click="functronButtonTask(17)"
           :loading="startButton.status && startButton.type === 19"
         >
-          {{ judgeButtonStatus(19) ? "结束监听" : "监听" }}
+          {{ judgeButtonStatus(19) ? $t("End listening") : $t("Monitor") }}
         </el-button>
         <el-button
           v-if="system_configs.EnabledAlarm"
@@ -117,7 +119,7 @@
           @click="alarmTalkTask"
           :loading="startButton.status && startButton.type === 3"
         >
-          {{ judgeButtonStatus(3) ? "结束报警" : "报警" }}
+          {{ judgeButtonStatus(3) ? $t("End alarm") : $t("Call the police") }}
         </el-button>
       </div>
       <div class="footer-volume">
@@ -134,15 +136,20 @@
         <span>{{ form.volume }}</span>
       </div>
     </div>
-    <el-dialog v-model="set_dialog" title="终端状态配置" width="450px" class="set-dialog">
+    <el-dialog
+      v-model="set_dialog"
+      :title="$t('Terminal status configuration')"
+      width="450px"
+      class="set-dialog"
+    >
       <!-- template -->
       <div class="terminal-config-items">
         <el-radio-group v-model="form.view_value" class="view-config">
-          <el-radio label="list" size="large">列表视图</el-radio>
-          <el-radio label="square" size="large">方块视图</el-radio>
+          <el-radio label="list" size="large">{{ $t("List view") }}</el-radio>
+          <el-radio label="square" size="large">{{ $t("Block view") }}</el-radio>
         </el-radio-group>
         <span class="view-number-config">
-          <span>每屏终端数量</span>
+          <span>{{ $t("Number of terminals per screen") }}</span>
           <el-select
             v-model="form.select_terminal"
             :disabled="form.view_value === 'list'"
@@ -161,7 +168,9 @@
           <el-button type="primary" @click="confirmTerminalSet">
             {{ $t("Confirm") }}
           </el-button>
-          <el-button @click="set_dialog = false"> 取消 </el-button>
+          <el-button @click="set_dialog = false">
+            {{ $t("Cancel") }}
+          </el-button>
         </span>
       </template>
     </el-dialog>
@@ -218,14 +227,7 @@ const form = reactive<any>({
   search_placeholder: "", // 搜索 placeholder
   speaker_terminal: "", // 主讲终端
   speakerTerminalOptions: [],
-  terminalStatusOptions: [
-    { value: -1, label: "全部状态" },
-    { value: 1, label: "空闲" },
-    { value: 2, label: "忙碌" },
-    { value: 3, label: "冻结" },
-    { value: 4, label: "故障" },
-    { value: 0, label: "离线" },
-  ],
+  terminalStatusOptions: useFormatMap.terminalStatusOptions,
   volume: 0, // 音量
   view_value: "list",
   select_terminal: "3x6",
@@ -267,7 +269,7 @@ const checked_all = ref(false);
 const is_checked_all = ref(false);
 
 // 处理全选
-const handleCheckedAll = (value: any) => {
+const handleCheckedAll = () => {
   is_checked_all.value = true;
 };
 
@@ -295,13 +297,13 @@ const setUp = () => {
 
 // 终端 <-> 分组切换
 const changeRouter = (name: string) => {
-  if (name === "分组") {
+  if (name === "group") {
     $useRouter.push("/terminal/group");
-    form.search_placeholder = "分组名称";
+    form.search_placeholder = proxy.$t("Group name");
     storeTerminal.changeFilterStatus(false);
   } else {
     $useRouter.push("/terminal/terminal_list");
-    form.search_placeholder = "终端名称";
+    form.search_placeholder = proxy.$t("Terminal name");
     storeTerminal.changeFilterStatus(true);
   }
 };
@@ -626,16 +628,7 @@ const timeToSec = (time: any, num = 1) => {
   var s = Number(hour * 3600) + Number(min * 60) + Number(sec);
   return s * num;
 };
-// 获取所有终端
-const getTerminalAll = () => {
-  return new Promise((resolve, reject) => {
-    proxy.$http.get("/terminals/all").then((result: any) => {
-      if (result.result === 200) {
-        resolve(result.data);
-      }
-    });
-  });
-};
+
 // 获取所有分组
 const getTerminalGroupAll = () => {
   proxy.$http
@@ -651,7 +644,7 @@ const getTerminalGroupAll = () => {
         terminal_group_data.value.unshift({
           id: 0,
           GroupID: 0,
-          name: "所有终端",
+          name: proxy.$t("All terminals"),
           terminals: JSON.parse(JSON.stringify(terminal_data.value)),
         });
         $useRouter.push("/terminal/terminal_list");
@@ -723,7 +716,7 @@ watch(
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  form.search_placeholder = "终端名称";
+  form.search_placeholder = proxy.$t("Terminal name");
   form.select_terminal =
     basic_configs.value.ListDisplaySize === 0
       ? "3x5"

@@ -662,7 +662,7 @@
   "Restore backup instructions 1": "1. 恢复已备份数据的版本和当前操作版本必须一致，否则无法恢复。例如：3.1版本的备份数据只能在3.1版本上进行恢复操作，以此类推！",
   "Restore backup instructions 2": "2. 单独备份媒体库的压缩文件不可用于恢复。",
   "Restore backup instructions 3": "3. 媒体库数据需在500M内，假如大于500M时请使用快速备份工具。",
-  "Identity check": "身份效应",
+  "Identity check": "身份校验",
   "Upgrade password": "升级密码",
   "Firmware": "固件",
   "Firmware specifications": "固件规格",
@@ -1023,5 +1023,14 @@
   "Apply to other terminals": "应用到其他终端",
   "No files": "没有文件！",
   "Play center": "播放中心",
-  "WebSocket connection failed": "WebSocket连接服务器失败"
+  "WebSocket connection failed": "WebSocket连接服务器失败",
+  "Speaker terminal": "主讲终端",
+  "Regional broadcasting": "全区广播",
+  "End the intercom": "结束对讲",
+  "End listening": "结束监听",
+  "End alarm": "结束报警",
+  "Terminal status configuration": "终端状态配置",
+  "List view": "列表视图",
+  "Block view": "方块视图",
+  "Number of terminals per screen": "每屏终端数量"
 }

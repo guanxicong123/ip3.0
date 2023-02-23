@@ -83,7 +83,7 @@
               </el-table-column>
               <el-table-column
                 prop="name"
-                label="终端名称"
+                :label="$t('Terminal name')"
                 sortable="custom"
                 show-overflow-tooltip
               />
@@ -154,7 +154,7 @@ const form = reactive<any>({
   currentPage: 1,
   pageSize: systemPageSize.value,
   total: 0,
-  currentGroupTitle: "所有终端",
+  currentGroupTitle: proxy.$t("All terminals"),
   isShowNavBar: true, // 是否显示左侧导航栏
   current_group: 0,
 });
