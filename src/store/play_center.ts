@@ -18,7 +18,7 @@ export const usePlayStore = defineStore({
       this.playStatusData = data;
     },
     setPlayTaskStatus(data: any) {
-      this.playSubscriptionTask = data;
+      this.playSubscriptionTask = data[0];
     },
   },
 });

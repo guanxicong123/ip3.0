@@ -443,6 +443,7 @@ const regionalBroadcasting = (currentTableRow: any) => {
       return item.EndPointID;
     });
   if (data.length) {
+    console.log(form.volume)
     let send_data = {
       company: "BL",
       actioncode: "c2ms_create_server_task",

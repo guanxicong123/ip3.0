@@ -557,7 +557,7 @@ const handlePlayTask = (row: any) => {
       token: "",
       data: {
         TaskID: row.TaskID,
-        ControlCode: "play",
+        ControlCode: "resume", //resume
         ControlValue: "",
       },
       result: 0,
@@ -925,7 +925,7 @@ const getPrioritySetting = () => {
 };
 const formatTooltip = (seconds: number) => {
   if (seconds) {
-    let data = Math.trunc(seconds / 1000);
+    let data = seconds;
     let hour =
       Math.floor(data / 3600) >= 10
         ? Math.floor(data / 3600)
@@ -972,6 +972,7 @@ watch(playStatusData, (newVal) => {
   form.play_status = newVal.PlayStatus;
 });
 watch(playSubscriptionTask, (newVal) => {
+  console.log(newVal, playCenterData.value?.TaskID)
   if (newVal.TaskID === playCenterData.value?.TaskID) {
     form.current_duration = newVal.CurrentTime;
     form.total_duration = newVal.TotalTime;
