@@ -30,12 +30,15 @@
                 <div class="custom-popover">
                   <el-input
                     v-model="form.searchTerminals"
-                    placeholder="终端名称/终端IP"
+                    :placeholder="$t('Terminal name') + '/' + $t('Terminal IP')"
                     maxlength="100"
                     clearable
                     @input="handleTerminalsSearch"
                   />
-                  <i class="iconfont icon-clear" @click="handleClickClosePopover"></i>
+                  <i
+                    class="iconfont icon-clear"
+                    @click="handleClickClosePopover"
+                  ></i>
                 </div>
               </el-popover>
               <span>{{ config.terminalsTitle }}</span>
@@ -44,7 +47,7 @@
           <div class="custom-scroll-bar">
             <div class="scroll-select">
               <el-select v-model="form.currentGroupsID">
-                <el-option :key="0" label="所有分组" :value="0" />
+                <el-option :key="0" :label="$t('All terminals')" :value="0" />
                 <el-option
                   v-for="item in form.allGroupsOptions"
                   :key="item.id"
@@ -56,13 +59,20 @@
             <div class="scroll-bar">
               <el-scrollbar>
                 <ul class="scroll-ul">
-                  <template v-for="item in form.allTerminalsData" :key="item.id">
+                  <template
+                    v-for="item in form.allTerminalsData"
+                    :key="item.id"
+                  >
                     <li
                       @click="selectTerminal(item)"
                       v-show="
                         !form.searchTerminalsVisible ||
-                        item[config.searchColumnName].match(form.searchTerminalsReg) ||
-                        item[config.searchColumnIP].match(form.searchTerminalsReg)
+                        item[config.searchColumnName].match(
+                          form.searchTerminalsReg
+                        ) ||
+                        item[config.searchColumnIP].match(
+                          form.searchTerminalsReg
+                        )
                       "
                     >
                       {{ item.name }}
@@ -94,7 +104,10 @@
                     clearable
                     @input="handleGroupsSearch"
                   />
-                  <i class="iconfont icon-clear" @click="handleClickClosePopover"></i>
+                  <i
+                    class="iconfont icon-clear"
+                    @click="handleClickClosePopover"
+                  ></i>
                 </div>
               </el-popover>
               <span>{{ config.groupsTitle }}</span>
@@ -119,8 +132,17 @@
       </el-tabs>
     </div>
     <div class="com-select-center">
-      <span title="全部右移" @click="selectAll" class="iconfont icon-shift-right"> </span>
-      <span title="全部左移" @click="deselectAll" class="iconfont icon-shift-left">
+      <span
+        :title="$t('Move all right')"
+        @click="selectAll"
+        class="iconfont icon-shift-right"
+      >
+      </span>
+      <span
+        :title="$t('Move all left')"
+        @click="deselectAll"
+        class="iconfont icon-shift-left"
+      >
       </span>
     </div>
     <!-- 已选终端 -->
@@ -143,7 +165,8 @@
           >
             <el-icon
               @click="
-                form.selectedSearchTerminalsVisible = !form.selectedSearchTerminalsVisible
+                form.selectedSearchTerminalsVisible =
+                  !form.selectedSearchTerminalsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -157,7 +180,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchTerminals"
-              placeholder="终端名称/终端IP"
+              :placeholder="$t('Terminal name') + '/' + $t('Terminal IP')"
               maxlength="100"
               clearable
               @input="handleSelectedTerminalsSearch"
@@ -172,12 +195,19 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template v-for="(item, index) in form.selectedTerminalsData" :key="item.id">
+            <template
+              v-for="(item, index) in form.selectedTerminalsData"
+              :key="item.id"
+            >
               <li
                 v-show="
                   !form.selectedSearchTerminalsVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
-                  item[config.searchColumnIP].match(form.selectedSearchTerminalsReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchTerminalsReg
+                  ) ||
+                  item[config.searchColumnIP].match(
+                    form.selectedSearchTerminalsReg
+                  )
                 "
               >
                 <div class="item-terminals">
@@ -253,12 +283,14 @@
         >
           <template
             v-if="
-              item.column !== config.searchColumnName || !form.selectedSearchGroupsVisible
+              item.column !== config.searchColumnName ||
+              !form.selectedSearchGroupsVisible
             "
           >
             <el-icon
               @click="
-                form.selectedSearchGroupsVisible = !form.selectedSearchGroupsVisible
+                form.selectedSearchGroupsVisible =
+                  !form.selectedSearchGroupsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -285,11 +317,16 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template v-for="(item, index) in form.selectedGroupsData" :key="item.id">
+            <template
+              v-for="(item, index) in form.selectedGroupsData"
+              :key="item.id"
+            >
               <li
                 v-show="
                   !form.selectedSearchGroupsVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchGroupsReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchGroupsReg
+                  )
                 "
               >
                 <div class="item-terminals group">
@@ -298,7 +335,9 @@
                     :key="key"
                     :style="row.style"
                     :title="
-                      row.column !== config.terminalsColumnVolume ? item[row.column] : ''
+                      row.column !== config.terminalsColumnVolume
+                        ? item[row.column]
+                        : ''
                     "
                   >
                     <el-input-number
@@ -318,7 +357,10 @@
                     </span>
                   </div>
                   <div class="icon-font-delete">
-                    <i class="iconfont icon-clear delete" @click="deleteGroup(item)"></i>
+                    <i
+                      class="iconfont icon-clear delete"
+                      @click="deleteGroup(item)"
+                    ></i>
                   </div>
                 </div>
               </li>
@@ -381,13 +423,13 @@ const form = reactive<any>({
 
 // 插件配置
 let config = reactive<any>({
-  terminalsTitle: "终端", // 终端选项开的标题
-  groupsTitle: "分组", // 分组选项卡的标题
+  terminalsTitle: proxy.$t("Terminal"), // 终端选项开的标题
+  groupsTitle: proxy.$t("Group"), // 分组选项卡的标题
   showTerminalsColumn: [
     // 要显示的列(终端） column列名 text列的别名 style 列的样式
     {
       column: "key",
-      text: "序号",
+      text: "No.",
       style: { width: "15%" },
     },
     {
@@ -397,7 +439,7 @@ let config = reactive<any>({
     },
     {
       column: "ip_address",
-      text: "终端IP",
+      text: proxy.$t("Terminal IP"),
       style: { width: "30%" },
     },
   ],
@@ -405,7 +447,7 @@ let config = reactive<any>({
     // 要显示的列(分组) column 列名 text 列的别名 style 列的样式
     {
       column: "key",
-      text: "序号",
+      text: "No.",
       style: { width: "15%" },
     },
     {
@@ -415,7 +457,7 @@ let config = reactive<any>({
     },
     {
       column: "list",
-      text: "终端列表",
+      text: proxy.$t("Terminal list"),
       style: { width: "30%" },
     },
   ],
@@ -439,15 +481,6 @@ let config = reactive<any>({
 watch(
   () => [parentData],
   ([newData]) => {
-    // 开启终端音量
-    // config = Object.assign(
-    //     config,
-    //     newData.openTerminalsVolume ? changeTerminalsVolumeConfig : defaultConfig
-    // );
-    // 开启并修改终端音量
-    // if (parentData.openTerminalsVolume && newData.changeTerminalsVolume) {
-    //     setChangeTerminalsVolume(newData.changeTerminalsVolume);
-    // }
     if (config.isSelectTerminals && newData.responseTerminals.length > 0) {
       handleEditTerminalsData();
     }
@@ -554,10 +587,12 @@ const handleUpdateSelectedTerminals = () => {
       form.selectedTerminalsID.push(item.id);
       request.name = item.name;
       selectedName += item.name + ",";
-      request[config.terminalsRequestColumnName] = item[config.terminalsColumnName];
+      request[config.terminalsRequestColumnName] =
+        item[config.terminalsColumnName];
 
       if (config.selectAmplifier) {
-        request[config.amplifierRequestColumnName] = item[config.amplifierColumnName];
+        request[config.amplifierRequestColumnName] =
+          item[config.amplifierColumnName];
       }
 
       request = Object.assign(request, config.terminalsOtherData);
@@ -575,8 +610,9 @@ const deselectAll = () => {
     form.selectedTerminalsData.forEach(
       (item: { [x: string]: string; ip_address: string }) => {
         if (form.selectedSearchTerminals) {
-          item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
-          item.ip_address.match(form.selectedSearchTerminalsReg)
+          item[config.searchColumnName].match(
+            form.selectedSearchTerminalsReg
+          ) || item.ip_address.match(form.selectedSearchTerminalsReg)
             ? selected.push(item)
             : noSelect.push(item);
         } else {
@@ -621,7 +657,9 @@ const selectAll = () => {
           : noSelect.push(item);
       }
     );
-    form.selectedTerminalsData = Array.from(selected.concat(form.selectedTerminalsData));
+    form.selectedTerminalsData = Array.from(
+      selected.concat(form.selectedTerminalsData)
+    );
     form.allTerminalsData = Array.from(noSelect);
     handleUpdateSelectedTerminals();
   }
@@ -634,7 +672,9 @@ const selectAll = () => {
         ? selected.push(item)
         : noSelect.push(item);
     });
-    form.selectedGroupsData = Array.from(selected.concat(form.selectedGroupsData));
+    form.selectedGroupsData = Array.from(
+      selected.concat(form.selectedGroupsData)
+    );
     form.allGroupsData = Array.from(noSelect);
     handleUpdateSelectedGroups();
   }
@@ -643,9 +683,11 @@ const selectAll = () => {
 const selectTerminal = (row: { id: number }) => {
   if (form.selectedTerminalsID.indexOf(row.id) < 0) {
     form.selectedTerminalsData.push(Object.assign({}, row));
-    form.allTerminalsData = form.allTerminalsData.filter((item: { id: number }) => {
-      return row.id !== item.id;
-    });
+    form.allTerminalsData = form.allTerminalsData.filter(
+      (item: { id: number }) => {
+        return row.id !== item.id;
+      }
+    );
     handleUpdateSelectedTerminals();
   }
 };
@@ -675,9 +717,11 @@ const selectGroup = (row: { id: number }) => {
 const deleteGroup = (row: { id: number }) => {
   if (form.selectedGroupsID.indexOf(row.id) >= 0) {
     form.allGroupsData.unshift(Object.assign({}, row));
-    form.selectedGroupsData = form.selectedGroupsData.filter((item: { id: number }) => {
-      return row.id !== item.id;
-    });
+    form.selectedGroupsData = form.selectedGroupsData.filter(
+      (item: { id: number }) => {
+        return row.id !== item.id;
+      }
+    );
     handleUpdateSelectedGroups();
   }
 };
@@ -691,7 +735,8 @@ const handleCheckAllAmplifierChange = (item: any) => {
 const handleSelectAmplifierChange = (item: any) => {
   const checkedCount = item[config.amplifierColumnName].length;
   item.checkAll_amplifier = checkedCount === config.amplifierValue.length;
-  item.isIndeterminate = checkedCount > 0 && checkedCount < config.amplifierValue.length;
+  item.isIndeterminate =
+    checkedCount > 0 && checkedCount < config.amplifierValue.length;
   handleUpdateSelectedTerminals();
 };
 // 设置tab当前选择状态
@@ -718,13 +763,15 @@ const getGroupsAll = () => {
     })
     .then((result: { result: number; data: any[] }) => {
       if (result.result === 200) {
-        form.allGroupsData = form.allGroupsOptions = result.data.map((item: any) => {
-          return {
-            id: item.id,
-            name: item.name,
-            terminals: item.terminals,
-          };
-        });
+        form.allGroupsData = form.allGroupsOptions = result.data.map(
+          (item: any) => {
+            return {
+              id: item.id,
+              name: item.name,
+              terminals: item.terminals,
+            };
+          }
+        );
         handleEditGroupsData();
       }
     });
@@ -801,7 +848,10 @@ const handleEditGroupsData = () => {
 onMounted(() => {
   getTerminalsAll();
   getGroupsAll();
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
   setCurrentTabSelectStatus();
 });
 </script>

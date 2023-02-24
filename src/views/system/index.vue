@@ -12,11 +12,13 @@
           <div class="com-head">
             <div class="com-head-content com-alert-bg">
               <div class="com-breadcrumb">
-                <span class="strong">一键报警配置</span>
+                <span class="strong">
+                  {{ $t("One-button alarm configuration") }}
+                </span>
               </div>
               <div class="com-button">
                 <el-button type="primary" round @click="changeConfig('alarm')">
-                  应用
+                  {{ $t("Apply") }}
                 </el-button>
               </div>
             </div>
@@ -24,9 +26,12 @@
           <div class="com-form">
             <el-form class="special-class" label-position="top" :inline="true">
               <div class="com-form-item-custom">
-                <el-checkbox v-model="form.one_key_alarm" label="启用一键报警功能" />
+                <el-checkbox
+                  v-model="form.one_key_alarm"
+                  :label="$t('Enable one-button alarm function')"
+                />
               </div>
-              <el-form-item label="报警曲目">
+              <el-form-item :label="$t('Alarm track')">
                 <el-select v-model="form.alarm_track">
                   <el-option
                     v-for="item in form.alarmTrackOptions"
@@ -41,18 +46,18 @@
           <div class="com-head">
             <div class="com-head-content com-alert-bg">
               <div class="com-breadcrumb">
-                <span class="strong">默认配置</span>
+                <span class="strong">{{ $t("Default configuration") }}</span>
               </div>
               <div class="com-button">
                 <el-button type="primary" round @click="changeConfig('default')">
-                  应用
+                  {{ $t("Apply") }}
                 </el-button>
               </div>
             </div>
           </div>
           <div class="com-form">
             <el-form label-position="top" :inline="true">
-              <el-form-item label="终端状态默认项">
+              <el-form-item :label="$t('Device status default')">
                 <el-select v-model="form.default_terminal_status">
                   <el-option
                     v-for="(item, keys) in form.terminalStatusOptions"
@@ -62,7 +67,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="默认展示模块">
+              <el-form-item :label="$t('Default display module')">
                 <el-select v-model="form.default_presentation_module">
                   <el-option
                     v-for="(item, keys) in form.presentationModuleOptions"
@@ -72,7 +77,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="终端排序">
+              <el-form-item :label="$t('Terminal sequencing')">
                 <el-select v-model="form.default_terminal_sort">
                   <el-option
                     v-for="(item, keys) in form.terminalSortOptions"
@@ -87,43 +92,55 @@
           <div class="com-head">
             <div class="com-head-content com-alert-bg">
               <div class="com-breadcrumb">
-                <span class="strong">提醒配置</span>
+                <span class="strong">{{ $t("Reminder configuration") }}</span>
               </div>
               <div class="com-button">
                 <el-button type="primary" round @click="changeConfig('remind')">
-                  应用
+                  {{ $t("Apply") }}
                 </el-button>
               </div>
             </div>
           </div>
           <div class="com-form">
             <el-checkbox-group class="check-box-group" v-model="reminder_configuration">
-              <el-checkbox label="1">启用火警报警提醒</el-checkbox>
-              <el-checkbox label="2">启用人工报警提醒</el-checkbox>
-              <el-checkbox label="3">启用终端离线提醒</el-checkbox>
-              <el-checkbox label="4">启用终端离线铃声提醒</el-checkbox>
+              <el-checkbox label="1">
+                {{ $t("Enable fire alarm reminder") }}
+              </el-checkbox>
+              <el-checkbox label="2">
+                {{ $t("Enable manual alarm reminder") }}
+              </el-checkbox>
+              <el-checkbox label="3">
+                {{ $t("Enable terminal offline reminder") }}
+              </el-checkbox>
+              <el-checkbox label="4">
+                {{ $t("Enable terminal offline ringtone reminder") }}
+              </el-checkbox>
             </el-checkbox-group>
           </div>
           <div class="com-head">
             <div class="com-head-content com-alert-bg">
               <div class="com-breadcrumb">
-                <span class="strong">功能配置</span>
+                <span class="strong">{{ $t("Function configuration") }}</span>
               </div>
               <div class="com-button">
-                <!-- <el-button type="primary" round>应用</el-button> -->
+                <!-- <el-button type="primary" round>{{ $t("Apply") }}</el-button> -->
               </div>
             </div>
           </div>
           <div class="com-form">
-            <el-button type="primary" round @click="handleFuncManage">功能管理</el-button>
-            <el-button type="primary" round @click="registerManage">注册管理</el-button>
+            <el-button type="primary" round @click="handleFuncManage">
+              {{ $t("Function management") }}
+            </el-button>
+            <el-button type="primary" round @click="registerManage">
+              {{ $t("Registration management") }}
+            </el-button>
           </div>
         </el-scrollbar>
       </div>
     </div>
     <el-dialog
       v-model="func_manage_dialog"
-      title="功能管理"
+      :title="$t('Function management')"
       width="720px"
       class="func-manage-dialog"
     >
@@ -131,8 +148,8 @@
         <div class="com-head-content com-alert-bg">
           <div class="com-breadcrumb">
             <span class="strong">
-              功能开关设置
-              <span class="">(修改配置，下次登录生效)</span>
+              {{ $t("Function switch setting") }}
+              <span class="">({{ $t("Modify configuration prompt") }})</span>
             </span>
           </div>
           <div class="com-button"></div>
@@ -145,22 +162,19 @@
           :inline="true"
           label-width="97px"
         >
-          <!-- <el-form-item v-for="item in func_switch_data" :key="item.label" :label="item.label">
-            <el-switch v-model="item.switch_value"></el-switch>
-          </el-form-item> -->
-          <el-form-item label="终端状态">
+          <el-form-item :label="$t('Equipment status')">
             <el-switch v-model="switch_form.TerminalStateEnabled"></el-switch>
           </el-form-item>
           <el-form-item :label="$t('Play center')">
             <el-switch v-model="switch_form.PlayCenterEnabled"></el-switch>
           </el-form-item>
-          <el-form-item label="会话状态">
+          <el-form-item :label="$t('Session status')">
             <el-switch v-model="switch_form.SessionEnabled"></el-switch>
           </el-form-item>
-          <el-form-item label="定时任务">
+          <el-form-item :label="$t('Timing task')">
             <el-switch v-model="switch_form.TimingEnabled"></el-switch>
           </el-form-item>
-          <el-form-item label="媒体库">
+          <el-form-item :label="$t('Media library')">
             <el-switch v-model="switch_form.MediasEnabled"></el-switch>
           </el-form-item>
         </el-form>
@@ -168,7 +182,7 @@
       <div class="com-head">
         <div class="com-head-content com-alert-bg">
           <div class="com-breadcrumb">
-            <span class="strong">区域选项</span>
+            <span class="strong">{{ $t("Regional options") }}</span>
           </div>
           <div class="com-button"></div>
         </div>
@@ -183,7 +197,7 @@
           <el-form-item :label="$t('Group')">
             <el-switch v-model="switch_form.GroupDisplay"></el-switch>
           </el-form-item>
-          <el-form-item label="显示远程任务">
+          <el-form-item :label="$t('Show remote tasks')">
             <el-switch v-model="switch_form.remoteTaskDisplay"></el-switch>
           </el-form-item>
         </el-form>
@@ -191,7 +205,7 @@
       <div class="com-head">
         <div class="com-head-content com-alert-bg">
           <div class="com-breadcrumb">
-            <span class="strong">媒体选项</span>
+            <span class="strong">{{ $t("Media options") }}</span>
           </div>
           <div class="com-button"></div>
         </div>
@@ -203,14 +217,16 @@
           :inline="true"
           label-width="97px"
         >
-          <el-form-item label="文件夹">
+          <el-form-item :label="$t('Media folder')">
             <el-switch v-model="switch_form.FolderDisplay"></el-switch>
           </el-form-item>
         </el-form>
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="saveSet"> 保存并重新登录 </el-button>
+          <el-button type="primary" @click="saveSet">
+            {{ $t("Save and login again") }}
+          </el-button>
           <el-button @click="func_manage_dialog = false">
             {{ $t("Cancel") }}
           </el-button>
@@ -225,19 +241,19 @@
     >
       <div class="register-logo">
         <img class="logo-image" src="@/assets/images/logo.png" alt="logo" />
-        <h2>软件注册</h2>
+        <h2>{{ $t("Software registration") }}</h2>
       </div>
       <div class="register-content">
         <el-form class="register-form-class" label-position="left">
-          <el-form-item label="机器码">
+          <el-form-item :label="$t('Machine code')">
             <span>{{ form.ProductKey }}</span>
           </el-form-item>
-          <el-form-item label="注册码">
+          <el-form-item :label="$t('Registration code')">
             <el-input
               type="text"
               auto-complete="off"
               v-model="form.code"
-              placeholder="输入注册码"
+              :placeholder="$t('Please enter')"
             >
             </el-input>
           </el-form-item>
@@ -267,6 +283,21 @@ import { ElMessage } from "element-plus";
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
+const systemStore = getStore.useSystemStore();
+// 计算属性 computed
+const system_configs = computed(() => {
+  return systemStore.system_configs;
+});
+const basic_configs = computed(() => {
+  return systemStore.basic_configs;
+});
+const opcodes = computed(() => {
+  return systemStore.opcodes;
+});
+const functional_configs = computed(() => {
+  return systemStore.functional_configs;
+});
+
 const form = reactive({
   one_key_alarm: false, // 启用一键报警功能
   alarm_track: "", // 报警曲目
@@ -278,91 +309,35 @@ const form = reactive({
   ],
   default_terminal_status: 0, // 终端状态默认项
   terminalStatusOptions: [
-    { value: 0, label: "终端" },
+    { value: 0, label: proxy.$t("Terminal") },
     { value: 1, label: proxy.$t("Group") },
   ],
   default_presentation_module: 0, // 默认展示模块
   presentationModuleOptions: [
-    { value: 0, label: "终端状态" },
+    { value: 0, label: proxy.$t("Equipment status") },
     { value: 1, label: proxy.$t("Play center") },
-    { value: 2, label: "会话状态" },
-    { value: 3, label: "定时任务" },
-    { value: 4, label: "媒体库" },
+    { value: 2, label: proxy.$t("Session status") },
+    { value: 3, label: proxy.$t("Timing task") },
+    { value: 4, label: proxy.$t("Media library") },
   ],
   default_terminal_sort: 0, // 默认终端排序
   terminalSortOptions: [
-    { value: 0, label: "终端状态" },
-    { value: 1, label: "IP地址" },
+    { value: 0, label: proxy.$t("Equipment status") },
+    { value: 1, label: proxy.$t("IP address") },
     { value: 2, label: proxy.$t("Terminal name") },
-    { value: 3, label: "呼叫编码" },
+    { value: 3, label: proxy.$t("Call code") },
   ],
   reminder_configuration: [], // 提醒配置
   ProductKey: "",
   code: "",
 });
 
-const $useRouter = useRouter();
-
-const systemStore = getStore.useSystemStore();
-
-const system_configs = computed(() => {
-  return systemStore.system_configs;
-});
-
-const basic_configs = computed(() => {
-  return systemStore.basic_configs;
-});
-
-const opcodes = computed(() => {
-  return systemStore.opcodes;
-});
-
-watch(
-  () => system_configs.value,
-  (newVal) => {
-    formatData();
-  },
-  {
-    deep: true,
-  }
-);
-
-const functional_configs = computed(() => {
-  return systemStore.functional_configs;
-});
-
 const func_manage_dialog = ref(false);
-
 const register_manage_dialog = ref(false);
-
 const reminder_configuration: any = ref([]);
-
-const func_switch_data = ref([
-  {
-    label: "终端状态",
-    switch_value: false,
-  },
-  {
-    label: proxy.$t("Play center"),
-    switch_value: false,
-  },
-  {
-    label: "会话状态",
-    switch_value: false,
-  },
-  {
-    label: "定时任务",
-    switch_value: false,
-  },
-  {
-    label: "媒体库",
-    switch_value: false,
-  },
-]);
-
 // 功能管理开关数据
 const switch_form = ref();
-
+// 获取全部一键报警曲目
 const getAlarmTask = () => {
   proxy.$http.get("/one-button-alarm/all").then((result: any) => {
     if (result.result === 200) {
@@ -370,7 +345,6 @@ const getAlarmTask = () => {
     }
   });
 };
-
 // 数据填充
 const formatData = () => {
   form.one_key_alarm = system_configs.value.EnabledAlarm;
@@ -388,7 +362,6 @@ const formatData = () => {
     ? reminder_configuration.value.push("4")
     : "";
 };
-
 // 功能管理配置
 const saveSet = () => {
   proxy.$http1
@@ -399,19 +372,16 @@ const saveSet = () => {
       }
     });
 };
-
 // 功能管理弹窗
 const handleFuncManage = () => {
   func_manage_dialog.value = true;
   switch_form.value = JSON.parse(JSON.stringify(functional_configs.value));
 };
-
 // 注册弹窗
 const registerManage = () => {
   register_manage_dialog.value = true;
   form.code = "";
 };
-
 // 注册操作
 const confirmRegister = () => {
   proxy.$http
@@ -421,7 +391,7 @@ const confirmRegister = () => {
     .then((result: any) => {
       if (result.result === 200) {
         if (result.data.code === 200) {
-          ElMessage.success("注册成功");
+          ElMessage.success(proxy.$t("Register succeeded"));
           register_manage_dialog.value = false;
         } else {
           ElMessage.error(result.data.message);
@@ -429,7 +399,6 @@ const confirmRegister = () => {
       }
     });
 };
-
 // 系统配置各模块配置数据处理
 const updateConfigData = (model: string) => {
   let data = {};
@@ -454,27 +423,35 @@ const updateConfigData = (model: string) => {
   }
   return data;
 };
-
 // 更改模块配置
 const changeConfig = (model: string) => {
   if (model === "alarm" && form.alarm_track === "") {
-    return ElMessage.error("请选择报警曲目");
+    return ElMessage.error(proxy.$t("Please select alarm track"));
   }
   let send_data = updateConfigData(model);
   proxy.$http1.put("/config/" + basic_configs.value.ID, send_data).then((result: any) => {
     if (result.result === 200) {
-      ElMessage.success("配置成功");
+      ElMessage.success(proxy.$t("Application succeeded"));
       systemStore.updateSystemConfig(send_data);
     }
   });
 };
+
+watch(
+  () => system_configs.value,
+  () => {
+    formatData();
+  },
+  {
+    deep: true,
+  }
+);
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   formatData();
   switch_form.value = JSON.parse(JSON.stringify(functional_configs.value));
   form.ProductKey = opcodes.value;
-  // 获取报警任务
   getAlarmTask();
 });
 </script>

@@ -9,21 +9,26 @@
     <div class="com-select-left">
       <div class="custom-title">
         <template v-if="!form.searchConfigureVisible">
-          <el-icon @click="form.searchConfigureVisible = !form.searchConfigureVisible">
+          <el-icon
+            @click="form.searchConfigureVisible = !form.searchConfigureVisible"
+          >
             <Search />
           </el-icon>
-          <span> 配置名称 </span>
+          <span> {{ $t("Configuration name") }} </span>
         </template>
         <span v-else :class="{ span: form.searchConfigureVisible }">
           <el-input
             class="title-search-input"
             v-model="form.searchConfigure"
-            placeholder="配置名称"
+            :placeholder="$t('Configuration name')"
             maxlength="100"
             clearable
             @input="handleConfigureSearch"
           />
-          <i class="iconfont icon-clear delete" @click="handleClickCloSesearchInput"></i>
+          <i
+            class="iconfont icon-clear delete"
+            @click="handleClickCloSesearchInput"
+          ></i>
         </span>
       </div>
       <div class="custom-content">
@@ -66,7 +71,8 @@
           >
             <el-icon
               @click="
-                form.selectedSearchConfigureVisible = !form.selectedSearchConfigureVisible
+                form.selectedSearchConfigureVisible =
+                  !form.selectedSearchConfigureVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -78,7 +84,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchConfigure"
-              placeholder="终端/分组"
+              :placeholder="$t('Terminal') + '/' + $t('Group')"
               maxlength="100"
               clearable
               @input="handleSelectedConfigureSearch"
@@ -100,7 +106,9 @@
               <li
                 v-show="
                   !form.selectedSearchConfigureVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchConfigureReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchConfigureReg
+                  )
                 "
               >
                 <div
@@ -109,27 +117,25 @@
                   :style="row.style"
                   :title="item[row.column]"
                 >
-                  <span
-                    :class="{
-                      'iconfont icon-terminals1':
-                        row.column === 'list' && !item.hasOwnProperty('ip_address'),
-                    }"
-                    :title="
-                      row.column === 'list' && !item.hasOwnProperty('ip_address')
-                        ? '点击查看'
-                        : ''
-                    "
-                  >
+                  <span>
                     {{
                       row.column === "key" // 序号
                         ? index + 1
-                        : row.column === "list" && item.hasOwnProperty("ip_address") // 终端列表
+                        : row.column === "list" &&
+                          item.hasOwnProperty("ip_address") // 终端列表
                         ? "-"
                         : row.column === "ip_address" &&
                           !item.hasOwnProperty("ip_address") // IP地址
                         ? "-"
                         : item[row.column]
                     }}
+                    <view-components-popover
+                      v-if="
+                        row.column === 'list' &&
+                        !item.hasOwnProperty('ip_address')
+                      "
+                      :url="'/terminals-groups/' + item.id + '/terminals'"
+                    />
                   </span>
                 </div>
               </li>
@@ -179,17 +185,17 @@ let config = reactive<any>({
     },
     {
       column: "name",
-      text: "终端/分组",
+      text: proxy.$t("Terminal") + "/" + proxy.$t("Group"),
       style: { width: "40%" },
     },
     {
       column: "ip_address",
-      text: "IP地址",
+      text: proxy.$t("IP address"),
       style: { width: "30%" },
     },
     {
       column: "list",
-      text: "终端列表",
+      text: proxy.$t("Terminal list"),
       style: { width: "20%" },
     },
   ],
@@ -232,7 +238,7 @@ const setCurrentTabSelectStatus = (data: any) => {
   });
 };
 // 获取快捷终端
-const getFastTerminals = (current: number, page: number) => {
+const getFastTerminals = () => {
   proxy.$http
     .get("/fast-terminals/all", {
       params: {
@@ -251,8 +257,11 @@ const getFastTerminals = (current: number, page: number) => {
 };
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
-  getFastTerminals(1, 30);
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
+  getFastTerminals();
 });
 </script>
 

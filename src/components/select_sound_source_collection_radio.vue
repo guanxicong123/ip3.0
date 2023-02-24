@@ -7,7 +7,7 @@
 <template>
   <div class="com-select-sound-source-collection">
     <div class="com-select-left">
-      <div class="custom-title">音源</div>
+      <div class="custom-title">{{ $t("Sound source") }}</div>
       <div class="custom-content">
         <el-scrollbar>
           <ul class="scroll-ul">
@@ -36,7 +36,10 @@
       <div class="custom-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template v-for="(item, index) in form.allSoundCardData" :key="item.id">
+            <template
+              v-for="(item, index) in form.allSoundCardData"
+              :key="item.id"
+            >
               <li
                 @click="handleSelectedSoundSource(item)"
                 :class="{
@@ -80,7 +83,8 @@
           >
             <el-icon
               @click="
-                form.selectedSearchAcquisitionVisible = !form.selectedSearchAcquisitionVisible
+                form.selectedSearchAcquisitionVisible =
+                  !form.selectedSearchAcquisitionVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -94,7 +98,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchAcquisition"
-              placeholder="终端名称/终端IP"
+              :placeholder="$t('Terminal name') + '/' + $t('Terminal IP')"
               maxlength="100"
               clearable
               @input="handleSelectedTerminalsSearch"
@@ -123,7 +127,9 @@
                   item[config.searchColumnName].match(
                     form.selectedSearchAcquisitionReg
                   ) ||
-                  item[config.searchColumnIP].match(form.selectedSearchAcquisitionReg)
+                  item[config.searchColumnIP].match(
+                    form.selectedSearchAcquisitionReg
+                  )
                 "
               >
                 <div
@@ -167,8 +173,8 @@ const parentData = defineProps([
 
 const form = reactive<any>({
   allSoundSourceData: [
-    { id: 1, name: "声卡" },
-    { id: 2, name: "采集终端" },
+    { id: 1, name: proxy.$t("Sound card") },
+    { id: 2, name: proxy.$t("Acquisition terminal") },
   ],
   currentGroupsID: 1, // 当前选择的分组id
   selectedSearchAcquisition: "", // 搜索采集终端
@@ -179,32 +185,18 @@ const form = reactive<any>({
   selectedSoundSourceData: {}, // 已选择的音源数据
 });
 
-// watch(
-//     () => parentData.responseSoundSource,
-//     () => {
-//         if (!parentData.responseSoundSource) {
-//             return;
-//         }
-//         const isHasID = Object.prototype.hasOwnProperty.call(
-//             parentData.responseSoundSource,
-//             "id"
-//         );
-//         form.currentGroupsID = isHasID ? 2 : 1;
-//         // form.selectedSoundSourceData = parentData.responseSoundSource;
-//     }
-// );
 // 插件配置
 let config = reactive<any>({
   showSoundCardColumn: [
     // 要显示的列(声卡） column列名 text列的别名 style 列的样式
     {
       column: "key",
-      text: "序号",
+      text: "No.",
       style: { width: "15%" },
     },
     {
       column: "name",
-      text: "声卡",
+      text: proxy.$t("Sound card"),
       style: { width: "85%" },
     },
   ],
@@ -212,7 +204,7 @@ let config = reactive<any>({
     // 要显示的列(采集终端) column 列名 text 列的别名 style 列的样式
     {
       column: "key",
-      text: "序号",
+      text: "No.",
       style: { width: "15%" },
     },
     {
@@ -222,7 +214,7 @@ let config = reactive<any>({
     },
     {
       column: "ip_address",
-      text: "终端IP",
+      text: proxy.$t("Terminal IP"),
       style: { width: "30%" },
     },
   ],

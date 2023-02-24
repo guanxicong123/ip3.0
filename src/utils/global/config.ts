@@ -157,6 +157,9 @@ const useConfig = {
     ms2c_unsubscribe_task_progress_bar: "ms2c_unsubscribe_task_progress_bar",
     // 结束所有考试模式
     c2ms_stop_endpoints_exam_mode: "c2ms_stop_endpoints_exam_mode",
+    // 任务提醒
+    c2ms_get_pending_task_info: "c2ms_get_pending_task_info",
+    ms2c_get_pending_task_info: "ms2c_get_pending_task_info",
     // 服务器主动推送-消息ID为 ms2c_push_msg
     // 注册信息
     register_info: "register_info",
