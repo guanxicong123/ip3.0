@@ -7,7 +7,7 @@
 <template>
   <el-dialog
     v-model="parentData.dialogVisible"
-    title="警告"
+    :title="$t('Warning')"
     class="com-dialong_warning_message"
     :close-on-press-escape="false"
     :close-on-click-modal="false"
@@ -25,12 +25,12 @@
     >
       <el-table-column
         property="EndPointName"
-        label="终端"
+        :label="$t('Terminal')"
         width="150"
         sortable
       />
-      <el-table-column property="EndPointIP" label="IP地址" width="200" />
-      <el-table-column property="OfflineTime" label="离线时间" sortable />
+      <el-table-column property="EndPointIP" :label="$t('IP address')" width="200" />
+      <el-table-column property="OfflineTime" :label="$t('Offline time')" sortable />
     </el-table>
   </el-dialog>
 </template>
@@ -55,13 +55,9 @@ watch(
 const handleSortChange = (row: { prop: any; order: string | string[] }) => {
   if (row.prop == "name") {
     if (row.order === "descending") {
-      tableData.value.sort((a: any, b: any) =>
-        b.name.localeCompare(a.name, "zh")
-      );
+      tableData.value.sort((a: any, b: any) => b.name.localeCompare(a.name, "zh"));
     } else if (row.order === "ascending") {
-      tableData.value.sort((a: any, b: any) =>
-        a.name.localeCompare(b.name, "zh")
-      );
+      tableData.value.sort((a: any, b: any) => a.name.localeCompare(b.name, "zh"));
     }
   }
 };
@@ -70,6 +66,7 @@ const handleClose = (done: () => void) => {
   done();
   parentEmit("update:dialogVisible", false);
 };
+
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   tableData.value = parentData.dialogAlertData;

@@ -38,18 +38,6 @@
             show-overflow-tooltip
           />
           <el-table-column
-            prop="terminal"
-            :label="$t('Executive terminal')"
-            show-overflow-tooltip
-          >
-            <template #default="scope">
-              <view-components-popover
-                :url="'/logs/tts/' + scope.row.id + '/terminals'"
-              />
-            </template>
-          </el-table-column>
-          <el-table-column prop="time" :label="$t('Start time')" show-overflow-tooltip />
-          <el-table-column
             prop="life_time"
             :label="$t('Duration')"
             show-overflow-tooltip

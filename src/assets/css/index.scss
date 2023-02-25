@@ -281,6 +281,9 @@ html {
 .com-ir-bg {
   background-color: #F3F9FF;
 }
+.com-select-bg {
+  background-color: #DFEBFF !important;
+}
 // 字体图标固定颜色
 .red, .icon-media-private-folder {
   color: #ff0000;
@@ -320,6 +323,14 @@ html {
   // -webkit-appearance: none;
   // -moz-appearance: none;
   outline: none;
+}
+// 禁止浏览器自动填充表单-输入/密码框
+.hide-input {
+  opacity: 0;
+  float: right;
+  height: 0;
+  width: 0;
+  margin-top: -6px;
 }
 .iconfont {
   cursor: pointer;

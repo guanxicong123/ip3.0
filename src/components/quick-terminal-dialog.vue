@@ -14,9 +14,11 @@
       :close-on-press-escape="false"
       :before-close="handleClose"
     >
-      <template #header="{ close, titleId, titleClass }">
+      <template #header="{ titleId, titleClass }">
         <div class="com-dialog-header">
-          <span :id="titleId" :class="titleClass">快捷终端</span>
+          <span :id="titleId" :class="titleClass">{{
+            $t("Fast terminal")
+          }}</span>
         </div>
       </template>
       <div class="com-dialog-components">
@@ -27,7 +29,9 @@
       </div>
       <template #footer>
         <div class="com-dialog-footer">
-          <el-button type="primary" @click="submit"> 保存 </el-button>
+          <el-button type="primary" @click="submit">
+            {{ $t("Save") }}
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -35,9 +39,6 @@
 </template>
 
 <script lang="ts" setup>
-// 全局属性
-const { proxy } = useCurrentInstance.useCurrentInstance();
-
 const props = defineProps(["dialogVisible", "seleQuickTerminal"]);
 const emit = defineEmits(["update:dialogVisible", "handleSelectedConfigure"]);
 

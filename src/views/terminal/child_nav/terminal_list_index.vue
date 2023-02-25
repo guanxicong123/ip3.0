@@ -76,7 +76,9 @@
                     class="iconfont"
                     :title="terminalsStatusMap.get(scope.row.Status)?.name"
                     :class="terminalsStatusMap.get(scope.row.Status)?.icon"
-                    :style="`color:` + terminalsStatusMap.get(scope.row.Status)?.color"
+                    :style="
+                      `color:` + terminalsStatusMap.get(scope.row.Status)?.color
+                    "
                   >
                   </span>
                 </template>
@@ -94,13 +96,25 @@
                 sortable="custom"
                 show-overflow-tooltip
               />
-              <el-table-column prop="code" label="呼叫编码" sortable="custom" />
-              <el-table-column prop="type" label="终端类型" show-overflow-tooltip>
+              <el-table-column
+                prop="code"
+                :label="$t('Call code')"
+                sortable="custom"
+              />
+              <el-table-column
+                prop="type"
+                label="终端类型"
+                show-overflow-tooltip
+              >
                 <template #default="scope">
                   {{ formatterTerminalsType(scope.row) }}
                 </template>
               </el-table-column>
-              <el-table-column prop="TaskName" label="任务名称" show-overflow-tooltip>
+              <el-table-column
+                prop="TaskName"
+                label="任务名称"
+                show-overflow-tooltip
+              >
                 <template #default="scope">
                   {{
                     scope.row.TaskName && scope.row.TaskName.length
@@ -169,7 +183,10 @@ const terminalsStatusMap = new Map([
       color: "#999999",
     },
   ],
-  [1, { icon: "icon-on-line", name: "空闲", class: "on-line", color: "#7ED321" }],
+  [
+    1,
+    { icon: "icon-on-line", name: "空闲", class: "on-line", color: "#7ED321" },
+  ],
   [
     2,
     {
@@ -224,7 +241,11 @@ watch([terminal_data, storage_terminal_data], () => {
     });
   });
   cacheTerminalData.value = filterData();
-  sortChange(sort_condition.value, sort_condition.value.prop, sort_condition.value.order);
+  sortChange(
+    sort_condition.value,
+    sort_condition.value.prop,
+    sort_condition.value.order
+  );
   form.data = cacheTerminalData.value.slice(
     form.pageSize * (form.currentPage - 1),
     form.pageSize * form.currentPage
@@ -257,7 +278,11 @@ watch(
 
 watch([terminal_status, search_value], () => {
   cacheTerminalData.value = filterData();
-  sortChange(sort_condition.value, sort_condition.value.prop, sort_condition.value.order);
+  sortChange(
+    sort_condition.value,
+    sort_condition.value.prop,
+    sort_condition.value.order
+  );
 });
 
 // 路由
@@ -315,7 +340,8 @@ const filterData = () => {
   } else {
     let filterData = storage_terminal_data.value.filter((item: any) => {
       return (
-        (item.Status === terminal_status.value || terminal_status.value === -1) &&
+        (item.Status === terminal_status.value ||
+          terminal_status.value === -1) &&
         (item.name.match(search_value.value) || search_value.value === "")
       );
     });
@@ -346,7 +372,10 @@ const sortChange = (column: any, prop: any, order: any) => {
     }
   } else if (column.prop == "ip_address") {
     if (column.order === "descending") {
-      cacheTerminalData.value = store.sortChangeData(1, cacheTerminalData.value);
+      cacheTerminalData.value = store.sortChangeData(
+        1,
+        cacheTerminalData.value
+      );
     } else if (column.order === "ascending") {
       cacheTerminalData.value.sort((a: any, b: any) => {
         let ip1 = a.ip_address
@@ -379,7 +408,10 @@ const typeIndex = (index: number) => {
 // 处理XXX条/页更改
 const handlefilterData = (val: number) => {
   form.currentPage = 1;
-  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage);
+  form.data = cacheTerminalData.value.slice(
+    0,
+    form.pageSize * form.currentPage
+  );
 };
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
@@ -389,7 +421,10 @@ const handleSizeChange = (val: number) => {
   });
   form.pageSize = val;
   form.currentPage = 1;
-  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage);
+  form.data = cacheTerminalData.value.slice(
+    0,
+    form.pageSize * form.currentPage
+  );
 };
 
 // 处理当前页更改

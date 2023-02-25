@@ -60,7 +60,7 @@
         />
         <el-table-column prop="name" :label="$t('Terminal name')" show-overflow-tooltip />
         <el-table-column prop="ip_address" label="终端IP" show-overflow-tooltip />
-        <el-table-column prop="call_code" label="呼叫编码" />
+        <el-table-column prop="call_code" :label="$t('Call code')" />
       </el-table>
     </el-dialog>
   </div>

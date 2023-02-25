@@ -1,7 +1,7 @@
 <!-- 
   @Author: hmf
   @CreateDate: 2022-08-19
-  @FilePath: src\views\manage\device\child_nav\quick_terminal\new_edit_index.vue
+  @FilePath: src\components\quick-music-dialog.vue
   @Describe: 快捷音源对话框
 -->
 <template>
@@ -12,9 +12,11 @@
     @close="emit('update:isShow', false)"
     class="com-default-dialog"
   >
-    <template #header="{ close, titleId, titleClass }">
+    <template #header="{ titleId, titleClass }">
       <div class="com-dialog-header">
-        <span :id="titleId" :class="titleClass">{{ form.title }}</span>
+        <span :id="titleId" :class="titleClass">
+          {{ $t("Select shortcut sound source") }}
+        </span>
       </div>
     </template>
     <div class="com-dialog-components">
@@ -25,14 +27,13 @@
     </div>
     <template #footer>
       <div class="com-dialog-footer">
-        <el-button type="primary" @click="submit"> 保存 </el-button>
+        <el-button type="primary" @click="submit"> {{ $t("Save") }} </el-button>
       </div>
     </template>
   </el-dialog>
 </template>
 
 <script lang="ts" setup>
-import type { FormInstance } from "element-plus";
 import selectShortcutSoundSource from "./select_shortcut_sound_source.vue";
 
 // 声明触发事件
@@ -42,15 +43,8 @@ const parentData = defineProps([
   "isShow", //对话框显示隐藏
   "seleQuickMusic", //选中的快捷音源
 ]);
-
-const selectConfigure: any = ref({}); //用于接收选中配置
-const form = reactive({
-  title: "选择快捷音源",
-  dialogVisible: false,
-});
-// 表单ref
-const ruleFormRef = ref<FormInstance>();
-
+// 用于接收选中配置
+const selectConfigure: any = ref({});
 // 处理选择终端/分组组件的数据
 const handleRequestTerminals = (data: any) => {
   selectConfigure.value = data;
