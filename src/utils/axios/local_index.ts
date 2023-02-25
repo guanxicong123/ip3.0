@@ -149,7 +149,7 @@ $http.interceptors.response.use(
       ElMessage.error(response.data.return_message);
     }
     if (status === 401 && response.data.result === 401) {
-      router.push("/");
+      usePublicMethod.signOut();
     }
     return response.data;
   },

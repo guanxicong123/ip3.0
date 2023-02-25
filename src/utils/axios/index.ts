@@ -139,6 +139,10 @@ $http.interceptors.response.use(
         }
       }
     }
+    // 登录token过期
+    if (status === 401) {
+      usePublicMethod.signOut();
+    }
     return response.data;
   },
   (error) => {

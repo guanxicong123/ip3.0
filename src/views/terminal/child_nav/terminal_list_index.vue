@@ -138,6 +138,7 @@ interface User {
   date: string;
   name: string;
   type: number;
+  EndPointType: number;
 }
 const systemStore = getStore.useSystemStore();
 
@@ -209,7 +210,7 @@ const cacheTerminalData: any = ref([]); //过滤后得数据
 
 // 格式化终端类型
 const formatterTerminalsType = (row: User) => {
-  return useFormatMap.terminalsMap.get(row.type);
+  return useFormatMap.terminalsMap.get(row.type ? row.type : row.EndPointType);
 };
 
 watch([terminal_data, storage_terminal_data], () => {

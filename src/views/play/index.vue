@@ -24,7 +24,6 @@
           <img
             class="record"
             src="@/assets/images/record.png"
-            handleStopTask
             @dblclick="
               playCenterData.TaskID
                 ? handleTaskButton()
