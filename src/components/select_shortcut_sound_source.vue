@@ -12,13 +12,13 @@
           <el-icon @click="form.searchConfigureVisible = !form.searchConfigureVisible">
             <Search />
           </el-icon>
-          <span> 配置名称 </span>
+          <span> {{ $t("Configuration name") }} </span>
         </template>
         <span v-else :class="{ span: form.searchConfigureVisible }">
           <el-input
             class="title-search-input"
             v-model="form.searchConfigure"
-            placeholder="配置名称"
+            :placeholder="$t('Configuration name')"
             maxlength="100"
             clearable
             @input="handleConfigureSearch"
@@ -81,7 +81,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchConfigure"
-              placeholder="媒体/媒体文件夹"
+              :placeholder="$t('Media') + '/' + $t('Media folder')"
               maxlength="100"
               clearable
               @input="handleSelectedConfigureSearch"
@@ -106,25 +106,6 @@
                   item[config.searchColumnName].match(form.selectedSearchConfigureReg)
                 "
               >
-                <!-- <div v-for="(row, key) in config.showMediaColumn" :key="key" :style="row.style"
-                                    :title="item[row.column]">
-                                    <span :class="{
-                                        'iconfont icon-terminals1':
-                                            row.column === 'list' && !item.hasOwnProperty('medias_id'),
-                                        }" :title="
-                                                row.column === 'list' && !item.hasOwnProperty('medias_id')
-                                                    ? '点击查看'
-                                                    : ''
-                                            ">
-                                        {{
-                                            row.column === "key"
-                                                ? index + 1
-                                                : row.column === "list" && item.hasOwnProperty("medias_id")
-                                                    ? "-"
-                                                    : item[row.column]
-                                        }}
-                                    </span>
-                                </div> -->
                 <div
                   v-for="(row, key) in config.showMediaColumn"
                   :key="key"
@@ -158,11 +139,19 @@
       v-show="[2, 3].includes(form.selectedConfigureData.type)"
     >
       <div class="custom-title">
-        {{ form.selectedConfigureData.type === 2 ? "音源采集" : "终端采集" }}
+        {{
+          form.selectedConfigureData.type === 2
+            ? $t("Sound source acquisition")
+            : $t("Terminal acquisition")
+        }}
       </div>
       <div class="custom-content">
         <el-form-item
-          :label="form.selectedConfigureData.type === 2 ? '选择音源' : '选择终端'"
+          :label="
+            form.selectedConfigureData.type === 2
+              ? $t('Select sound source')
+              : $t('Select terminal')
+          "
         >
           <div class="fast-source">
             {{
@@ -212,22 +201,22 @@ let config = reactive<any>({
     // 要显示的列(媒体/媒体文件夹) column 列名 text 列的别名 style 列的样式
     {
       column: "key",
-      text: "序号",
+      text: "No.",
       style: { width: "15%" },
     },
     {
       column: "name",
-      text: "媒体/媒体文件夹",
+      text: proxy.$t("Media") + "/" + proxy.$t("Media folder"),
       style: { width: "55%" },
     },
     {
       column: "list",
-      text: "媒体列表",
+      text: proxy.$t("Media list"),
       style: { width: "30%" },
     },
   ],
   searchColumnName: "name", // 搜索的列名
-  musicTitle: "音乐播放", // 标题名
+  musicTitle: proxy.$t("Music play"), // 标题名
 });
 // 查看组件插件配置
 const mediaConfig = useConfig.mediaConfig;

@@ -18,33 +18,39 @@
         v-if="registerStatus?.freeTime > 0 && !isRegister"
       >
         <p>
-          请联系厂商注册，软件剩余体验
+          {{ $t("Trial Expiration Prompt") }}
           <span>{{ registerStatus?.freeTime }}</span>
-          天
+          {{ $t("Day") }}
         </p>
       </div>
       <div class="broadcast-register-from" v-else>
-        <h3>软件注册</h3>
+        <h3>{{ $t("Software registration") }}</h3>
         <div class="broadcast-register-machine-code">
-          <span>机器码</span>
+          <span>{{ $t("Machine code") }}</span>
           <span>{{ registerStatus?.ProductKey }}</span>
         </div>
         <div class="broadcast-register-registration-code">
-          <span>注册码</span>
-          <el-input v-model="code" placeholder="请输入注册码" />
+          <span>{{ $t("Registration code") }}</span>
+          <el-input v-model="code" :placeholder="$t('Please enter')" />
         </div>
       </div>
       <div class="broadcast-register-button">
-        <span class="button-cancel" v-if="!isRegister" @click="close">试用</span>
-        <span class="button-submit" v-if="!isRegister" @click="isRegister = true">
-          注册
-        </span>
-        <span class="button-cancel" v-if="isRegister" @click="close">
-          {{ $t("Cancel") }}
-        </span>
-        <span class="button-submit" v-if="isRegister" @click="submit">
-          {{ $t("Determine") }}
-        </span>
+        <template v-if="!isRegister">
+          <el-button class="button-cancel" @click="close">
+            {{ $t("On trial") }}
+          </el-button>
+          <el-button type="primary" @click="isRegister = true">
+            {{ $t("Register") }}
+          </el-button>
+        </template>
+        <template v-else>
+          <el-button class="button-cancel" @click="close">
+            {{ $t("Cancel") }}
+          </el-button>
+          <el-button type="primary" @click="submit" :disabled="code === ''">
+            {{ $t("Determine") }}
+          </el-button>
+        </template>
       </div>
     </div>
   </div>
@@ -52,6 +58,7 @@
 
 <script lang="ts" setup>
 import { contextBridge, ipcRenderer } from "electron";
+
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
@@ -73,9 +80,6 @@ const gitRegisterStatus = () => {
 // 提交
 const submit = () => {
   window.electronAPI.send("register-success");
-  if (code.value === "") {
-    return proxy.$message.warning("请输入注册码");
-  }
   proxy.$http1
     .post("/register", {
       code: code.value,
@@ -112,7 +116,7 @@ onMounted(() => {
   border-radius: 4px;
   background-color: $c-fff;
   text-align: center;
-  //   -webkit-app-region: drag;
+  // -webkit-app-region: drag;
   .el-icon {
     position: absolute;
     top: 12px;
@@ -178,26 +182,14 @@ onMounted(() => {
     bottom: 24px;
     width: 99%;
     text-align: center;
-    > span {
-      display: inline-block;
-      width: 70px;
-      height: 30px;
-      border-radius: 4px;
-      font-size: 14px;
-      line-height: 30px;
+    .button-cancel {
+      color: #7992d5;
+      background-color: #e1eafd;
+      border-color: #e1eafd;
       &:hover {
         opacity: 0.8;
         cursor: pointer;
       }
-    }
-    .button-cancel {
-      color: #7992d5;
-      background-color: #e1eafd;
-      margin-right: 10px;
-    }
-    .button-submit {
-      color: #ffffff;
-      background-color: #0070ee;
     }
   }
 }

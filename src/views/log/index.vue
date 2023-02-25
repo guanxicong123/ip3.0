@@ -542,7 +542,7 @@ const handleAdvancedReset = (name: string) => {
   }
   if (name == "2") {
     form.selectLogType = form.selectTerminalsType = terminalRef.value.search.search_level = terminalRef.value.search.search_terminals_type = 0;
-    form.selectTerminalStatusType = terminalRef.value.search.search_terminals_type = -1;
+    form.selectTerminalStatusType = terminalRef.value.search.status = -1;
     form.search_terminals = terminalRef.value.search.search_terminals = "";
     terminalRef.value.handleDefaultGet();
   }

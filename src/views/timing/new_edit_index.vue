@@ -482,9 +482,9 @@ const validateName = (rule: any, value: any, callback: any) => {
   ruleForm.name = value = useRegex.replaceEmojiSpaces(value);
 
   if (!useRegex.validateEmpty(value)) {
-    return callback(new Error("请输入"));
+    return callback(new Error(proxy.$t("Please enter")));
   } else if (!useRegex.validateName(value)) {
-    return callback(new Error("该名称不符合规则"));
+    return callback(new Error(proxy.$t("The name does not conform to the rule")));
   } else if (form.old_name === value) {
     return callback();
   }
@@ -496,7 +496,7 @@ const validateName = (rule: any, value: any, callback: any) => {
       if (result.data?.status) {
         callback();
       } else {
-        callback(new Error("名称已存在"));
+        callback(new Error(proxy.$t("Name already exists")));
       }
     })
     .catch((error) => {
@@ -581,7 +581,7 @@ const handleMultiSelectExecutionTime = () => {
         if (item.value === form.multiple_execute_time) {
           num = num + 1;
           ElMessage({
-            message: "已过滤重复执行时间",
+            message: proxy.$t("Upload filter repeat time prompt"),
             type: "warning",
             grouping: true,
           });
@@ -607,7 +607,7 @@ const filterExecutionTimeData = () => {
   form.executionTimeData = handleUnique(form.executionTimeData);
   if (length !== form.executionTimeData.length) {
     ElMessage({
-      message: "已过滤重复执行时间",
+      message: proxy.$t("Upload filter repeat time prompt"),
       type: "warning",
       grouping: true,
     });
@@ -670,7 +670,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
         (form.type === 1 || (form.type === 4 && form.fast_sound_type === 1)) &&
         form.executionTimeData.length < 1
       ) {
-        return handleReturnError("请选择执行时间");
+        return handleReturnError(proxy.$t("Please select the execution time"));
       }
       // 音源设置 - 快捷音源
       let isQuick = form.type == 4 && ruleForm.fast_sound_id == 0;
@@ -683,21 +683,21 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
         (form.type === 3 && form.sound_source.terminals_name == "");
 
       if (isQuick || isMusic || isSound) {
-        return handleReturnError("请选择音源");
+        return handleReturnError(proxy.$t("Please select a sound source"));
       }
       // 重复日期
       if (form.request_weeks.length < 1 && form.request_assign_dates.length < 1) {
-        return handleReturnError("请选择重复日期");
+        return handleReturnError(proxy.$t("Please select a duplicate date"));
       }
       // 终端或分组
       if (form.terminalSettingsType === 2) {
         if (form.terminals.length < 1 && form.terminals_groups.length < 1) {
-          return handleReturnError("请选择终端或分组");
+          return handleReturnError(proxy.$t("Please select a terminal or group"));
         }
       } else {
         // 快捷终端
         if (ruleForm.fast_terminals_id < 1) {
-          return handleReturnError("请选择快捷终端");
+          return handleReturnError(proxy.$t("Please select a shortcut terminal"));
         }
       }
       // 音源采集时，判断结束时间是否大于执行时间
@@ -709,7 +709,9 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
         const start_time = ruleForm.execute_time.replace(/:/g, "");
         const end_time = form.sound_source.end_time.replace(/:/g, "");
         if (Number(start_time) > Number(end_time)) {
-          return handleReturnError("结束时间必须大于执行时间");
+          return handleReturnError(
+            proxy.$t("The end time must be greater than the execution time")
+          );
         }
       }
       // 音乐播放
@@ -740,7 +742,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
             if (result.data?.id) {
               ElMessage({
                 type: "success",
-                message: "编辑成功",
+                message: proxy.$t("Edit succeeded"),
                 grouping: true,
               });
               usePublicMethod.clickBack();
@@ -775,7 +777,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
             if (result.data?.id) {
               ElMessage({
                 type: "success",
-                message: "新建成功",
+                message: proxy.$t("New succeeded"),
                 grouping: true,
               });
               usePublicMethod.clickBack();
@@ -914,7 +916,7 @@ onMounted(() => {
   getAllLED();
   handleGetOnePriority();
   form.id = Number($useRoute.params?.id);
-  form.title = form.id > 0 ? "编辑" : "新建";
+  form.title = form.id > 0 ? proxy.$t("Edit") : proxy.$t("Newly build");
   if (form.id > 0) {
     handleGetEditData();
   } else {
@@ -929,7 +931,7 @@ onBeforeRouteLeave((to, from, next) => {
   if (to.path === "/timing" || to.path === "/") {
     next();
   } else {
-    ElMessageBox.confirm("本次修改尚未保存，即将退出页面，是否继续?", proxy.$t("Tips"), {
+    ElMessageBox.confirm(proxy.$t("Exit page prompt"), proxy.$t("Tips"), {
       confirmButtonText: proxy.$t("Determine"),
       cancelButtonText: proxy.$t("Cancel"),
       type: "warning",

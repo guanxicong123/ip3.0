@@ -21,7 +21,7 @@
           v-model:dialogVisible="dialogVisibleTerminal"
           :dialogAlertData="terminalAlertData"
           @requestDispose="clearTerminalWarning"
-          dialogTitle="以下终端离线，请检查离线原因！"
+          :dialogTitle="$t('Terminal offline prompt')"
         />
       </el-main>
     </el-container>

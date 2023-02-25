@@ -781,7 +781,7 @@ onBeforeRouteLeave((to, from, next) => {
   if (to.path === "/play" || to.path === "/") {
     next();
   } else {
-    ElMessageBox.confirm("本次修改尚未保存，即将退出页面，是否继续?", proxy.$t("Tips"), {
+    ElMessageBox.confirm(proxy.$t("Exit page prompt"), proxy.$t("Tips"), {
       confirmButtonText: proxy.$t("Determine"),
       cancelButtonText: proxy.$t("Cancel"),
       type: "warning",

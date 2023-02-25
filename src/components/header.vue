@@ -6,22 +6,30 @@
 -->
 <template>
   <div class="broadcast-header">
-    <h2>IP网络广播系统</h2>
+    <h2>{{ $t("IP network broadcasting system") }}</h2>
     <div class="broadcast-header-function">
       <div class="broadcast-header-function-user">
         <el-dropdown @command="handleCommandUser">
           <span class="el-dropdown-link">
-            {{ username }}
+            {{ form.userName }}
             <el-icon>
               <ArrowDownBold />
             </el-icon>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="simplified">修改账号</el-dropdown-item>
-              <el-dropdown-item command="character">修改密码</el-dropdown-item>
-              <el-dropdown-item command="about">关于</el-dropdown-item>
-              <el-dropdown-item command="english">退出登录</el-dropdown-item>
+              <el-dropdown-item command="simplified">
+                {{ $t("Modify account") }}
+              </el-dropdown-item>
+              <el-dropdown-item command="character">
+                {{ $t("Change password") }}
+              </el-dropdown-item>
+              <el-dropdown-item command="about">
+                {{ $t("About") }}
+              </el-dropdown-item>
+              <el-dropdown-item command="english">
+                {{ $t("Exit") }}
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -60,7 +68,7 @@
           <template #default>
             <span
               class="iconfont"
-              :class="form.isShowMaximize ? 'icon-win' : 'icon-enlarge'"
+              :class="form.isShowMaximize ? 'icon-enlarge' : 'icon-win'"
             ></span>
           </template>
         </el-icon>
@@ -71,155 +79,62 @@
         </el-icon>
       </div>
     </div>
+    <!-- 修改账号名称 -->
+    <change-account
+      :isShow="form.accountDialogVisible"
+      @show="handleAccountDialogVisible"
+    />
+    <!-- 修改账号密码 -->
+    <change-password
+      :isShow="form.passwordDialogVisible"
+      :isFirstUse="form.isFirstUse"
+      @show="handlePasswordDialogVisible"
+      @signOut="handleSignOut"
+    />
+    <!-- 关于 -->
     <el-dialog
-      v-model="dialogUserName"
-      title="修改账号"
-      width="30%"
-      :before-close="handleClose"
-      class="com-default-dialog"
-    >
-      <el-form
-        ref="ruleFormNameRef"
-        :rules="rulesName"
-        :model="userNameForm"
-        v-loading="loadingUserPass"
-        element-loading-text="Loading..."
-      >
-        <el-form-item prop="name">
-          <el-input
-            type="text"
-            auto-complete="off"
-            v-model="userNameForm.name"
-            :maxlength="100"
-            placeholder="请输入 1-100 字母/数字/_组合"
-            clearable
-            suffix-icon=""
-            :spellcheck="false"
-          >
-            <template #prefix>
-              <i class="iconfont icon-user"></i>
-            </template>
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button
-            @click="
-              dialogUserName = false;
-              userNameForm.name = '';
-            "
-          >
-            {{ $t("Cancel") }}
-          </el-button>
-          <el-button type="primary" @click="handleChangeUser(ruleFormNameRef)">
-            {{ $t("Confirm") }}
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
-    <el-dialog
-      v-model="dialogUserPass"
-      title="修改密码"
-      width="30%"
-      :before-close="handleClose"
-      class="com-default-dialog"
-    >
-      <el-form
-        ref="ruleFormRef"
-        :rules="rules"
-        :model="userPasswordForm"
-        v-loading="loadingUserPass"
-        element-loading-text="Loading..."
-      >
-        <el-form-item prop="old_password">
-          <el-input
-            type="password"
-            v-model.trim="userPasswordForm.old_password"
-            :maxlength="20"
-            placeholder="请输入旧密码"
-            clearable
-            show-password
-            auto-complete="new-password"
-            oncopy="return false"
-            onpaste="return false"
-            ondragstart="return false"
-            onselectstart="return false"
-          ></el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            type="password"
-            v-model.trim="userPasswordForm.password"
-            :maxlength="20"
-            placeholder="输入新密码"
-            clearable
-            show-password
-            auto-complete="new-password"
-            oncopy="return false"
-            onpaste="return false"
-            ondragstart="return false"
-            onselectstart="return false"
-          ></el-input>
-        </el-form-item>
-        <el-form-item prop="confirm_password">
-          <el-input
-            type="password"
-            v-model.trim="userPasswordForm.confirm_password"
-            :maxlength="20"
-            placeholder="确认输入新密码"
-            clearable
-            show-password
-            auto-complete="new-password"
-            oncopy="return false"
-            onpaste="return false"
-            ondragstart="return false"
-            onselectstart="return false"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogUserPass = false">{{ $t("Cancel") }}</el-button>
-          <el-button type="primary" @click="handleChangeUserPass(ruleFormRef)">
-            {{ $t("Confirm") }}
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
-    <el-dialog
-      v-model="dialogVersionNo"
-      title="关于"
-      width="30%"
-      :before-close="handleClose"
+      v-model="form.aboutDialogVisible"
+      :title="$t('About')"
+      width="450px"
+      @close="form.aboutDialogVisible = false"
       class="com-default-dialog"
     >
       <div class="com-default-dialog-test">
         <div class="com-default-dialog-content">
-          <p>名称：IP网络广播系统分控软件</p>
           <p>
-            {{ $t("Current version") }} : V3.0 ( {{ $t("Build") }} : V{{ form.version }}
+            {{ $t("Name") }}:
+            {{ $t("IP network broadcasting system sub-control software") }}
+          </p>
+          <p>
+            {{ $t("Current version") }} : V3.0 ( {{ $t("Build") }} : V{{
+              form.version
+            }}
             )
           </p>
         </div>
       </div>
     </el-dialog>
+    <!-- 退出登录 -->
     <el-dialog
-      v-model="dialogLogOut"
-      title="警告"
-      width="30%"
-      :before-close="handleClose"
+      v-model="form.signOutDialogVisible"
+      :title="$t('Warning')"
+      width="450px"
+      @close="form.signOutDialogVisible = false"
       class="com-default-dialog"
     >
       <div class="com-default-dialog-test">
         <div class="com-default-dialog-content">
-          <p>即将退出登录？</p>
+          <p>{{ $t("Are you about to log out") }}</p>
         </div>
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogLogOut = false">{{ $t("Cancel") }}</el-button>
-          <el-button type="primary" @click="handleLogOut">{{ $t("Confirm") }}</el-button>
+          <el-button @click="form.signOutDialogVisible = false">
+            {{ $t("Cancel") }}
+          </el-button>
+          <el-button type="primary" @click="handleLogOut">
+            {{ $t("Confirm") }}
+          </el-button>
         </span>
       </template>
     </el-dialog>
@@ -227,12 +142,16 @@
 </template>
 
 <script lang="ts" setup>
-import { FormInstance, FormRules } from "element-plus";
 import { send } from "@/utils/socket";
 import { UsersService } from "@/utils/api/users/index";
 
-// 全局属性
-const { proxy } = useCurrentInstance.useCurrentInstance();
+// defineAsyncComponent 异步组件-懒加载子组件
+const changeAccount = defineAsyncComponent(
+  () => import("@/components/change_account/account.vue")
+);
+const changePassword = defineAsyncComponent(
+  () => import("@/components/change_account/password.vue")
+);
 
 const lang = getStore.useLanguageStore();
 // 计算属性 computed
@@ -240,54 +159,31 @@ const langStore = computed(() => {
   return lang.language;
 });
 
-const $useRouter = useRouter();
-
 const form = reactive({
   isShowMaximize: false, // 是否最大化
   version: "3.0.2", // 版本
   languagesList: {}, // 多语言列表
   selectedLang: "zh-cn", // 选中语言
+  accountDialogVisible: false, // 编辑账号名称弹窗
+  passwordDialogVisible: false, // 编辑账号密码弹窗
+  aboutDialogVisible: false, // 关于弹窗
+  signOutDialogVisible: false, // 退出登录弹窗
+  isFirstUse: false, // 是否第一次使用系统
+  userName: "", // 用户名称
 });
-const username = localStorage.get("username");
-const dialogUserName = ref(false); //修改用户弹框
-const dialogUserPass = ref(false); //修改密码弹框
-const loadingUserPass = ref(false); //密码提交时加载
-const ruleFormRef = ref<FormInstance>();
-const userPasswordForm = reactive({
-  old_password: "",
-  password: "",
-  confirm_password: "",
-});
-const ruleFormNameRef: any = ref<FormInstance>();
-const userNameForm = reactive({
-  name: "",
-});
-const dialogVersionNo = ref(false); //关于弹框
-const dialogLogOut = ref(false); //退出登录弹框
-
-watch(dialogUserName, (newVal) => {
-  if (!newVal) {
-    ruleFormNameRef.value?.resetFields();
-  }
-});
-watch(dialogUserPass, (newVal) => {
-  if (!newVal) {
-    ruleFormRef.value?.resetFields();
-  }
-});
-
+// 处理下拉框点击事件
 const handleCommandUser = (command: string | number | object) => {
   if (command === "simplified") {
-    dialogUserName.value = true;
+    form.accountDialogVisible = true;
   }
   if (command === "character") {
-    dialogUserPass.value = true;
+    form.passwordDialogVisible = true;
   }
   if (command === "about") {
-    dialogVersionNo.value = true;
+    form.aboutDialogVisible = true;
   }
   if (command === "english") {
-    dialogLogOut.value = true;
+    form.signOutDialogVisible = true;
   }
 };
 // 切换语言文本
@@ -318,49 +214,17 @@ const handleMaxMin = () => {
 const close = () => {
   window.electronAPI.send("close");
 };
-const handleClose = () => {
-  dialogUserName.value = false;
-  dialogUserPass.value = false;
-  dialogVersionNo.value = false;
-  dialogLogOut.value = false;
+// 处理编辑账号名称弹窗的响应展示/关闭
+const handleAccountDialogVisible = (value: boolean) => {
+  form.accountDialogVisible = value;
 };
-const handleChangeUser = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.validate((valid) => {
-    if (valid) {
-      proxy.$http
-        .put("/me", {
-          name: userNameForm.name,
-        })
-        .then((result: any) => {
-          if (result.result === 200) {
-            proxy.$message.success("修改用户名成功,跳转至登录页面");
-            setTimeout(() => {
-              usePublicMethod.signOut();
-            }, 1000);
-          }
-        });
-    }
-  });
+// 处理编辑账号密码弹窗的响应展示/关闭
+const handlePasswordDialogVisible = (value: boolean) => {
+  form.passwordDialogVisible = value;
 };
-// 修改用户密码
-const handleChangeUserPass = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.validate((valid) => {
-    if (valid) {
-      if (loadingUserPass.value) return;
-      loadingUserPass.value = true;
-      proxy.$http.put("/me/password", userPasswordForm).then((result: any) => {
-        if (result.result === 200) {
-          proxy.$message.success("修改密码成功,将跳转至登录页面");
-          loadingUserPass.value = false;
-          setTimeout(() => {
-            usePublicMethod.signOut();
-          }, 3000);
-        }
-      });
-    }
-  });
+// 处理账号密码弹窗-退出登录
+const handleSignOut = () => {
+  handleLogOut();
 };
 // 退出登录
 const handleLogOut = () => {
@@ -375,64 +239,6 @@ const handleLogOut = () => {
   send(data);
   usePublicMethod.signOut();
 };
-// 验证
-const validateOldPassword = (rule: any, value: any, callback: any) => {
-  userPasswordForm.old_password = value = useRegex.replacePassword(value);
-
-  if (!useRegex.validateEmpty(value)) {
-    return callback(new Error("请输入"));
-  } else if (value.length < 6) {
-    return callback(new Error("请输入 6-20 字母/数字/符号组合"));
-  } else {
-    callback();
-  }
-};
-const validatePassword = (rule: any, value: any, callback: any) => {
-  userPasswordForm.password = value = useRegex.replacePassword(value);
-
-  if (!useRegex.validateEmpty(value)) {
-    return callback(new Error("请输入"));
-  } else if (value.length < 6) {
-    return callback(new Error("请输入 6-20 字母/数字/符号组合"));
-  } else {
-    if (value.length >= 6 && value === userPasswordForm.confirm_password) {
-      ruleFormRef.value?.validateField("confirm_password");
-    }
-    callback();
-  }
-};
-const validateConfirmPassword = (rule: any, value: any, callback: any) => {
-  userPasswordForm.confirm_password = value = useRegex.replacePassword(value);
-
-  if (!useRegex.validateEmpty(value)) {
-    return callback(new Error("请输入"));
-  } else if (value.length < 6) {
-    return callback(new Error("请输入 6-20 字母/数字/符号组合"));
-  } else if (value !== userPasswordForm.password) {
-    return callback(new Error("确认密码与登录密码不一致"));
-  } else {
-    callback();
-  }
-};
-const validateUserName = (rule: any, value: any, callback: any) => {
-  const validate = /^[A-Za-z0-9_]{1,100}$/;
-  if (!value) {
-    return callback(new Error("请输入账号"));
-  } else if (!validate.test(value)) {
-    return callback(new Error("请输入 1-100 字母/数字/_组合"));
-  }
-  callback();
-};
-const rules = reactive<FormRules>({
-  old_password: [{ validator: validateOldPassword, trigger: "blur", required: true }],
-  password: [{ validator: validatePassword, trigger: "blur", required: true }],
-  confirm_password: [
-    { validator: validateConfirmPassword, trigger: "blur", required: true },
-  ],
-});
-const rulesName = reactive<FormRules>({
-  name: [{ validator: validateUserName, trigger: "blur", required: true }],
-});
 // 获取账号信息
 const getUserMe = () => {
   UsersService.getUsersMe({
@@ -443,6 +249,7 @@ const getUserMe = () => {
       const user = {
         user: result.data,
       };
+      form.userName = result.data.name;
       getStore.useUserStore().updateUser(user);
     })
     .catch(() => {});

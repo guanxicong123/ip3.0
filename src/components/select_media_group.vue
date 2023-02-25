@@ -30,7 +30,7 @@
                 <div class="custom-popover">
                   <el-input
                     v-model="form.searchMedia"
-                    placeholder="媒体"
+                    :placeholder="$t('Media')"
                     maxlength="100"
                     clearable
                     @input="handleMediaSearch"
@@ -44,7 +44,7 @@
           <div class="custom-scroll-bar">
             <div class="scroll-select">
               <el-select v-model="form.currentGroupsID">
-                <el-option :key="0" label="所有文件夹" :value="0" />
+                <el-option :key="0" :label="$t('All files')" :value="0" />
                 <el-option
                   v-for="item in form.allGroupsOptions"
                   :key="item.id"
@@ -88,7 +88,7 @@
                 <div class="custom-popover">
                   <el-input
                     v-model="form.searchGroups"
-                    placeholder="媒体文件夹"
+                    :placeholder="$t('Media folder')"
                     maxlength="100"
                     clearable
                     @input="handleGroupsSearch"
@@ -118,8 +118,17 @@
       </el-tabs>
     </div>
     <div class="com-select-center">
-      <span title="全部右移" @click="selectAll" class="iconfont icon-shift-right"> </span>
-      <span title="全部左移" @click="deselectAll" class="iconfont icon-shift-left">
+      <span
+        :title="$t('Move all right')"
+        @click="selectAll"
+        class="iconfont icon-shift-right"
+      >
+      </span>
+      <span
+        :title="$t('Move all left')"
+        @click="deselectAll"
+        class="iconfont icon-shift-left"
+      >
       </span>
     </div>
     <!-- 已选媒体 -->
@@ -153,7 +162,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchMedia"
-              placeholder="媒体"
+              :placeholder="$t('Media')"
               maxlength="100"
               clearable
               @input="handleSelectedMediaSearch"
@@ -242,7 +251,7 @@
             <el-input
               class="title-search-input"
               v-model="form.selectedSearchGroups"
-              placeholder="媒体文件夹"
+              :placeholder="$t('Media folder')"
               maxlength="100"
               clearable
               @input="handleSelectedGroupsSearch"
@@ -292,7 +301,7 @@
       </div>
     </div>
     <p class="com-second-tip">
-      播放时长约:
+      {{ $t("Play time is about") }}:
       {{ usePublicMethod.convertSongDuration(form.mediaSecond + form.groupsSecond) }}
     </p>
   </div>
@@ -351,23 +360,23 @@ const form = reactive<any>({
 });
 // 插件配置
 let config = reactive<any>({
-  mediaTitle: "媒体", // 媒体选项开的标题
-  groupsTitle: "媒体文件夹", // 媒体文件夹选项卡的标题
+  mediaTitle: proxy.$t("Media"), // 媒体选项开的标题
+  groupsTitle: proxy.$t("Media folder"), // 媒体文件夹选项卡的标题
   showMediaColumn: [
     // 要显示的列(媒体） column列名 text列的别名 style 列的样式
     {
       column: "key",
-      text: "序号",
+      text: "No.",
       style: { width: "15%" },
     },
     {
       column: "name",
-      text: "媒体",
+      text: proxy.$t("Media"),
       style: { width: "55%" },
     },
     {
       column: "length",
-      text: "时长",
+      text: proxy.$t("File duration"),
       style: { width: "30%" },
     },
   ],
@@ -375,17 +384,17 @@ let config = reactive<any>({
     // 要显示的列(媒体文件夹) column 列名 text 列的别名 style 列的样式
     {
       column: "key",
-      text: "序号",
+      text: "No.",
       style: { width: "15%" },
     },
     {
       column: "name",
-      text: "媒体文件夹",
+      text: proxy.$t("Media folder"),
       style: { width: "55%" },
     },
     {
       column: "length",
-      text: "时长",
+      text: proxy.$t("File duration"),
       style: { width: "30%" },
     },
   ],

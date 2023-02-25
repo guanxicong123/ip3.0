@@ -184,7 +184,9 @@ const handleDefaultGet = () => {
 // 处理重置
 const handleReset = () => {
   form.search = "";
-  form.selectType = 0;
+  form.search_terminals_type = 0;
+  form.search_level = 0;
+  form.status = -1;
   handleDefaultGet();
 };
 // 处理XXX条/页更改
