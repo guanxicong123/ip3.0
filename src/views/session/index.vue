@@ -88,41 +88,32 @@
             show-overflow-tooltip
           />
           <el-table-column
+            prop="EndpointIpListArray"
             :label="$t('Respondent')"
             show-overflow-tooltip
-            class="dangqianlie"
           >
             <template #default="scope">
               <el-dropdown
-                v-if="scope.row.EndPointList?.length > 1"
-                placement="bottom-start"
-                class="dropdown-link-tabel"
+                placement="left-start"
+                :max-height="234"
+                class="custom-dropdown"
+                v-if="scope.row.EndPointListArray?.length > 0"
               >
-                <span class="el-dropdown-link">
-                  <span class="dropdown-link-defalut">
-                    {{ scope.row.EndPointList[0].EndPointName }}
-                  </span>
-                  <el-icon class="el-icon--right">
-                    <arrow-down />
-                  </el-icon>
+                <span class="theme">
+                  <el-icon class="el-icon--right"><arrow-down /></el-icon>
+                  {{ scope.row.EndPointListArray?.[0]?.EndPointName }}
                 </span>
                 <template #dropdown>
-                  <el-dropdown-menu class="EndpointIpListArray">
+                  <el-dropdown-menu>
                     <el-dropdown-item
-                      v-for="item in scope.row.EndPointList"
-                      :key="item.EndPointName"
+                      v-for="(item, key) in scope.row.EndPointListArray"
+                      :key="key"
                     >
                       {{ item.EndPointName }}
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
-              <span
-                v-if="scope.row.EndPointList?.length === 1"
-                class="dropdown-link-defalut"
-              >
-                {{ scope.row.EndPointList[0].EndPointName }}
-              </span>
             </template>
           </el-table-column>
           <el-table-column
@@ -285,6 +276,12 @@ const handleGetOnePageData = async () => {
   session.setSessionPaginationArray();
   form.total = sessionStoreTotal.value;
   form.data = sessionStoreOnePage.value;
+  // 当第二页以上，最后一条任务数据没了后，自动跳转到上一页
+  if (form.currentPage > 1 && form.data.length == 0) {
+    form.currentPage--;
+    session.setSessionPage(form.currentPage, form.pageSize);
+    session.setSessionPaginationArray();
+  }
 };
 // 处理默认获取
 const handleDefaultGet = () => {

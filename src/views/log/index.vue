@@ -194,11 +194,6 @@
                 clearable
                 style="margin-right: 12px"
               />
-              <el-input
-                v-model="form.search_execution_terminal"
-                :placeholder="$t('Executive terminal')"
-                clearable
-              />
             </template>
           </div>
         </div>
@@ -303,7 +298,6 @@ const form = reactive<any>({
   search_join_terminal: "",
   // TTS日志
   search_txt: "",
-  search_execution_terminal: "",
 
   userOptions: [], // 用户数据
   logDialogVisible: false, // 是否显示导出日志弹窗
@@ -376,7 +370,6 @@ const handleClick = (tab: TabsPaneContext) => {
   form.search_launch_terminal = "";
   form.search_join_terminal = "";
   form.search_txt = "";
-  form.search_execution_terminal = "";
 };
 // 处理刷新
 const handleRefresh = (name: string) => {
@@ -526,7 +519,6 @@ const handleAdvancedSearch = (name: string) => {
   if (name == "6") {
     TTSRef.value.search.search_level = form.selectLogType;
     TTSRef.value.search.context = form.search_txt;
-    TTSRef.value.search.terminals = form.search_execution_terminal;
     TTSRef.value.search.search_users_ids = form.selectUserType;
     TTSRef.value.handleDefaultGet();
   }
@@ -569,8 +561,8 @@ const handleAdvancedReset = (name: string) => {
   }
   if (name == "6") {
     form.selectLogType = TTSRef.value.search.search_level = 0;
-    form.selectUserType = form.search_execution_terminal = -1;
-    form.search_txt = form.search_execution_terminal = "";
+    form.selectUserType = TTSRef.value.search.search_users_ids = -1;
+    form.search_txt = TTSRef.value.search.context = "";
     TTSRef.value.handleDefaultGet();
   }
 };
@@ -784,12 +776,7 @@ const handleSeatchButton = (name: string) => {
       }
       break;
     case "6":
-      if (
-        form.selectLogType == 0 &&
-        form.selectUserType == -1 &&
-        form.search_txt == "" &&
-        form.search_execution_terminal == ""
-      ) {
+      if (form.selectLogType == 0 && form.selectUserType == -1 && form.search_txt == "") {
         disable = true;
       }
       break;
