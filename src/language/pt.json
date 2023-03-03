@@ -977,6 +977,7 @@
   "Click the task monitoring prompt": "正等待服务器响应上次操作，请稍后再操作",
   "Backup save path prompt": "备份保存路径不能选择含有中文，请重新选择",
   "Data recovery prompt": "数据恢复中，请勿刷新界面",
+  "Data backup prompt": "数据备份中，请勿刷新界面",
   "Firmware upgrade IP address prompt": "注意：该IP地址禁止使用127.0.0.1，内网升级请使用配置服务器IP地址，外网升级请使用外网IP地址",
   "No task ID": "没有任务ID",
   "Reminder time": "提醒时间",
@@ -1060,5 +1061,8 @@
   "Offline time": "离线时间",
   "Terminal offline prompt": "以下终端离线，请检查离线原因！",
   "About": "关于",
-  "Are you about to log out": "即将退出登录？"
+  "Are you about to log out": "即将退出登录？",
+  "Convert": "转换",
+  "Ungrouped": "未分组",
+  "Default": "默认"
 }

@@ -24,8 +24,10 @@ const usePublicMethod = {
   },
   // 跳转新建/编辑界面
   clickJump(path: string, id: number, scheme?: number) {
-    const scheme_id = scheme ? "/" + scheme : "";
-    router.push(path + "/new_edit/" + id + scheme_id);
+    if (!path.includes("/new_edit/")) {
+      const scheme_id = scheme ? "/" + scheme : "";
+      router.push(path + "/new_edit/" + id + scheme_id);
+    }
   },
   // 后退
   clickBack() {

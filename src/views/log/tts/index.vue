@@ -112,10 +112,7 @@ const form = reactive<any>({
   total: 0,
   search_level: 0,
   search_users_ids: -1,
-  search_tasks_name: "", //任务名称
-  search_life_time: "",
   context: "", //文本内容
-  terminals: "", //执行终端
 });
 const search = computed(() => {
   return form;
@@ -147,7 +144,6 @@ const handleGetOnePageData = async () => {
     search_level: form.search_level,
     search_users_ids: form.search_users_ids,
     context: form.context,
-    terminals: form.terminals,
   })
     .then((result) => {
       if (result.data.data) {

@@ -977,6 +977,7 @@
   "Click the task monitoring prompt": "Waiting for the server to respond to the last operation, please try again later",
   "Backup save path prompt": "The backup save path cannot contain Chinese, please select again",
   "Data recovery prompt": "Do not refresh the interface during data recovery",
+  "Data backup prompt": "Do not refresh the interface during data backup",
   "Firmware upgrade IP address prompt": "Note: 127.0.0.1 is prohibited for this IP address. For intranet upgrade, use the configured server IP address. For internet upgrade, use the internet IP address",
   "No task ID": "No task ID",
   "Reminder time": "Reminder time",
@@ -1060,5 +1061,8 @@
   "Offline time": "Offline time",
   "Terminal offline prompt": "The following terminals are offline, please check the reason for offline!",
   "About": "About",
-  "Are you about to log out": "Are you about to log out?"
+  "Are you about to log out": "Are you about to log out?",
+  "Convert": "Convert",
+  "Ungrouped": "Ungrouped",
+  "Default": "Default"
 }

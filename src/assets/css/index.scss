@@ -415,28 +415,6 @@ html {
     }
   }
 }
-.dropdown-link-tabel {
-  width: 100%;
-  .el-dropdown-link {
-      max-width: 100%;
-      display: flex;
-      .dropdown-link-defalut {
-          flex: 1;
-      }
-      > span {
-          display: inline-block;
-          max-width: calc(100% - 20px);
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-      }
-  }
-  .dropdown-link-defalut {
-      &:hover {
-          color: #00ECFF;
-      }
-  }
-}
 .com-data-select-compute {
   font-size: 14px;
   padding-bottom: 18px;

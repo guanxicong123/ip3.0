@@ -160,6 +160,7 @@
                       format="HH:mm:ss"
                       value-format="HH:mm:ss"
                       :placeholder="$t('Any point in time')"
+                      @blur="handleSelectExecutionTime"
                     />
                   </el-form-item>
                 </el-col>
@@ -570,6 +571,30 @@ const handleRequestQuickTerminals = (data: any) => {
 const handleClearAllExecutionTime = () => {
   form.executionTimeData = [];
   form.multiple_execute_time = "";
+};
+// 处理添加执行时间
+const handleSelectExecutionTime = () => {
+  let num = 0;
+  if (ruleForm.execute_time !== "") {
+    if (form.executionTimeData.length > 0) {
+      form.executionTimeData.forEach((item: { value: any }) => {
+        // 当选有重复执行时间给提示
+        if (item.value === ruleForm.execute_time) {
+          num = num + 1;
+        }
+      });
+      // 当没有重复执行时间给添加进数组
+      if (num < 1) {
+        form.executionTimeData.push({
+          value: ruleForm.execute_time,
+        });
+      }
+    } else {
+      form.executionTimeData.push({
+        value: ruleForm.execute_time,
+      });
+    }
+  }
 };
 // 处理添加多选执行时间
 const handleMultiSelectExecutionTime = () => {

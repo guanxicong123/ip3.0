@@ -244,6 +244,7 @@ onMounted(() => {
   config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   myConfigTerminal.selectAmplifier = config.selectAmplifier;
   form.view_mode = userStore.value?.user?.users_config?.view_mode;
+  handleSetEditData();
 });
 </script>
 
