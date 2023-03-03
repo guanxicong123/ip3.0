@@ -398,7 +398,7 @@ onMounted(() => {
 
   .custom-content {
     flex: 1;
-    height: calc(100% - 40px);
+    height: calc(100% - 60px);
 
     .scroll-ul {
       li {

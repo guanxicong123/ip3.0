@@ -3,6 +3,7 @@ export interface AppState {
   is_websocekt: boolean;
   is_login: boolean;
   is_login_status: number;
+  is_registration_window: boolean;
 }
 export const useAppStore = defineStore({
   id: "app",
@@ -10,6 +11,7 @@ export const useAppStore = defineStore({
     is_websocekt: false, //是否连接
     is_login: false, //是否登录中
     is_login_status: 0,
+    is_registration_window: true, //是否显示注册窗口
   }),
   actions: {
     // 改变webscoet连接状态
@@ -19,6 +21,10 @@ export const useAppStore = defineStore({
     // 改变登录状态
     changeLoginStatus(status: boolean) {
       this.is_login = status;
+    },
+    // 改变注册窗口
+    changeRegistrationWindow(status: boolean) {
+      this.is_registration_window = status
     },
     // 登录成功返回信息
     loginSuccessData(data: any) {

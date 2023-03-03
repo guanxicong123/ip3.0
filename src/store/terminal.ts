@@ -55,19 +55,20 @@ export const useTerminalStore = defineStore({
         } else {
           // 开启终端离线提醒，数据状态由非离线状态转换为离线状态触发
           if (
-            alertMessage?.EnabledTerminalOffAlert &&
             this.terminal_data[index]?.Status !== 0 &&
             item.Status === 0
           ) {
-            const data = {
-              EndPointName: item.EndPointName,
-              EndPointIP: item.EndPointIP,
-              OfflineTime: usePublicMethod.formatDate(
-                new Date().toLocaleString(),
-                "YYYY-MM-DD HH:mm:ss"
-              ),
-            };
-            this.terminal_Alert_data.push(data);
+            if (alertMessage?.EnabledTerminalOffAlert) {
+              const data = {
+                EndPointName: item.EndPointName,
+                EndPointIP: item.EndPointIP,
+                OfflineTime: usePublicMethod.formatDate(
+                  new Date().toLocaleString(),
+                  "YYYY-MM-DD HH:mm:ss"
+                ),
+              };
+              this.terminal_Alert_data.push(data);
+            }
             if (alertMessage?.EnabledTerminalOffRingfAlert) {
               $http.get("/tools/palyring");
             }

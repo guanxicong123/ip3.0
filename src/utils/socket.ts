@@ -87,13 +87,6 @@ const send = (data: any) => {
     if (data.actioncode !== "c2ms_user_login") {
       data["token"] = localStorage.get("userToken");
     }
-    if (
-      data.data.TaskType === 15 &&
-      !remotePlayTaskKey.includes(data.data.TaskID)
-    ) {
-      //远程播放任务（截取TaskID，返回连接成功后发起播放）
-      remotePlayTaskKey.push(data.data.TaskID);
-    }
     getStore.useSessionStore().taskLocalKeyRecord(data.data.TaskID);
     socket.send(JSON.stringify(data));
   }
@@ -146,8 +139,9 @@ const requestFunction = (actionCode: string) => {
 };
 // 发起远程音乐播放任务
 const startRemotePlay = (row: any) => {
+  console.log(row, getStore.usePlayStore().playTaskStaging.includes(row.TaskID))
   if (
-    remotePlayTaskKey.includes(row.TaskID) &&
+    getStore.usePlayStore().playTaskStaging.includes(row.TaskID) &&
     row.RemoteType !== "manual_alarm"
   ) {
     const data = {
@@ -163,9 +157,10 @@ const startRemotePlay = (row: any) => {
       return_message: "",
     };
     send(data);
-    remotePlayTaskKey = remotePlayTaskKey.filter((item: any) => {
-      return item !== row.TaskID;
-    });
+    getStore.usePlayStore().changePlayTaskStaging({
+      key: 'del',
+      value: row.TaskID
+    })
   }
 };
 // 登录
@@ -274,6 +269,9 @@ const handlerMsg = (msg: any) => {
       getStore.usePlayStore().setPlayStatus(msg.data);
       break;
     case "ms2c_create_server_task":
+      startRemotePlay(msg.data);
+      break;
+    case 'ms2c_create_local_task':
       startRemotePlay(msg.data);
       break;
     case "ms2c_control_task": // 播放中心任务状态改变

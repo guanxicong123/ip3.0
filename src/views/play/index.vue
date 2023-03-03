@@ -19,15 +19,22 @@
         @click="handleFullscreenStatus"
       ></i>
       <div class="center-content">
-        <div class="content-top" :class="playCenterData.TaskID ? 'playing' : ''">
+        <div 
+          class="content-top" 
+          :class="
+          playCenterData?.TaskID && 
+          ((playCenterData?.TaskType === 15 && playSubscriptionTask?.PlayStatus === 'play')
+            || playCenterData?.TaskType !== 15
+          ) ? 'playing' : ''"
+        >
           <img class="record-arm" src="@/assets/images/record-arm.png" alt="" />
           <img
             class="record"
             src="@/assets/images/record.png"
             @dblclick="
-              playCenterData.TaskID
+              playCenterData?.TaskID
                 ? handleTaskButton()
-                  ? handlePauseTask(playCenterData)
+                  ? playSubscriptionTask?.PlayStatus === 'play' ? handlePauseTask(playCenterData) : handlePlayTask(playCenterData)
                   : handleStopTask(playCenterData)
                 : handlePlayTask(playCenterData)
             "
@@ -67,7 +74,7 @@
             class="iconfont"
             :class="playModeIcon.get(form.play_model)?.icon"
             :title="playModeIcon.get(form.play_model)?.title"
-            @click="handleSwitchTask(playCenterData, 'PlayMode')"
+            @click="handleSwitchTask(playCenterData, 'play_mode')"
           >
           </i>
           <i
@@ -131,7 +138,7 @@
             "
           >
           </i>
-          <el-popover trigger="click" popper-class="f">
+          <el-popover trigger="click" popper-class="play-volume-popper">
             <template #reference>
               <i class="iconfont icon-volume2" title="音量"></i>
             </template>
@@ -495,7 +502,7 @@ const handleRowDblclick = (row: any) => {
 const handleDecideStatus = (row: any) => {
   if (row.type < 10) {
     return form.sessionsData.some((item: any) => {
-      return item.RemoteTaskID === row.id;
+      return item.RemoteTaskID === row.id && item.SubTaskTypeName == "remote_play";
     });
   }
   if (row.type >= 10) {
@@ -582,21 +589,29 @@ const handlePlayTask = (row: any) => {
         if (row.terminalsIds.length === 0)
           return proxy.$message.warning("未找到播放终端，请重新配置");
         if (TaskProp?.TaskAudioType) {
+          let TaskID = usePublicMethod.generateUUID()
+          let TaskType = handleTaskTypeMap(row)
           let data = {
             company: "BL",
             actioncode: "c2ms_create_server_task",
             data: {
               EndPointsAdditionalProp: {},
               EndPointList: row.terminalsIds, //终端ID合集
-              TaskID: usePublicMethod.generateUUID(), //UUID
+              TaskID: TaskID, //UUID
               TaskName: row.name, //任务名称
               Priority: row.priority, //优先级
               Volume: row.volume, //音量
-              TaskType: handleTaskTypeMap(row), //任务类型
+              TaskType: TaskType, //任务类型
               UserID: localStorage.get("LoginUserID"), // 操作用户id
               TaskProp: TaskProp,
             },
           };
+          if (TaskType === 15) {
+            storePlay.changePlayTaskStaging({
+              key: 'add',
+              value: TaskID
+            })
+          }
           send(data);
         }
       });
@@ -611,6 +626,12 @@ const handlePlayTask = (row: any) => {
       result: 0,
       return_message: "",
     };
+    if (row.type === 11) {
+      storePlay.changePlayTaskStaging({
+        key: 'add',
+        value: row.taskid
+      })
+    }
     send(data);
   }
 };
@@ -971,8 +992,7 @@ watch(playStatusData, (newVal) => {
   form.play_status = newVal.PlayStatus;
 });
 watch(playSubscriptionTask, (newVal) => {
-  console.log(newVal, playCenterData.value?.TaskID)
-  if (newVal.TaskID === playCenterData.value?.TaskID) {
+  if (newVal?.TaskID === playCenterData.value?.TaskID) {
     form.current_duration = newVal.CurrentTime;
     form.total_duration = newVal.TotalTime;
     form.song_name = newVal.MusicName;

@@ -57,7 +57,9 @@ const submit = () => {
   emit("handleSelectedConfigure", selectConfigure.value);
 };
 // mounted 实例挂载完成后被调用
-onMounted(() => {});
+onMounted(() => {
+  
+});
 </script>
 
 <style lang="scss">

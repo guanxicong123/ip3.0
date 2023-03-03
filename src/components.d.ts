@@ -5,6 +5,7 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    Account: typeof import('./components/change_account/account.vue')['default']
     Container: typeof import('./components/container.vue')['default']
     Date_setting: typeof import('./components/configura_components/date_setting.vue')['default']
     Dialong_warning_message: typeof import('./components/dialong_warning_message.vue')['default']
@@ -51,6 +52,7 @@ declare module '@vue/runtime-core' {
     Header: typeof import('./components/header.vue')['default']
     Loading: typeof import('element-plus/es')['ElLoadingDirective']
     Menu: typeof import('./components/menu.vue')['default']
+    Password: typeof import('./components/change_account/password.vue')['default']
     QuickMusicDialog: typeof import('./components/quick-music-dialog.vue')['default']
     QuickTerminalDialog: typeof import('./components/quick-terminal-dialog.vue')['default']
     Register: typeof import('./components/register.vue')['default']

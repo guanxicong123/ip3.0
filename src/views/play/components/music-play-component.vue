@@ -80,7 +80,7 @@
               style="height: 22px; margin-bottom: 8px"
               >播放曲目</el-radio
             >
-            <el-input v-model="ruleForm.play_number" :disabled="ruleForm.type !== 2" />
+            <el-input v-model.number="ruleForm.play_number" :disabled="ruleForm.type !== 2" :maxlength="4"/>
           </el-form-item>
         </el-col>
       </el-row>
@@ -134,6 +134,7 @@ watch([ruleForm, duration], () => {
       life_time: ruleForm.play_model === 0 ? duration.value : ruleForm.life_time,
     };
   }
+  console.log(data)
   emit("requestDispose", data);
 });
 
@@ -169,19 +170,19 @@ onMounted(() => {
     const hasLifeTime = Object.prototype.hasOwnProperty.call(
       props.requestConfig,
       "life_time"
-    );
+    ) &&  props.requestConfig?.life_time;
     const hasPlayNumber = Object.prototype.hasOwnProperty.call(
       props.requestConfig,
       "play_number"
     );
-
+    console.log(hasLifeTime, hasPlayNumber)
     ruleForm.play_model = props.requestConfig.play_model || 0;
     ruleForm.life_time = hasLifeTime ? props.requestConfig.life_time : "00:00:00";
     ruleForm.play_number = hasPlayNumber ? props.requestConfig.play_number : 1;
     duration.value = hasLifeTime ? props.requestConfig.life_time : "00:00:00";
-
+    console.log(props.requestConfig)
     if (ruleForm.play_model > 0) {
-      ruleForm.type = hasLifeTime ? 1 : 2;
+      ruleForm.type = props.requestConfig?.life_time ? 1 : 2;
     }
   }
   emit("requestDispose", ruleForm);

@@ -127,6 +127,7 @@
                 v-model="ruleForm.repeattime"
                 :min="1"
                 controls-position="right"
+                maxlength="4"
                 :disabled="!props.isEdit"
                 :value-on-clear="ruleForm.repeattime"
               />
@@ -181,7 +182,7 @@ const ruleForm: any = reactive({
   repeattime: 1, //播放次数
   txtpath: "", //文本路径
   ttscontent: "", //文本内容
-  enabledplayfun: false,
+  enabledplayfun: true,
   displayattribute: 0, //显示属性
 });
 const textType = ref(0);

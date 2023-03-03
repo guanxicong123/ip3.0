@@ -181,9 +181,9 @@
               {{ scope.row.hasOwnProperty("ip_address") ? scope.row.ip_address : "-" }}
             </template>
           </el-table-column>
-          <el-table-column prop="volume" label="音量" show-overflow-tooltip>
+          <el-table-column prop="default_volume" label="音量" show-overflow-tooltip>
             <template #default="scope">
-              {{ scope.row.hasOwnProperty("terminals_id") ? scope.row.volume : "-" }}
+              {{ scope.row.hasOwnProperty("terminals_id") ? scope.row.default_volume : "-" }}
             </template>
           </el-table-column>
           <el-table-column prop="type" label="类型" width="100">

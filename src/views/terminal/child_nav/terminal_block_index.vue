@@ -27,7 +27,7 @@
                 </svg>
               </span>
               <el-popover
-                placement="left-start"
+                placement="left"
                 trigger="click"
                 popper-class="terminal-volume-popper"
                 :disabled="item.status !== 1 && item.status !== 2"
@@ -49,10 +49,10 @@
               <span>编码 : {{ item.code }}</span>
               <div class="status">
                 <div class="span" :class="terminalsStatusMap.get(item.status)?.class">
-                  <span v-if="item.status != 2">{{
+                  <span>{{
                     terminalsStatusMap.get(item.status)?.name
                   }}</span>
-                  <span v-else>{{ item.sound_source_type }}</span>
+                  <!-- <span v-else>{{ item.sound_source_type }}</span> -->
                 </div>
               </div>
             </div>
@@ -311,11 +311,11 @@ onMounted(() => {
       margin: 0 12px 0 18px;
 
       .i-span {
+        flex: 1;
         font-size: 20px;
       }
 
       .i-volume {
-        flex: 1;
         text-align: right;
         color: $c-999;
 
