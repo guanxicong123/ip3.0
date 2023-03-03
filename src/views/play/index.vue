@@ -27,7 +27,7 @@
             @dblclick="
               playCenterData.TaskID
                 ? handleTaskButton()
-                  ? handlePauseTask(playCenterData)
+                  ? git(playCenterData)
                   : handleStopTask(playCenterData)
                 : handlePlayTask(playCenterData)
             "

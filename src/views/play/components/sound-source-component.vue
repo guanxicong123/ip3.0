@@ -170,8 +170,6 @@ const emit = defineEmits([
   "requestSoundSource", // 更新传递已选择的快捷音源，用于父组件进行数据交互
 ]);
 
-const folderDialogVisible = ref(false); //录音路径选择框
-const selectPath = ref("");
 const ruleForm = reactive({
   id: -1, //快捷音源配置id
   type: 0, //选择的快捷音源类型

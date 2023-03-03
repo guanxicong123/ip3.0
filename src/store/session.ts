@@ -151,7 +151,7 @@ export const useSessionStore = defineStore({
     },
     // 清除会话数据
     clearSession() {
-      this.allSessionObj = [];
+      this.allSessionObj = {};
       this.onePageSession = [];
       this.allFilterSession = [];
       this.sessionsLocalKey = [];

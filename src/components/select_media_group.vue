@@ -932,7 +932,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     flex: 1;
-    width: calc(100% - 336px);
+    width: calc(100% - 360px);
     height: 100%;
     border-radius: 2px;
     border-left: 1px solid #ddd;

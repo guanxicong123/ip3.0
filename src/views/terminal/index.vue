@@ -537,7 +537,7 @@ const monitorTalkTask = (EndPointList: any[], EndPointID: number) => {
       TaskType: 17,
       UserID: Number(localStorage.get("LoginUserID")),
       TaskProp: {
-        TaskAudioType: 0,
+        TaskAudioType: 2,
         CollectID: EndPointID,
         SelfCheck: 0,
       },

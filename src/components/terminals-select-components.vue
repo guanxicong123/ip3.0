@@ -400,7 +400,7 @@ const form = reactive<any>({
   activeName: "first",
   searchTerminals: "", // 搜索终端
   searchTerminalsReg: /.*/,
-  searchGroups: "", // 搜索分组
+  searchGroups: "", // 搜索分组a
   searchGroupsReg: /.*/,
   selectedSearchTerminals: "", // 已选择的搜索终端
   selectedSearchTerminalsReg: /.*/,
@@ -650,11 +650,12 @@ const selectAll = () => {
     form.allTerminalsData.forEach(
       (item: { [x: string]: string; groups_id: any; ip_address: string }) => {
         (form.currentGroupsID <= 0 ||
-          item.groups_id.indexOf(form.currentGroupsID) >= 0) &&
+          item.groups_id?.indexOf(form.currentGroupsID) >= 0) &&
         (item[config.searchColumnName].match(form.searchTerminalsReg) ||
           item.ip_address.match(form.searchTerminalsReg))
           ? selected.push(item)
           : noSelect.push(item);
+        console.log(item)
       }
     );
     form.selectedTerminalsData = Array.from(

@@ -5,7 +5,7 @@
   @Describe: 登陆页面
 -->
 <template>
-  <div class="broadcast-login">
+  <div class="broadcast-login" @keyup.enter="submit">
     <div class="broadcast-login-header">
       <div class="login-header-functron">
         <el-icon @click="handleMinimize">
@@ -151,6 +151,10 @@ const isWebsocekt = computed(() => {
 const isLogin = computed(() => {
   return store.is_login;
 }); //是否登录
+const isRegistrationWindow = computed(() => {
+  return store.is_registration_window;
+}); //是否显示注册窗口
+
 
 // 表单值
 const modelRef = reactive({
@@ -185,14 +189,14 @@ window.electronAPI.handleRegisterRefresh((event: any, value: any) => {
 // 获取注册状态
 const gitRegisterStatus = () => {
   return new Promise<void>((resolve, reject) => {
-    proxy.$http1.get("/register").then((result: any) => {
-      if (result.result === 200) {
-        registerStatus.value = result.data;
-        if (!registerStatus.value.isRegister) {
-          resolve();
+      proxy.$http1.get("/register").then((result: any) => {
+        if (result.result === 200) {
+          registerStatus.value = result.data;
+          if (!registerStatus.value.isRegister) {
+            resolve();
+          }
         }
-      }
-    });
+      });
   });
 };
 // 提交
@@ -229,7 +233,10 @@ const submit = () => {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   gitRegisterStatus().then(() => {
-    window.electronAPI.send("register-window");
+    if (isRegistrationWindow.value) {
+      window.electronAPI.send("register-window");
+      store.changeRegistrationWindow(false)
+    }
   });
   if (socket) {
     socket.close();

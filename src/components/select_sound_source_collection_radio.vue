@@ -238,7 +238,6 @@ const handleSelectedTerminalsSearch = () => {
 };
 // 处理点击关闭已选择终端的搜索框
 const handleClickCloSesearchInput = () => {
-  // form.selectedSearchAcquisition = "";
   form.selectedSearchAcquisitionVisible = false;
 };
 // 设置tab当前选择状态

@@ -73,6 +73,7 @@
             <el-input
               v-model="ruleForm.play_number"
               :disabled="ruleForm.radioVal !== 2"
+              :maxlength="4"
             />
           </el-form-item>
         </el-col>
