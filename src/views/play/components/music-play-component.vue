@@ -134,7 +134,6 @@ watch([ruleForm, duration], () => {
       life_time: ruleForm.play_model === 0 ? duration.value : ruleForm.life_time,
     };
   }
-  console.log(data)
   emit("requestDispose", data);
 });
 
@@ -175,15 +174,20 @@ onMounted(() => {
       props.requestConfig,
       "play_number"
     );
-    console.log(hasLifeTime, hasPlayNumber)
     ruleForm.play_model = props.requestConfig.play_model || 0;
     ruleForm.life_time = hasLifeTime ? props.requestConfig.life_time : "00:00:00";
     ruleForm.play_number = hasPlayNumber ? props.requestConfig.play_number : 1;
     duration.value = hasLifeTime ? props.requestConfig.life_time : "00:00:00";
-    console.log(props.requestConfig)
     if (ruleForm.play_model > 0) {
       ruleForm.type = props.requestConfig?.life_time ? 1 : 2;
     }
+  }
+  if (props.fileList) {
+    let timeDuration = 0;
+    tableData.value?.forEach((item: any) => {
+      timeDuration += Number(item.time);
+    });
+    duration.value = formatSecondNo(timeDuration);
   }
   emit("requestDispose", ruleForm);
 });

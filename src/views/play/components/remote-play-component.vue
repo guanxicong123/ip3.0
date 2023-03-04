@@ -139,6 +139,7 @@ const requestMediaGroups = (data: any) => {
   emit("update:medias_groups", data);
 };
 const totalSecond = (length: number) => {
+  console.log(length)
   duration.value = length;
 };
 // 时长转换

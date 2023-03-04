@@ -72,8 +72,8 @@
           ></i>
           <i
             class="iconfont"
-            :class="playModeIcon.get(form.play_model)?.icon"
-            :title="playModeIcon.get(form.play_model)?.title"
+            :class="playModeIcon.get(playCenterData?.PlayModel)?.icon"
+            :title="playModeIcon.get(playCenterData?.PlayModel)?.title"
             @click="handleSwitchTask(playCenterData, 'play_mode')"
           >
           </i>
@@ -207,9 +207,7 @@
                   min-width="280"
                 >
                   <template #default="scope">
-                    <svg class="icon" aria-hidden="true">
-                      <use :xlink:href="taskTypeMap.get(scope.row.type)"></use>
-                    </svg>
+                    <span class="icon iconfont" :class="taskTypeMap.get(scope.row.type)" style="color: #7AB1F0"></span>
                     {{ scope.row.name }}
                   </template>
                 </el-table-column>
@@ -364,21 +362,26 @@ const handleFullscreenStatus = () => {
   form.playlist_status = false;
 };
 const taskTypeMap = new Map([
-  [1, "#icon-remote-playback"],
-  [4, "#icon-view-collection-terminal"],
-  [11, "#icon-text"],
-  [13, "#icon-terminals"],
-  [12, "#icon-terminals"],
-  [10, "#icon-music-playback"],
+  [1, "icon-remote-playback"],
+  [4, "icon-view-collection-terminal"],
+  [11, "icon-text"],
+  [13, "icon-terminals"],
+  [12, "icon-terminals"],
+  [10, "icon-music-playback"],
 ]);
 const taskPlayMode = new Map([
   [0, "normal_play"],
   [1, "loop_play"],
   [2, "random_play"],
 ]);
+const playModeNum = new Map([
+  ["normal_play", 0],
+  ["loop_play", 1],
+  ["random_play", 2],
+]);
 const playModeIcon = new Map([
   [
-    0,
+    "normal_play",
     {
       icon: "icon-list-play",
       title: "列表播放",
@@ -386,7 +389,7 @@ const playModeIcon = new Map([
     },
   ],
   [
-    1,
+    "loop_play",
     {
       icon: "icon-loop-play",
       title: "循环播放",
@@ -394,7 +397,7 @@ const playModeIcon = new Map([
     },
   ],
   [
-    2,
+    "random_play",
     {
       icon: "icon-random",
       title: "随机播放",
@@ -657,10 +660,10 @@ const handleControlValuev = (type: string) => {
   if (type === "progress") {
     return form.current_duration;
   }
-  if (type === "PlayMode") {
+  if (type === "play_mode") {
     let model = 0;
-    form.play_model === 2 ? (model = 0) : (model = form.play_model + 1);
-    return playModeIcon.get(model)?.model;
+    playModeNum.get(playCenterData.value?.PlayMode) === 2 ? (model = 0) : (model = form.play_model + 1);
+    return taskPlayMode.get(model);
   }
   return "";
 };

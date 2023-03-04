@@ -117,8 +117,8 @@
               >
                 <template #default="scope">
                   {{
-                    scope.row.TaskName && scope.row.TaskName.length
-                      ? scope.row.TaskName
+                    scope.row.TaskName && scope.row.TaskName.length > 0
+                      ? scope.row.TaskName[0]
                       : "-"
                   }}
                 </template>

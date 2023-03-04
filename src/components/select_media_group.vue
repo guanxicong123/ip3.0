@@ -59,6 +59,10 @@
                   <template v-for="item in form.allMediaData" :key="item.id">
                     <li
                       @click="selectTerminal(item)"
+                      v-if="
+                        form.currentGroupsID === 0 ||
+                        item.medias_groups_id === form.currentGroupsID
+                      "
                       v-show="
                         !form.searchMediaVisible ||
                         item[config.searchColumnName].match(form.searchMediaReg)
@@ -559,16 +563,12 @@ const selectAll = () => {
   if (form.activeName === "first") {
     let selected: any[] = [];
     let noSelect: any[] = [];
-    form.allMediaData.forEach(
-      (item: { [x: string]: string; groups_id: any; ip_address: string }) => {
-        (form.currentGroupsID <= 0 ||
-          item.groups_id.indexOf(form.currentGroupsID) >= 0) &&
-        (item[config.searchColumnName].match(form.searchMediaReg) ||
-          item.ip_address.match(form.searchMediaReg))
-          ? selected.push(item)
-          : noSelect.push(item);
-      }
-    );
+    form.allMediaData.forEach((item: { [x: string]: string; medias_groups_id: any }) => {
+      (form.currentGroupsID <= 0 || item.medias_groups_id == form.currentGroupsID) &&
+      item[config.searchColumnName].match(form.searchMediaReg)
+        ? selected.push(item)
+        : noSelect.push(item);
+    });
     form.selectedMediaData = Array.from(selected.concat(form.selectedMediaData));
     form.allMediaData = Array.from(noSelect);
     handleUpdateSelectedMedia();
@@ -716,6 +716,7 @@ const handleGetAllGroups = () => {
     })
     .then((result: any) => {
       form.allGroupsData = result.data;
+      form.allGroupsOptions = [...form.allGroupsOptions, ...result.data];
       handleEditGroupsData();
     });
 };
