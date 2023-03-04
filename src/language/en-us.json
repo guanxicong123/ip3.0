@@ -814,6 +814,7 @@
   "Confirmation password verification prompt": "The confirmation password is inconsistent with the login password",
   "Please select": "Please select",
   "Please select an idle terminal": "Please select an idle terminal",
+  "Please select an idle speaker terminal": "Please select an idle speaker terminal",
   "Please select a shortcut terminal": "Please select a shortcut terminal",
   "Please select a sound source": "Please select a sound source",
   "Please select a terminal or group": "Please select a terminal or group",
@@ -1064,5 +1065,16 @@
   "Are you about to log out": "Are you about to log out?",
   "Convert": "Convert",
   "Ungrouped": "Ungrouped",
-  "Default": "Default"
+  "Default": "Default",
+  "Put away": "Put away",
+  "Open": "Open",
+  "Code": "Code",
+  "Client listening task": "Client listening task",
+  "Client intercom task": "Client intercom task",
+  "Client broadcast task": "Client broadcast task",
+  "Client-wide broadcast task": "Client-wide broadcast task",
+  "No execution terminal": "No execution terminal",
+  "Play configuration": "Play configuration",
+  "There is no executable task terminal in the selected terminal": "There is no executable task terminal in the selected terminal",
+  "Only one intercom receiving terminal can be selected": "Only one intercom receiving terminal can be selected"
 }

@@ -13,19 +13,23 @@
             :class="{ select: activeName === 'configure' }"
             @click="handleSwitchTabs('configure')"
           >
-            播放配置
+            {{ $t("Play configuration") }}
             {{ musicsNumber !== "" ? "(" + musicsNumber + ")" : "" }}
           </div>
           <div
             :class="{ select: activeName === 'region' }"
             @click="handleSwitchTabs('region')"
           >
-            播放区域
+            {{ $t("Play area") }}
             {{ terminasNumber !== "" ? "(" + terminasNumber + ")" : "" }}
           </div>
         </div>
         <div class="com-button">
-          <i class="iconfont icon-edit1" @click="handleEditButton" v-if="!editStatus"></i>
+          <i
+            class="iconfont icon-edit1"
+            @click="handleEditButton"
+            v-if="!editStatus"
+          ></i>
           <i class="iconfont icon-save" @click="handleEditSava" v-else></i>
         </div>
       </div>
@@ -70,9 +74,17 @@
       >
       </acquisition-device-component>
       <div class="com-table" v-if="ruleForm.type === 10">
-        <el-table :data="ruleForm.data" height="100%" @row-dblclick="handelRowDblclick">
-          <el-table-column type="index" label="序号" width="80" />
-          <el-table-column prop="path" label="名称" show-overflow-tooltip>
+        <el-table
+          :data="ruleForm.data"
+          height="100%"
+          @row-dblclick="handelRowDblclick"
+        >
+          <el-table-column type="index" label="No." width="80" />
+          <el-table-column
+            prop="path"
+            :label="$t('Name')"
+            show-overflow-tooltip
+          >
             <template #default="scope">
               <div class="tabel-data-popover">
                 <div class="tabel-data-popover-content">
@@ -115,7 +127,7 @@
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="time" label="时长" width="100">
+          <el-table-column prop="time" :label="$t('File duration')" width="100">
             <template #default="scope">
               {{ formatSecondNo(scope.row.time) }}
             </template>
@@ -124,8 +136,12 @@
       </div>
       <div class="com-table" v-if="ruleForm.type === 1">
         <el-table :data="ruleForm.data" style="width: 100%" height="100%">
-          <el-table-column type="index" label="序号" width="80" />
-          <el-table-column prop="name" label="名称" show-overflow-tooltip>
+          <el-table-column type="index" label="No." width="80" />
+          <el-table-column
+            prop="name"
+            :label="$t('Name')"
+            show-overflow-tooltip
+          >
             <template #default="scope">
               <div class="tabel-data-popover">
                 <div class="tabel-data-popover-content">
@@ -149,7 +165,11 @@
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="length" label="时长" width="100">
+          <el-table-column
+            prop="length"
+            :label="$t('File duration')"
+            width="100"
+          >
             <template #default="scope">
               {{ formatSecondNo(scope.row.length) }}
             </template>
@@ -160,8 +180,12 @@
     <div class="com-main" v-else>
       <div class="com-table" v-if="taskDataDetailed.fast_terminals_id === 0">
         <el-table :data="taskTerminalAll" height="100%">
-          <el-table-column type="index" label="序号" width="80" />
-          <el-table-column prop="name" label="名称" show-overflow-tooltip>
+          <el-table-column type="index" label="No." width="80" />
+          <el-table-column
+            prop="name"
+            :label="$t('Name')"
+            show-overflow-tooltip
+          >
             <template #default="scope">
               <div class="tabel-data-popover">
                 <div class="tabel-data-popover-content">
@@ -176,17 +200,33 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="ip_address" label="IP地址" show-overflow-tooltip>
+          <el-table-column
+            prop="ip_address"
+            :label="$t('IP address')"
+            show-overflow-tooltip
+          >
             <template #default="scope">
-              {{ scope.row.hasOwnProperty("ip_address") ? scope.row.ip_address : "-" }}
+              {{
+                scope.row.hasOwnProperty("ip_address")
+                  ? scope.row.ip_address
+                  : "-"
+              }}
             </template>
           </el-table-column>
-          <el-table-column prop="default_volume" label="音量" show-overflow-tooltip>
+          <el-table-column
+            prop="default_volume"
+            :label="$t('Volume')"
+            show-overflow-tooltip
+          >
             <template #default="scope">
-              {{ scope.row.hasOwnProperty("terminals_id") ? scope.row.default_volume : "-" }}
+              {{
+                scope.row.hasOwnProperty("terminals_id")
+                  ? scope.row.default_volume
+                  : "-"
+              }}
             </template>
           </el-table-column>
-          <el-table-column prop="type" label="类型" width="100">
+          <el-table-column prop="type" :label="$t('Type')" width="100">
             <template #default="scope">
               {{
                 scope.row.hasOwnProperty("terminals_id")
@@ -205,7 +245,7 @@
         >
           <el-row :gutter="80">
             <el-col>
-              <el-form-item label="快捷终端">
+              <el-form-item :label="$t('Fast terminal')">
                 <div class="fast-sound-source">
                   <div class="fast-sound-source-name">
                     {{
@@ -233,7 +273,11 @@
       :on-change="uploadChange"
     >
       <template #trigger>
-        <span class="iconfont icon-add" ref="iconAdd" style="display: none"></span>
+        <span
+          class="iconfont icon-add"
+          ref="iconAdd"
+          style="display: none"
+        ></span>
       </template>
     </el-upload>
     <select-media-dialog
@@ -310,11 +354,15 @@ const isConfigure = computed(() => {
 });
 
 const terminasNumber = computed(() => {
-  return taskDataDetailed.value.fast_terminals_id ? "" : taskTerminalAll.value.length;
+  return taskDataDetailed.value.fast_terminals_id
+    ? ""
+    : taskTerminalAll.value.length;
 });
 
 const musicsNumber = computed(() => {
-  return [1, 10].includes(taskDataDetailed.value.type) ? ruleForm.data.length : "";
+  return [1, 10].includes(taskDataDetailed.value.type)
+    ? ruleForm.data.length
+    : "";
 });
 
 watch(
@@ -377,7 +425,10 @@ const handleSelectedTerminals = (data: any) => {
     }),
   };
   if (ruleForm.type >= 10) {
-    if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id === 0) {
+    if (
+      activeName.value === "region" &&
+      taskDataDetailed.value.fast_terminals_id === 0
+    ) {
       proxy.$http1
         .put("/task/terminal/" + props.selectTaskData.id, {
           terminals: putData.terminals,
@@ -466,15 +517,22 @@ const handleAllTerminals = (newVal: any, oldVal: any) => {
 };
 // 触发编辑
 const handleEditButton = () => {
-  if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id !== 0) {
+  if (
+    activeName.value === "region" &&
+    taskDataDetailed.value.fast_terminals_id !== 0
+  ) {
     terminaDialogVisible.value = true;
     return;
   }
-  if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id === 0) {
+  if (
+    activeName.value === "region" &&
+    taskDataDetailed.value.fast_terminals_id === 0
+  ) {
     terminaSelectVisible.value = true;
     return;
   }
-  if (props.playCenterData.TaskID) return proxy.$message.warning("任务正在执行中");
+  if (props.playCenterData.TaskID)
+    return proxy.$message.warning("任务正在执行中");
   if (ruleForm.type === 10) {
     iconAdd.value.click();
   }
@@ -552,7 +610,8 @@ const handleRemoteTasks = () => {
         fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
         terminals: props.selectTaskData.terminals,
         terminals_groups: props.selectTaskData.terminals_groups,
-        sound_source: props.selectTaskData.type === 4 ? soundSourceForm.value : "",
+        sound_source:
+          props.selectTaskData.type === 4 ? soundSourceForm.value : "",
         medias: props.selectTaskData.medias,
         medias_groups: props.selectTaskData.medias_groups,
       })
@@ -640,7 +699,10 @@ const uploadMedia = (data: any) => {
     });
 };
 // 选中文件时触发
-const uploadChange: UploadProps["onChange"] = (uploadFile: any, uploadFiles: any) => {
+const uploadChange: UploadProps["onChange"] = (
+  uploadFile: any,
+  uploadFiles: any
+) => {
   getTimes(uploadFile);
   usePublicMethod.debounce(handleLocalTaskMusic, 500);
 };
@@ -660,7 +722,11 @@ const getTimes = (file: any) => {
 // 上移
 const handleMoveUp = (row: any, index: number) => {
   if (index === 0) return;
-  ruleForm.data[index] = ruleForm.data.splice(index - 1, 1, ruleForm.data[index])[0];
+  ruleForm.data[index] = ruleForm.data.splice(
+    index - 1,
+    1,
+    ruleForm.data[index]
+  )[0];
   proxy.$http1
     .put("/task/detail/" + props.selectTaskData.id, {
       content: ruleForm.data,
@@ -674,7 +740,11 @@ const handleMoveUp = (row: any, index: number) => {
 // 下移
 const handleMoveDown = (row: any, index: number) => {
   if (index + 1 === ruleForm.data.length) return;
-  ruleForm.data[index] = ruleForm.data.splice(index + 1, 1, ruleForm.data[index])[0];
+  ruleForm.data[index] = ruleForm.data.splice(
+    index + 1,
+    1,
+    ruleForm.data[index]
+  )[0];
   proxy.$http1
     .put("/task/detail/" + props.selectTaskData.id, {
       content: ruleForm.data,
@@ -756,9 +826,11 @@ const handleSelectionData = (row: any) => {
         taskDataDetailed.value = restlu.data;
         if (restlu.data.fast_terminals_id) {
           getFastTerminals().then((data: any) => {
-            taskDataDetailed.value["fast_terminal"] = data.filter((item: { id: any }) => {
-              return item.id === restlu.data.fast_terminals_id;
-            })[0];
+            taskDataDetailed.value["fast_terminal"] = data.filter(
+              (item: { id: any }) => {
+                return item.id === restlu.data.fast_terminals_id;
+              }
+            )[0];
           });
         }
         const terminals = restlu.data.terminals ? restlu.data.terminals : [];

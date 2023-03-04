@@ -8,7 +8,7 @@
   <el-dialog
     v-model="props.dialogVisible"
     class="select-media-dialog"
-    title="选择媒体"
+    :title="$t('Select media')"
     width="70%"
     :before-close="handleClose"
   >

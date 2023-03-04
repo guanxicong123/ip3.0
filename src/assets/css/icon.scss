@@ -18,3 +18,60 @@
 .offline {
   color: #999;
 }
+
+.red,
+.icon-media-private-folder {
+  color: #ff0000;
+}
+
+.icon-delete {
+  color: #ec6656;
+}
+
+.icon-media-public-folder {
+  color: #0fb905;
+}
+
+.icon-folder {
+  color: #FFD142;
+}
+// 背景色
+.on-line {
+  background-color: #74C300;
+}
+
+.off-line {
+  background-color: $c-999;
+}
+
+.be-busy {
+  background-color: #E29341;
+}
+
+.fault {
+  background-color: #F7403A;
+}
+
+.frozen {
+  background-color: #2F91FF;
+}
+
+.com-hc-bg {
+  background-color: #eaf4ff;
+}
+
+.com-m-bg {
+  background-color: #EBF5FF;
+}
+
+.com-il-bg {
+  background-color: #E7F1FB;
+}
+
+.com-ir-bg {
+  background-color: #F3F9FF;
+}
+
+.com-select-bg {
+  background-color: #DFEBFF !important;
+}

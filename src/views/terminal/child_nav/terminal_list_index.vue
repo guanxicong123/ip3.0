@@ -34,7 +34,7 @@
               <i
                 class="iconfont theme"
                 :class="form.isShowNavBar ? 'icon-shrink' : 'icon-order'"
-                :title="form.isShowNavBar ? '收起' : '展开'"
+                :title="form.isShowNavBar ? $t('Put away') : $t('Open')"
                 @click="form.isShowNavBar = !form.isShowNavBar"
               ></i>
               <span class="title">{{ form.currentGroupTitle }}</span>
@@ -60,14 +60,14 @@
               <el-table-column type="selection" width="44" />
               <el-table-column
                 type="index"
-                label="序号"
+                label="No."
                 show-overflow-tooltip
                 width="60"
                 :index="typeIndex"
               />
               <el-table-column
                 prop="status"
-                label="状态"
+                :label="$t('Status')"
                 sortable="custom"
                 show-overflow-tooltip
               >
@@ -75,10 +75,7 @@
                   <span
                     class="iconfont"
                     :title="terminalsStatusMap.get(scope.row.Status)?.name"
-                    :class="terminalsStatusMap.get(scope.row.Status)?.icon"
-                    :style="
-                      `color:` + terminalsStatusMap.get(scope.row.Status)?.color
-                    "
+                    :class="terminalsStatusMap.get(scope.row.Status)?.class"
                   >
                   </span>
                 </template>
@@ -89,21 +86,17 @@
                 sortable="custom"
                 show-overflow-tooltip
               />
-              <el-table-column prop="volume" label="音量" />
+              <el-table-column prop="volume" :label="$t('Volume')" />
               <el-table-column
                 prop="ip_address"
-                label="终端IP"
+                :label="$t('Terminal IP')"
                 sortable="custom"
                 show-overflow-tooltip
               />
-              <el-table-column
-                prop="code"
-                :label="$t('Call code')"
-                sortable="custom"
-              />
+              <el-table-column prop="code" :label="$t('Call code')" sortable="custom" />
               <el-table-column
                 prop="type"
-                label="终端类型"
+                :label="$t('Terminal type')"
                 show-overflow-tooltip
               >
                 <template #default="scope">
@@ -112,7 +105,7 @@
               </el-table-column>
               <el-table-column
                 prop="TaskName"
-                label="任务名称"
+                :label="$t('Task name')"
                 show-overflow-tooltip
               >
                 <template #default="scope">
@@ -173,32 +166,7 @@ const form = reactive<any>({
   isShowNavBar: true, // 是否显示左侧导航栏
   current_group: 0,
 });
-const terminalsStatusMap = new Map([
-  [
-    0,
-    {
-      icon: "icon-off-line",
-      name: "离线",
-      class: "off-line",
-      color: "#999999",
-    },
-  ],
-  [
-    1,
-    { icon: "icon-on-line", name: "空闲", class: "on-line", color: "#7ED321" },
-  ],
-  [
-    2,
-    {
-      icon: "icon-executing",
-      name: "忙碌",
-      class: "be-busy",
-      color: "#E29341",
-    },
-  ],
-  [3, { icon: "icon-freeze", name: "冻结", class: "frozen", color: "#2F91FF" }],
-  [4, { icon: "icon-fault", name: "故障", class: "fault", color: "#ED4471" }],
-]);
+const terminalsStatusMap = useFormatMap.terminalsStatusMap;
 
 const { terminal_group_data }: any = inject("terminal_group");
 const { updateCheckedTerminals }: any = inject("checkedAll");
@@ -241,11 +209,7 @@ watch([terminal_data, storage_terminal_data], () => {
     });
   });
   cacheTerminalData.value = filterData();
-  sortChange(
-    sort_condition.value,
-    sort_condition.value.prop,
-    sort_condition.value.order
-  );
+  sortChange(sort_condition.value, sort_condition.value.prop, sort_condition.value.order);
   form.data = cacheTerminalData.value.slice(
     form.pageSize * (form.currentPage - 1),
     form.pageSize * form.currentPage
@@ -278,16 +242,8 @@ watch(
 
 watch([terminal_status, search_value], () => {
   cacheTerminalData.value = filterData();
-  sortChange(
-    sort_condition.value,
-    sort_condition.value.prop,
-    sort_condition.value.order
-  );
+  sortChange(sort_condition.value, sort_condition.value.prop, sort_condition.value.order);
 });
-
-// 路由
-let $useRouter = useRouter();
-let $useRoute = useRoute();
 
 const sort_map = new Map([
   [0, "status"],
@@ -314,25 +270,6 @@ const handleSelectionChange = (val: User[]) => {
   updateCheckedTerminals(terminal_ids);
 };
 
-const sortByIPDesc = (a: any, b: any) => {
-  let ip1 = Number(
-    a.ip_address
-      .split(".")
-      .map((e: any) => e.padStart(3, "0"))
-      .join("")
-  );
-  let ip2 = Number(
-    b.ip_address
-      .split(".")
-      .map((e: any) => e.padStart(3, "0"))
-      .join("")
-  );
-  if (ip2 - ip1 > 0) {
-    return 1;
-  } else {
-    return -1;
-  }
-};
 const filterData = () => {
   let condition = terminal_status.value === -1 && search_value.value === "";
   if (condition) {
@@ -340,8 +277,7 @@ const filterData = () => {
   } else {
     let filterData = storage_terminal_data.value.filter((item: any) => {
       return (
-        (item.Status === terminal_status.value ||
-          terminal_status.value === -1) &&
+        (item.Status === terminal_status.value || terminal_status.value === -1) &&
         (item.name.match(search_value.value) || search_value.value === "")
       );
     });
@@ -372,10 +308,7 @@ const sortChange = (column: any, prop: any, order: any) => {
     }
   } else if (column.prop == "ip_address") {
     if (column.order === "descending") {
-      cacheTerminalData.value = store.sortChangeData(
-        1,
-        cacheTerminalData.value
-      );
+      cacheTerminalData.value = store.sortChangeData(1, cacheTerminalData.value);
     } else if (column.order === "ascending") {
       cacheTerminalData.value.sort((a: any, b: any) => {
         let ip1 = a.ip_address
@@ -408,10 +341,7 @@ const typeIndex = (index: number) => {
 // 处理XXX条/页更改
 const handlefilterData = (val: number) => {
   form.currentPage = 1;
-  form.data = cacheTerminalData.value.slice(
-    0,
-    form.pageSize * form.currentPage
-  );
+  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage);
 };
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
@@ -421,10 +351,7 @@ const handleSizeChange = (val: number) => {
   });
   form.pageSize = val;
   form.currentPage = 1;
-  form.data = cacheTerminalData.value.slice(
-    0,
-    form.pageSize * form.currentPage
-  );
+  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage);
 };
 
 // 处理当前页更改

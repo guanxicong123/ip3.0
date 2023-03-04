@@ -16,7 +16,7 @@
           @selection-change="handleSelectionChange"
           row-class-name="com-table-list"
         >
-          <el-table-column type="index" width="60" label="序号" />
+          <el-table-column type="index" width="60" label="No." />
           <el-table-column prop="name" label="文件名称" show-overflow-tooltip />
           <el-table-column prop="time" label="时长">
             <template #default="scope">
@@ -37,7 +37,11 @@
         </el-table>
       </div>
     </div>
-    <el-form :model="ruleForm" label-position="top" class="play-task-form-inline">
+    <el-form
+      :model="ruleForm"
+      label-position="top"
+      class="play-task-form-inline"
+    >
       <el-row :gutter="80">
         <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
           <el-form-item label="播放模式">
@@ -51,12 +55,26 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.play_model === 0">
+        <el-col
+          :xs="12"
+          :sm="8"
+          :md="8"
+          :lg="8"
+          :xl="6"
+          v-if="ruleForm.play_model === 0"
+        >
           <el-form-item label="持续时间">
             {{ duration }}
           </el-form-item>
         </el-col>
-        <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.play_model !== 0">
+        <el-col
+          :xs="12"
+          :sm="8"
+          :md="8"
+          :lg="8"
+          :xl="6"
+          v-if="ruleForm.play_model !== 0"
+        >
           <el-form-item>
             <el-radio
               v-model="ruleForm.type"
@@ -72,7 +90,14 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.play_model !== 0">
+        <el-col
+          :xs="12"
+          :sm="8"
+          :md="8"
+          :lg="8"
+          :xl="6"
+          v-if="ruleForm.play_model !== 0"
+        >
           <el-form-item>
             <el-radio
               v-model="ruleForm.type"
@@ -80,7 +105,11 @@
               style="height: 22px; margin-bottom: 8px"
               >播放曲目</el-radio
             >
-            <el-input v-model.number="ruleForm.play_number" :disabled="ruleForm.type !== 2" :maxlength="4"/>
+            <el-input
+              v-model.number="ruleForm.play_number"
+              :disabled="ruleForm.type !== 2"
+              :maxlength="4"
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -96,7 +125,11 @@ const props = defineProps({
   fileList: Array,
   requestConfig: Object,
 });
-const emit = defineEmits(["update:musicSelect", "requestDispose", "deteleOneMusic"]);
+const emit = defineEmits([
+  "update:musicSelect",
+  "requestDispose",
+  "deteleOneMusic",
+]);
 const ruleForm = reactive({
   play_model: 0, //播放模式
   life_time: "00:00:00", //持续时间
@@ -131,10 +164,11 @@ watch([ruleForm, duration], () => {
   } else {
     data = {
       play_model: ruleForm.play_model,
-      life_time: ruleForm.play_model === 0 ? duration.value : ruleForm.life_time,
+      life_time:
+        ruleForm.play_model === 0 ? duration.value : ruleForm.life_time,
     };
   }
-  console.log(data)
+  console.log(data);
   emit("requestDispose", data);
 });
 
@@ -167,20 +201,21 @@ const formatSecondNo = (seconds: any) => {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   if (props.requestConfig) {
-    const hasLifeTime = Object.prototype.hasOwnProperty.call(
-      props.requestConfig,
-      "life_time"
-    ) &&  props.requestConfig?.life_time;
+    const hasLifeTime =
+      Object.prototype.hasOwnProperty.call(props.requestConfig, "life_time") &&
+      props.requestConfig?.life_time;
     const hasPlayNumber = Object.prototype.hasOwnProperty.call(
       props.requestConfig,
       "play_number"
     );
-    console.log(hasLifeTime, hasPlayNumber)
+    console.log(hasLifeTime, hasPlayNumber);
     ruleForm.play_model = props.requestConfig.play_model || 0;
-    ruleForm.life_time = hasLifeTime ? props.requestConfig.life_time : "00:00:00";
+    ruleForm.life_time = hasLifeTime
+      ? props.requestConfig.life_time
+      : "00:00:00";
     ruleForm.play_number = hasPlayNumber ? props.requestConfig.play_number : 1;
     duration.value = hasLifeTime ? props.requestConfig.life_time : "00:00:00";
-    console.log(props.requestConfig)
+    console.log(props.requestConfig);
     if (ruleForm.play_model > 0) {
       ruleForm.type = props.requestConfig?.life_time ? 1 : 2;
     }

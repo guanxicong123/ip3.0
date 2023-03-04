@@ -180,12 +180,15 @@
 <script lang="ts" setup>
 import { Search } from "@element-plus/icons-vue";
 import { send } from "@/utils/socket";
+
 // defineAsyncComponent 异步组件-懒加载子组件
 const selectMonitoringSpeaker = defineAsyncComponent(
   () => import("../session/components/select_monitoring_speaker.vue")
 );
+
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
+
 const storeTerminal = getStore.useTerminalStore();
 const session = getStore.useSessionStore();
 const systemStore = getStore.useSystemStore();
@@ -397,12 +400,12 @@ const functronButtonTask = (type: number) => {
   // 存在任务时
   if (sessionsData.value.length > 0) {
     startButton.value.status = false;
-    return proxy.$message.warning("主讲终端忙碌中");
+    return proxy.$message.warning(proxy.$t("Please select an idle speaker terminal"));
   }
   const currentTableRow = JSON.parse(localStorage.get("monitoringSpeaker")) || "";
   if (!currentTableRow) {
     startButton.value.status = false;
-    return proxy.$message.error("未选择主讲终端或主讲终端未在线");
+    return proxy.$message.error(proxy.$t("Please select an idle speaker terminal"));
   }
   if (type === 1) {
     regionalBroadcasting(currentTableRow);
@@ -413,11 +416,13 @@ const functronButtonTask = (type: number) => {
   });
   if (checked_terminals.value.length === 0) {
     startButton.value.status = false;
-    return proxy.$message.error("请选择终端");
+    return proxy.$message.error(proxy.$t("Please select a terminal"));
   }
   if (filter_initiator_terminals.length === 0 && checked_terminals.value.length > 0) {
     startButton.value.status = false;
-    return proxy.$message.error("选中终端中不存在可执行任务终端");
+    return proxy.$message.error(
+      proxy.$t("There is no executable task terminal in the selected terminal")
+    );
   }
   if (type === 5) {
     originateBroadcast(filter_initiator_terminals, currentTableRow.EndPointID);
@@ -425,7 +430,9 @@ const functronButtonTask = (type: number) => {
   if (type === 4) {
     startButton.value.status = false;
     if (filter_initiator_terminals.length > 1) {
-      return proxy.$message.error("对讲接收终端只能选一个");
+      return proxy.$message.error(
+        proxy.$t("Only one intercom receiving terminal can be selected")
+      );
     }
     initiatedTalkTask(filter_initiator_terminals, currentTableRow.EndPointID);
   }
@@ -443,7 +450,7 @@ const regionalBroadcasting = (currentTableRow: any) => {
       return item.EndPointID;
     });
   if (data.length) {
-    console.log(form.volume)
+    console.log(form.volume);
     let send_data = {
       company: "BL",
       actioncode: "c2ms_create_server_task",
@@ -451,7 +458,11 @@ const regionalBroadcasting = (currentTableRow: any) => {
         EndPointsAdditionalProp: {},
         EndPointList: data,
         TaskID: usePublicMethod.generateUUID(),
-        TaskName: "客户端全区广播任务（" + localStorage.get("username") + "）",
+        TaskName:
+          proxy.$t("Client-wide broadcast task") +
+          "(" +
+          localStorage.get("username") +
+          ")",
         Priority: priorityData.value.get(5),
         Volume: form.volume,
         TaskType: 5,
@@ -467,7 +478,7 @@ const regionalBroadcasting = (currentTableRow: any) => {
     };
     send(send_data);
   } else {
-    proxy.$message.error("不存在可执行任务终端");
+    proxy.$message.error(proxy.$t("No execution terminal"));
   }
 };
 // 发起广播任务
@@ -479,7 +490,8 @@ const originateBroadcast = (EndPointList: any[], EndPointID: number) => {
       EndPointsAdditionalProp: {},
       EndPointList: EndPointList,
       TaskID: usePublicMethod.generateUUID(),
-      TaskName: "客户端广播任务（" + localStorage.get("username") + "）",
+      TaskName:
+        proxy.$t("Client broadcast task") + "(" + localStorage.get("username") + ")",
       Priority: priorityData.value.get(5),
       Volume: form.volume,
       TaskType: 5,
@@ -505,7 +517,8 @@ const initiatedTalkTask = (EndPointList: any[], EndPointID: number) => {
       EndPointsAdditionalProp: {},
       EndPointList: EndPointList,
       TaskID: usePublicMethod.generateUUID(),
-      TaskName: "客户端对讲任务（" + localStorage.get("username") + "）",
+      TaskName:
+        proxy.$t("Client intercom task") + "(" + localStorage.get("username") + ")",
       Priority: priorityData.value.get(4),
       Volume: form.volume,
       TaskType: 4,
@@ -531,7 +544,8 @@ const monitorTalkTask = (EndPointList: any[], EndPointID: number) => {
       EndPointsAdditionalProp: {},
       EndPointList: EndPointList,
       TaskID: usePublicMethod.generateUUID(),
-      TaskName: "客户端监听任务（" + localStorage.get("username") + "）",
+      TaskName:
+        proxy.$t("Client listening task") + "(" + localStorage.get("username") + ")",
       Priority: priorityData.value.get(17),
       Volume: form.volume,
       TaskType: 17,
