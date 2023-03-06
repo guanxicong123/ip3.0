@@ -16,7 +16,7 @@
           @selection-change="handleSelectionChange"
           row-class-name="com-table-list"
         >
-          <el-table-column type="index" width="60" label="序号" />
+          <el-table-column type="index" width="60" label="No." />
           <el-table-column prop="name" label="文件名称" show-overflow-tooltip />
           <el-table-column prop="time" label="时长">
             <template #default="scope">
@@ -80,7 +80,11 @@
               style="height: 22px; margin-bottom: 8px"
               >播放曲目</el-radio
             >
-            <el-input v-model.number="ruleForm.play_number" :disabled="ruleForm.type !== 2" :maxlength="4"/>
+            <el-input
+              v-model.number="ruleForm.play_number"
+              :disabled="ruleForm.type !== 2"
+              :maxlength="4"
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -166,18 +170,19 @@ const formatSecondNo = (seconds: any) => {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   if (props.requestConfig) {
-    const hasLifeTime = Object.prototype.hasOwnProperty.call(
-      props.requestConfig,
-      "life_time"
-    ) &&  props.requestConfig?.life_time;
+    const hasLifeTime =
+      Object.prototype.hasOwnProperty.call(props.requestConfig, "life_time") &&
+      props.requestConfig?.life_time;
     const hasPlayNumber = Object.prototype.hasOwnProperty.call(
       props.requestConfig,
       "play_number"
     );
+
     ruleForm.play_model = props.requestConfig.play_model || 0;
     ruleForm.life_time = hasLifeTime ? props.requestConfig.life_time : "00:00:00";
     ruleForm.play_number = hasPlayNumber ? props.requestConfig.play_number : 1;
     duration.value = hasLifeTime ? props.requestConfig.life_time : "00:00:00";
+
     if (ruleForm.play_model > 0) {
       ruleForm.type = props.requestConfig?.life_time ? 1 : 2;
     }

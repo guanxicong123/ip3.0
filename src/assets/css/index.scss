@@ -268,50 +268,6 @@ html {
 .hover-row td {
   background-color: $c-f2 !important;
 }
-// 背景色、字体颜色
-.com-hc-bg {
-  background-color: #eaf4ff;
-}
-.com-m-bg {
-  background-color: #EBF5FF;
-}
-.com-il-bg {
-  background-color: #E7F1FB;
-}
-.com-ir-bg {
-  background-color: #F3F9FF;
-}
-.com-select-bg {
-  background-color: #DFEBFF !important;
-}
-// 字体图标固定颜色
-.red, .icon-media-private-folder {
-  color: #ff0000;
-}
-.icon-delete {
-  color: #ec6656;
-}
-.icon-media-public-folder {
-  color: #0fb905;
-}
-.on-line {
-  background-color: #74C300;
-}
-.off-line {
-  background-color: $c-999;
-}
-.be-busy {
-  background-color: #E29341;
-}
-.fault {
-  background-color: #F7403A;
-}
-.frozen {
-  background-color: #2F91FF;
-}
-.icon-folder {
-  color: #FFD142;
-}
 // 自定义默认select样式
 .custom-select {
   width: 100%;

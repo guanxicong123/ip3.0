@@ -9,7 +9,7 @@
     <el-scrollbar>
       <div class="play-task-basics configure-level">
         <div class="from-alert">
-          <span>基础配置</span>
+          <span>{{ $t("Basic configuration") }}</span>
         </div>
         <div class="play-task-basics-content configure-level-content">
           <el-form
@@ -21,10 +21,10 @@
           >
             <el-row :gutter="80">
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                <el-form-item label="任务名称" prop="name">
+                <el-form-item :label="$t('Task name')" prop="name">
                   <el-input
                     v-model="ruleForm.name"
-                    placeholder="请输入1-100字符"
+                    :placeholder="$t('Name placeholder')"
                     maxlength="100"
                     show-word-limit
                     clearable
@@ -32,7 +32,7 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                <el-form-item label="任务音量">
+                <el-form-item :label="$t('Task volume')">
                   <el-input-number
                     v-model="ruleForm.volume"
                     :min="0"
@@ -42,7 +42,7 @@
                   />
                   <el-tooltip
                     effect="dark"
-                    content="音量为0时，使用终端的默认音量"
+                    :content="$t('Volume prompt description')"
                     placement="right-start"
                   >
                     <i class="iconfont icon-tips theme"></i>
@@ -50,9 +50,14 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                <el-form-item label="优先级" class="custom-form-input">
-                  <div class="custom-number red" title="任务优先级-音乐播放">
-                    <span class="red">{{ priorityData.get(typePriority.get(ruleForm.type)) }}</span>
+                <el-form-item :label="$t('Priority')" class="custom-form-input">
+                  <div
+                    class="custom-number red"
+                    :title="$t('Task priority') + '-' + $t('Music play')"
+                  >
+                    <span class="red">{{
+                      priorityData.get(typePriority.get(ruleForm.type))
+                    }}</span>
                   </div>
                   <el-input-number
                     v-model="ruleForm.priority"
@@ -63,7 +68,7 @@
                   />
                   <el-tooltip
                     effect="dark"
-                    content="自定义优先级数值越高,同类任务中优先级越高"
+                    :content="$t('Priority prompt description')"
                     placement="right-start"
                   >
                     <i class="iconfont icon-tips theme"></i>
@@ -71,14 +76,17 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                <el-form-item label="音源类型">
+                <el-form-item :label="$t('Sound type')">
                   <el-select v-model="ruleForm.type">
                     <el-option
                       v-for="item in typeOptions"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value"
-                      :disabled="$useRoute.query?.type > 10 && item.type !== 2 || $useRoute.query?.type < 10 && item.type !== 1"
+                      :disabled="
+                        ($useRoute.query?.type > 10 && item.type !== 2) ||
+                        ($useRoute.query?.type < 10 && item.type !== 1)
+                      "
                     />
                   </el-select>
                 </el-form-item>
@@ -89,7 +97,7 @@
       </div>
       <div class="play-task-configure configure-level">
         <div class="from-alert">
-          <span>播放配置</span>
+          <span>{{ $t("Play configuration") }}</span>
           <div class="play-task-configure-music" v-if="ruleForm.type === 10">
             <span class="iconfont icon-delete" @click="deteleSelectMusic"></span>
             <el-upload
@@ -152,14 +160,14 @@
       </div>
       <div class="play-task-region configure-level">
         <div class="from-alert">
-          <span>执行区域</span>
+          <span>{{ $t("Execution area") }}</span>
         </div>
         <div class="play-task-region-content configure-level-content">
           <el-tabs v-model="executionregiontype" class="demo-tabs">
-            <el-tab-pane label="快捷终端" :name="0">
+            <el-tab-pane :label="$t('Fast terminal')" :name="0">
               <el-row :gutter="80">
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                  <p class="selection-title">快捷终端</p>
+                  <p class="selection-title">{{ $t("Fast terminal") }}</p>
                   <div class="quick-terminal-selection">
                     <el-input v-model="quickTerminaName" disabled />
                     <span
@@ -170,15 +178,16 @@
                 </el-col>
               </el-row>
             </el-tab-pane>
-            <el-tab-pane label="终端选择" :name="1">
+            <el-tab-pane :label="$t('Terminal selection')" :name="1">
               <div class="com-data-select-compute">
                 <span>选择终端/分组</span>
                 <span>
-                  <span class="head-add-color">*</span> 已选终端:
+                  <span class="head-add-color">*</span>
+                  {{ $t("Selected terminal") }}:
                   <span class="head-add-color">{{ terminals.length }}</span>
                 </span>
                 <span>
-                  已选分组:
+                  {{ $t("Selected groups") }}:
                   <span class="head-add-color">{{ terminals_groups.length }}</span>
                 </span>
               </div>
@@ -195,8 +204,12 @@
       </div>
     </el-scrollbar>
     <div class="add-edit-bottom-button">
-      <div class="button button-cancel" @click="$useRouter.push('/play')">返回</div>
-      <div class="button button-submit" @click="submitTask">保存</div>
+      <div class="button button-cancel" @click="$useRouter.push('/play')">
+        {{ $t("Return") }}
+      </div>
+      <div class="button button-submit" @click="submitTask">
+        {{ $t("Save") }}
+      </div>
       <div class="button button-submit" @click="submitTaskPlay">保存并播放</div>
     </div>
     <quick-terminal-dialog
@@ -274,10 +287,10 @@ const taskDataDetailed = ref({});
 const dialogVisible = ref(false);
 const typeOptions = [
   { label: "快捷音源", value: 4, type: 1 },
-  { label: "音乐播放", value: 10, type: 2},
-  { label: "远程播放", value: 1, type: 1},
-  { label: "文本播放", value: 11, type: 2},
-  { label: "音源采集", value: 12, type: 2},
+  { label: "音乐播放", value: 10, type: 2 },
+  { label: "远程播放", value: 1, type: 1 },
+  { label: "文本播放", value: 11, type: 2 },
+  { label: "音源采集", value: 12, type: 2 },
 ];
 // 将任务类型转换为对应优先级类型
 const typePriority = new Map([
@@ -287,7 +300,7 @@ const typePriority = new Map([
   [11, 12], //文本播放
   [12, 13], //声卡采集
   [13, 14], //终端采集
-])
+]);
 const ruleFormRef = ref<FormInstance>();
 // 验证
 const validateName = (rule: any, value: any, callback: any) => {
@@ -398,7 +411,7 @@ const submitTaskPlay = () => {
     terminals.value.length === 0 &&
     terminals_groups.value.length === 0
   ) {
-    return proxy.$message.warning("请选择终端或分组");
+    return proxy.$message.warning(proxy.$t("Please select a terminal or group"));
   }
 
   let data = getBasicData();
@@ -454,7 +467,7 @@ const submitTaskPlay = () => {
 };
 // 提交任务
 const submitTask = () => {
-  console.log(executionregiontype.value, fast_terminals_id.value)
+  console.log(executionregiontype.value, fast_terminals_id.value);
   if (!executionregiontype.value && !fast_terminals_id.value)
     return proxy.$message.warning("请选择快捷终端");
   if (
@@ -462,7 +475,7 @@ const submitTask = () => {
     terminals.value.length === 0 &&
     terminals_groups.value.length === 0
   ) {
-    return proxy.$message.warning("请选择终端或分组");
+    return proxy.$message.warning(proxy.$t("Please select a terminal or group"));
   }
 
   let data = getBasicData();
@@ -569,7 +582,11 @@ const createRemteTask = (data: any) => {
       remotePlayForm.value?.life_time === "00:00:00"
     )
       return proxy.$message.warning("请选择持续时间");
-      console.log(remotePlayForm.value?.play_model, remotePlayForm.value?.play_number, !remotePlayForm.value?.play_number)
+    console.log(
+      remotePlayForm.value?.play_model,
+      remotePlayForm.value?.play_number,
+      !remotePlayForm.value?.play_number
+    );
     if (remotePlayForm.value?.play_model !== 0 && remotePlayForm.value?.play_number === 0)
       return proxy.$message.warning("请输入正确播放曲目");
 
@@ -721,14 +738,14 @@ const getLocalTask = (row: any) => {
       requestMusicConfig.value = {
         life_time: result.data.life_time,
         play_model: result.data.play_model,
-        play_number: result.data.play_number
+        play_number: result.data.play_number,
       };
-      console.log(ruleForm.content, requestMusicConfig.value)
+      console.log(ruleForm.content, requestMusicConfig.value);
     }
     if (result.data.fast_terminals_id === 0) {
       executionregiontype.value = 1;
     } else {
-      fast_terminals_id.value = result.data.fast_terminals?.id
+      fast_terminals_id.value = result.data.fast_terminals?.id;
       quickTerminaName.value = result.data.fast_terminals?.name;
     }
     if (result.data.terminals && result.data.fast_terminals_id === 0) {
@@ -761,7 +778,7 @@ const getServeTask = (row: any) => {
       if (result.data.fast_terminals_id === 0) {
         executionregiontype.value = 1;
       } else {
-        fast_terminals_id.value = result.data.fast_terminals?.id
+        fast_terminals_id.value = result.data.fast_terminals?.id;
         quickTerminaName.value = result.data.fast_terminals?.name;
       }
       if (ruleForm.type === 1) {
@@ -776,11 +793,11 @@ const getServeTask = (row: any) => {
 const getPrioritySetting = () => {
   return new Promise((resolve, reject) => {
     proxy.$http.get("/priority-setting").then((restlu: any) => {
-      let mapData = new Map()
+      let mapData = new Map();
       restlu.data.forEach((item: { task_type: number; priority: number }) => {
         mapData.set(item.task_type, item.priority);
       });
-      priorityData.value = mapData
+      priorityData.value = mapData;
       resolve(restlu.data);
     });
   });

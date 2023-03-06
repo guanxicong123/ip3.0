@@ -8,7 +8,7 @@
   <el-dialog
     v-model="props.dialogVisible"
     class="select-source-acquisition-dialog"
-    title="请选择音源"
+    :title="$t('Please select a sound source')"
     width="70%"
     :before-close="handleClose"
   >

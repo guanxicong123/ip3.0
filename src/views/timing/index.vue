@@ -305,37 +305,35 @@
           </el-table-column>
           <el-table-column :label="$t('Operation')" width="120">
             <template #default="scope">
-              <template>
-                <el-button
-                  link
-                  type="primary"
-                  v-if="scope.row.is_done === 0"
-                  @click="handleEnableOrDisable(scope.row)"
-                >
-                  <template #icon>
-                    <i class="iconfont icon-enable-task" :title="$t('Enable')"></i>
-                  </template>
-                </el-button>
-                <el-button
-                  link
-                  type="danger"
-                  v-else
-                  @click="handleEnableOrDisable(scope.row)"
-                >
-                  <template #icon>
-                    <i class="iconfont icon-disable-task" :title="$t('Disable')"></i>
-                  </template>
-                </el-button>
-                <el-button link type="primary">
-                  <template #icon>
-                    <i
-                      class="iconfont icon-edit"
-                      :title="$t('Edit')"
-                      @click="usePublicMethod.clickJump($useRoute.path, scope.row.id)"
-                    ></i>
-                  </template>
-                </el-button>
-              </template>
+              <el-button
+                link
+                type="primary"
+                v-if="scope.row.is_done === 0"
+                @click="handleEnableOrDisable(scope.row)"
+              >
+                <template #icon>
+                  <i class="iconfont icon-enable-task" :title="$t('Enable')"></i>
+                </template>
+              </el-button>
+              <el-button
+                link
+                type="danger"
+                v-else
+                @click="handleEnableOrDisable(scope.row)"
+              >
+                <template #icon>
+                  <i class="iconfont icon-disable-task" :title="$t('Disable')"></i>
+                </template>
+              </el-button>
+              <el-button link type="primary">
+                <template #icon>
+                  <i
+                    class="iconfont icon-edit"
+                    :title="$t('Edit')"
+                    @click="usePublicMethod.clickJump($useRoute.path, scope.row.id)"
+                  ></i>
+                </template>
+              </el-button>
               <el-button link type="danger">
                 <template #icon>
                   <i

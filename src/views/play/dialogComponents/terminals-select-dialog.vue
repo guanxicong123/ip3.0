@@ -8,7 +8,7 @@
   <el-dialog
     v-model="props.dialogVisible"
     class="terminals-select-dialog"
-    title="请选择终端"
+    :title="$t('Please select a terminal')"
     width="70%"
     :before-close="handleClose"
   >

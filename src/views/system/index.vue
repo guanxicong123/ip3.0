@@ -384,7 +384,7 @@ const registerManage = () => {
 };
 // 注册操作
 const confirmRegister = () => {
-  proxy.$http
+  proxy.$http1
     .post("/register", {
       code: form.code,
     })

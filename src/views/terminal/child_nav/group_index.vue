@@ -19,10 +19,11 @@
               @click="handleSelected(item)"
               @dblclick="viewGroupInfo(item)"
             >
-              <span class="li-span" :title="terminalsStatusMap.get(item.status)?.name">
+              <span class="li-span">
                 <span
                   class="iconfont"
                   :class="terminalsStatusMap.get(item.status)?.class"
+                  :title="terminalsStatusMap.get(item.status)?.name"
                 ></span>
               </span>
               <div class="li-text">
@@ -53,13 +54,17 @@
       >
         <el-table-column
           type="index"
-          label="序号"
+          label="No."
           show-overflow-tooltip
           width="60"
           :index="typeIndex"
         />
         <el-table-column prop="name" :label="$t('Terminal name')" show-overflow-tooltip />
-        <el-table-column prop="ip_address" label="终端IP" show-overflow-tooltip />
+        <el-table-column
+          prop="ip_address"
+          :label="$t('Terminal IP')"
+          show-overflow-tooltip
+        />
         <el-table-column prop="call_code" :label="$t('Call code')" />
       </el-table>
     </el-dialog>
@@ -86,13 +91,7 @@ const show_group_info = ref(false);
 
 const group_title = ref("");
 
-const terminalsStatusMap = new Map([
-  [0, { class: ".icon-off-line", name: "离线" }],
-  [1, { class: ".icon-on-line", name: "空闲" }],
-  [2, { class: ".icon-executing", name: "忙碌" }],
-  [3, { class: ".icon-freeze", name: "冻结" }],
-  [4, { class: ".icon-fault", name: "故障" }],
-]);
+const terminalsStatusMap = useFormatMap.terminalsStatusMap;
 // 注入祖先组件供给的数据
 const {
   checked_all,
@@ -146,11 +145,11 @@ const cleanCheckedTerminalIds = () => {
 };
 
 // 分组终端详情显示
-const viewGroupInfo = (item: { GroupName: string; terminals: object }) => {
+const viewGroupInfo = (item: { name: string; terminals: object }) => {
   show_group_info.value = true;
-  group_title.value = item.GroupName;
+  group_title.value = item.name;
   form.table_data = item.terminals;
-  console.log(item.terminals)
+  console.log(item.terminals);
 };
 
 const typeIndex = (index: number) => {

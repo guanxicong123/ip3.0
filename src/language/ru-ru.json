@@ -814,6 +814,7 @@
   "Confirmation password verification prompt": "确认密码与登录密码不一致",
   "Please select": "请选择",
   "Please select an idle terminal": "请选择空闲终端",
+  "Please select an idle speaker terminal": "请选择空闲主讲终端",
   "Please select a shortcut terminal": "请选择快捷终端",
   "Please select a sound source": "请选择音源",
   "Please select a terminal or group": "请选择终端或分组",
@@ -1064,5 +1065,16 @@
   "Are you about to log out": "即将退出登录？",
   "Convert": "转换",
   "Ungrouped": "未分组",
-  "Default": "默认"
+  "Default": "默认",
+  "Put away": "收起",
+  "Open": "展开",
+  "Code": "编码",
+  "Client listening task": "客户端监听任务",
+  "Client intercom task": "客户端对讲任务",
+  "Client broadcast task": "客户端广播任务",
+  "Client-wide broadcast task": "客户端全区广播任务",
+  "No execution terminal": "没有执行终端",
+  "Play configuration": "播放配置",
+  "There is no executable task terminal in the selected terminal": "选中终端中没有可执行任务终端",
+  "Only one intercom receiving terminal can be selected": "只能选一个对讲接收终端"
 }

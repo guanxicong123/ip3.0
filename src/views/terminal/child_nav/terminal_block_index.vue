@@ -21,10 +21,12 @@
             @click="handleSelected(item)"
           >
             <div class="li-top">
-              <span class="i-span" :title="terminalsStatusMap.get(item.status)?.name">
-                <svg class="icon" aria-hidden="true">
-                  <use :xlink:href="terminalsStatusMap.get(item.status)?.icon"></use>
-                </svg>
+              <span class="i-span">
+                <span
+                  class="iconfont"
+                  :class="terminalsStatusMap.get(item.status)?.class"
+                  :title="terminalsStatusMap.get(item.status)?.name"
+                ></span>
               </span>
               <el-popover
                 placement="left"
@@ -46,12 +48,10 @@
               <p :title="item.ip_address">{{ item.ip_address }}</p>
             </div>
             <div class="li-bottom">
-              <span>编码 : {{ item.code }}</span>
+              <span>{{ $t("Code") }} : {{ item.code }}</span>
               <div class="status">
-                <div class="span" :class="terminalsStatusMap.get(item.status)?.class">
-                  <span>{{
-                    terminalsStatusMap.get(item.status)?.name
-                  }}</span>
+                <div class="span" :class="terminalsBGStatusMap.get(item.status)">
+                  <span>{{ terminalsStatusMap.get(item.status)?.name }}</span>
                   <!-- <span v-else>{{ item.sound_source_type }}</span> -->
                 </div>
               </div>
@@ -75,9 +75,8 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeRouteLeave, onBeforeRouteUpdate, stringifyQuery } from "vue-router";
+import { onBeforeRouteLeave } from "vue-router";
 import { send } from "@/utils/socket";
-import { ElMessage } from "element-plus";
 
 const form = reactive<any>({
   data: [],
@@ -89,31 +88,13 @@ const form = reactive<any>({
   layoutArrange: "3*6", // 布局排列
 });
 
-// const terminalDataAll: any = ref([])
-// const terminalData: any = ref([])
-
-const terminalsStatusMap = new Map([
-  [
-    0,
-    {
-      icon: "#icon-off-line",
-      name: "离线",
-      class: "off-line",
-      color: "#999999",
-    },
-  ],
-  [1, { icon: "#icon-on-line", name: "空闲", class: "on-line", color: "#7ED321" }],
-  [
-    2,
-    {
-      icon: "#icon-executing",
-      name: "忙碌",
-      class: "be-busy",
-      color: "#E29341",
-    },
-  ],
-  [3, { icon: "#icon-freeze", name: "冻结", class: "frozen", color: "#2F91FF" }],
-  [4, { icon: "#icon-fault", name: "故障", class: "fault", color: "#ED4471" }],
+const terminalsStatusMap = useFormatMap.terminalsStatusMap;
+const terminalsBGStatusMap = new Map([
+  [0, "off-line"],
+  [1, "on-line"],
+  [2, "be-busy"],
+  [3, "frozen"],
+  [4, "fault"],
 ]);
 // 注入祖先组件供给的数据
 const {
