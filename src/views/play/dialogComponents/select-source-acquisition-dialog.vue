@@ -27,11 +27,6 @@
 </template>
 
 <script lang="ts" setup>
-// defineAsyncComponent 异步组件-懒加载子组件
-const selectFolder = defineAsyncComponent(
-  () => import("../components/select_folder.vue")
-);
-
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 

@@ -25,11 +25,7 @@
           </div>
         </div>
         <div class="com-button">
-          <i
-            class="iconfont icon-edit1"
-            @click="handleEditButton"
-            v-if="!editStatus"
-          ></i>
+          <i class="iconfont icon-edit1" @click="handleEditButton" v-if="!editStatus"></i>
           <i class="iconfont icon-save" @click="handleEditSava" v-else></i>
         </div>
       </div>
@@ -74,26 +70,19 @@
       >
       </acquisition-device-component>
       <div class="com-table" v-if="ruleForm.type === 10">
-        <el-table
-          :data="ruleForm.data"
-          height="100%"
-          @row-dblclick="handelRowDblclick"
-        >
+        <el-table :data="ruleForm.data" height="100%" @row-dblclick="handelRowDblclick">
           <el-table-column type="index" label="No." width="80" />
-          <el-table-column
-            prop="path"
-            :label="$t('Name')"
-            show-overflow-tooltip
-          >
+          <el-table-column prop="path" :label="$t('Name')" show-overflow-tooltip>
             <template #default="scope">
               <div class="tabel-data-popover">
                 <div class="tabel-data-popover-content">
                   <span>
                     {{ scope.row.name }}
                   </span>
-                  <!-- <view-components-popover v-if="!scope.row.medias_id"
-                                        :url="'/medias-groups/' + scope.row.id + '/medias'"
-                                    /> -->
+                  <!-- <view-components-popover
+                    v-if="!scope.row.medias_id"
+                    :url="'/medias-groups/' + scope.row.id + '/medias'"
+                  /> -->
                 </div>
               </div>
             </template>
@@ -107,7 +96,7 @@
                 :disabled="scope.$index === 0"
               >
                 <template #icon>
-                  <i class="iconfont icon-move-up" title="上移"></i>
+                  <i class="iconfont icon-move-up" :title="$t('Move up')"></i>
                 </template>
               </el-button>
               <el-button
@@ -117,7 +106,7 @@
                 :disabled="scope.$index + 1 === ruleForm.data.length"
               >
                 <template #icon>
-                  <i class="iconfont icon-move-down" title="下移"></i>
+                  <i class="iconfont icon-move-down" :title="$t('Move down')"></i>
                 </template>
               </el-button>
               <el-button link type="primary" @click="handleDelete(scope.row)">
@@ -129,7 +118,7 @@
           </el-table-column>
           <el-table-column prop="time" :label="$t('File duration')" width="100">
             <template #default="scope">
-              {{ formatSecondNo(scope.row.time) }}
+              {{ usePublicMethod.convertSongDuration(scope.row.time) }}
             </template>
           </el-table-column>
         </el-table>
@@ -137,21 +126,18 @@
       <div class="com-table" v-if="ruleForm.type === 1">
         <el-table :data="ruleForm.data" style="width: 100%" height="100%">
           <el-table-column type="index" label="No." width="80" />
-          <el-table-column
-            prop="name"
-            :label="$t('Name')"
-            show-overflow-tooltip
-          >
+          <el-table-column prop="name" :label="$t('Name')" show-overflow-tooltip>
             <template #default="scope">
               <div class="tabel-data-popover">
                 <div class="tabel-data-popover-content">
                   <span>
                     {{ scope.row.name }}
                   </span>
-                  <!-- <view-components-popover v-if="!scope.row.medias_id"
-                                        :url="'/medias'"
-                                        :mediasGroupsID="scope.row.id"
-                                    /> -->
+                  <!-- <view-components-popover
+                    v-if="!scope.row.medias_id"
+                    :url="'/medias'"
+                    :mediasGroupsID="scope.row.id"
+                  /> -->
                 </div>
               </div>
             </template>
@@ -165,13 +151,9 @@
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="length"
-            :label="$t('File duration')"
-            width="100"
-          >
+          <el-table-column prop="length" :label="$t('File duration')" width="100">
             <template #default="scope">
-              {{ formatSecondNo(scope.row.length) }}
+              {{ usePublicMethod.convertSongDuration(scope.row.length) }}
             </template>
           </el-table-column>
         </el-table>
@@ -181,11 +163,7 @@
       <div class="com-table" v-if="taskDataDetailed.fast_terminals_id === 0">
         <el-table :data="taskTerminalAll" height="100%">
           <el-table-column type="index" label="No." width="80" />
-          <el-table-column
-            prop="name"
-            :label="$t('Name')"
-            show-overflow-tooltip
-          >
+          <el-table-column prop="name" :label="$t('Name')" show-overflow-tooltip>
             <template #default="scope">
               <div class="tabel-data-popover">
                 <div class="tabel-data-popover-content">
@@ -206,11 +184,7 @@
             show-overflow-tooltip
           >
             <template #default="scope">
-              {{
-                scope.row.hasOwnProperty("ip_address")
-                  ? scope.row.ip_address
-                  : "-"
-              }}
+              {{ scope.row.hasOwnProperty("ip_address") ? scope.row.ip_address : "-" }}
             </template>
           </el-table-column>
           <el-table-column
@@ -220,9 +194,7 @@
           >
             <template #default="scope">
               {{
-                scope.row.hasOwnProperty("terminals_id")
-                  ? scope.row.default_volume
-                  : "-"
+                scope.row.hasOwnProperty("terminals_id") ? scope.row.default_volume : "-"
               }}
             </template>
           </el-table-column>
@@ -273,11 +245,7 @@
       :on-change="uploadChange"
     >
       <template #trigger>
-        <span
-          class="iconfont icon-add"
-          ref="iconAdd"
-          style="display: none"
-        ></span>
+        <span class="iconfont icon-add" ref="iconAdd" style="display: none"></span>
       </template>
     </el-upload>
     <select-media-dialog
@@ -354,15 +322,11 @@ const isConfigure = computed(() => {
 });
 
 const terminasNumber = computed(() => {
-  return taskDataDetailed.value.fast_terminals_id
-    ? ""
-    : taskTerminalAll.value.length;
+  return taskDataDetailed.value.fast_terminals_id ? "" : taskTerminalAll.value.length;
 });
 
 const musicsNumber = computed(() => {
-  return [1, 10].includes(taskDataDetailed.value.type)
-    ? ruleForm.data.length
-    : "";
+  return [1, 10].includes(taskDataDetailed.value.type) ? ruleForm.data.length : "";
 });
 
 watch(
@@ -425,10 +389,7 @@ const handleSelectedTerminals = (data: any) => {
     }),
   };
   if (ruleForm.type >= 10) {
-    if (
-      activeName.value === "region" &&
-      taskDataDetailed.value.fast_terminals_id === 0
-    ) {
+    if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id === 0) {
       proxy.$http1
         .put("/task/terminal/" + props.selectTaskData.id, {
           terminals: putData.terminals,
@@ -517,22 +478,16 @@ const handleAllTerminals = (newVal: any, oldVal: any) => {
 };
 // 触发编辑
 const handleEditButton = () => {
-  if (
-    activeName.value === "region" &&
-    taskDataDetailed.value.fast_terminals_id !== 0
-  ) {
+  if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id !== 0) {
     terminaDialogVisible.value = true;
     return;
   }
-  if (
-    activeName.value === "region" &&
-    taskDataDetailed.value.fast_terminals_id === 0
-  ) {
+  if (activeName.value === "region" && taskDataDetailed.value.fast_terminals_id === 0) {
     terminaSelectVisible.value = true;
     return;
   }
   if (props.playCenterData.TaskID)
-    return proxy.$message.warning("任务正在执行中");
+    return proxy.$message.warning(proxy.$t("Task is in progress"));
   if (ruleForm.type === 10) {
     iconAdd.value.click();
   }
@@ -610,8 +565,7 @@ const handleRemoteTasks = () => {
         fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
         terminals: props.selectTaskData.terminals,
         terminals_groups: props.selectTaskData.terminals_groups,
-        sound_source:
-          props.selectTaskData.type === 4 ? soundSourceForm.value : "",
+        sound_source: props.selectTaskData.type === 4 ? soundSourceForm.value : "",
         medias: props.selectTaskData.medias,
         medias_groups: props.selectTaskData.medias_groups,
       })
@@ -636,6 +590,7 @@ const handleLocalTaskTermina = () => {
         if (result.result === 200) {
           handleSelectionData(props.selectTaskData);
         }
+        resolve();
       });
   });
 };
@@ -699,10 +654,7 @@ const uploadMedia = (data: any) => {
     });
 };
 // 选中文件时触发
-const uploadChange: UploadProps["onChange"] = (
-  uploadFile: any,
-  uploadFiles: any
-) => {
+const uploadChange: UploadProps["onChange"] = (uploadFile: any, uploadFiles: any) => {
   getTimes(uploadFile);
   usePublicMethod.debounce(handleLocalTaskMusic, 500);
 };
@@ -716,17 +668,13 @@ const getTimes = (file: any) => {
   file["time"] = 0;
   audioElement.addEventListener("loadedmetadata", () => {
     let data = audioElement.duration;
-    file["time"] = parseInt(data);
+    file["time"] = parseInt(data.toString());
   });
 };
 // 上移
 const handleMoveUp = (row: any, index: number) => {
   if (index === 0) return;
-  ruleForm.data[index] = ruleForm.data.splice(
-    index - 1,
-    1,
-    ruleForm.data[index]
-  )[0];
+  ruleForm.data[index] = ruleForm.data.splice(index - 1, 1, ruleForm.data[index])[0];
   proxy.$http1
     .put("/task/detail/" + props.selectTaskData.id, {
       content: ruleForm.data,
@@ -740,11 +688,7 @@ const handleMoveUp = (row: any, index: number) => {
 // 下移
 const handleMoveDown = (row: any, index: number) => {
   if (index + 1 === ruleForm.data.length) return;
-  ruleForm.data[index] = ruleForm.data.splice(
-    index + 1,
-    1,
-    ruleForm.data[index]
-  )[0];
+  ruleForm.data[index] = ruleForm.data.splice(index + 1, 1, ruleForm.data[index])[0];
   proxy.$http1
     .put("/task/detail/" + props.selectTaskData.id, {
       content: ruleForm.data,
@@ -826,11 +770,9 @@ const handleSelectionData = (row: any) => {
         taskDataDetailed.value = restlu.data;
         if (restlu.data.fast_terminals_id) {
           getFastTerminals().then((data: any) => {
-            taskDataDetailed.value["fast_terminal"] = data.filter(
-              (item: { id: any }) => {
-                return item.id === restlu.data.fast_terminals_id;
-              }
-            )[0];
+            taskDataDetailed.value["fast_terminal"] = data.filter((item: { id: any }) => {
+              return item.id === restlu.data.fast_terminals_id;
+            })[0];
           });
         }
         const terminals = restlu.data.terminals ? restlu.data.terminals : [];
@@ -853,21 +795,6 @@ const getFastTerminals = () => {
       }
     });
   });
-};
-// 时长转换
-const formatSecondNo = (seconds: any) => {
-  let hour: any =
-    Math.floor(seconds / 3600) >= 10
-      ? Math.floor(seconds / 3600)
-      : "0" + Math.floor(seconds / 3600);
-  seconds -= 3600 * hour;
-  let min: any =
-    Math.floor(seconds / 60) >= 10
-      ? Math.floor(seconds / 60)
-      : "0" + Math.floor(seconds / 60);
-  seconds -= 60 * min;
-  let sec = seconds >= 10 ? Math.trunc(seconds) : "0" + Math.trunc(seconds);
-  return hour + ":" + min + ":" + sec;
 };
 
 // 格式化终端类型

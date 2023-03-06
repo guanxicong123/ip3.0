@@ -7,15 +7,20 @@
 <template>
   <div class="com-remote-play-component">
     <div class="com-data-select-compute">
-      <span>选择媒体/媒体库</span>
       <span>
-        <span class="head-add-color">*</span> 已选媒体:
-        <span class="head-add-color">{{ mediaNum }}</span>
+        {{ $t("Select media") }}
+        <template v-if="systemStore.functional_configs.GroupDisplay">
+          /{{ $t("Media folder") }}
+        </template>
       </span>
       <span>
-        已选媒体文件夹:
-        <span class="head-add-color">{{ mediaGroupsNum }}</span></span
-      >
+        <span class="head-add-color">*</span> {{ $t("Selected media") }}:
+        <span class="head-add-color">{{ mediaNum }}</span>
+      </span>
+      <span v-if="systemStore.functional_configs.GroupDisplay">
+        {{ $t("Selected folder") }}:
+        <span class="head-add-color">{{ mediaGroupsNum }}</span>
+      </span>
     </div>
     <select-media-group
       :responseMedia="props.responseMedia"
@@ -28,7 +33,7 @@
     <el-form :model="ruleForm" label-position="top" class="play-task-form-inline">
       <el-row :gutter="80">
         <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-          <el-form-item label="播放模式">
+          <el-form-item :label="$t('Play mode')">
             <el-select v-model="ruleForm.play_model">
               <el-option
                 v-for="item in playmodelOptions"
@@ -40,8 +45,8 @@
           </el-form-item>
         </el-col>
         <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.play_model === 0">
-          <el-form-item label="持续时间">
-            {{ formatSecondNo(duration) }}
+          <el-form-item :label="$t('Duration')">
+            {{ usePublicMethod.convertSongDuration(duration) }}
           </el-form-item>
         </el-col>
         <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.play_model !== 0">
@@ -51,7 +56,7 @@
               :label="1"
               style="height: 22px; margin-bottom: 8px"
             >
-              持续时间
+              {{ $t("Duration") }}
             </el-radio>
             <el-time-picker
               v-model="ruleForm.life_time"
@@ -68,12 +73,15 @@
               :label="2"
               style="height: 22px; margin-bottom: 8px"
             >
-              播放曲目
+              {{ $t("Play track") }}
             </el-radio>
-            <el-input
+            <el-input-number
               v-model="ruleForm.play_number"
+              :min="1"
+              :max="9999"
+              :value-on-clear="ruleForm.play_number"
+              controls-position="right"
               :disabled="ruleForm.radioVal !== 2"
-              :maxlength="4"
             />
           </el-form-item>
         </el-col>
@@ -84,6 +92,7 @@
 
 <script lang="ts" setup>
 import selectMediaGroup from "@/components/select_media_group.vue";
+import usePublicMethod from "@/utils/global/index";
 
 const props = defineProps({
   responseMedia: Array,
@@ -91,6 +100,9 @@ const props = defineProps({
   soundSource: Object,
 });
 const emit = defineEmits(["requestDispose", "update:medias", "update:medias_groups"]);
+
+const systemStore = getStore.useSystemStore();
+
 const ruleForm = reactive({
   play_model: 0, //播放模式
   life_time: "00:00:00", //持续时间
@@ -101,11 +113,7 @@ const ruleForm = reactive({
 const mediaNum = ref(0); //已选媒体数量
 const mediaGroupsNum = ref(0); //以选媒体文件夹数量
 const duration = ref(0); //持续时间
-const playmodelOptions = [
-  { label: "列表播放", value: 0 },
-  { label: "循环播放", value: 1 },
-  { label: "随机播放", value: 2 },
-];
+const playmodelOptions = useFormatMap.playModelOption;
 
 watch([ruleForm, duration], () => {
   let data: any = {
@@ -115,7 +123,9 @@ watch([ruleForm, duration], () => {
     data["play_number"] = ruleForm.play_number;
   } else {
     data["life_time"] =
-      ruleForm.play_model === 0 ? formatSecondNo(duration.value) : ruleForm.life_time;
+      ruleForm.play_model === 0
+        ? usePublicMethod.convertSongDuration(duration.value)
+        : ruleForm.life_time;
   }
   emit("requestDispose", data);
 });
@@ -139,23 +149,8 @@ const requestMediaGroups = (data: any) => {
   emit("update:medias_groups", data);
 };
 const totalSecond = (length: number) => {
-  console.log(length)
+  console.log(length);
   duration.value = length;
-};
-// 时长转换
-const formatSecondNo = (seconds: any) => {
-  let hour: any =
-    Math.floor(seconds / 3600) >= 10
-      ? Math.floor(seconds / 3600)
-      : "0" + Math.floor(seconds / 3600);
-  seconds -= 3600 * hour;
-  let min: any =
-    Math.floor(seconds / 60) >= 10
-      ? Math.floor(seconds / 60)
-      : "0" + Math.floor(seconds / 60);
-  seconds -= 60 * min;
-  let sec = seconds >= 10 ? Math.trunc(seconds) : "0" + Math.trunc(seconds);
-  return hour + ":" + min + ":" + sec;
 };
 
 // mounted 实例挂载完成后被调用
@@ -170,7 +165,9 @@ onMounted(() => {
     data = {
       play_model: ruleForm.play_model,
       life_time:
-        ruleForm.play_model === 0 ? formatSecondNo(duration.value) : ruleForm.life_time,
+        ruleForm.play_model === 0
+          ? usePublicMethod.convertSongDuration(duration.value)
+          : ruleForm.life_time,
     };
   }
   emit("requestDispose", data);

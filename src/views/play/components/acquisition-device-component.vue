@@ -17,7 +17,7 @@
           ></span>
         </div>
       </el-form-item>
-      <el-form-item label="采集音质">
+      <el-form-item :label="$t('Acquisition sound quality')">
         <el-select v-model="ruleForm.audioQuality" :disabled="!props.isEdit">
           <el-option
             v-for="item in audioQualityOptions"
@@ -27,11 +27,11 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="录音开关" v-if="ruleForm.type === 12">
+      <el-form-item :label="$t('Recording switch')" v-if="ruleForm.type === 12">
         <el-switch v-model="ruleForm.record" :disabled="!props.isEdit" />
       </el-form-item>
       <el-form-item
-        label="录音路径"
+        :label="$t('Recording path')"
         v-if="ruleForm.record && ruleForm.type === 12"
         class="record-path"
       >
@@ -41,7 +41,7 @@
             type="primary"
             :disabled="!props.isEdit"
           >
-            浏览
+            {{ $t("Browse") }}
           </el-button>
           <p class="recording-evt-path" :title="ruleForm.recordpath">
             {{ ruleForm.recordpath }}
@@ -68,7 +68,7 @@
     >
       <template #header="{ titleId, titleClass }">
         <div class="com-dialog-header">
-          <span :id="titleId" :class="titleClass">选择文件夹</span>
+          <span :id="titleId" :class="titleClass">{{ $t("Select folder") }}</span>
         </div>
       </template>
       <select-folder @selectedPath="handleSelectedPath" />
@@ -116,11 +116,7 @@ const ruleForm: any = reactive({
   terminalID: 0,
   soundcard: "",
 });
-const audioQualityOptions = [
-  { label: "初级", value: 1 },
-  { label: "中级", value: 2 },
-  { label: "高级", value: 3 },
-];
+const audioQualityOptions = useFormatMap.qualityOption;
 
 watch(
   () => props.selectTaskData,
@@ -177,7 +173,8 @@ const handleSelectedfolder = () => {
   folderDialogVisible.value = true;
 };
 const handleConfirm = () => {
-  if (selectPath.value === "") return proxy.$message.warning("请选择路径");
+  if (selectPath.value === "")
+    return proxy.$message.warning(proxy.$t("Please select a path"));
   ruleForm.data.recordpath = selectPath.value;
   folderDialogVisible.value = false;
 };

@@ -180,7 +180,7 @@
             </el-tab-pane>
             <el-tab-pane :label="$t('Terminal selection')" :name="1">
               <div class="com-data-select-compute">
-                <span>选择终端/分组</span>
+                <span>{{ $t("Select terminal") }}/{{ $t("Group") }}</span>
                 <span>
                   <span class="head-add-color">*</span>
                   {{ $t("Selected terminal") }}:
@@ -210,7 +210,9 @@
       <div class="button button-submit" @click="submitTask">
         {{ $t("Save") }}
       </div>
-      <div class="button button-submit" @click="submitTaskPlay">保存并播放</div>
+      <div class="button button-submit" @click="submitTaskPlay">
+        {{ $t("Save and play") }}
+      </div>
     </div>
     <quick-terminal-dialog
       v-model:dialogVisible="dialogVisible"
@@ -258,7 +260,6 @@ const ruleForm: any = reactive({
   medias_groups: [], //已选择的媒体媒体文件夹
   sound_source: {},
 });
-const priorityType = ref(4); //优先级
 const fast_terminals_id = ref(); //快捷终端id
 const terminals = ref([]); //终端id集合
 const terminals_groups = ref([]); //终端分组id集合
@@ -272,8 +273,8 @@ const tsctFormData = ref({
   ttsspeed: 5,
   txtpath: "",
 }); //文本播放表单数据
-const quickTerminaName = ref("请选择快捷终端");
-const soundSourceForm = ref({}); //快捷音源表单数据
+const quickTerminaName = ref(proxy.$t("Please select a shortcut terminal"));
+const soundSourceForm: any = ref({}); //快捷音源表单数据
 const musicPlayForm: any = ref({}); //音乐播放表单数据
 const remotePlayForm: any = ref({}); //远程播放表单数据
 const sourAcquisiFrom: any = ref({}); //音源采集表单数据
@@ -286,11 +287,11 @@ const requestTaskConfig = ref({}); //文本播放配置
 const taskDataDetailed = ref({});
 const dialogVisible = ref(false);
 const typeOptions = [
-  { label: "快捷音源", value: 4, type: 1 },
-  { label: "音乐播放", value: 10, type: 2 },
-  { label: "远程播放", value: 1, type: 1 },
-  { label: "文本播放", value: 11, type: 2 },
-  { label: "音源采集", value: 12, type: 2 },
+  { label: proxy.$t("Fast sound source"), value: 4, type: 1 },
+  { label: proxy.$t("Music play"), value: 10, type: 2 },
+  { label: proxy.$t("Remote play"), value: 1, type: 1 },
+  { label: proxy.$t("Text play"), value: 11, type: 2 },
+  { label: proxy.$t("Sound source acquisition"), value: 12, type: 2 },
 ];
 // 将任务类型转换为对应优先级类型
 const typePriority = new Map([
@@ -307,9 +308,9 @@ const validateName = (rule: any, value: any, callback: any) => {
   ruleForm.name = value = useRegex.replaceEmojiSpaces(value);
 
   if (!useRegex.validateEmpty(value)) {
-    return callback(new Error("请输入"));
+    return callback(new Error(proxy.$t("Please enter")));
   } else if (!useRegex.validateName(value)) {
-    return callback(new Error("该名称不符合规则"));
+    return callback(new Error(proxy.$t("The name does not conform to the rule")));
   }
   return callback();
 };
@@ -368,7 +369,7 @@ const getTimes = (file: any) => {
   file["time"] = 0;
   audioElement.addEventListener("loadedmetadata", () => {
     let data = audioElement.duration;
-    file["time"] = parseInt(data);
+    file["time"] = parseInt(data.toString());
   });
 };
 // 选择的快捷音源配置
@@ -405,7 +406,7 @@ const requestGroups = (data: any) => {
 // 提交任务并播放
 const submitTaskPlay = () => {
   if (!executionregiontype.value && !fast_terminals_id.value)
-    return proxy.$message.warning("请选择快捷终端");
+    return proxy.$message.warning(proxy.$t("Please select a shortcut terminal"));
   if (
     executionregiontype.value &&
     terminals.value.length === 0 &&
@@ -469,7 +470,7 @@ const submitTaskPlay = () => {
 const submitTask = () => {
   console.log(executionregiontype.value, fast_terminals_id.value);
   if (!executionregiontype.value && !fast_terminals_id.value)
-    return proxy.$message.warning("请选择快捷终端");
+    return proxy.$message.warning(proxy.$t("Please select a shortcut terminal"));
   if (
     executionregiontype.value &&
     terminals.value.length === 0 &&
@@ -503,7 +504,8 @@ const getBasicData = () => {
 // 快捷音源任务
 const createQuickSou = (data: any) => {
   return new Promise((resolve, reject) => {
-    if (!ruleForm.fast_sound_id) return proxy.$message.warning("请选择快捷音源");
+    if (!ruleForm.fast_sound_id)
+      return proxy.$message.warning(proxy.$t("Please select a shortcut sound source"));
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http
         .put(
@@ -538,14 +540,13 @@ const createQuickSou = (data: any) => {
 // 音乐播放任务
 const createLocalAudio = (data: any) => {
   return new Promise((resolve, reject) => {
-    if (ruleForm.content.length === 0) return proxy.$message.warning("请添加音频文件");
+    if (ruleForm.content.length === 0)
+      return proxy.$message.warning(proxy.$t("Please select a media file"));
     if (
       musicPlayForm.value?.play_model !== 0 &&
       musicPlayForm.value?.life_time === "00:00:00"
     )
-      return proxy.$message.warning("请选择持续时间");
-    if (musicPlayForm.value?.play_model !== 0 && musicPlayForm.value?.play_number === 0)
-      return proxy.$message.warning("请输入正确播放曲目");
+      return proxy.$message.warning(proxy.$t("Please select the duration"));
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http1
         .put(
@@ -576,19 +577,17 @@ const createLocalAudio = (data: any) => {
 const createRemteTask = (data: any) => {
   return new Promise((resolve, reject) => {
     if (ruleForm.medias.length === 0 && ruleForm.medias_groups.length === 0)
-      return proxy.$message.warning("请添加媒体文件或媒体文件夹");
+      return proxy.$message.warning(proxy.$t("Please select a media file"));
     if (
       remotePlayForm.value?.play_model !== 0 &&
       remotePlayForm.value?.life_time === "00:00:00"
     )
-      return proxy.$message.warning("请选择持续时间");
+      return proxy.$message.warning(proxy.$t("Please select the duration"));
     console.log(
       remotePlayForm.value?.play_model,
       remotePlayForm.value?.play_number,
       !remotePlayForm.value?.play_number
     );
-    if (remotePlayForm.value?.play_model !== 0 && remotePlayForm.value?.play_number === 0)
-      return proxy.$message.warning("请输入正确播放曲目");
 
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http
@@ -625,11 +624,11 @@ const createRemteTask = (data: any) => {
 const createTxstPlay = (data: any) => {
   return new Promise((resolve, reject) => {
     if (tsctFormData.value.is_txt && tsctFormData.value.txtpath === "")
-      return proxy.$message.warning("请选择文本路径");
+      return proxy.$message.warning(proxy.$t("Please select a path"));
     if (!tsctFormData.value.is_txt && tsctFormData.value.ttscontent === "")
-      return proxy.$message.warning("请输入文本内容");
+      return proxy.$message.warning(proxy.$t("Please enter the text content"));
     if (!tsctFormData.value.ttsenginename)
-      return proxy.$message.warning("请选择播放语音");
+      return proxy.$message.warning(proxy.$t("Please select to play voice"));
 
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http1
@@ -676,15 +675,17 @@ const createSoundSourceCollection = (data: any) => {
         sourAcquisiFrom.value.selectVal.id ||
         JSON.stringify(sourAcquisiFrom.value.selectVal) === "{}"
       )
-        return proxy.$message.warning("请选择声卡");
+        return proxy.$message.warning(proxy.$t("Please select a sound card"));
       if (sourAcquisiFrom.value.record && sourAcquisiFrom.value.recordpath === "")
-        return proxy.$message.warning("请选择录音存放路径");
+        return proxy.$message.warning(
+          proxy.$t("Please select the recording saving path")
+        );
       fromData["soundcard"] = sourAcquisiFrom.value.selectVal;
       fromData["record"] = sourAcquisiFrom.value.record;
       fromData["recordpath"] = sourAcquisiFrom.value.recordpath;
     } else {
       if (sourAcquisiFrom.value.selectVal === "" || !sourAcquisiFrom.value.selectVal.id)
-        return proxy.$message.warning("请选择采集终端");
+        return proxy.$message.warning(proxy.$t("Please select the acquisition terminal"));
       fromData["terminalID"] = sourAcquisiFrom.value.selectVal.id;
     }
 

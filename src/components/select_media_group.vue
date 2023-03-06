@@ -206,7 +206,7 @@
                         row.column === "key"
                           ? index + 1
                           : row.column === "length"
-                          ? formatSecondNo(item[row.column])
+                          ? usePublicMethod.convertSongDuration(item[row.column])
                           : item[row.column]
                       }}
                     </span>
@@ -289,7 +289,7 @@
                         row.column === "key"
                           ? index + 1
                           : row.column === "length"
-                          ? formatSecondNo(Number(item[row.column]))
+                          ? usePublicMethod.convertSongDuration(Number(item[row.column]))
                           : item[row.column]
                       }}
                     </span>
@@ -673,21 +673,6 @@ const handleMediasDragEnter = (e: any, item: any) => {
 
   form.selectedMediaData = newMedias;
   handleUpdateSelectedMedia();
-};
-// 时长转换
-const formatSecondNo = (seconds: any) => {
-  let hour: any =
-    Math.floor(seconds / 3600) >= 10
-      ? Math.floor(seconds / 3600)
-      : "0" + Math.floor(seconds / 3600);
-  seconds -= 3600 * hour;
-  let min: any =
-    Math.floor(seconds / 60) >= 10
-      ? Math.floor(seconds / 60)
-      : "0" + Math.floor(seconds / 60);
-  seconds -= 60 * min;
-  let sec = seconds >= 10 ? Math.trunc(seconds) : "0" + Math.trunc(seconds);
-  return hour + ":" + min + ":" + sec;
 };
 const handleGetAllMeida = () => {
   proxy.$http

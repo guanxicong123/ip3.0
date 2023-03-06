@@ -30,17 +30,17 @@
 
 <script lang="ts" setup>
 import selectMediaGroup from "@/components/select_media_group.vue";
+
 const props = defineProps({
   dialogVisible: Boolean,
   responseMedia: Array,
   responseeMediaGroups: Array,
 });
 const emit = defineEmits(["update:dialogVisible", "uploadMedia"]);
+
 const medias = ref([]);
 const medias_groups = ref([]);
-const data = reactive({
-  data: [],
-});
+
 // 选择的媒体文件
 const requestMedia = (data: any) => {
   medias.value = data;

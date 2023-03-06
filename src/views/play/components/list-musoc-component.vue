@@ -6,11 +6,11 @@
 -->
 <template>
   <div class="com-list-musoc-component play-left">
-    <h2 class="theme">播放列表 (22)</h2>
+    <h2 class="theme">{{ $t("Play list") }} ({{ tableData.length }})</h2>
     <ul class="left-ul">
       <li>
-        <span class="order">序号</span>
-        <span class="name">名称</span>
+        <span class="order">No.</span>
+        <span class="name">{{ $t("Name") }}</span>
       </li>
     </ul>
     <div class="left-list">

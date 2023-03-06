@@ -15,17 +15,20 @@
       <i
         class="iconfont theme"
         :class="form.fullscreen_satus ? 'icon-narrow' : 'icon-enlarge'"
-        :title="form.fullscreen_satus ? '缩小' : '放大'"
+        :title="form.fullscreen_satus ? $t('Reduce') : $t('Enlarge')"
         @click="handleFullscreenStatus"
       ></i>
       <div class="center-content">
-        <div 
-          class="content-top" 
+        <div
+          class="content-top"
           :class="
-          playCenterData?.TaskID && 
-          ((playCenterData?.TaskType === 15 && playSubscriptionTask?.PlayStatus === 'play')
-            || playCenterData?.TaskType !== 15
-          ) ? 'playing' : ''"
+            playCenterData?.TaskID &&
+            ((playCenterData?.TaskType === 15 &&
+              playSubscriptionTask?.PlayStatus === 'play') ||
+              playCenterData?.TaskType !== 15)
+              ? 'playing'
+              : ''
+          "
         >
           <img class="record-arm" src="@/assets/images/record-arm.png" alt="" />
           <img
@@ -34,7 +37,9 @@
             @dblclick="
               playCenterData?.TaskID
                 ? handleTaskButton()
-                  ? playSubscriptionTask?.PlayStatus === 'play' ? handlePauseTask(playCenterData) : handlePlayTask(playCenterData)
+                  ? playSubscriptionTask?.PlayStatus === 'play'
+                    ? handlePauseTask(playCenterData)
+                    : handlePlayTask(playCenterData)
                   : handleStopTask(playCenterData)
                 : handlePlayTask(playCenterData)
             "
@@ -66,7 +71,7 @@
           <i
             class="iconfont"
             :class="form.playlist_status ? 'icon-shrink' : 'icon-order'"
-            title="音频列表"
+            :title="$t('Audio list')"
             @click="form.playlist_status = !form.playlist_status"
             v-if="form.fullscreen_satus"
           ></i>
@@ -79,7 +84,7 @@
           </i>
           <i
             class="iconfont icon-prev"
-            title="上一首"
+            :title="$t('Prev')"
             @click="handleSwitchTask(playCenterData, 'pre')"
           ></i>
           <i
@@ -91,8 +96,8 @@
             "
             :title="
               playCenterData.TaskID && playSubscriptionTask?.PlayStatus === 'play'
-                ? '暂停'
-                : '播放'
+                ? $t('Suspend')
+                : $t('Play')
             "
             @click="
               playCenterData.TaskID && playSubscriptionTask?.PlayStatus === 'play'
@@ -103,17 +108,17 @@
           </i>
           <i
             class="iconfont icon-next"
-            title="下一首"
+            :title="$t('Next')"
             @click="handleSwitchTask(playCenterData, 'next')"
           ></i>
           <i
             class="iconfont icon-end"
-            title="停止"
+            :title="$t('Stop')"
             @click="handleStopTask(playCenterData)"
           ></i>
           <el-popover trigger="click" popper-class="play-volume-popper">
             <template #reference>
-              <i class="iconfont icon-volume2" title="音量"></i>
+              <i class="iconfont icon-volume2" :title="$t('Volume')"></i>
             </template>
             <span class="play-volume-number">{{ form.volume }}</span>
             <el-slider
@@ -130,7 +135,7 @@
           <i
             class="iconfont"
             :class="playCenterData.TaskID ? 'icon-end' : 'icon-play'"
-            :title="playCenterData.TaskID ? '停止' : '播放'"
+            :title="playCenterData.TaskID ? $t('Suspend') : $t('Play')"
             @click="
               playCenterData.TaskID
                 ? handleStopTask(playCenterData)
@@ -140,7 +145,7 @@
           </i>
           <el-popover trigger="click" popper-class="play-volume-popper">
             <template #reference>
-              <i class="iconfont icon-volume2" title="音量"></i>
+              <i class="iconfont icon-volume2" :title="$t('Volume')"></i>
             </template>
             <span class="play-volume-number">{{ form.volume }}</span>
             <el-slider
@@ -162,11 +167,11 @@
             <div class="com-head-content">
               <div class="com-breadcrumb">
                 <div class="play-table-title theme">
-                  <span>任务列表</span>
+                  <span>{{ $t("Task list") }}</span>
                 </div>
                 <el-input
                   v-model="form.search"
-                  placeholder="任务名称"
+                  :placeholder="$t('Task name')"
                   :prefix-icon="Search"
                   @input="handleSearch"
                 />
@@ -179,11 +184,12 @@
                 </el-button>
               </div>
               <div class="com-button">
-                <i class="iconfont icon-add" title="添加" @click="addPlayTask"></i>
+                <i class="iconfont icon-add" :title="$t('Add')" @click="addPlayTask"></i>
                 <i
                   class="iconfont icon-delete"
+                  :class="{ 'icon-disabled': multipleSelection.length == 0 }"
                   @click="handleDeleteAll"
-                  title="批量删除"
+                  :title="$t('Batch deletion')"
                 ></i>
               </div>
             </div>
@@ -202,22 +208,26 @@
               >
                 <el-table-column
                   prop="name"
-                  label="任务"
+                  :label="$t('Task')"
                   show-overflow-tooltip
                   min-width="280"
                 >
                   <template #default="scope">
-                    <span class="icon iconfont" :class="taskTypeMap.get(scope.row.type)" style="color: #7AB1F0"></span>
+                    <span
+                      class="icon iconfont"
+                      :class="taskTypeMap.get(scope.row.type)"
+                      style="color: #7ab1f0"
+                    ></span>
                     {{ scope.row.name }}
                   </template>
                 </el-table-column>
-                <el-table-column prop="priority" label="优先级">
+                <el-table-column prop="priority" :label="$t('Priority')">
                   <template #default="scope">
                     <span class="red">[{{ priorityData.get(scope.row.type) }}]</span>
                     {{ scope.row.priority }}
                   </template>
                 </el-table-column>
-                <el-table-column label="操作" width="120">
+                <el-table-column :label="$t('Operation')" width="120">
                   <template #default="scope">
                     <el-button
                       link
@@ -226,7 +236,7 @@
                       v-if="handleDecideStatus(scope.row)"
                     >
                       <template #icon>
-                        <i class="iconfont icon-end" title="结束"></i>
+                        <i class="iconfont icon-end" :title="$t('Stop')"></i>
                       </template>
                     </el-button>
                     <el-button
@@ -236,12 +246,12 @@
                       v-else
                     >
                       <template #icon>
-                        <i class="iconfont icon-play" title="播放"></i>
+                        <i class="iconfont icon-play" :title="$t('Play')"></i>
                       </template>
                     </el-button>
                     <el-button link type="danger" @click.stop="handleEditTask(scope.row)">
                       <template #icon>
-                        <i class="iconfont icon-edit" title="编辑"></i>
+                        <i class="iconfont icon-edit" :title="$t('Edit')"></i>
                       </template>
                     </el-button>
                     <el-button
@@ -331,7 +341,7 @@ interface User {
 
 const form = reactive<any>({
   percentage: 50, // 进度
-  song_name: "音乐播放2.mp3", // 歌曲名称
+  song_name: "", // 歌曲名称
   total_duration: 0, // 总时长
   current_duration: 0, // 当前时长
   play_status: false, // 播放状态
@@ -384,7 +394,7 @@ const playModeIcon = new Map([
     "normal_play",
     {
       icon: "icon-list-play",
-      title: "列表播放",
+      title: proxy.$t("List play"),
       model: "normal_play",
     },
   ],
@@ -392,7 +402,7 @@ const playModeIcon = new Map([
     "loop_play",
     {
       icon: "icon-loop-play",
-      title: "循环播放",
+      title: proxy.$t("Loop play"),
       model: "loop_play",
     },
   ],
@@ -400,7 +410,7 @@ const playModeIcon = new Map([
     "random_play",
     {
       icon: "icon-random",
-      title: "随机播放",
+      title: proxy.$t("Shuffle play"),
       model: "random_play",
     },
   ],
@@ -446,8 +456,8 @@ const handleSelectionChange = (val: User[]) => {
 };
 // 批量删除任务
 const handleDeleteAll = () => {
-  if (multipleSelection.value.length === 0) return proxy.$message.warning("请选择任务");
-  ElMessageBox.confirm("即将删除选中任务,是否继续?", "警告", {
+  if (multipleSelection.value.length === 0) return;
+  ElMessageBox.confirm(proxy.$t("Delete prompt"), proxy.$t("Tips"), {
     confirmButtonText: proxy.$t("Confirm"),
     cancelButtonText: proxy.$t("Cancel"),
     type: "warning",
@@ -467,10 +477,6 @@ const handleDeleteAll = () => {
       }
     );
   });
-};
-// 编辑
-const handleEditButton = () => {
-  playConfig.value.handleEditButton();
 };
 // 获取选中任务详情信息
 const handleSelectionClick = (row: any) => {
@@ -590,10 +596,10 @@ const handlePlayTask = (row: any) => {
         let row = result.data;
         let TaskProp = handleTaskAttribute(row);
         if (row.terminalsIds.length === 0)
-          return proxy.$message.warning("未找到播放终端，请重新配置");
+          return proxy.$message.warning(proxy.$t("No play terminal"));
         if (TaskProp?.TaskAudioType) {
-          let TaskID = usePublicMethod.generateUUID()
-          let TaskType = handleTaskTypeMap(row)
+          let TaskID = usePublicMethod.generateUUID();
+          let TaskType = handleTaskTypeMap(row);
           let data = {
             company: "BL",
             actioncode: "c2ms_create_server_task",
@@ -611,9 +617,9 @@ const handlePlayTask = (row: any) => {
           };
           if (TaskType === 15) {
             storePlay.changePlayTaskStaging({
-              key: 'add',
-              value: TaskID
-            })
+              key: "add",
+              value: TaskID,
+            });
           }
           send(data);
         }
@@ -631,9 +637,9 @@ const handlePlayTask = (row: any) => {
     };
     if (row.type === 11) {
       storePlay.changePlayTaskStaging({
-        key: 'add',
-        value: row.taskid
-      })
+        key: "add",
+        value: row.taskid,
+      });
     }
     send(data);
   }
@@ -662,7 +668,9 @@ const handleControlValuev = (type: string) => {
   }
   if (type === "play_mode") {
     let model = 0;
-    playModeNum.get(playCenterData.value?.PlayMode) === 2 ? (model = 0) : (model = form.play_model + 1);
+    playModeNum.get(playCenterData.value?.PlayMode) === 2
+      ? (model = 0)
+      : (model = form.play_model + 1);
     return taskPlayMode.get(model);
   }
   return "";
@@ -736,7 +744,7 @@ const handleTaskAttribute = (row: any) => {
   if (row.type === 1) {
     //远程任务-音乐播放
     if (row.mediasIds.length === 0)
-      return proxy.$message.warning("未找到媒体信息，请重新配置");
+      return proxy.$message.warning(proxy.$t('"No sound source"'));
     data = {
       TaskAudioType: 6,
       RemoteID: row.id,
@@ -755,7 +763,7 @@ const handleTaskAttribute = (row: any) => {
     //快捷音源
     if (row.sound_source.type === 1) {
       if (row.mediasIds.length === 0)
-        return proxy.$message.warning("未找到媒体信息，请重新配置");
+        return proxy.$message.warning(proxy.$t('"No sound source"'));
       //音乐播放
       data = {
         TaskAudioType: 6,
@@ -786,7 +794,7 @@ const handleTaskAttribute = (row: any) => {
           },
         };
       } else {
-        proxy.$message.warning("未找到采集声卡设备，请重新配置");
+        proxy.$message.warning(proxy.$t("No sound card"));
       }
     }
     if (row.sound_source.type === 3) {
@@ -805,7 +813,7 @@ const handleTaskAttribute = (row: any) => {
           },
         };
       } else {
-        proxy.$message.warning("未找到采集终端设备，请重新配置");
+        proxy.$message.warning(proxy.$t("No acquisition terminal"));
       }
     }
   }
@@ -831,7 +839,7 @@ const handleEditTask = (row: any) => {
 };
 // 删除播放任务
 const handleDeleteTask = (row: any) => {
-  ElMessageBox.confirm("即将删除任务,是否继续?", "警告", {
+  ElMessageBox.confirm(proxy.$t("Delete prompt"), proxy.$t("Tips"), {
     confirmButtonText: proxy.$t("Confirm"),
     cancelButtonText: proxy.$t("Cancel"),
     type: "warning",
@@ -1039,7 +1047,7 @@ onMounted(() => {
       form.data = [...data[0], ...data[1]];
       if (form.data.length > 0) {
         handleSelectionClick(form.data[0]);
-        multipleTableRef.value!.setCurrentRow(form.data[0]);
+        multipleTableRef.value?.setCurrentRow(form.data[0]);
       }
     }
   );

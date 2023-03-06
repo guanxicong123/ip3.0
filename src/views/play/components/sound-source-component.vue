@@ -19,7 +19,7 @@
           :lg="props.adaption.lg"
           :xl="props.adaption.xl"
         >
-          <el-form-item label="快捷音源">
+          <el-form-item :label="$t('Fast sound source')">
             <div class="fast-sound-source">
               <el-input v-model="seleQuickMusic.name" disabled />
               <span
@@ -38,7 +38,7 @@
           :xl="props.adaption.xl"
           v-if="!isMusicPlay"
         >
-          <el-form-item label="采集音质">
+          <el-form-item :label="$t('Acquisition sound quality')">
             <el-select v-model="ruleForm.sound_quality" :disabled="!props.isEdit">
               <el-option
                 v-for="item in audioQualityOptions"
@@ -57,7 +57,7 @@
           :xl="props.adaption.xl"
           v-if="isMusicPlay"
         >
-          <el-form-item label="播放模式">
+          <el-form-item :label="$t('Play mode')">
             <el-select v-model="ruleForm.play_model" :disabled="!props.isEdit">
               <el-option
                 v-for="item in playmodelOptions"
@@ -76,7 +76,7 @@
           :xl="props.adaption.xl"
           v-if="isMusicPlay && ruleForm.play_model === 0"
         >
-          <el-form-item label="持续时间">
+          <el-form-item :label="$t('Duration')">
             {{ duration }}
           </el-form-item>
         </el-col>
@@ -95,7 +95,7 @@
               :label="1"
               style="height: 22px; margin-bottom: 8px"
             >
-              持续时间
+              {{ $t("Duration") }}
             </el-radio>
             <el-time-picker
               v-model="ruleForm.life_time"
@@ -120,10 +120,14 @@
               :label="2"
               style="height: 22px; margin-bottom: 8px"
             >
-              播放曲目
+              {{ $t("Play track") }}
             </el-radio>
-            <el-input
+            <el-input-number
               v-model="ruleForm.play_number"
+              :min="1"
+              :max="9999"
+              :value-on-clear="ruleForm.play_number"
+              controls-position="right"
               :disabled="ruleForm.radioVal !== 2 || !props.isEdit"
             />
           </el-form-item>
@@ -139,11 +143,7 @@
 </template>
 
 <script lang="ts" setup>
-// defineAsyncComponent 异步组件-懒加载子组件
-const selectFolder = defineAsyncComponent(() => import("./select_folder.vue"));
-
-// 全局属性
-const { proxy } = useCurrentInstance.useCurrentInstance();
+import usePublicMethod from "@/utils/global/index";
 
 const props: any = defineProps({
   selectTaskData: Object,
@@ -179,16 +179,8 @@ const ruleForm = reactive({
   play_number: 1, //播放曲目
   radioVal: 1,
 });
-const audioQualityOptions = [
-  { label: "初级", value: 1 },
-  { label: "中级", value: 2 },
-  { label: "高级", value: 3 },
-];
-const playmodelOptions = [
-  { label: "列表播放", value: 0 },
-  { label: "循环播放", value: 1 },
-  { label: "随机播放", value: 2 },
-];
+const audioQualityOptions = useFormatMap.qualityOption;
+const playmodelOptions = useFormatMap.playModelOption;
 const duration = ref("00:00:00"); //持续时间
 const isShow = ref(false);
 const seleQuickMusic: any = ref({
@@ -233,8 +225,8 @@ watch(ruleForm, (newVal) => {
         num += Number(item.length);
       });
       console.log(num);
-      data["life_time"] = formatSecondNo(num);
-      duration.value = formatSecondNo(num);
+      data["life_time"] = usePublicMethod.convertSongDuration(num);
+      duration.value = usePublicMethod.convertSongDuration(num);
     } else {
       data["life_time"] = newVal?.life_time;
     }
@@ -252,27 +244,13 @@ const handleSelectedConfigure = (item: any) => {
     item.all_data.forEach((item: string | any[]) => {
       num += Number(item.length);
     });
-    duration.value = formatSecondNo(num);
-    ruleForm.life_time = formatSecondNo(num);
+    duration.value = usePublicMethod.convertSongDuration(num);
+    ruleForm.life_time = usePublicMethod.convertSongDuration(num);
   }
   ruleForm.type = item.type;
   seleQuickMusic.value = item;
 };
-// 时长转换
-const formatSecondNo = (seconds: any) => {
-  let hour: any =
-    Math.floor(seconds / 3600) >= 10
-      ? Math.floor(seconds / 3600)
-      : "0" + Math.floor(seconds / 3600);
-  seconds -= 3600 * hour;
-  let min: any =
-    Math.floor(seconds / 60) >= 10
-      ? Math.floor(seconds / 60)
-      : "0" + Math.floor(seconds / 60);
-  seconds -= 60 * min;
-  let sec = seconds >= 10 ? Math.trunc(seconds) : "0" + Math.trunc(seconds);
-  return hour + ":" + min + ":" + sec;
-};
+
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   if (props.selectTaskData) {

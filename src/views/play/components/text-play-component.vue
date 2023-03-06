@@ -10,15 +10,15 @@
       <el-form :label-position="props.labelPosition">
         <el-row :gutter="80">
           <el-col :xs="80" :sm="80" :md="80" :lg="80" :xl="80">
-            <el-form-item label="文本类型">
+            <el-form-item :label="$t('Text type')">
               <el-radio-group v-model="ruleForm.is_txt" :disabled="!props.isEdit">
-                <el-radio :label="true">文件</el-radio>
-                <el-radio :label="false">内容</el-radio>
+                <el-radio :label="true">{{ $t("File") }}</el-radio>
+                <el-radio :label="false">{{ $t("Content") }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :xs="12" :sm="80" :md="80" :lg="80" :xl="80" v-show="ruleForm.is_txt">
-            <el-form-item label="文本路径">
+            <el-form-item :label="$t('Text path')">
               <el-upload
                 ref="uploadRef"
                 class="upload-demo"
@@ -30,7 +30,9 @@
                 :on-change="uploadChange"
               >
                 <template #trigger>
-                  <el-button type="primary" :disabled="!props.isEdit">浏览</el-button>
+                  <el-button type="primary" :disabled="!props.isEdit">
+                    {{ $t("Browse") }}
+                  </el-button>
                 </template>
                 <template #tip>
                   <div class="el-upload__tip">
@@ -41,12 +43,12 @@
             </el-form-item>
           </el-col>
           <el-col :xs="80" :sm="80" :md="80" :lg="80" :xl="80" v-show="!ruleForm.is_txt">
-            <el-form-item label="文本内容">
+            <el-form-item :label="$t('Text content')">
               <el-input
                 v-model="ruleForm.ttscontent"
                 :rows="5"
                 type="textarea"
-                placeholder="请输入内容（不超过1000字）"
+                :placeholder="$t('Please enter the text content')"
                 show-word-limit
                 maxlength="1000"
                 :disabled="!props.isEdit"
@@ -58,14 +60,14 @@
               <el-checkbox
                 v-model="ruleForm.enabledplayfun"
                 :disabled="!props.isEdit"
-                label="开启播放功能(未启用时，终端默认静音)"
+                :label="$t('Enable the play function')"
               />
             </el-form-item>
           </el-col>
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-show="!ruleForm.is_txt">
-            <el-form-item label="显示属性">
+            <el-form-item :label="$t('Display Properties')">
               <el-select v-model="ruleForm.displayattribute" :disabled="!props.isEdit">
-                <el-option label="无" :value="0" />
+                <el-option :label="$t('Nothing')" :value="0" />
                 <el-option
                   v-for="item in dispProperOption"
                   :key="item.id"
@@ -82,7 +84,7 @@
             :lg="props.adaption.lg"
             :xl="props.adaption.xl"
           >
-            <el-form-item label="播放语音">
+            <el-form-item :label="$t('Play voice')">
               <el-select v-model="ruleForm.ttsenginename" :disabled="!props.isEdit">
                 <el-option
                   v-for="item in playVoiceOptions"
@@ -100,7 +102,7 @@
             :lg="props.adaption.lg"
             :xl="props.adaption.xl"
           >
-            <el-form-item label="播放语速">
+            <el-form-item :label="$t('Play speech speed')">
               <el-select
                 v-model="ruleForm.ttsspeed"
                 class="custom-el-select"
@@ -122,7 +124,7 @@
             :lg="props.adaption.lg"
             :xl="props.adaption.xl"
           >
-            <el-form-item label="播报次数">
+            <el-form-item :label="$t('Number of broadcasts')">
               <el-input-number
                 v-model="ruleForm.repeattime"
                 :min="1"
@@ -140,13 +142,7 @@
 </template>
 
 <script lang="ts" setup>
-import { send } from "@/utils/socket";
-import type {
-  TabsPaneContext,
-  UploadInstance,
-  UploadUserFile,
-  UploadProps,
-} from "element-plus";
+import type { UploadInstance, UploadProps } from "element-plus";
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
@@ -185,7 +181,6 @@ const ruleForm: any = reactive({
   enabledplayfun: true,
   displayattribute: 0, //显示属性
 });
-const textType = ref(0);
 // 显示属性
 const dispProperOption = ref<any[]>([]);
 // 播放语速
@@ -203,7 +198,7 @@ watch(playVoiceOptions, (newVal) => {
 });
 watch(
   () => props.selectTaskData,
-  (newVal: any) => {
+  () => {
     Object.assign(ruleForm, props.selectTaskData.content);
   }
 );
@@ -215,11 +210,11 @@ const uploadChange: UploadProps["onChange"] = (uploadFile: any, uploadFiles) => 
 const formatterSpeed = (row: number) => {
   switch (row) {
     case 1:
-      return row + " ( 最慢 )";
+      return row + " ( " + proxy.$t("Slowest") + " )";
     case 5:
-      return row + " ( 推荐 )";
+      return row + " ( " + proxy.$t("Recommended") + " )";
     case 10:
-      return row + " ( 最快 )";
+      return row + " ( " + proxy.$t("Fastest") + " )";
     default:
       return row;
   }

@@ -35,7 +35,11 @@
               {{ formatterTaskType(scope.row) }}
             </template>
           </el-table-column>
-          <el-table-column prop="user.name" :label="$t('User')" show-overflow-tooltip />
+          <el-table-column
+            prop="launch_terminal"
+            :label="$t('Initiator')"
+            show-overflow-tooltip
+          />
           <el-table-column
             prop="terminal"
             :label="$t('Executive terminal')"

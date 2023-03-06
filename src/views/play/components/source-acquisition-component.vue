@@ -15,7 +15,7 @@
     <el-form :model="ruleForm" label-position="top" class="play-task-form-inline">
       <el-row :gutter="80">
         <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-          <el-form-item label="采集音质">
+          <el-form-item :label="$t('Acquisition sound quality')">
             <el-select v-model="ruleForm.audioQuality">
               <el-option
                 v-for="item in audioQualityOptions"
@@ -27,7 +27,7 @@
           </el-form-item>
         </el-col>
         <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-show="ruleForm.type === 1">
-          <el-form-item label="录音开关">
+          <el-form-item :label="$t('Recording switch')">
             <el-switch v-model="ruleForm.record" />
           </el-form-item>
         </el-col>
@@ -39,9 +39,11 @@
           :xl="6"
           v-show="ruleForm.type === 1 && ruleForm.record"
         >
-          <el-form-item label="录音路径" class="record-path">
+          <el-form-item :label="$t('Recording path')" class="record-path">
             <div class="recording-evt">
-              <div @click="handleSelectedfolder" class="recording-evt-select">浏览</div>
+              <div @click="handleSelectedfolder" class="recording-evt-select">
+                {{ $t("Browse") }}
+              </div>
               <p class="recording-evt-path" :title="ruleForm.recordpath">
                 {{ ruleForm.recordpath }}
               </p>
@@ -61,7 +63,7 @@
     >
       <template #header="{ titleId, titleClass }">
         <div class="com-dialog-header">
-          <span :id="titleId" :class="titleClass">选择文件夹</span>
+          <span :id="titleId" :class="titleClass">{{ $t("Select folder") }}</span>
         </div>
       </template>
       <select-folder @selectedPath="handleSelectedPath" />
@@ -99,11 +101,7 @@ const ruleForm = reactive({
   record: false, //是否录音
   recordpath: "", //录音文件存放地址
 });
-const audioQualityOptions = [
-  { label: "初级", value: 1 },
-  { label: "中级", value: 2 },
-  { label: "高级", value: 3 },
-];
+const audioQualityOptions = useFormatMap.qualityOption;
 const selectPath = ref("");
 
 watch(ruleForm, () => {
@@ -126,7 +124,8 @@ const handleSelectedPath = (data: any) => {
   selectPath.value = data;
 };
 const handleConfirm = () => {
-  if (selectPath.value === "") return proxy.$message.warning("请选择路径");
+  if (selectPath.value === "")
+    return proxy.$message.warning(proxy.$t("Please select a path"));
   ruleForm.recordpath = selectPath.value;
   folderDialogVisible.value = false;
 };

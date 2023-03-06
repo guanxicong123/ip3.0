@@ -6,7 +6,9 @@
 -->
 <template>
   <div class="com-select-folder">
-    <div class="select-dir"><span>已选择</span> : {{ form.selected.path }}</div>
+    <div class="select-dir">
+      <span>{{ $t("Selected") }}</span> : {{ form.selected.path }}
+    </div>
     <div class="select-tree">
       <el-scrollbar>
         <el-tree
