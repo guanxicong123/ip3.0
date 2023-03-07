@@ -57,7 +57,6 @@
 </template>
 
 <script lang="ts" setup>
-import { contextBridge, ipcRenderer } from "electron";
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
@@ -80,20 +79,19 @@ const gitRegisterStatus = () => {
 // 提交
 const submit = () => {
   window.electronAPI.send("register-success");
-  proxy.$http1
-    .post("/register", {
-      code: code.value,
-    })
-    .then((result: any) => {
-      if (result.result === 200) {
-        window.electronAPI.send("register-success");
-      }
-    })
-    .then((result: any) => {
-      if (result.result === 200) {
-        close();
-      }
-    });
+  proxy.$http1.post("/register", {
+    code: code.value,
+  })
+  .then((result: any) => {
+    if (result.result === 200) {
+      window.electronAPI.send("register-success");
+    }
+  })
+  .then((result: any) => {
+    if (result.result === 200) {
+      close();
+    }
+  });
 };
 // 关闭
 const close = () => {

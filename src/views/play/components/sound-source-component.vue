@@ -36,7 +36,7 @@
           :md="props.adaption.md"
           :lg="props.adaption.lg"
           :xl="props.adaption.xl"
-          v-if="!isMusicPlay"
+          v-if="!isMusicPlay && seleQuickMusic?.type"
         >
           <el-form-item :label="$t('Acquisition sound quality')">
             <el-select v-model="ruleForm.sound_quality" :disabled="!props.isEdit">
@@ -189,7 +189,7 @@ const seleQuickMusic: any = ref({
 }); //选中的快捷音源
 const isMusicPlay = computed(() => {
   return seleQuickMusic.value?.type === 1;
-});
+}); //是否是音乐媒体
 
 watch(
   () => props.selectTaskData,
@@ -224,7 +224,6 @@ watch(ruleForm, (newVal) => {
       all_data.forEach((item: string | any[]) => {
         num += Number(item.length);
       });
-      console.log(num);
       data["life_time"] = usePublicMethod.convertSongDuration(num);
       duration.value = usePublicMethod.convertSongDuration(num);
     } else {

@@ -333,9 +333,6 @@ watch(
   () => props.selectTaskData,
   (newVal: any) => {
     handleSelectionData(newVal);
-  },
-  {
-    deep: true,
   }
 );
 watch(taskDataDetailed, (newVal: any) => {
@@ -450,7 +447,7 @@ const handleAllTerminals = (newVal: any, oldVal: any) => {
   if (addData.length > 0) {
     let data = {
       company: "BL",
-      actioncode: "ms2cs_notify_add_endpoint_to_task",
+      actioncode: "c2ms_add_terminals_to_task",
       token: "",
       data: {
         TaskID: props.playCenterData.TaskID,
@@ -464,7 +461,7 @@ const handleAllTerminals = (newVal: any, oldVal: any) => {
   if (delData.length > 0) {
     let data = {
       company: "BL",
-      actioncode: "ms2cs_notify_remove_endpoint_to_task",
+      actioncode: "c2ms_remove_terminals_from_task",
       token: "",
       data: {
         TaskID: props.playCenterData.TaskID,
