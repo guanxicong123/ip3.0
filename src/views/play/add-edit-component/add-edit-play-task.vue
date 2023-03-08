@@ -56,7 +56,7 @@
                     :title="$t('Task priority') + '-' + $t('Music play')"
                   >
                     <span class="red">{{
-                      priorityData.get(typePriority.get(ruleForm.type))
+                      priorityData.get(typePriority.get(typePriorityNum))
                     }}</span>
                   </div>
                   <el-input-number
@@ -293,15 +293,19 @@ const typeOptions = [
   { label: proxy.$t("Text play"), value: 11, type: 2 },
   { label: proxy.$t("Sound source acquisition"), value: 12, type: 2 },
 ];
+const typePriorityNum = ref(1)
 // 将任务类型转换为对应优先级类型
 const typePriority = new Map([
   [1, 15], //远程任务
+  [2, 13], //快捷音源-声卡采集
+  [3, 14], ////快捷音源-终端采集
   [4, 15], //远程任务
   [10, 15], //音乐播放
   [11, 12], //文本播放
   [12, 13], //声卡采集
   [13, 14], //终端采集
 ]);
+
 const ruleFormRef = ref<FormInstance>();
 // 验证
 const validateName = (rule: any, value: any, callback: any) => {
@@ -374,7 +378,8 @@ const getTimes = (file: any) => {
 };
 // 选择的快捷音源配置
 const requestSoundSource = (data: any) => {
-  soundSourceForm.value = data;
+  typePriorityNum.value = data.type
+  soundSourceForm.value = JSON.parse(JSON.stringify(data));
   ruleForm.fast_sound_id = data.id;
   delete soundSourceForm.value?.id;
 };
@@ -468,7 +473,6 @@ const submitTaskPlay = () => {
 };
 // 提交任务
 const submitTask = () => {
-  console.log(executionregiontype.value, fast_terminals_id.value);
   if (!executionregiontype.value && !fast_terminals_id.value)
     return proxy.$message.warning(proxy.$t("Please select a shortcut terminal"));
   if (
@@ -583,11 +587,6 @@ const createRemteTask = (data: any) => {
       remotePlayForm.value?.life_time === "00:00:00"
     )
       return proxy.$message.warning(proxy.$t("Please select the duration"));
-    console.log(
-      remotePlayForm.value?.play_model,
-      remotePlayForm.value?.play_number,
-      !remotePlayForm.value?.play_number
-    );
 
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http
@@ -731,6 +730,7 @@ const getLocalTask = (row: any) => {
     ruleForm.name = result.data.name;
     ruleForm.volume = result.data.volume;
     ruleForm.priority = result.data.priority;
+    typePriorityNum.value = result.data.type
     if (ruleForm.type === 13) {
       ruleForm.type = 12;
     }
@@ -741,7 +741,6 @@ const getLocalTask = (row: any) => {
         play_model: result.data.play_model,
         play_number: result.data.play_number,
       };
-      console.log(ruleForm.content, requestMusicConfig.value);
     }
     if (result.data.fast_terminals_id === 0) {
       executionregiontype.value = 1;
@@ -805,15 +804,19 @@ const getPrioritySetting = () => {
 };
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  getPrioritySetting();
   if ($useRoute.query.id && $useRoute.query.id !== "0") {
-    if ($useRoute.query.type < 10) {
-      getServeTask($useRoute.query.id);
-    } else {
-      getLocalTask($useRoute.query.id);
-    }
+    getPrioritySetting().then(()=> {
+      if ($useRoute.query.type < 10) {
+        getServeTask($useRoute.query.id);
+      } else {
+        getLocalTask($useRoute.query.id);
+      }
+    })
+  } else {
+    getPrioritySetting();
   }
 });
+
 onBeforeRouteLeave((to, from, next) => {
   if (to.path === "/play" || to.path === "/") {
     next();

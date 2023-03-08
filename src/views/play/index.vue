@@ -77,8 +77,8 @@
           ></i>
           <i
             class="iconfont"
-            :class="playModeIcon.get(playCenterData?.PlayModel)?.icon"
-            :title="playModeIcon.get(playCenterData?.PlayModel)?.title"
+            :class="playModeIcon.get(form.play_model)?.icon"
+            :title="playModeIcon.get(form.play_model)?.title"
             @click="handleSwitchTask(playCenterData, 'play_mode')"
           >
           </i>
@@ -391,7 +391,7 @@ const playModeNum = new Map([
 ]);
 const playModeIcon = new Map([
   [
-    "normal_play",
+    0,
     {
       icon: "icon-list-play",
       title: proxy.$t("List play"),
@@ -399,7 +399,7 @@ const playModeIcon = new Map([
     },
   ],
   [
-    "loop_play",
+    1,
     {
       icon: "icon-loop-play",
       title: proxy.$t("Loop play"),
@@ -407,7 +407,7 @@ const playModeIcon = new Map([
     },
   ],
   [
-    "random_play",
+    2,
     {
       icon: "icon-random",
       title: proxy.$t("Shuffle play"),
@@ -664,11 +664,11 @@ const handleSwitchTask = (row: any, type: string) => {
 };
 const handleControlValuev = (type: string) => {
   if (type === "progress") {
-    return form.current_duration;
+    return form.current_duration.toString();
   }
   if (type === "play_mode") {
     let model = 0;
-    playModeNum.get(playCenterData.value?.PlayMode) === 2
+    form.play_model === 2
       ? (model = 0)
       : (model = form.play_model + 1);
     return taskPlayMode.get(model);
@@ -1000,6 +1000,7 @@ watch(playSubscriptionTask, (newVal) => {
     form.total_duration = newVal.TotalTime;
     form.song_name = newVal.MusicName;
     form.play_status = newVal.PlayStatus;
+    form.play_model = playModeNum.get(newVal.PlayModel)
   }
 });
 watch(playCenterData, (newVal, oldVal) => {
