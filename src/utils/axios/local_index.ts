@@ -141,12 +141,20 @@ $http.interceptors.response.use(
         if (!isMsg) {
           response.data.return_message = message;
         } else {
-          ElMessage.error(response.data.return_message);
+          ElMessage({
+            type: "error",
+            message: response.data.return_message,
+            grouping: true,
+          });
         }
       }
     }
     if (status === 200 && response.data.result !== 200) {
-      ElMessage.error(response.data.return_message);
+      ElMessage({
+        type: "error",
+        message: response.data.return_message,
+        grouping: true,
+      });
     }
     if (status === 401 && response.data.result === 401) {
       usePublicMethod.signOut();

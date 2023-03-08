@@ -36,8 +36,6 @@ const registerWebSocket = async () => {
       //初始化请求数据
       if (is_login) {
         initRequest();
-        getStore.useSystemStore().getConfigInfo(); //获取系统配置
-        getStore.useSystemStore().getPrioritySetting(); //获取系统优先级3333
       } else {
         login();
       }
@@ -67,7 +65,11 @@ const registerWebSocket = async () => {
         connected = false;
         getStore.useAppStore().changeWsStatus(false);
         getStore.useAppStore().changeLoginStatus(false);
-        ElMessage.error($t.t("WebSocket connection failed"));
+        ElMessage({
+          type: "error",
+          message: $t.t("WebSocket connection failed"),
+          grouping: true,
+        });
         return;
       }
       clearInterval(reloadInterval);
@@ -139,7 +141,10 @@ const requestFunction = (actionCode: string) => {
 };
 // 发起远程音乐播放任务
 const startRemotePlay = (row: any) => {
-  console.log(row, getStore.usePlayStore().playTaskStaging.includes(row.TaskID))
+  console.log(
+    row,
+    getStore.usePlayStore().playTaskStaging.includes(row.TaskID)
+  );
   if (
     getStore.usePlayStore().playTaskStaging.includes(row.TaskID) &&
     row.RemoteType !== "manual_alarm"
@@ -158,9 +163,9 @@ const startRemotePlay = (row: any) => {
     };
     send(data);
     getStore.usePlayStore().changePlayTaskStaging({
-      key: 'del',
-      value: row.TaskID
-    })
+      key: "del",
+      value: row.TaskID,
+    });
   }
 };
 // 登录
@@ -223,7 +228,11 @@ const handlerMsg = (msg: any) => {
       getStore.useAppStore().changeLoginStatus(false);
       socket.close();
     }
-    return ElMessage.error(msg.return_message);
+    return ElMessage({
+      type: "error",
+      message: msg.return_message,
+      grouping: true,
+    });
   }
   if (msg.actioncode === "cs2ms_net_disconnect") {
     return ElNotification({
@@ -271,7 +280,7 @@ const handlerMsg = (msg: any) => {
     case "ms2c_create_server_task":
       startRemotePlay(msg.data);
       break;
-    case 'ms2c_create_local_task':
+    case "ms2c_create_local_task":
       startRemotePlay(msg.data);
       break;
     case "ms2c_control_task": // 播放中心任务状态改变

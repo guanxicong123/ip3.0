@@ -391,10 +391,18 @@ const confirmRegister = () => {
     .then((result: any) => {
       if (result.result === 200) {
         if (result.data.code === 200) {
-          ElMessage.success(proxy.$t("Register succeeded"));
+          ElMessage({
+            type: "success",
+            message: proxy.$t("Register succeeded"),
+            grouping: true,
+          });
           register_manage_dialog.value = false;
         } else {
-          ElMessage.error(result.data.message);
+          ElMessage({
+            type: "error",
+            message: result.data.message,
+            grouping: true,
+          });
         }
       }
     });
@@ -426,12 +434,20 @@ const updateConfigData = (model: string) => {
 // 更改模块配置
 const changeConfig = (model: string) => {
   if (model === "alarm" && form.alarm_track === "") {
-    return ElMessage.error(proxy.$t("Please select alarm track"));
+    return ElMessage({
+      type: "error",
+      message: proxy.$t("Please select alarm track"),
+      grouping: true,
+    });
   }
   let send_data = updateConfigData(model);
   proxy.$http1.put("/config/" + basic_configs.value.ID, send_data).then((result: any) => {
     if (result.result === 200) {
-      ElMessage.success(proxy.$t("Application succeeded"));
+      ElMessage({
+        type: "success",
+        message: proxy.$t("Application succeeded"),
+        grouping: true,
+      });
       systemStore.updateSystemConfig(send_data);
     }
   });

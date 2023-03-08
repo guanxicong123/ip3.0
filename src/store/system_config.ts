@@ -83,7 +83,6 @@ export const useSystemStore = defineStore({
     regional_options: {},
     // 路由权限配置
     router_permission_config: {},
-
     // 提醒配置：火警、人工、终端离线登
     remind_config: {},
     // 默认配置:终端状态默认项、默认展示模块、终端排序
@@ -99,6 +98,7 @@ export const useSystemStore = defineStore({
     // 分页
     pageSize: {
       Terminal_PageSize: 20,
+      Group_PageSize: 20,
       Session_PageSize: 20,
       Timer_PageSize: 20,
       Medias_PageSize: 20,
@@ -164,17 +164,12 @@ export const useSystemStore = defineStore({
               };
               // 模块分页
               this.pageSize = {
-                Terminal_PageSize: data.Terminal_PageSize
-                  ? data.Terminal_PageSize
-                  : 20,
-                Session_PageSize: data.Session_PageSize
-                  ? data.Session_PageSize
-                  : 20,
-                Timer_PageSize: data.Timer_PageSize ? data.Timer_PageSize : 20,
-                Medias_PageSize: data.Medias_PageSize
-                  ? data.Medias_PageSize
-                  : 20,
-                Log_PageSize: data.Log_PageSize ? data.Log_PageSize : 20,
+                Terminal_PageSize: data.Terminal_PageSize,
+                Group_PageSize: data.Group_PageSize,
+                Session_PageSize: data.Session_PageSize,
+                Timer_PageSize: data.Timer_PageSize,
+                Medias_PageSize: data.Medias_PageSize,
+                Log_PageSize: data.Log_PageSize,
               };
               this.setRouterPermission();
             }
@@ -194,7 +189,6 @@ export const useSystemStore = defineStore({
         }
       });
     },
-
     // 获取所有系统优先级
     getPrioritySetting() {
       return new Promise((resolve, reject) => {
@@ -206,7 +200,6 @@ export const useSystemStore = defineStore({
         });
       });
     },
-
     // 处理登录成功后，路由权限数据
     setRouterPermission() {
       this.router_data = [];
@@ -226,12 +219,11 @@ export const useSystemStore = defineStore({
         }
         this.router_data.push(item);
       });
-     
+
       const time_id = setInterval(() => {
         clearInterval(time_id);
       }, 100);
     },
-
     // 更新终端状态模块基础配置
     updateTerminalStatusConfig(data: any) {
       this.basic_configs.ListDisplaySize = data.ListDisplaySize;

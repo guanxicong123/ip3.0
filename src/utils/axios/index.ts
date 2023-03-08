@@ -135,7 +135,11 @@ $http.interceptors.response.use(
         if (!isMsg) {
           response.data.return_message = message;
         } else {
-          ElMessage.error(response.data.return_message);
+          ElMessage({
+            type: "error",
+            message: response.data.return_message,
+            grouping: true,
+          });
         }
       }
     }

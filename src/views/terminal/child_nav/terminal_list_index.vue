@@ -14,7 +14,7 @@
               <ul class="folder-ul">
                 <li
                   v-for="item in form.groupData"
-                  :key="item.GroupID"
+                  :key="item.id"
                   @click="handleClickGroup(item)"
                   :class="form.current_group === item.id ? 'theme' : ''"
                 >
@@ -54,8 +54,11 @@
               style="width: 100%"
               height="100%"
               @selection-change="handleSelectionChange"
-              :default-sort="sort_condition"
-              @sort-change="sortChange"
+              @sort-change="handleSortChange"
+              :default-sort="{ prop: 'Status', order: 'descending' }"
+              v-loading="form.loading"
+              element-loading-text="Loading..."
+              element-loading-background="rgba(0, 0, 0, 0.7)"
             >
               <el-table-column type="selection" width="44" />
               <el-table-column
@@ -66,36 +69,47 @@
                 :index="typeIndex"
               />
               <el-table-column
-                prop="status"
+                prop="Status"
                 :label="$t('Status')"
                 sortable="custom"
                 show-overflow-tooltip
               >
                 <template #default="scope">
-                  <span
+                  <i
                     class="iconfont"
-                    :title="terminalsStatusMap.get(scope.row.Status)?.name"
+                    :class="terminalsStatusMap.get(4)?.class"
+                    :title="terminalsStatusMap.get(4)?.name"
+                    v-if="scope.row.Disable"
+                  ></i>
+                  <i
+                    v-else
+                    class="iconfont"
                     :class="terminalsStatusMap.get(scope.row.Status)?.class"
-                  >
-                  </span>
+                    :title="terminalsStatusMap.get(scope.row.Status)?.name"
+                  ></i>
                 </template>
               </el-table-column>
               <el-table-column
-                prop="name"
+                prop="EndPointName"
                 :label="$t('Terminal name')"
                 sortable="custom"
                 show-overflow-tooltip
               />
-              <el-table-column prop="volume" :label="$t('Volume')" />
+              <el-table-column prop="Volume" :label="$t('Volume')" />
               <el-table-column
-                prop="ip_address"
+                prop="EndPointIP"
                 :label="$t('Terminal IP')"
                 sortable="custom"
                 show-overflow-tooltip
               />
-              <el-table-column prop="code" :label="$t('Call code')" sortable="custom" />
               <el-table-column
-                prop="type"
+                prop="CallCode"
+                :label="$t('Call code')"
+                sortable="custom"
+                show-overflow-tooltip
+              />
+              <el-table-column
+                prop="EndPointType"
                 :label="$t('Terminal type')"
                 show-overflow-tooltip
               >
@@ -110,9 +124,7 @@
               >
                 <template #default="scope">
                   {{
-                    scope.row.TaskName && scope.row.TaskName.length > 0
-                      ? scope.row.TaskName[0]
-                      : "-"
+                    scope.row.TaskName?.length > 0 ? scope.row.TaskName.toString() : "-"
                   }}
                 </template>
               </el-table-column>
@@ -136,253 +148,209 @@
 </template>
 
 <script lang="ts" setup>
-import { ElTable } from "element-plus";
+import { ElTable, ElMessage } from "element-plus";
+import { GroupsService } from "@/utils/api/groups/inedx";
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
-interface User {
-  date: string;
-  name: string;
-  type: number;
-  EndPointType: number;
-}
+const terminals = getStore.useTerminalsStore();
 const systemStore = getStore.useSystemStore();
-
-const system_configs = computed(() => {
-  return systemStore.system_configs;
+// 计算属性 computed
+const terminalsStoreAll = computed(() => {
+  return terminals.allTerminalsObj;
+});
+const terminalsStoreTotal = computed(() => {
+  return terminals.allFilterTerminals.length;
+});
+const terminalsStoreSearch = computed(() => {
+  return terminals.searchString;
+});
+const terminalsStoreStatus = computed(() => {
+  return terminals.status;
+});
+const equipmentListChangeNum = computed(() => {
+  return terminals.equipmentListChangeNum;
+});
+const terminalsStoreOnePage = computed(() => {
+  return terminals.onePageTerminals;
 });
 const systemPageSize = computed(() => {
   return systemStore.pageSize?.Terminal_PageSize;
 });
+
+interface User {
+  id: number;
+  name: string;
+  EndPointType: number;
+}
+
 const form = reactive<any>({
   search: "",
-  groupData: [],
-  data: [],
+  selectRelayType: -1,
+  selectStatusType: -1,
+  groupData: [], // 分组数据
+  data: [], // 表格数据
   currentPage: 1,
   pageSize: systemPageSize.value,
   total: 0,
+  orderColumn: "Status",
+  orderType: "desc",
   currentGroupTitle: proxy.$t("All terminals"),
   isShowNavBar: true, // 是否显示左侧导航栏
   current_group: 0,
+  groupOfAllTerminalsIDS: [], // 当前分组下的所有终端ids
+  loading: false, // 等待加载数据状态
+  loadingGroup: false, // 等待加载数据状态
 });
+// 表格类型格式转换
 const terminalsStatusMap = useFormatMap.terminalsStatusMap;
 
-const { terminal_group_data }: any = inject("terminal_group");
 const { updateCheckedTerminals }: any = inject("checkedAll");
-
-const store = getStore.useTerminalStore();
-
-const terminal_data = computed(() => {
-  // 终端状态数据
-  return store.terminal_data;
-});
-const terminal_status = computed(() => {
-  //筛选状态
-  return store.terminal_status;
-});
-const search_value = computed(() => {
-  //搜索字段
-  return store.search_value;
-});
-
-const sort_condition: any = ref({
-  prop: "ip_address",
-  order: "descending",
-});
-const storage_terminal_data = ref(); //当前分组下的设备信息
-const cacheTerminalData: any = ref([]); //过滤后得数据
-
-// 格式化终端类型
-const formatterTerminalsType = (row: User) => {
-  return useFormatMap.terminalsMap.get(row.type ? row.type : row.EndPointType);
-};
-
-watch([terminal_data, storage_terminal_data], () => {
-  storage_terminal_data.value.forEach((one: any) => {
-    terminal_data.value.some((two: any) => {
-      if (one.id === two.EndPointID) {
-        Object.assign(one, two);
-        return true;
-      }
-      return false;
-    });
-  });
-  cacheTerminalData.value = filterData();
-  sortChange(sort_condition.value, sort_condition.value.prop, sort_condition.value.order);
-  form.data = cacheTerminalData.value.slice(
-    form.pageSize * (form.currentPage - 1),
-    form.pageSize * form.currentPage
-  );
-});
-
-watch(
-  () => terminal_group_data.value,
-  (newVal) => {
-    if (!form.current_group && newVal.length > 0) {
-      form.current_group = newVal[0].id;
-    }
-    getCurGroupData();
-  },
-  {
-    deep: true,
-  }
-);
-
-watch(
-  () => cacheTerminalData.value,
-  (newVal) => {
-    form.data = newVal.slice(
-      form.pageSize * (form.currentPage - 1),
-      form.pageSize * form.currentPage
-    );
-    form.total = form.data.length;
-  }
-);
-
-watch([terminal_status, search_value], () => {
-  cacheTerminalData.value = filterData();
-  sortChange(sort_condition.value, sort_condition.value.prop, sort_condition.value.order);
-});
-
-const sort_map = new Map([
-  [0, "status"],
-  [1, "ip_address"],
-  [2, "name"],
-  [3, "code"],
-]);
-
-// 处理点击切换分组
-const handleClickGroup = (val: any) => {
-  form.currentGroupTitle = val.GroupName;
-  form.current_group = val.id;
-  getCurGroupData();
-};
-
+// 获取refs
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
-
+// 处理点击切换分组
+const handleClickGroup = (val: any) => {
+  let arrayIDS = [];
+  for (let index = 0; index < val.terminals?.length; index++) {
+    const item = val.terminals[index];
+    arrayIDS.push(item.id);
+  }
+  form.groupOfAllTerminalsIDS = arrayIDS;
+  form.currentGroupTitle = val.name;
+  form.current_group = val.id;
+  handleDefaultGet();
+};
 // 当前已选择表格数据
 const handleSelectionChange = (val: User[]) => {
-  let terminal_ids = val.map((item: any) => {
-    return item.id || item.EndPointID;
+  let ids: number[] = [];
+  multipleSelection.value = val;
+  multipleSelection.value.map((item) => {
+    ids.push(item.id);
   });
-  updateCheckedTerminals(terminal_ids);
+  updateCheckedTerminals(ids);
 };
-
-const filterData = () => {
-  let condition = terminal_status.value === -1 && search_value.value === "";
-  if (condition) {
-    return storage_terminal_data.value;
-  } else {
-    let filterData = storage_terminal_data.value.filter((item: any) => {
-      return (
-        (item.Status === terminal_status.value || terminal_status.value === -1) &&
-        (item.name.match(search_value.value) || search_value.value === "")
-      );
-    });
-    return filterData;
-  }
-};
-// 排序处理
-const sortChange = (column: any, prop: any, order: any) => {
-  sort_condition.value = {
-    prop: column.prop,
-    order: column.order,
-  };
-  if (column.prop == "status") {
-    if (column.order === "descending") {
-      cacheTerminalData.value.sort((a: any, b: any) => b.status - a.status);
-    } else if (column.order === "ascending") {
-      cacheTerminalData.value.sort((a: any, b: any) => a.status - b.status);
-    }
-  } else if (column.prop == "name") {
-    if (column.order === "descending") {
-      cacheTerminalData.value.sort((a: any, b: any) =>
-        b.name.localeCompare(a.name, "zh")
-      );
-    } else if (column.order === "ascending") {
-      cacheTerminalData.value.sort((a: any, b: any) =>
-        a.name.localeCompare(b.name, "zh")
-      );
-    }
-  } else if (column.prop == "ip_address") {
-    if (column.order === "descending") {
-      cacheTerminalData.value = store.sortChangeData(1, cacheTerminalData.value);
-    } else if (column.order === "ascending") {
-      cacheTerminalData.value.sort((a: any, b: any) => {
-        let ip1 = a.ip_address
-          .split(".")
-          .map((e: any) => e.padStart(3, "0"))
-          .join("");
-        let ip2 = b.ip_address
-          .split(".")
-          .map((e: any) => e.padStart(3, "0"))
-          .join("");
-        return ip1 - ip2;
-      });
-    }
-  } else {
-    if (column.order === "descending") {
-      cacheTerminalData.value.sort((a: any, b: any) => {
-        return b.code - a.code;
-      });
-    } else if (column.order === "ascending") {
-      cacheTerminalData.value.sort((a: any, b: any) => a.code - b.code);
-    }
-  }
-  handlefilterData(form.pageSize);
-};
-
 // 序号
 const typeIndex = (index: number) => {
   return index + (form.currentPage - 1) * form.pageSize + 1;
 };
-// 处理XXX条/页更改
-const handlefilterData = (val: number) => {
+// 处理获取一页数据
+const handleGetOnePageData = async () => {
+  terminals.setTerminalsSearchString(form.search);
+  terminals.setTerminalsServersID(form.selectRelayType);
+  terminals.setTerminalsStatus(form.selectStatusType);
+  terminals.setTerminalsSort(form.orderType, form.orderColumn);
+  terminals.setTerminalsFilterGroups(form.current_group > 0, form.groupOfAllTerminalsIDS);
+  terminals.setTerminalsPage(form.currentPage, form.pageSize);
+  terminals.setFilterTerminalsArray();
+  terminals.setFilterTerminalsArraySort();
+  terminals.setTerminalsPaginationArray();
+  form.total = terminalsStoreTotal.value;
+  form.data = terminalsStoreOnePage.value;
+  // 当第二页以上，最后一条任务数据没了后，自动跳转到上一页
+  if (form.currentPage > 1 && form.data.length == 0) {
+    form.currentPage--;
+    terminals.setTerminalsPage(form.currentPage, form.pageSize);
+    terminals.setTerminalsPaginationArray();
+  }
+};
+// 处理默认获取
+const handleDefaultGet = () => {
   form.currentPage = 1;
-  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage);
+  handleGetOnePageData();
+};
+// 处理重置
+const handleReset = () => {
+  form.search = "";
+  form.selectRelayType = -1;
+  form.selectStatusType = -1;
+  handleDefaultGet();
+};
+// 处理排序
+const handleSortChange = (row: { prop: any; order: string | string[] }) => {
+  form.orderColumn = row.order ? row.prop : "Status";
+  form.orderType = !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
+  handleDefaultGet();
 };
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
+  form.pageSize = val;
+  handleDefaultGet();
+  multipleTableRef.value?.setScrollTop(0);
+  // 记住分页
   systemStore.updateSystemSize({
     key: "Terminal_PageSize",
     val,
   });
-  form.pageSize = val;
-  form.currentPage = 1;
-  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage);
 };
-
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
-  form.data = cacheTerminalData.value.slice(
-    form.pageSize * (form.currentPage - 1),
-    form.pageSize * form.currentPage
-  );
+  handleGetOnePageData();
+  multipleTableRef.value?.setScrollTop(0);
+};
+// 格式化终端类型
+const formatterTerminalsType = (row: User) => {
+  return useFormatMap.terminalsMap.get(row.EndPointType);
+};
+// 获取所有分组
+const getTerminalGroupAll = () => {
+  GroupsService.getAllGroups({
+    withTerminals: true,
+    withTerminalsNums: true,
+  })
+    .then((result: any) => {
+      if (result.data) {
+        form.groupData = result.data;
+        form.groupData.unshift({
+          id: 0,
+          name: proxy.$t("All terminals"),
+          terminals: [],
+        });
+        form.current_group = form.groupData[0].id;
+        handleGetOnePageData();
+      } else {
+        ElMessage({
+          type: "error",
+          message: result.return_message,
+          grouping: true,
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
-const getCurGroupData = () => {
-  form.groupData = terminal_group_data.value;
-  if (terminal_group_data.value) {
-    let index = terminal_group_data.value.findIndex(
-      (item: any) => item.id === form.current_group
-    );
-    storage_terminal_data.value = terminal_group_data.value[index]?.terminals;
+// 监听变化
+watch(
+  () => [
+    terminalsStoreAll.value,
+    terminalsStoreSearch.value,
+    terminalsStoreStatus.value,
+    equipmentListChangeNum.value,
+  ],
+  ([newAll, newSearch, newStatus, newNum], [oldAll, oldSearch, oldStatus, oldNum]) => {
+    if (newNum != oldNum) {
+      form.selectStatusType = newStatus;
+      form.search = newSearch;
+      handleGetOnePageData();
+    }
+    if (newAll != oldAll) {
+      handleGetOnePageData();
+    }
+  },
+  {
+    // 设置首次进入执行方法 immediate
+    // immediate: true,
+    deep: true,
   }
-};
+);
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  sort_condition.value = {
-    prop: String(sort_map.get(system_configs.value.TerminalOrderbyType)),
-    order: "descending",
-  };
-  if (terminal_group_data.value.length > 0) {
-    form.current_group = terminal_group_data.value[0].id;
-  }
-  getCurGroupData();
+  getTerminalGroupAll();
 });
 </script>
 

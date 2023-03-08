@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "31543512",
+      "name": "Check",
+      "font_class": "Check",
+      "unicode": "e6a1",
+      "unicode_decimal": 59041
+    },
+    {
       "icon_id": "34102899",
       "name": "一级音量",
       "font_class": "volume-level-1",

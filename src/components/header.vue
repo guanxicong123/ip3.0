@@ -106,9 +106,7 @@
             {{ $t("IP network broadcasting system sub-control software") }}
           </p>
           <p>
-            {{ $t("Current version") }} : V3.0 ( {{ $t("Build") }} : V{{
-              form.version
-            }}
+            {{ $t("Current version") }} : V3.0 ( {{ $t("Build") }} : V{{ form.version }}
             )
           </p>
         </div>
@@ -274,7 +272,8 @@ watch(
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  getUserMe();
+  getStore.useSystemStore().getConfigInfo(); //获取系统配置
+  getUserMe(); //获取账号信息
 });
 </script>
 

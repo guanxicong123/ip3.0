@@ -752,7 +752,7 @@ const handleTaskAttribute = (row: any) => {
       RemoteAudioProp: {
         MusicIDs: row.mediasIds,
         LimitTime: row.sound_source.life_time
-          ? timeToSec(row.sound_source.life_time, 1)
+          ? usePublicMethod.timeToSec(row.sound_source.life_time, 1)
           : 0,
         PlayMode: taskPlayMode.get(row.sound_source.play_model),
         PlayTimes: row.sound_source?.play_number || 0,
@@ -773,7 +773,7 @@ const handleTaskAttribute = (row: any) => {
           TaskAudioType: 1,
           MusicIDs: row.mediasIds,
           LimitTime: row.sound_source.life_time
-            ? timeToSec(row.sound_source.life_time, 1)
+            ? usePublicMethod.timeToSec(row.sound_source.life_time, 1)
             : 0,
           PlayMode: taskPlayMode.get(row.sound_source.play_model),
           PlayTimes: row.sound_source?.play_number || 0,
@@ -818,14 +818,6 @@ const handleTaskAttribute = (row: any) => {
     }
   }
   return data;
-};
-// 将时间转换为秒
-const timeToSec = (time: any, num = 1) => {
-  var hour = time.split(":")[0];
-  var min = time.split(":")[1];
-  var sec = time.split(":")[2];
-  var s = Number(hour * 3600) + Number(min * 60) + Number(sec);
-  return s * num;
 };
 // 编辑播放任务
 const handleEditTask = (row: any) => {

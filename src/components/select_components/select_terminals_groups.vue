@@ -82,10 +82,7 @@
             <div class="scroll-bar">
               <el-scrollbar>
                 <ul class="scroll-ul">
-                  <template
-                    v-for="item in form.allTerminalsData"
-                    :key="item.id"
-                  >
+                  <template v-for="item in form.allTerminalsData" :key="item.id">
                     <li
                       @click="selectTerminal(item)"
                       v-if="
@@ -94,12 +91,8 @@
                       "
                       v-show="
                         !form.searchTerminalsVisible ||
-                        item[config.searchColumnName].match(
-                          form.searchTerminalsReg
-                        ) ||
-                        item[config.searchColumnIP].match(
-                          form.searchTerminalsReg
-                        )
+                        item[config.searchColumnName].match(form.searchTerminalsReg) ||
+                        item[config.searchColumnIP].match(form.searchTerminalsReg)
                       "
                     >
                       {{ item.name }}
@@ -186,8 +179,7 @@
           >
             <el-icon
               @click="
-                form.selectedSearchTerminalsVisible =
-                  !form.selectedSearchTerminalsVisible
+                form.selectedSearchTerminalsVisible = !form.selectedSearchTerminalsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -216,19 +208,12 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template
-              v-for="(item, index) in form.selectedTerminalsData"
-              :key="item.id"
-            >
+            <template v-for="(item, index) in form.selectedTerminalsData" :key="item.id">
               <li
                 v-show="
                   !form.selectedSearchTerminalsVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchTerminalsReg
-                  ) ||
-                  item[config.searchColumnIP].match(
-                    form.selectedSearchTerminalsReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
+                  item[config.searchColumnIP].match(form.selectedSearchTerminalsReg)
                 "
               >
                 <div class="item-terminals">
@@ -248,9 +233,7 @@
                     :key="key"
                     :style="row.style"
                     :title="
-                      row.column !== config.terminalsColumnVolume
-                        ? item[row.column]
-                        : ''
+                      row.column !== config.terminalsColumnVolume ? item[row.column] : ''
                     "
                   >
                     <el-input-number
@@ -330,14 +313,12 @@
         >
           <template
             v-if="
-              item.column !== config.searchColumnName ||
-              !form.selectedSearchGroupsVisible
+              item.column !== config.searchColumnName || !form.selectedSearchGroupsVisible
             "
           >
             <el-icon
               @click="
-                form.selectedSearchGroupsVisible =
-                  !form.selectedSearchGroupsVisible
+                form.selectedSearchGroupsVisible = !form.selectedSearchGroupsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -364,16 +345,11 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template
-              v-for="(item, index) in form.selectedGroupsData"
-              :key="item.id"
-            >
+            <template v-for="(item, index) in form.selectedGroupsData" :key="item.id">
               <li
                 v-show="
                   !form.selectedSearchGroupsVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchGroupsReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchGroupsReg)
                 "
               >
                 <div class="item-terminals group">
@@ -382,9 +358,7 @@
                     :key="key"
                     :style="row.style"
                     :title="
-                      row.column !== config.terminalsColumnVolume
-                        ? item[row.column]
-                        : ''
+                      row.column !== config.terminalsColumnVolume ? item[row.column] : ''
                     "
                   >
                     <el-input-number
@@ -632,8 +606,7 @@ const handleUpdateSelectedGroups = () => {
       selectedName += item.name + ",";
       // 开启修改终端音量
       if (parentData.openTerminalsVolume) {
-        request[config.terminalsColumnVolume] =
-          item[config.terminalsColumnVolume];
+        request[config.terminalsColumnVolume] = item[config.terminalsColumnVolume];
         request.is_lock = item.is_lock;
       }
       request[config.groupsRequestColumnName] = item[config.groupsColumnName];
@@ -659,16 +632,13 @@ const handleUpdateSelectedTerminals = () => {
       selectedName += item.name + ",";
       // 开启修改终端音量
       if (parentData.openTerminalsVolume) {
-        request[config.terminalsColumnVolume] =
-          item[config.terminalsColumnVolume];
+        request[config.terminalsColumnVolume] = item[config.terminalsColumnVolume];
         request.is_lock = item.is_lock;
       }
-      request[config.terminalsRequestColumnName] =
-        item[config.terminalsColumnName];
+      request[config.terminalsRequestColumnName] = item[config.terminalsColumnName];
 
       if (config.selectAmplifier) {
-        request[config.amplifierRequestColumnName] =
-          item[config.amplifierColumnName];
+        request[config.amplifierRequestColumnName] = item[config.amplifierColumnName];
       }
 
       request = Object.assign(request, config.terminalsOtherData);
@@ -687,9 +657,8 @@ const deselectAll = () => {
     form.selectedTerminalsData.forEach(
       (item: { [x: string]: string; ip_address: string }) => {
         if (form.selectedSearchTerminals) {
-          item[config.searchColumnName].match(
-            form.selectedSearchTerminalsReg
-          ) || item.ip_address.match(form.selectedSearchTerminalsReg)
+          item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
+          item.ip_address.match(form.selectedSearchTerminalsReg)
             ? selected.push(item)
             : noSelect.push(item);
         } else {
@@ -734,9 +703,7 @@ const selectAll = () => {
           : noSelect.push(item);
       }
     );
-    form.selectedTerminalsData = Array.from(
-      selected.concat(form.selectedTerminalsData)
-    );
+    form.selectedTerminalsData = Array.from(selected.concat(form.selectedTerminalsData));
     form.allTerminalsData = Array.from(noSelect);
     handleUpdateSelectedTerminals();
   }
@@ -749,9 +716,7 @@ const selectAll = () => {
         ? selected.push(item)
         : noSelect.push(item);
     });
-    form.selectedGroupsData = Array.from(
-      selected.concat(form.selectedGroupsData)
-    );
+    form.selectedGroupsData = Array.from(selected.concat(form.selectedGroupsData));
     form.allGroupsData = Array.from(noSelect);
     handleUpdateSelectedGroups();
   }
@@ -760,11 +725,9 @@ const selectAll = () => {
 const selectTerminal = (row: { id: number }) => {
   if (form.selectedTerminalsID.indexOf(row.id) < 0) {
     form.selectedTerminalsData.push(Object.assign({}, row));
-    form.allTerminalsData = form.allTerminalsData.filter(
-      (item: { id: number }) => {
-        return row.id !== item.id;
-      }
-    );
+    form.allTerminalsData = form.allTerminalsData.filter((item: { id: number }) => {
+      return row.id !== item.id;
+    });
     handleUpdateSelectedTerminals();
   }
 };
@@ -794,11 +757,9 @@ const selectGroup = (row: { id: number }) => {
 const deleteGroup = (row: { id: number }) => {
   if (form.selectedGroupsID.indexOf(row.id) >= 0) {
     form.allGroupsData.unshift(Object.assign({}, row));
-    form.selectedGroupsData = form.selectedGroupsData.filter(
-      (item: { id: number }) => {
-        return row.id !== item.id;
-      }
-    );
+    form.selectedGroupsData = form.selectedGroupsData.filter((item: { id: number }) => {
+      return row.id !== item.id;
+    });
     handleUpdateSelectedGroups();
   }
 };
@@ -813,8 +774,7 @@ const handleCheckAllAmplifierChange = (item: any) => {
 const handleSelectAmplifierChange = (item: any) => {
   const checkedCount = item[config.amplifierColumnName].length;
   item.checkAll_amplifier = checkedCount === config.amplifierValue.length;
-  item.isIndeterminate =
-    checkedCount > 0 && checkedCount < config.amplifierValue.length;
+  item.isIndeterminate = checkedCount > 0 && checkedCount < config.amplifierValue.length;
   handleUpdateSelectedTerminals();
 };
 // 设置tab当前选择状态
@@ -834,9 +794,7 @@ const setCurrentTabSelectStatus = () => {
 // 处理改变自定义单个终端音量
 const handleChangeCustomVolume = (item: any) => {
   item.is_lock =
-    item[config.terminalsColumnVolume] === parentData.changeTerminalsVolume
-      ? 0
-      : 1;
+    item[config.terminalsColumnVolume] === parentData.changeTerminalsVolume ? 0 : 1;
   handleUpdateSelectedTerminals();
 };
 // 设置改变各个数组的终端音量
@@ -986,7 +944,7 @@ const handleEditTerminalsData = () => {
   for (let index = 0; index < form.oldAllTerminalsData.length; index++) {
     const item = form.oldAllTerminalsData[index];
     // 更新开启终端音量后的锁住状态
-    for (let index = 0; index < parentData.responseTerminals.length; index++) {
+    for (let index = 0; index < parentData.responseTerminals?.length; index++) {
       const row = parentData.responseTerminals[index];
       if (row.id == item.id) {
         item.is_lock = row.is_lock;
@@ -1000,7 +958,7 @@ const handleEditTerminalsData = () => {
     }
   }
   // 资源共享会出现的情况-账号本身没有终端数据，但有任务里有共享出来的终端数据
-  if (selectedData.length == 0 && parentData.responseTerminals.length > 0) {
+  if (selectedData.length == 0 && parentData.responseTerminals?.length > 0) {
     handleAssemblyDataStructureTerminals(parentData.responseTerminals);
     selectedData = parentData.responseTerminals;
   }
@@ -1026,7 +984,7 @@ const handleEditGroupsData = () => {
     }
   }
   // 资源共享会出现的情况-账号本身没有分组数据，但有任务里有共享出来的分组数据
-  if (selectedData.length == 0 && parentData.responseGroups.length > 0) {
+  if (selectedData.length == 0 && parentData.responseGroups?.length > 0) {
     handleAssemblyDataStructureGroups(parentData.responseGroups);
     selectedData = parentData.responseGroups;
   }
@@ -1046,8 +1004,7 @@ const handleExcludeTerminals = (data: any) => {
   if (parentData.excludeTerminalsIDS?.length > 0) {
     form.allTerminalsData = data.filter((item: { id: number }) => {
       return (
-        !parentData.excludeTerminalsIDS.includes(item.id) &&
-        !arrayIDS.includes(item.id)
+        !parentData.excludeTerminalsIDS.includes(item.id) && !arrayIDS.includes(item.id)
       );
     });
   } else {
@@ -1070,7 +1027,7 @@ const handleExcludeGroups = (data: any) => {
 const handleUpdateOpenTerminalsVolume = (selectedData: any[]) => {
   for (let index = 0; index < selectedData.length; index++) {
     const item = selectedData[index];
-    for (let index = 0; index < parentData.responseTerminals.length; index++) {
+    for (let index = 0; index < parentData.responseTerminals?.length; index++) {
       const row = parentData.responseTerminals[index];
       if (item.id == row.id) {
         item.task_terminal_vol = row.task_terminal_vol;
@@ -1082,7 +1039,7 @@ const handleUpdateOpenTerminalsVolume = (selectedData: any[]) => {
 const handleUpdateOpenGroupsVolume = (selectedData: any[]) => {
   for (let index = 0; index < selectedData.length; index++) {
     const item = selectedData[index];
-    for (let index = 0; index < parentData.responseGroups.length; index++) {
+    for (let index = 0; index < parentData.responseGroups?.length; index++) {
       const row = parentData.responseGroups[index];
       if (item.id == row.id) {
         item.task_terminal_vol = row.task_terminal_vol;
@@ -1117,22 +1074,8 @@ watch(
     parentData.changeTerminalsVolume,
   ],
   (
-    [
-      newExcludeTerminals,
-      newTerminals,
-      newGroups,
-      newSearch,
-      newOpenVolume,
-      newVolume,
-    ],
-    [
-      oldExcludeTerminals,
-      oldTerminals,
-      oldGroups,
-      oldSearch,
-      oldOpenVolume,
-      oldVolume,
-    ]
+    [newExcludeTerminals, newTerminals, newGroups, newSearch, newOpenVolume, newVolume],
+    [oldExcludeTerminals, oldTerminals, oldGroups, oldSearch, oldOpenVolume, oldVolume]
   ) => {
     handleSetShowColumn(newOpenVolume);
     // 开启并修改终端音量

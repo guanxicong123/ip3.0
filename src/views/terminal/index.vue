@@ -13,14 +13,14 @@
           <div class="play-table-title">
             <span
               :class="{ theme: $useRoute.name != 'group' }"
-              @click="changeRouter('terminals')"
+              @click.stop="changeRouter('terminal')"
             >
               {{ $t("All terminals") }}
             </span>
             <span class="line"> | </span>
             <span
               :class="{ theme: $useRoute.name == 'group' }"
-              @click="changeRouter('group')"
+              @click.stop="changeRouter('group')"
             >
               {{ $t("Group") }}
             </span>
@@ -43,10 +43,14 @@
             :placeholder="form.search_placeholder"
             clearable
           />
-          <el-button :icon="Search" @click="handleFilter"></el-button>
+          <el-button
+            :icon="Search"
+            @click="handleFilter()"
+            :disabled="form.search == ''"
+          ></el-button>
           <el-button
             :disabled="form.search == '' && form.terminal_status == -1"
-            @click="handleReset"
+            @click.stop="handleReset()"
           >
             {{ $t("Reset") }}
           </el-button>
@@ -62,12 +66,18 @@
     </div>
     <div class="com-footer">
       <div class="footer-button" v-if="$useRoute.name != 'terminal'">
-        <el-checkbox
-          v-model="checked_all"
-          :label="$t('Select all')"
-          @change="handleCheckedAll"
-          v-if="$useRoute.name != 'terminal_list'"
-        />
+        <template v-if="$useRoute.name != 'terminal_list'">
+          <el-checkbox
+            v-model="checked_all"
+            :label="$t('Select all')"
+            @change="handleCheckedAll"
+          />
+          <span class="checked-num">
+            <template v-if="checked_terminals.length > 0">
+              ( <span class="theme">{{ checked_terminals.length }}</span> )
+            </template>
+          </span>
+        </template>
         <el-button
           type="primary"
           color="#4900EE"
@@ -259,7 +269,6 @@ const taskPlayMode = new Map([
   [2, "random_play"],
 ]);
 
-const terminal_group_data: any = ref([]);
 // 路由
 const $useRouter = useRouter();
 const $useRoute = useRoute();
@@ -274,6 +283,9 @@ const is_checked_all = ref(false);
 // 处理全选
 const handleCheckedAll = () => {
   is_checked_all.value = true;
+  if (!checked_all.value) {
+    checked_terminals.value = [];
+  }
 };
 
 // 处理是否全选
@@ -298,26 +310,33 @@ const setUp = () => {
   set_dialog.value = true;
 };
 
-// 终端 <-> 分组切换
+// 终端 <-> 分组切换-状态状态显示方式DisplayType 0：方块视图 1：列表视图
 const changeRouter = (name: string) => {
-  if (name === "group") {
-    $useRouter.push("/terminal/group");
-    form.search_placeholder = proxy.$t("Group name");
-    storeTerminal.changeFilterStatus(false);
-  } else {
-    $useRouter.push("/terminal/terminal_list");
-    form.search_placeholder = proxy.$t("Terminal name");
-    storeTerminal.changeFilterStatus(true);
-  }
+  $useRouter.push(
+    name === "group"
+      ? "/terminal/group"
+      : basic_configs.value?.DisplayType == 0
+      ? "/terminal/terminal_block"
+      : "/terminal/terminal_list"
+  );
+  form.search_placeholder =
+    name === "group"
+      ? proxy.$t("Group name") + "/" + proxy.$t("Group code")
+      : proxy.$t("Terminal name");
+  handleReset();
+  checked_terminals.value = [];
+  is_checked_all.value = false;
 };
 
 // 切换终端状态或者点击搜索
 const handleFilter = () => {
-  let conditions = {
-    status: form.terminal_status,
-    search: form.search,
-  };
-  storeTerminal.updateFiltrateCondition(conditions);
+  if ($useRoute.name !== "group") {
+    getStore.useTerminalsStore().setTerminalsStatus(form.terminal_status);
+    getStore.useTerminalsStore().setTerminalsSearchString(form.search);
+  } else {
+    getStore.useTerminalsStore().setGroupSearchString(form.search);
+  }
+  getStore.useTerminalsStore().setEquipmentListChangeNum(1);
 };
 const handleReset = () => {
   form.search = "";
@@ -350,7 +369,7 @@ const confirmTerminalSet = () => {
         };
         systemStore.updateTerminalStatusConfig(data);
         if (form.view_value === "list") {
-          getTerminalGroupAll();
+          $useRouter.push("/terminal/terminal_list");
         } else {
           $useRouter.push({
             path: "/terminal/terminal_block",
@@ -450,7 +469,6 @@ const regionalBroadcasting = (currentTableRow: any) => {
       return item.EndPointID;
     });
   if (data.length) {
-    console.log(form.volume);
     let send_data = {
       company: "BL",
       actioncode: "c2ms_create_server_task",
@@ -613,11 +631,11 @@ const alarmTalkTask = () => {
               RemoteAudioProp: {
                 MusicIDs: row.mediasIds,
                 LimitTime: row.sound_source.life_time
-                  ? timeToSec(row.sound_source.life_time, 1)
+                  ? usePublicMethod.timeToSec(row.sound_source.life_time, 1)
                   : 0,
                 PlayMode: taskPlayMode.get(row.sound_source.play_model),
                 PlayTimes: row.sound_source.play_times
-                  ? timeToSec(row.sound_source.play_times, 1)
+                  ? usePublicMethod.timeToSec(row.sound_source.play_times, 1)
                   : 0,
               },
             },
@@ -635,38 +653,6 @@ const alarmTalkTask = () => {
     });
 };
 
-// 将时间转换为秒
-const timeToSec = (time: any, num = 1) => {
-  var hour = time.split(":")[0];
-  var min = time.split(":")[1];
-  var sec = time.split(":")[2];
-  var s = Number(hour * 3600) + Number(min * 60) + Number(sec);
-  return s * num;
-};
-
-// 获取所有分组
-const getTerminalGroupAll = () => {
-  proxy.$http
-    .get("/terminals-groups/all", {
-      params: {
-        withTerminals: true,
-        withTerminalsNums: true,
-      },
-    })
-    .then((result: any) => {
-      if (result.result === 200) {
-        terminal_group_data.value = result.data;
-        terminal_group_data.value.unshift({
-          id: 0,
-          GroupID: 0,
-          name: proxy.$t("All terminals"),
-          terminals: JSON.parse(JSON.stringify(terminal_data.value)),
-        });
-        $useRouter.push("/terminal/terminal_list");
-      }
-    });
-};
-
 const judgeButtonStatus = (type: number) => {
   let status = sessionsData.value.some((item: any) => {
     return (
@@ -678,6 +664,16 @@ const judgeButtonStatus = (type: number) => {
     return true;
   }
   return false;
+};
+// 处理默认展示数据和路由跳转
+const handleGetDefaultData = () => {
+  form.select_terminal =
+    basic_configs.value.ListDisplaySize === 0
+      ? "3x5"
+      : basic_configs.value.ListDisplaySize === 1
+      ? "3x6"
+      : "4x6";
+  form.view_value = basic_configs.value.DisplayType === 1 ? "list" : "square";
 };
 
 // 供给数据
@@ -693,11 +689,6 @@ provide("checkedAll", {
 // 传给方块视图页面
 provide("select_terminal", {
   select_terminal,
-});
-
-// 终端分组数据
-provide("terminal_group", {
-  terminal_group_data,
 });
 
 watch(sessionsData, () => {
@@ -716,13 +707,7 @@ watch(
 watch(
   () => basic_configs.value,
   (newVal) => {
-    form.select_terminal =
-      basic_configs.value.ListDisplaySize === 0
-        ? "3x5"
-        : basic_configs.value.ListDisplaySize === 1
-        ? "3x6"
-        : "4x6";
-    form.view_value = basic_configs.value.DisplayType === 1 ? "list" : "square";
+    handleGetDefaultData();
   },
   {
     deep: true,
@@ -732,22 +717,20 @@ watch(
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   form.search_placeholder = proxy.$t("Terminal name");
-  form.select_terminal =
-    basic_configs.value.ListDisplaySize === 0
-      ? "3x5"
-      : basic_configs.value.ListDisplaySize === 1
-      ? "3x6"
-      : "4x6";
-  form.view_value = basic_configs.value.DisplayType === 1 ? "list" : "square";
-  if (form.view_value === "list") {
-    getTerminalGroupAll();
+  handleGetDefaultData();
+  if (system_configs.value.TerminalStateDefaultType == 0) {
+    if (form.view_value === "list") {
+      $useRouter.push("/terminal/terminal_list");
+    } else {
+      $useRouter.push({
+        path: "/terminal/terminal_block",
+        query: {
+          layoutArrange: select_terminal.value,
+        },
+      });
+    }
   } else {
-    $useRouter.push({
-      path: "/terminal/terminal_block",
-      query: {
-        layoutArrange: select_terminal.value,
-      },
-    });
+    $useRouter.push("/terminal/group");
   }
 });
 </script>
@@ -805,7 +788,12 @@ onMounted(() => {
     padding-left: 30px;
 
     .el-checkbox {
-      margin-right: 50px;
+      margin-right: 10px;
+    }
+
+    .checked-num {
+      min-width: 45px;
+      margin-right: 10px;
     }
   }
 

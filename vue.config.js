@@ -27,7 +27,7 @@ module.exports = defineConfig({
         // options placed here will be merged with default configuration and passed to electron-builder
         productName: "ip-broadcast", //项目名，也是生成的安装文件名，即ip-broadcast.exe
         appId: "com.example.ip-broadcast",
-        copyright: "Copyright © 2022", //版权信息
+        copyright: "Copyright © 2023", //版权信息
         // 设置用户可选择安装目录
         nsis: {
           // "oneClick" : false,// 是否一键安装

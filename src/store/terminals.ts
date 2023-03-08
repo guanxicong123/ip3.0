@@ -13,6 +13,8 @@ interface TerminalsParams<T = any> {
   filterGroups: boolean;
   groupsIDArray: Array<number>;
   terminalType: number;
+  searchGroupString: string;
+  equipmentListChangeNum: number;
 }
 
 export const useTerminalsStore = defineStore({
@@ -33,6 +35,8 @@ export const useTerminalsStore = defineStore({
       filterGroups: false, // 是否过滤分组
       groupsIDArray: [], // 分组id数组
       terminalType: 0, // 终端类型
+      searchGroupString: "", // 搜索分组字段-区别searchString
+      equipmentListChangeNum: 0, // 设备列表改变状态次数-避免设备状态-主讲终端组件交互干扰到数据
     };
   },
   actions: {
@@ -236,6 +240,14 @@ export const useTerminalsStore = defineStore({
       this.allTerminalsObj = {};
       this.onePageTerminals = [];
       this.allFilterTerminals = [];
+    },
+    // 设置搜索分组字符串
+    setGroupSearchString(string: string) {
+      this.searchGroupString = string;
+    },
+    // 设置设备列表改变次数
+    setEquipmentListChangeNum(num: number) {
+      this.equipmentListChangeNum += num;
     },
   },
 });

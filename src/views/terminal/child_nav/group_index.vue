@@ -29,6 +29,11 @@
               <div class="li-text">
                 <span :title="item.name">{{ item.name }}</span>
               </div>
+              <div class="li-text code">
+                <span :title="item.call_code">
+                  {{ $t("Code") }} : {{ item.call_code }}
+                </span>
+              </div>
             </li>
           </ul>
         </el-scrollbar>
@@ -50,7 +55,7 @@
         ref="multipleTableRef"
         :data="form.table_data"
         style="width: 100%"
-        height="195px"
+        max-height="60vh"
       >
         <el-table-column
           type="index"
@@ -73,24 +78,40 @@
 
 <script lang="ts" setup>
 import { onBeforeRouteLeave } from "vue-router";
-import { ElTable } from "element-plus";
+import { ElTable, ElMessage } from "element-plus";
+import { GroupsService } from "@/utils/api/groups/inedx";
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
+const terminals = getStore.useTerminalsStore();
+const systemStore = getStore.useSystemStore();
+// 计算属性 computed
+const terminalsStoreAll = computed(() => {
+  return terminals.allTerminalsObj;
+});
+const groupStoreSearch = computed(() => {
+  return terminals.searchGroupString;
+});
+const systemPageSize = computed(() => {
+  return systemStore.pageSize?.Group_PageSize;
+});
+
 const form = reactive<any>({
+  search: "",
   data: [],
   currentPage: 1,
-  pageSize: 20,
+  pageSize: systemPageSize.value,
   total: 0,
+  orderColumn: "id",
+  orderType: "desc",
   multipleSelection: [], // 已选择的分组
   table_data: [],
 });
 
 const show_group_info = ref(false);
-
 const group_title = ref("");
-
+// 表格类型格式转换
 const terminalsStatusMap = useFormatMap.terminalsStatusMap;
 // 注入祖先组件供给的数据
 const {
@@ -100,17 +121,8 @@ const {
   handleIsCheckedAll,
   updateCheckedTerminals,
 }: any = inject("checkedAll");
-
-const { terminal_group_data }: any = inject("terminal_group");
-
-const store = getStore.useTerminalStore();
-
-const search_value = computed(() => {
-  return store.search_value;
-});
-
+// 获取refs
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
-
 // 处理点击选择分组
 const handleSelected = (item: { id: number }) => {
   if (form.multipleSelection.includes(item.id)) {
@@ -125,7 +137,6 @@ const handleSelected = (item: { id: number }) => {
   handleUpdateCheckedAll(form.multipleSelection.length === form.data.length);
   handleIsCheckedAll(false);
 };
-
 // 处理勾选分组数据
 const cleanCheckedTerminalIds = () => {
   let terminals_arr: any = [];
@@ -143,7 +154,6 @@ const cleanCheckedTerminalIds = () => {
   });
   updateCheckedTerminals(checked_terminals_ids);
 };
-
 // 分组终端详情显示
 const viewGroupInfo = (item: { name: string; terminals: object }) => {
   show_group_info.value = true;
@@ -151,11 +161,6 @@ const viewGroupInfo = (item: { name: string; terminals: object }) => {
   form.table_data = item.terminals;
   console.log(item.terminals);
 };
-
-const typeIndex = (index: number) => {
-  return index + 1;
-};
-
 // 处理全选
 const handleCheckedAll = () => {
   form.multipleSelection = [];
@@ -164,16 +169,70 @@ const handleCheckedAll = () => {
   }
   cleanCheckedTerminalIds();
 };
-
+// 序号
+const typeIndex = (index: number) => {
+  return index + 1;
+};
+// 处理默认获取
+const handleDefaultGet = () => {
+  form.currentPage = 1;
+  handleGetOnePageData();
+};
+// 处理重置
+const handleReset = () => {
+  form.search = "";
+  form.selectRelayType = -1;
+  form.selectStatusType = -1;
+  handleDefaultGet();
+};
 // 处理XXX条/页更改
 const handleSizeChange = (val: number) => {
   form.pageSize = val;
-  form.currentPage = 1;
+  handleDefaultGet();
+  multipleTableRef.value?.setScrollTop(0);
+  // 记住分页
+  systemStore.updateSystemSize({
+    key: "Group_PageSize",
+    val,
+  });
 };
-
 // 处理当前页更改
 const handleCurrentChange = (val: number) => {
   form.currentPage = val;
+  handleGetOnePageData();
+  multipleTableRef.value?.setScrollTop(0);
+};
+// 处理获取一页数据
+const handleGetOnePageData = () => {
+  GroupsService.getOnePageGroups({
+    likeName: form.search,
+    page: form.currentPage,
+    limit: form.pageSize,
+    orderColumn: form.orderColumn,
+    orderType: form.orderType,
+    withTerminalsNums: true,
+    withTerminals: true,
+  })
+    .then((result: any) => {
+      if (result.data?.data) {
+        form.data = result.data.data;
+        form.total = result.data.total;
+        // 给分组手动添加默认状态，然后根据终端状态来更新
+        // 遵循“忙碌>空闲>冻结>故障>离线”的排序规则，分组状态为当前终端状态排序最前者。
+        form.data.map((item: any) => {
+          item.status = 1;
+        });
+      } else {
+        ElMessage({
+          type: "error",
+          message: result.return_message,
+          grouping: true,
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 // 监听路由
@@ -182,44 +241,38 @@ onBeforeRouteLeave((to, from) => {
   handleUpdateCheckedAll(false);
 });
 
-// 监听
+// 监听变化
 watch(
-  checked_all,
-  (value) => {
-    value
-      ? handleCheckedAll()
-      : setTimeout(() => {
-          is_checked_all.value ? (form.multipleSelection = []) : "";
-        }, 200);
+  () => [terminalsStoreAll.value, groupStoreSearch.value, checked_all.value],
+  ([newAll, newSearch, newCheck], [oldAll, oldSearch, oldCheck]) => {
+    // 设备状态数据
+    if (newAll != oldAll) {
+      console.log(newAll);
+    }
+    // 搜索数据
+    if (newSearch != oldSearch) {
+      form.search = newSearch;
+      handleGetOnePageData();
+    }
+    // 全选
+    if (newCheck != oldCheck) {
+      newCheck
+        ? handleCheckedAll()
+        : setTimeout(() => {
+            is_checked_all.value ? (form.multipleSelection = []) : "";
+          }, 200);
+    }
   },
   {
-    // 初始化立即执行
-    immediate: true,
+    // 设置首次进入执行方法 immediate
+    // immediate: true,
     deep: true,
   }
 );
 
-watch(
-  () => search_value.value,
-  () => {
-    getGroupList();
-  }
-);
-
-const getGroupList = () => {
-  form.data = store.filterGroupData(terminal_group_data.value).filter((item: any) => {
-    return item.id !== 0;
-  });
-  form.total = form.data.length;
-  // 给分组手动添加状态，等后续增加分组状态字段再去除
-  form.data.map((item: any) => {
-    item.status = 1;
-  });
-};
-
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  getGroupList();
+  handleGetOnePageData();
 });
 </script>
 
@@ -241,12 +294,16 @@ onMounted(() => {
 
     .li-text {
       font-size: 18px;
-      padding: 18px 12px 0;
+      padding: 16px 12px 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       box-sizing: border-box;
       color: #b17f05;
+    }
+
+    .code {
+      font-size: 14px;
     }
   }
 

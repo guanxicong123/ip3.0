@@ -10,6 +10,9 @@ const routerBeforeEach = {
         app.config.globalProperties
           .$getLanguages()
           .then((result: any) => {
+            document.title = app.config.globalProperties.$t(
+              "IP network broadcasting"
+            );
             console.log(result);
           })
           .catch((error: any) => {
