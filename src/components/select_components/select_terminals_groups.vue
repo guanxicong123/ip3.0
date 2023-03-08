@@ -46,7 +46,7 @@
           </template>
           <div class="custom-scroll-bar">
             <div class="scroll-select">
-              <el-select v-model="form.currentGroupsID">
+              <el-select v-model="form.currentGroupsID" fit-input-width>
                 <el-option :key="-1" :label="$t('All terminals')" :value="-1">
                   <span style="float: left">{{ $t("All terminals") }}</span>
                   <span

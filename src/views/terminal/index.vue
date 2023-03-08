@@ -61,7 +61,12 @@
         </div>
       </div>
     </div>
-    <div class="com-main com-m-bg">
+    <div
+      class="com-main com-m-bg"
+      v-loading="form.loading"
+      element-loading-text="Loading..."
+      element-loading-background="rgba(0, 0, 0, 0.7)"
+    >
       <router-view />
     </div>
     <div class="com-footer">
@@ -96,13 +101,21 @@
           color="#467CF7"
           @click="functronButtonTask(5)"
           :loading="startButton.status && startButton.type === 5"
-        >
-          {{
+          v-if="
             judgeButtonStatus(5) &&
-            sessionsData[0]?.TaskName.indexOf($t("Regional broadcasting")) === -1
-              ? $t("End broadcast")
-              : $t("Broadcast")
-          }}
+            sessionsData[0]?.TaskName.indexOf($t('Regional broadcasting')) === -1
+          "
+        >
+          {{ $t("End broadcast") }}
+        </el-button>
+        <el-button
+          type="primary"
+          color="#467CF7"
+          @click="functronButtonTask(5)"
+          :loading="startButton.status && startButton.type === 5"
+          v-else
+        >
+          {{ $t("Broadcast") }}
         </el-button>
         <el-button
           type="primary"
@@ -244,6 +257,7 @@ const form = reactive<any>({
   volume: 0, // 音量
   view_value: "list",
   select_terminal: "3x6",
+  loading: false, // 等待加载数据状态
 });
 
 const startButton = ref({
@@ -267,6 +281,12 @@ const taskPlayMode = new Map([
   [0, "normal_play"],
   [1, "loop_play"],
   [2, "random_play"],
+]);
+// 方块视图每页显示规格 0: 3x5 1:3x6 2:4x6
+const pageSizeStatusMap = new Map([
+  [0, { num: 15, string: "3x5" }],
+  [1, { num: 18, string: "3x6" }],
+  [2, { num: 24, string: "4x6" }],
 ]);
 
 // 路由
@@ -312,6 +332,7 @@ const setUp = () => {
 
 // 终端 <-> 分组切换-状态状态显示方式DisplayType 0：方块视图 1：列表视图
 const changeRouter = (name: string) => {
+  form.loading = true;
   $useRouter.push(
     name === "group"
       ? "/terminal/group"
@@ -326,6 +347,9 @@ const changeRouter = (name: string) => {
   handleReset();
   checked_terminals.value = [];
   is_checked_all.value = false;
+  setTimeout(() => {
+    form.loading = false;
+  }, 200);
 };
 
 // 切换终端状态或者点击搜索
@@ -368,6 +392,7 @@ const confirmTerminalSet = () => {
             form.select_terminal === "3x5" ? 0 : form.select_terminal === "3x6" ? 1 : 2,
         };
         systemStore.updateTerminalStatusConfig(data);
+        form.loading = true;
         if (form.view_value === "list") {
           $useRouter.push("/terminal/terminal_list");
         } else {
@@ -378,6 +403,10 @@ const confirmTerminalSet = () => {
             },
           });
         }
+        setTimeout(() => {
+          handleGetDefaultRouter();
+          form.loading = false;
+        }, 200);
         set_dialog.value = false;
         storeTerminal.changeFilterStatus(true);
       }
@@ -525,7 +554,6 @@ const originateBroadcast = (EndPointList: any[], EndPointID: number) => {
   };
   send(send_data);
 };
-
 // 发起对讲
 const initiatedTalkTask = (EndPointList: any[], EndPointID: number) => {
   let send_data = {
@@ -552,7 +580,6 @@ const initiatedTalkTask = (EndPointList: any[], EndPointID: number) => {
   };
   send(send_data);
 };
-
 // 发起监听任务
 const monitorTalkTask = (EndPointList: any[], EndPointID: number) => {
   let send_data = {
@@ -579,7 +606,6 @@ const monitorTalkTask = (EndPointList: any[], EndPointID: number) => {
   };
   send(send_data);
 };
-
 // 发起报警任务
 const alarmTalkTask = () => {
   startButton.value.type = 3;
@@ -652,7 +678,7 @@ const alarmTalkTask = () => {
       startButton.value.status = false;
     });
 };
-
+// 判断按钮状态
 const judgeButtonStatus = (type: number) => {
   let status = sessionsData.value.some((item: any) => {
     return (
@@ -665,59 +691,18 @@ const judgeButtonStatus = (type: number) => {
   }
   return false;
 };
-// 处理默认展示数据和路由跳转
+// 处理默认展示数据
 const handleGetDefaultData = () => {
-  form.select_terminal =
-    basic_configs.value.ListDisplaySize === 0
-      ? "3x5"
-      : basic_configs.value.ListDisplaySize === 1
-      ? "3x6"
-      : "4x6";
+  form.select_terminal = pageSizeStatusMap.get(
+    basic_configs.value.ListDisplaySize
+  )?.string;
   form.view_value = basic_configs.value.DisplayType === 1 ? "list" : "square";
 };
-
-// 供给数据
-provide("checkedAll", {
-  checked_all,
-  is_checked_all,
-  handleUpdateCheckedAll,
-  handleIsCheckedAll,
-  checked_terminals,
-  updateCheckedTerminals,
-});
-
-// 传给方块视图页面
-provide("select_terminal", {
-  select_terminal,
-});
-
-watch(sessionsData, () => {
-  startButton.value.status = false;
-});
-watch(
-  () => terminal_data.value,
-  () => {
-    cleanOnLineTerminal();
-  },
-  {
-    deep: true,
+// 处理默认路由跳转
+const handleGetDefaultRouter = () => {
+  if (system_configs.value.TerminalStateDefaultType == undefined) {
+    return;
   }
-);
-
-watch(
-  () => basic_configs.value,
-  (newVal) => {
-    handleGetDefaultData();
-  },
-  {
-    deep: true,
-  }
-);
-
-// mounted 实例挂载完成后被调用
-onMounted(() => {
-  form.search_placeholder = proxy.$t("Terminal name");
-  handleGetDefaultData();
   if (system_configs.value.TerminalStateDefaultType == 0) {
     if (form.view_value === "list") {
       $useRouter.push("/terminal/terminal_list");
@@ -732,6 +717,63 @@ onMounted(() => {
   } else {
     $useRouter.push("/terminal/group");
   }
+};
+
+// 供给数据
+provide("checkedAll", {
+  checked_all,
+  is_checked_all,
+  handleUpdateCheckedAll,
+  handleIsCheckedAll,
+  checked_terminals,
+  updateCheckedTerminals,
+});
+// 传给方块视图页面
+provide("select_terminal", {
+  select_terminal,
+});
+
+// 监听变化
+watch(
+  () => [
+    system_configs.value,
+    basic_configs.value,
+    terminal_data.value,
+    sessionsData.value,
+  ],
+  (
+    [newSystem, newBasic, newTerminal, newSessions],
+    [oldSystem, oldBasic, oldTerminal, oldSessions]
+  ) => {
+    if (newSystem != oldSystem) {
+      handleGetDefaultRouter();
+    }
+    if (newBasic != oldBasic) {
+      handleGetDefaultData();
+    }
+    if (newTerminal != oldTerminal) {
+      cleanOnLineTerminal();
+    }
+    if (newSessions != oldSessions) {
+      startButton.value.status = false;
+    }
+  },
+  {
+    // 设置首次进入执行方法 immediate
+    // immediate: true,
+    deep: true,
+  }
+);
+
+// mounted 实例挂载完成后被调用
+onMounted(() => {
+  form.search_placeholder = proxy.$t("Terminal name");
+  handleGetDefaultData();
+  form.loading = true;
+  setTimeout(() => {
+    handleGetDefaultRouter();
+    form.loading = false;
+  }, 200);
 });
 </script>
 

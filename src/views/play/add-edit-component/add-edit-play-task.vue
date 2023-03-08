@@ -163,7 +163,11 @@
           <span>{{ $t("Execution area") }}</span>
         </div>
         <div class="play-task-region-content configure-level-content">
-          <el-tabs v-model="executionregiontype" class="demo-tabs">
+          <el-tabs
+            v-model="executionregiontype"
+            class="demo-tabs"
+            @tab-click="showSearch = executionregiontype != 1"
+          >
             <el-tab-pane :label="$t('Fast terminal')" :name="0">
               <el-row :gutter="80">
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
@@ -196,6 +200,7 @@
                 :responseGroups="responseGroups"
                 @requestTerminals="requestTerminals"
                 @requestGroups="requestGroups"
+                :showSearch="showSearch"
               >
               </terminals-select-components>
             </el-tab-pane>
@@ -260,6 +265,7 @@ const ruleForm: any = reactive({
   medias_groups: [], //已选择的媒体媒体文件夹
   sound_source: {},
 });
+const showSearch = ref(false); // 是否显示搜索弹窗
 const fast_terminals_id = ref(); //快捷终端id
 const terminals = ref([]); //终端id集合
 const terminals_groups = ref([]); //终端分组id集合
@@ -293,7 +299,7 @@ const typeOptions = [
   { label: proxy.$t("Text play"), value: 11, type: 2 },
   { label: proxy.$t("Sound source acquisition"), value: 12, type: 2 },
 ];
-const typePriorityNum = ref(1)
+const typePriorityNum = ref(1);
 // 将任务类型转换为对应优先级类型
 const typePriority = new Map([
   [1, 15], //远程任务
@@ -378,7 +384,7 @@ const getTimes = (file: any) => {
 };
 // 选择的快捷音源配置
 const requestSoundSource = (data: any) => {
-  typePriorityNum.value = data.type
+  typePriorityNum.value = data.type;
   soundSourceForm.value = JSON.parse(JSON.stringify(data));
   ruleForm.fast_sound_id = data.id;
   delete soundSourceForm.value?.id;
@@ -730,7 +736,7 @@ const getLocalTask = (row: any) => {
     ruleForm.name = result.data.name;
     ruleForm.volume = result.data.volume;
     ruleForm.priority = result.data.priority;
-    typePriorityNum.value = result.data.type
+    typePriorityNum.value = result.data.type;
     if (ruleForm.type === 13) {
       ruleForm.type = 12;
     }
@@ -805,13 +811,13 @@ const getPrioritySetting = () => {
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   if ($useRoute.query.id && $useRoute.query.id !== "0") {
-    getPrioritySetting().then(()=> {
+    getPrioritySetting().then(() => {
       if ($useRoute.query.type < 10) {
         getServeTask($useRoute.query.id);
       } else {
         getLocalTask($useRoute.query.id);
       }
-    })
+    });
   } else {
     getPrioritySetting();
   }

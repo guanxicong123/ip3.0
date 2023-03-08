@@ -260,13 +260,6 @@ const handleDefaultGet = () => {
   form.currentPage = 1;
   handleGetOnePageData();
 };
-// 处理重置
-const handleReset = () => {
-  form.search = "";
-  form.selectRelayType = -1;
-  form.selectStatusType = -1;
-  handleDefaultGet();
-};
 // 处理排序
 const handleSortChange = (row: { prop: any; order: string | string[] }) => {
   form.orderColumn = row.order ? row.prop : "Status";

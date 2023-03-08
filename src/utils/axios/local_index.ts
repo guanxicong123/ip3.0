@@ -156,7 +156,7 @@ $http.interceptors.response.use(
         grouping: true,
       });
     }
-    if (status === 401 && response.data.result === 401) {
+    if (status === 401) {
       usePublicMethod.signOut();
     }
     return response.data;

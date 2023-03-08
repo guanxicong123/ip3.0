@@ -373,6 +373,7 @@ onMounted(() => {
 
     i {
       font-size: 16px;
+      cursor: pointer;
     }
 
     .el-icon:hover {

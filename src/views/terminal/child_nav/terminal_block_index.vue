@@ -5,7 +5,12 @@
   @Describe: 终端状态-终端方块视图
 -->
 <template>
-  <div class="com-index">
+  <div
+    class="com-index"
+    v-loading="form.loading"
+    element-loading-text="Loading..."
+    element-loading-background="rgba(0, 0, 0, 0.7)"
+  >
     <div class="com-main">
       <div class="com-table">
         <ul class="group-ul">
@@ -33,6 +38,7 @@
                 trigger="click"
                 popper-class="terminal-volume-popper"
                 :disabled="item.status !== 1 && item.status !== 2"
+                :persistent="false"
               >
                 <el-slider v-model="item.volume" @change="changeVolume(item)" />
                 <template #reference>
@@ -64,7 +70,7 @@
       <el-pagination
         v-model:currentPage="form.currentPage"
         v-model:page-size="form.pageSize"
-        :page-sizes="form.pageSizes"
+        :page-sizes="proxy.$user?.config?.pageRule"
         layout="total, sizes, prev, pager, next, jumper"
         :total="form.total"
         @size-change="handleSizeChange"
@@ -78,24 +84,34 @@
 import { onBeforeRouteLeave } from "vue-router";
 import { send } from "@/utils/socket";
 
-const form = reactive<any>({
-  data: [],
-  currentPage: 1,
-  pageSizes: [18], // 一页/x条
-  pageSize: 20,
-  total: 0,
-  multipleSelection: [], // 已选择的分组
-  layoutArrange: "3*6", // 布局排列
+// 全局属性
+const { proxy } = useCurrentInstance.useCurrentInstance();
+
+const terminals = getStore.useTerminalsStore();
+const systemStore = getStore.useSystemStore();
+// 计算属性 computed
+const basic_configs = computed(() => {
+  return systemStore.basic_configs;
+});
+const terminalsStoreAll = computed(() => {
+  return terminals.allTerminalsObj;
+});
+const terminalsStoreTotal = computed(() => {
+  return terminals.allFilterTerminals.length;
+});
+const terminalsStoreSearch = computed(() => {
+  return terminals.searchString;
+});
+const terminalsStoreStatus = computed(() => {
+  return terminals.status;
+});
+const equipmentListChangeNum = computed(() => {
+  return terminals.equipmentListChangeNum;
+});
+const terminalsStoreOnePage = computed(() => {
+  return terminals.onePageTerminals;
 });
 
-const terminalsStatusMap = useFormatMap.terminalsStatusMap;
-const terminalsBGStatusMap = new Map([
-  [0, "off-line"],
-  [1, "on-line"],
-  [2, "be-busy"],
-  [3, "frozen"],
-  [4, "fault"],
-]);
 // 注入祖先组件供给的数据
 const {
   checked_all,
@@ -104,56 +120,73 @@ const {
   handleIsCheckedAll,
 }: any = inject("checkedAll");
 
-const storage_terminal_data = ref();
-
-const store = getStore.useTerminalStore();
-
-const terminal_data = computed(() => {
-  return store.terminal_data;
-});
-
-const terminal_status = computed(() => {
-  return store.terminal_status;
-});
-
-const search_value = computed(() => {
-  return store.search_value;
-});
-
-const cacheTerminalData: any = [];
-
-watch(
-  () => terminal_data.value,
-  (newVal) => {
-    storage_terminal_data.value = newVal;
-    cacheTerminalData.value = store.defaultTerminalSort(filterData());
-    form.data = cacheTerminalData.value;
-    form.total = form.data.length;
-  }
-);
-
-watch(
-  () => terminal_status.value,
-  () => {
-    cacheTerminalData.value = store.defaultTerminalSort(filterData());
-    form.data = cacheTerminalData.value;
-    form.total = form.data.length;
-  }
-);
-
-watch(
-  () => search_value.value,
-  () => {
-    cacheTerminalData.value = store.defaultTerminalSort(filterData());
-    form.data = cacheTerminalData.value;
-    form.total = form.data.length;
-  }
-);
-
 const { select_terminal }: any = inject("select_terminal");
-
 const { updateCheckedTerminals }: any = inject("checkedAll");
 
+const form = reactive<any>({
+  loading: false, // 等待加载数据状态
+  search: "",
+  selectRelayType: -1,
+  selectStatusType: -1,
+  data: [],
+  currentPage: 1,
+  pageSize: 18,
+  total: 0,
+  orderColumn: "Status",
+  orderType: "desc",
+  multipleSelection: [], // 已选择的分组
+  layoutArrange: "3*6", // 布局排列
+});
+// 表格类型格式转换
+const terminalsStatusMap = useFormatMap.terminalsStatusMap;
+const terminalsBGStatusMap = new Map([
+  [0, "off-line"],
+  [1, "on-line"],
+  [2, "be-busy"],
+  [3, "frozen"],
+  [4, "fault"],
+]);
+// 方块视图每页显示规格 0: 3x5 1:3x6 2:4x6
+const pageSizeStatusMap = new Map([
+  [0, { num: 15, string: "3x5" }],
+  [1, { num: 18, string: "3x6" }],
+  [2, { num: 24, string: "4x6" }],
+]);
+// 处理获取一页数据
+const handleGetOnePageData = async () => {
+  terminals.setTerminalsSearchString(form.search);
+  terminals.setTerminalsServersID(form.selectRelayType);
+  terminals.setTerminalsStatus(form.selectStatusType);
+  terminals.setTerminalsSort(form.orderType, form.orderColumn);
+  terminals.setTerminalsFilterGroups(false, []);
+  terminals.setTerminalsPage(form.currentPage, form.pageSize);
+  terminals.setFilterTerminalsArray();
+  terminals.setFilterTerminalsArraySort();
+  terminals.setTerminalsPaginationArray();
+  form.total = terminalsStoreTotal.value;
+  form.data = terminalsStoreOnePage.value;
+  // 当第二页以上，最后一条任务数据没了后，自动跳转到上一页
+  if (form.currentPage > 1 && form.data.length == 0) {
+    form.currentPage--;
+    terminals.setTerminalsPage(form.currentPage, form.pageSize);
+    terminals.setTerminalsPaginationArray();
+  }
+};
+// 处理默认获取
+const handleDefaultGet = () => {
+  form.currentPage = 1;
+  handleGetOnePageData();
+};
+// 处理XXX条/页更改
+const handleSizeChange = (val: number) => {
+  form.pageSize = val;
+  handleDefaultGet();
+};
+// 处理当前页更改
+const handleCurrentChange = (val: number) => {
+  form.currentPage = val;
+  handleGetOnePageData();
+};
 // 处理点击选择终端
 const handleSelected = (item: { EndPointID: number }) => {
   if (form.multipleSelection.includes(item.EndPointID)) {
@@ -176,21 +209,6 @@ const handleCheckedAll = () => {
   }
   updateCheckedTerminals(form.multipleSelection);
 };
-// 处理XXX条/页更改
-const handleSizeChange = (val: number) => {
-  form.pageSize = val;
-  form.currentPage = 1;
-  form.data = cacheTerminalData.value.slice(0, form.pageSize * form.currentPage);
-};
-// 处理当前页更改
-const handleCurrentChange = (val: number) => {
-  form.currentPage = val;
-  form.data = cacheTerminalData.value.slice(
-    form.pageSize * (form.currentPage - 1),
-    form.pageSize * form.currentPage
-  );
-};
-
 // 修改终端音量
 const changeVolume = (data: any) => {
   let send_data = {
@@ -207,27 +225,11 @@ const changeVolume = (data: any) => {
   console.log("send_data", send_data);
   send(send_data);
 };
-
-const filterData = () => {
-  let condition = terminal_status.value === -1 && search_value.value === "";
-  if (condition) {
-    return storage_terminal_data.value;
-  } else {
-    let data = storage_terminal_data.value.filter((item: any) => {
-      return (
-        (item.Status === terminal_status.value || terminal_status.value === -1) &&
-        (item.name.match(search_value.value) || search_value.value === "")
-      );
-    });
-    return data;
-  }
+// 处理设置默认获取条件
+const handleGetDefaultCondition = () => {
+  form.layoutArrange = pageSizeStatusMap.get(basic_configs.value.ListDisplaySize)?.string;
+  form.pageSize = pageSizeStatusMap.get(basic_configs.value.ListDisplaySize)?.num;
 };
-
-// 监听路由
-onBeforeRouteLeave((to, from) => {
-  handleIsCheckedAll(false);
-  handleUpdateCheckedAll(false);
-});
 
 // 监听
 watch(
@@ -240,26 +242,61 @@ watch(
         }, 200);
   },
   {
-    // 初始化立即执行
+    // 设置首次进入执行方法 immediate
     immediate: true,
     deep: true,
   }
 );
 
+// 监听变化
+watch(
+  () => [
+    terminalsStoreAll.value,
+    terminalsStoreSearch.value,
+    terminalsStoreStatus.value,
+    equipmentListChangeNum.value,
+    basic_configs.value,
+  ],
+  (
+    [newAll, newSearch, newStatus, newNum, newBasic],
+    [oldAll, oldSearch, oldStatus, oldNum, oldBasic]
+  ) => {
+    if (newBasic != oldBasic) {
+      handleGetDefaultCondition();
+      handleDefaultGet();
+    }
+    if (newNum != oldNum) {
+      form.selectStatusType = newStatus;
+      form.search = newSearch;
+      handleGetOnePageData();
+    }
+    if (newAll != oldAll) {
+      handleGetOnePageData();
+    }
+  },
+  {
+    // 设置首次进入执行方法 immediate
+    // immediate: true,
+    deep: true,
+  }
+);
+
 watch(select_terminal, (value) => {
+  form.layoutArrange = value;
   form.pageSize = value.split("x")[0] * value.split("x")[1];
-  handleSizeChange(form.pageSize);
+  handleDefaultGet();
+});
+
+// 监听路由
+onBeforeRouteLeave((to, from) => {
+  handleIsCheckedAll(false);
+  handleUpdateCheckedAll(false);
 });
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  form.layoutArrange = select_terminal;
-  form.pageSizes = [form.layoutArrange.split("x")[0] * form.layoutArrange.split("x")[1]];
-  form.pageSize = form.pageSizes[0];
-  storage_terminal_data.value = terminal_data.value;
-  cacheTerminalData.value = store.defaultTerminalSort(filterData());
-  form.data = cacheTerminalData.value;
-  form.total = form.data.length;
+  handleGetDefaultCondition();
+  handleGetOnePageData();
 });
 </script>
 

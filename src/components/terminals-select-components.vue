@@ -36,7 +36,7 @@
                     @input="handleTerminalsSearch"
                   />
                   <i
-                    class="iconfont icon-clear"
+                    class="iconfont icon-execution-failed delete"
                     @click="handleClickClosePopover"
                   ></i>
                 </div>
@@ -46,8 +46,31 @@
           </template>
           <div class="custom-scroll-bar">
             <div class="scroll-select">
-              <el-select v-model="form.currentGroupsID">
-                <el-option :key="0" :label="$t('All terminals')" :value="0" />
+              <el-select v-model="form.currentGroupsID" fit-input-width>
+                <el-option :key="-1" :label="$t('All terminals')" :value="-1">
+                  <span style="float: left">{{ $t("All terminals") }}</span>
+                  <span
+                    style="
+                      float: right;
+                      color: var(--el-text-color-secondary);
+                      font-size: 13px;
+                    "
+                  >
+                    {{ $t("Default") }}
+                  </span>
+                </el-option>
+                <el-option :key="0" :label="$t('Ungrouped')" :value="0">
+                  <span style="float: left">{{ $t("Ungrouped") }}</span>
+                  <span
+                    style="
+                      float: right;
+                      color: var(--el-text-color-secondary);
+                      font-size: 13px;
+                    "
+                  >
+                    {{ $t("Default") }}
+                  </span>
+                </el-option>
                 <el-option
                   v-for="item in form.allGroupsOptions"
                   :key="item.id"
@@ -65,6 +88,10 @@
                   >
                     <li
                       @click="selectTerminal(item)"
+                      v-if="
+                        form.currentGroupsID === -1 ||
+                        item.with_groups_ids.includes(form.currentGroupsID)
+                      "
                       v-show="
                         !form.searchTerminalsVisible ||
                         item[config.searchColumnName].match(
@@ -105,7 +132,7 @@
                     @input="handleGroupsSearch"
                   />
                   <i
-                    class="iconfont icon-clear"
+                    class="iconfont icon-execution-failed delete"
                     @click="handleClickClosePopover"
                   ></i>
                 </div>
@@ -186,7 +213,7 @@
               @input="handleSelectedTerminalsSearch"
             />
             <i
-              class="iconfont icon-clear delete"
+              class="iconfont icon-execution-failed delete"
               @click="handleClickCloSesearchInput"
             ></i>
           </span>
@@ -231,7 +258,7 @@
                   </div>
                   <div class="icon-font-delete">
                     <i
-                      class="iconfont icon-clear delete"
+                      class="iconfont icon-execution-failed delete"
                       @click="deleteTerminal(item)"
                     ></i>
                   </div>
@@ -308,7 +335,7 @@
               @input="handleSelectedGroupsSearch"
             />
             <i
-              class="iconfont icon-clear delete"
+              class="iconfont icon-execution-failed delete"
               @click="handleClickCloSesearchInput"
             ></i>
           </span>
@@ -358,7 +385,7 @@
                   </div>
                   <div class="icon-font-delete">
                     <i
-                      class="iconfont icon-clear delete"
+                      class="iconfont icon-execution-failed delete"
                       @click="deleteGroup(item)"
                     ></i>
                   </div>
@@ -394,6 +421,7 @@ const parentData = defineProps([
   "excludeTerminalsIDS", // 终端id集合 选择终端时可以排除不选这里面的id
   "excludeGroupsIDS", // 分组id集合 选择分组时可以排除不选这里面的id
   "isTerminalGroups", //是否需要分组终端ID
+  "showSearch", // 控制显示搜索弹出框-popover
 ]);
 
 const form = reactive<any>({
@@ -410,7 +438,7 @@ const form = reactive<any>({
   searchGroupsVisible: false, // 是否显示搜索分组popover弹窗
   selectedSearchTerminalsVisible: false, // 是否显示已选择终端的搜索框
   selectedSearchGroupsVisible: false, // 是否显示已选择分组的搜索框
-  currentGroupsID: 0, // 当前选择的分组id
+  currentGroupsID: -1, // 当前选择的分组id
   currentSelectStatus: "first", // 当前选择tab的状态，用于编辑界面时处理数据展示
   allGroupsOptions: [], // 所有分组-选择框
   allTerminalsData: [], // 所有终端数据
@@ -477,24 +505,6 @@ let config = reactive<any>({
   isSelectGroups: systemStore.functional_configs.GroupDisplay, // 是否可以选择分组
   selectAmplifier: false, // 是否可以选择功率分区
 });
-// 监听变化
-watch(
-  () => [parentData],
-  ([newData]) => {
-    if (config.isSelectTerminals && newData.responseTerminals.length > 0) {
-      handleEditTerminalsData();
-    }
-    if (config.isSelectGroups && newData.responseGroups.length > 0) {
-      handleEditGroupsData();
-    }
-  },
-  {
-    // 设置首次进入执行方法 immediate
-    // immediate: true,
-    deep: true,
-  }
-);
-
 // 处理tab点击
 const handleTabClick = (tab: TabsPaneContext) => {
   if (
@@ -648,14 +658,21 @@ const selectAll = () => {
     let selected: any[] = [];
     let noSelect: any[] = [];
     form.allTerminalsData.forEach(
-      (item: { [x: string]: string; groups_id: any; ip_address: string }) => {
-        (form.currentGroupsID <= 0 ||
-          item.groups_id?.indexOf(form.currentGroupsID) >= 0) &&
-        (item[config.searchColumnName].match(form.searchTerminalsReg) ||
-          item.ip_address.match(form.searchTerminalsReg))
+      (item: {
+        [x: string]: string;
+        with_groups_ids: any;
+        ip_address: string;
+      }) => {
+        (form.currentGroupsID == -1 ||
+          item.with_groups_ids.indexOf(form.currentGroupsID) >= 0) &&
+        (item[config.searchColumnName].match(
+          form.searchTerminalsVisible ? form.searchTerminalsReg : ""
+        ) ||
+          item.ip_address.match(
+            form.searchTerminalsVisible ? form.searchTerminalsReg : ""
+          ))
           ? selected.push(item)
           : noSelect.push(item);
-        console.log(item)
       }
     );
     form.selectedTerminalsData = Array.from(
@@ -754,8 +771,8 @@ const setCurrentTabSelectStatus = () => {
     }
   }
 };
-// 获取所有分组
-const getGroupsAll = () => {
+// 处理获取全部分组
+const handleGetAllGroups = () => {
   proxy.$http
     .get("terminals-groups/all", {
       params: {
@@ -777,26 +794,50 @@ const getGroupsAll = () => {
       }
     });
 };
-// 获取所有终端
-const getTerminalsAll = () => {
+// 处理获取全部终端
+const handleGetAllTerminals = () => {
   proxy.$http
     .get("/terminals/all", {
       params: {
+        relayServers: true,
         withGroups: true,
+        terminals_type: 0,
       },
     })
     .then((result: { result: number; data: any[] }) => {
       if (result.result === 200) {
-        form.allTerminalsData = result.data.map((item: any) => {
-          item.isShowAmplifier = false;
-          item.checkAll_amplifier = false;
-          item.isIndeterminate = false;
-          item.amplifier = [];
-          return item;
-        });
+        handleAssemblyDataStructureTerminals(result.data);
+        form.allTerminalsData = result.data;
         handleEditTerminalsData();
       }
     });
+};
+// 处理终端组装数据结构
+const handleAssemblyDataStructureTerminals = (data: any[]) => {
+  for (let index = 0; index < data.length; index++) {
+    const item = data[index];
+    item.isShowAmplifier = false;
+    item.checkAll_amplifier = false;
+    item.isIndeterminate = false;
+    item.with_groups_ids = [];
+    // 当含有分组数据时,添加到with_groups_ids字段，进行分组筛选时使用
+    if (item.with_groups?.length > 0) {
+      for (let key = 0; key < item.with_groups.length; key++) {
+        const groups = item.with_groups[key];
+        item.with_groups_ids.push(groups.terminals_groups_id);
+      }
+    } else {
+      item.with_groups_ids.push(0);
+    }
+    // 当含有八分区数据时
+    if (Object.prototype.hasOwnProperty.call(item.other_config, "amplifier")) {
+      const checkedCount = item.other_config.amplifier.length;
+      item[config.amplifierColumnName] = item.other_config.amplifier;
+      item.checkAll_amplifier = checkedCount == config.amplifierValue.length;
+      item.isIndeterminate =
+        checkedCount > 0 && checkedCount < config.amplifierValue.length;
+    }
+  }
 };
 // 设置编辑界面传递回来的ids
 const setEditDataIDS = (data: any[]) => {
@@ -845,15 +886,68 @@ const handleEditGroupsData = () => {
   form.selectedGroupsData = selectedData;
   handleUpdateSelectedGroups();
 };
+// 处理excludeTerminalsIDS传递回来需过滤终端
+const handleExcludeTerminals = (data: any) => {
+  const arrayIDS: number[] = [];
+  form.selectedTerminalsData.map((item: { id: number }) => {
+    arrayIDS.push(item.id);
+  });
+  if (parentData.excludeTerminalsIDS?.length > 0) {
+    form.allTerminalsData = data.filter((item: { id: number }) => {
+      return (
+        !parentData.excludeTerminalsIDS.includes(item.id) &&
+        !arrayIDS.includes(item.id)
+      );
+    });
+  } else {
+    form.allTerminalsData = data.filter((item: { id: number }) => {
+      return !arrayIDS.includes(item.id);
+    });
+  }
+};
+
+// 监听变化
+watch(
+  () => [
+    parentData.excludeTerminalsIDS,
+    parentData.responseTerminals,
+    parentData.responseGroups,
+    parentData.showSearch,
+  ],
+  (
+    [newExcludeTerminals, newTerminals, newGroups, newSearch],
+    [oldExcludeTerminals, oldTerminals, oldGroups, oldSearch]
+  ) => {
+    if (config.isSelectTerminals && newTerminals != oldTerminals) {
+      handleEditTerminalsData();
+    }
+    if (config.isSelectGroups && newGroups != oldGroups) {
+      handleEditGroupsData();
+    }
+    if (newExcludeTerminals != oldExcludeTerminals) {
+      handleExcludeTerminals(form.allTerminalsData);
+    }
+    if (newSearch != oldSearch) {
+      form.searchTerminalsVisible = false;
+      form.searchGroupsVisible = false;
+    }
+  },
+  {
+    // 设置首次进入执行方法 immediate
+    // immediate: true,
+    deep: true,
+  }
+);
+
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  getTerminalsAll();
-  getGroupsAll();
   config = Object.assign(
     config,
     parentData.myConfig ? parentData.myConfig : {}
   );
   setCurrentTabSelectStatus();
+  config.isSelectTerminals && handleGetAllTerminals();
+  handleGetAllGroups();
 });
 </script>
 

@@ -134,12 +134,6 @@ $http.interceptors.response.use(
         // 没有就添加上自定义 message
         if (!isMsg) {
           response.data.return_message = message;
-        } else {
-          ElMessage({
-            type: "error",
-            message: response.data.return_message,
-            grouping: true,
-          });
         }
       }
     }

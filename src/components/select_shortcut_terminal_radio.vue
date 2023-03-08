@@ -9,9 +9,7 @@
     <div class="com-select-left">
       <div class="custom-title">
         <template v-if="!form.searchConfigureVisible">
-          <el-icon
-            @click="form.searchConfigureVisible = !form.searchConfigureVisible"
-          >
+          <el-icon @click="form.searchConfigureVisible = !form.searchConfigureVisible">
             <Search />
           </el-icon>
           <span> {{ $t("Configuration name") }} </span>
@@ -26,7 +24,7 @@
             @input="handleConfigureSearch"
           />
           <i
-            class="iconfont icon-clear delete"
+            class="iconfont icon-execution-failed delete"
             @click="handleClickCloSesearchInput"
           ></i>
         </span>
@@ -71,8 +69,7 @@
           >
             <el-icon
               @click="
-                form.selectedSearchConfigureVisible =
-                  !form.selectedSearchConfigureVisible
+                form.selectedSearchConfigureVisible = !form.selectedSearchConfigureVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -90,7 +87,7 @@
               @input="handleSelectedConfigureSearch"
             />
             <i
-              class="iconfont icon-clear delete"
+              class="iconfont icon-execution-failed delete"
               @click="handleClickCloSelectedSesearch"
             ></i>
           </span>
@@ -106,9 +103,7 @@
               <li
                 v-show="
                   !form.selectedSearchConfigureVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchConfigureReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchConfigureReg)
                 "
               >
                 <div
@@ -121,8 +116,7 @@
                     {{
                       row.column === "key" // 序号
                         ? index + 1
-                        : row.column === "list" &&
-                          item.hasOwnProperty("ip_address") // 终端列表
+                        : row.column === "list" && item.hasOwnProperty("ip_address") // 终端列表
                         ? "-"
                         : row.column === "ip_address" &&
                           !item.hasOwnProperty("ip_address") // IP地址
@@ -130,10 +124,7 @@
                         : item[row.column]
                     }}
                     <view-components-popover
-                      v-if="
-                        row.column === 'list' &&
-                        !item.hasOwnProperty('ip_address')
-                      "
+                      v-if="row.column === 'list' && !item.hasOwnProperty('ip_address')"
                       :url="'/terminals-groups/' + item.id + '/terminals'"
                     />
                   </span>
@@ -257,10 +248,7 @@ const getFastTerminals = () => {
 };
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   getFastTerminals();
 });
 </script>
@@ -384,10 +372,7 @@ onMounted(() => {
 
     i {
       font-size: 16px;
-    }
-
-    .el-icon:hover {
-      color: $c-theme;
+      cursor: pointer;
     }
 
     .title-search-input {
