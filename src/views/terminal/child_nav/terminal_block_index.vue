@@ -268,11 +268,8 @@ watch(
     if (newNum != oldNum) {
       form.selectStatusType = newStatus;
       form.search = newSearch;
-      handleGetOnePageData();
     }
-    if (newAll != oldAll) {
-      handleGetOnePageData();
-    }
+    handleGetOnePageData();
   },
   {
     // 设置首次进入执行方法 immediate

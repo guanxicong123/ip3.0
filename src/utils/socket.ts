@@ -9,7 +9,6 @@ let socket: any;
 let reloadInterval: any;
 let connected = false;
 let connecting = false;
-let remotePlayTaskKey: any[] = [];
 let is_login = true; //是否处于登录状态
 const baseParams = {
   company: "BL",
