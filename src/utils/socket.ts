@@ -35,6 +35,7 @@ const registerWebSocket = async () => {
       //初始化请求数据
       if (is_login) {
         initRequest();
+        getStore.useSystemStore().getPrioritySetting(); //获取系统优先级
       } else {
         login();
       }

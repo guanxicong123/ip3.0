@@ -155,7 +155,6 @@ const isRegistrationWindow = computed(() => {
   return store.is_registration_window;
 }); //是否显示注册窗口
 
-
 // 表单值
 const modelRef = reactive({
   name: localStorage.get("username") || "",
@@ -189,14 +188,14 @@ window.electronAPI.handleRegisterRefresh((event: any, value: any) => {
 // 获取注册状态
 const gitRegisterStatus = () => {
   return new Promise<void>((resolve, reject) => {
-      proxy.$http1.get("/register").then((result: any) => {
-        if (result.result === 200) {
-          registerStatus.value = result.data;
-          if (!registerStatus.value.isRegister) {
-            resolve();
-          }
+    proxy.$http1.get("/register").then((result: any) => {
+      if (result.result === 200) {
+        registerStatus.value = result.data;
+        if (!registerStatus.value.isRegister) {
+          resolve();
         }
-      });
+      }
+    });
   });
 };
 // 提交
@@ -219,7 +218,7 @@ const submit = () => {
       Platform: "PC",
       HostIP: modelRef.server_ip_address,
       ForceLogin: false,
-      server: modelRef.server_ip_address + ":51330",
+      server: modelRef.server_ip_address + ":8800",
     },
     result: 0,
     return_message: "",
@@ -235,7 +234,7 @@ onMounted(() => {
   gitRegisterStatus().then(() => {
     if (isRegistrationWindow.value) {
       window.electronAPI.send("register-window");
-      store.changeRegistrationWindow(false)
+      store.changeRegistrationWindow(false);
     }
   });
   if (socket) {

@@ -2,7 +2,7 @@
   @Author: hmf
   @CreateDate: 2022-06-18
   @FilePath: src\views\terminal\index.vue
-  @Describe: 终端状态
+  @Describe: 设备状态
 -->
 <template>
   <div class="com-index">
@@ -57,7 +57,7 @@
         </div>
         <div class="com-button">
           <span class="monitor-speaker">{{ $t("Speaker terminal") }}</span>
-          <select-monitoring-speaker />
+          <select-speaker-terminal />
         </div>
       </div>
     </div>
@@ -159,9 +159,10 @@
         <span>{{ form.volume }}</span>
       </div>
     </div>
+    <!-- 设备状态配置 -->
     <el-dialog
       v-model="set_dialog"
-      :title="$t('Terminal status configuration')"
+      :title="$t('Device status configuration')"
       width="450px"
       class="set-dialog"
     >
@@ -205,14 +206,14 @@ import { Search } from "@element-plus/icons-vue";
 import { send } from "@/utils/socket";
 
 // defineAsyncComponent 异步组件-懒加载子组件
-const selectMonitoringSpeaker = defineAsyncComponent(
-  () => import("../session/components/select_monitoring_speaker.vue")
+const selectSpeakerTerminal = defineAsyncComponent(
+  () => import("./components/select_speaker_terminal.vue")
 );
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
-const storeTerminal = getStore.useTerminalStore();
+const terminals = getStore.useTerminalsStore();
 const session = getStore.useSessionStore();
 const systemStore = getStore.useSystemStore();
 // 计算属性 computed
@@ -222,8 +223,8 @@ const basic_configs = computed(() => {
 const priorityData = computed(() => {
   return systemStore.priorityData;
 });
-const terminal_data = computed(() => {
-  return storeTerminal.terminal_data;
+const terminalsStoreOnePage = computed(() => {
+  return terminals.onePageTerminals;
 });
 const sessionsLocalKey = computed(() => {
   //当前客户端发起任务
@@ -370,9 +371,11 @@ const handleReset = () => {
 
 // 过滤出在线终端
 const cleanOnLineTerminal = () => {
-  form.speakerTerminalOptions = terminal_data.value.filter((item: { status: number }) => {
-    return item.status === 1 || item.status === 2;
-  });
+  form.speakerTerminalOptions = terminalsStoreOnePage.value.filter(
+    (item: { status: number }) => {
+      return item.status === 1 || item.status === 2;
+    }
+  );
 };
 
 // 确认终端视图模式
@@ -408,7 +411,6 @@ const confirmTerminalSet = () => {
           form.loading = false;
         }, 200);
         set_dialog.value = false;
-        storeTerminal.changeFilterStatus(true);
       }
     });
 };
@@ -450,7 +452,7 @@ const functronButtonTask = (type: number) => {
     startButton.value.status = false;
     return proxy.$message.warning(proxy.$t("Please select an idle speaker terminal"));
   }
-  const currentTableRow = JSON.parse(localStorage.get("monitoringSpeaker")) || "";
+  const currentTableRow = JSON.parse(localStorage.get("speakerTerminal")) || "";
   if (!currentTableRow) {
     startButton.value.status = false;
     return proxy.$message.error(proxy.$t("Please select an idle speaker terminal"));
@@ -490,7 +492,7 @@ const functronButtonTask = (type: number) => {
 };
 // 全区广播任务
 const regionalBroadcasting = (currentTableRow: any) => {
-  let data = terminal_data.value
+  let data = terminalsStoreOnePage.value
     .filter((item: any) => {
       return item.Status !== 0 && item.EndPointID !== currentTableRow.EndPointID;
     })
@@ -738,7 +740,7 @@ watch(
   () => [
     system_configs.value,
     basic_configs.value,
-    terminal_data.value,
+    terminalsStoreOnePage.value,
     sessionsData.value,
   ],
   (

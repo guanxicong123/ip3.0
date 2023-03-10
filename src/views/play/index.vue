@@ -58,7 +58,9 @@
               v-model="form.current_duration"
               :max="form.total_duration"
               :format-tooltip="formatTooltip"
-              @change="handleSwitchTask(playCenterData, 'progress')"
+              @change="handleChangeSliderProgressBar(playCenterData, 'progress')"
+              :show-tooltip="false"
+              @click="form.isChangeProgressBar = false"
             />
             <span class="fl">{{ formatTooltip(form.current_duration) }}</span>
             <span class="fr">{{ formatTooltip(form.total_duration) }}</span>
@@ -223,7 +225,9 @@
                 </el-table-column>
                 <el-table-column prop="priority" :label="$t('Priority')">
                   <template #default="scope">
-                    <span class="red">[{{ priorityData.get(scope.row.type) }}]</span>
+                    <span class="red">
+                      [{{ priorityData.get(typePriority.get(scope.row.type)) }}]
+                    </span>
                     {{ scope.row.priority }}
                   </template>
                 </el-table-column>
@@ -356,12 +360,12 @@ const form = reactive<any>({
   total: 0,
   volume: 0,
   sessionsData: [], // 任务数据
+  isChangeProgressBar: true, // 是否正在改变播放进度条
 });
 
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
 const priorityData = new Map();
-const playConfig = ref();
 const tableDataAll: any = ref([]);
 const selectTaskData: any = ref({}); //选中的任务数据(http)
 // 路由
@@ -415,6 +419,18 @@ const playModeIcon = new Map([
     },
   ],
 ]);
+// 将任务类型转换为对应优先级类型
+const typePriority = new Map([
+  [1, 15], //远程任务
+  [2, 13], //快捷音源-声卡采集
+  [3, 14], ////快捷音源-终端采集
+  [4, 15], //远程任务
+  [10, 15], //音乐播放
+  [11, 12], //文本播放
+  [12, 13], //声卡采集
+  [13, 14], //终端采集
+]);
+
 // 判断是否显示进度条
 const handleTaskProgress = () => {
   if (selectTaskData.value.type === 1 || selectTaskData.value.type === 10) {
@@ -662,15 +678,21 @@ const handleSwitchTask = (row: any, type: string) => {
     send(data);
   }
 };
+// 处理改变播放进度条
+const handleChangeSliderProgressBar = (row: any, type: string) => {
+  console.log(form.isChangeProgressBar);
+  handleSwitchTask(row, type),
+    setTimeout(() => {
+      form.isChangeProgressBar = true;
+    }, 1000);
+};
 const handleControlValuev = (type: string) => {
   if (type === "progress") {
     return form.current_duration.toString();
   }
   if (type === "play_mode") {
     let model = 0;
-    form.play_model === 2
-      ? (model = 0)
-      : (model = form.play_model + 1);
+    form.play_model === 2 ? (model = 0) : (model = form.play_model + 1);
     return taskPlayMode.get(model);
   }
   return "";
@@ -989,18 +1011,24 @@ watch(
   }
 );
 watch(playStatusData, (newVal) => {
-  form.current_duration = newVal.CurrentTime;
+  console.log(newVal.CurrentTime, form.isChangeProgressBar, "2");
+  if (form.isChangeProgressBar) {
+    form.current_duration = newVal.CurrentTime;
+  }
   form.total_duration = newVal.TotalTime;
   form.song_name = newVal.MusicName;
   form.play_status = newVal.PlayStatus;
 });
 watch(playSubscriptionTask, (newVal) => {
+  console.log(newVal.CurrentTime, form.isChangeProgressBar, "2");
   if (newVal?.TaskID === playCenterData.value?.TaskID) {
-    form.current_duration = newVal.CurrentTime;
+    if (form.isChangeProgressBar) {
+      form.current_duration = newVal.CurrentTime;
+    }
     form.total_duration = newVal.TotalTime;
     form.song_name = newVal.MusicName;
     form.play_status = newVal.PlayStatus;
-    form.play_model = playModeNum.get(newVal.PlayModel)
+    form.play_model = playModeNum.get(newVal.PlayModel);
   }
 });
 watch(playCenterData, (newVal, oldVal) => {
