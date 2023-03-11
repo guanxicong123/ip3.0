@@ -143,10 +143,6 @@ const requestFunction = (actionCode: string) => {
 };
 // 发起远程音乐播放任务
 const startRemotePlay = (row: any) => {
-  console.log(
-    row,
-    getStore.usePlayStore().playTaskStaging.includes(row.TaskID)
-  );
   if (
     getStore.usePlayStore().playTaskStaging.includes(row.TaskID) &&
     row.RemoteType !== "manual_alarm"

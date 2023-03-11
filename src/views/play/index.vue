@@ -651,7 +651,7 @@ const handlePlayTask = (row: any) => {
       result: 0,
       return_message: "",
     };
-    if (row.type === 11) {
+    if (row.type === 10) {
       storePlay.changePlayTaskStaging({
         key: "add",
         value: row.taskid,
