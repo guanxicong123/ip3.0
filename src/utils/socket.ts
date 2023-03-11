@@ -1,9 +1,11 @@
-import { ElMessage, ElNotification } from "element-plus";
+import { ElMessage, ElNotification, ElLoading } from "element-plus";
 import i18n from "@/utils/language";
 import router from "../router";
 
+
 const $t: any = i18n.global;
 
+let loadingInstance: any;
 let loginData: any = ""; //用于储存登录时请求信息
 let socket: any;
 let reloadInterval: any;
@@ -228,18 +230,18 @@ const handlerMsg = (msg: any) => {
       getStore.useAppStore().changeLoginStatus(false);
       socket.close();
     }
+    if (msg.actioncode === "cs2ms_net_disconnect") {
+      console.log('服务器断开连接')
+      loadingInstance = ElLoading.service({
+        text: '正在尝试重新连接逻辑服务器...',
+        background: 'rgba(0, 0, 0, 0.7)',
+      })
+      return
+    }
     return ElMessage({
       type: "error",
       message: msg.return_message,
       grouping: true,
-    });
-  }
-  if (msg.actioncode === "cs2ms_net_disconnect") {
-    return ElNotification({
-      title: "",
-      message: $t.t("Attempting to reconnect to logical server"),
-      type: "error",
-      position: "bottom-right",
     });
   }
   if (msg.actioncode === "ls2c_set_terminal_volume") {
@@ -286,6 +288,7 @@ const handlerMsg = (msg: any) => {
     case "ms2c_control_task": // 播放中心任务状态改变
       break;
     case "cs2ms_net_reconnect": // 服务器重连
+      loadingInstance?.close()
       initRequest();
       break;
     case "ms2c_stop_task":

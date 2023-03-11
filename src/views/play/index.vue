@@ -1011,7 +1011,6 @@ watch(
   }
 );
 watch(playStatusData, (newVal) => {
-  console.log(newVal.CurrentTime, form.isChangeProgressBar, "2");
   if (form.isChangeProgressBar) {
     form.current_duration = newVal.CurrentTime;
   }
@@ -1020,7 +1019,6 @@ watch(playStatusData, (newVal) => {
   form.play_status = newVal.PlayStatus;
 });
 watch(playSubscriptionTask, (newVal) => {
-  console.log(newVal.CurrentTime, form.isChangeProgressBar, "2");
   if (newVal?.TaskID === playCenterData.value?.TaskID) {
     if (form.isChangeProgressBar) {
       form.current_duration = newVal.CurrentTime;

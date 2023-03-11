@@ -347,7 +347,7 @@ watch(taskDataDetailed, (newVal: any) => {
 });
 
 const handelRowDblclick = (row: any, column: any, event: any) => {
-  console.log(row, column, event, props.playCenterData);
+  console.log(row, column, event);
 };
 
 // 切换tabs
