@@ -1096,5 +1096,7 @@
   "Content": "内容",
   "Enlarge": "放大",
   "Reduce": "缩小",
-  "Audio list": "音频列表"
+  "Audio list": "音频列表",
+  "Converting": "转换中",
+  "Conversion succeeded": "转换成功"
 }

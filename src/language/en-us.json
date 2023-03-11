@@ -1096,5 +1096,7 @@
   "Content": "Content",
   "Enlarge": "Enlarge",
   "Reduce": "Reduce",
-  "Audio list": "Audio list"
+  "Audio list": "Audio list",
+  "Converting": "Converting",
+  "Conversion succeeded": "Conversion succeeded"
 }
