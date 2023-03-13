@@ -43,14 +43,18 @@
       <el-pagination
         v-model:currentPage="form.currentPage"
         v-model:page-size="form.pageSize"
-        :page-sizes="proxy.$user?.config?.pageRule"
+        :page-sizes="userStore?.pageRule"
         layout="total, sizes, prev, pager, next, jumper"
         :total="form.total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
     </div>
-    <el-dialog v-model="show_group_info" :title="group_title" class="group-info-class">
+    <el-dialog
+      v-model="show_group_info"
+      :title="group_title"
+      class="group-info-class"
+    >
       <el-table
         ref="multipleTableRef"
         :data="form.table_data"
@@ -64,7 +68,11 @@
           width="60"
           :index="typeIndex"
         />
-        <el-table-column prop="name" :label="$t('Terminal name')" show-overflow-tooltip />
+        <el-table-column
+          prop="name"
+          :label="$t('Terminal name')"
+          show-overflow-tooltip
+        />
         <el-table-column
           prop="ip_address"
           :label="$t('Terminal IP')"
@@ -81,12 +89,13 @@ import { onBeforeRouteLeave } from "vue-router";
 import { ElTable, ElMessage } from "element-plus";
 import { GroupsService } from "@/utils/api/groups/inedx";
 
-// 全局属性
-const { proxy } = useCurrentInstance.useCurrentInstance();
-
+const user = getStore.useUserStore();
 const terminals = getStore.useTerminalsStore();
 const systemStore = getStore.useSystemStore();
 // 计算属性 computed
+const userStore = computed(() => {
+  return user.user.user;
+});
 const terminalsStoreAll = computed(() => {
   return terminals.allTerminalsObj;
 });

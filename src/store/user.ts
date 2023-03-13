@@ -8,38 +8,10 @@ export const useUserStore = defineStore({
   state: (): UserParams => {
     return {
       user: {
-        config: {
-          ipAddress: "",
-          alarm: [],
-          alarmPort: [],
-          amplifier: [],
-          power: [],
-          pageRule: [],
-          defaultCallMusic: {
-            id: 0,
-            name: "ring.mp3",
-          },
-          defaultWaitingMusic: {
-            id: 0,
-            name: "wait.mp3",
-          },
-        },
-        token: "",
-        user: {
-          id: 0,
-          name: "",
-          theme: "0",
-          priority: 0,
-          type: 0,
-          roles: [],
-          rules: [{ switch: 0 }],
-          ensembles: [],
-          home_config_json: [],
-          users_config: {
-            view_mode: 1,
-            default_timing_bells_groups_id: 0,
-          },
-        },
+        id: 0,
+        pageRule: [],
+        type: 0,
+        name: "",
       },
       defaultSchemeID: 0, // 默认打铃方案
     };

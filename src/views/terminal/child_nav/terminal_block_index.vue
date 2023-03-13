@@ -56,7 +56,10 @@
             <div class="li-bottom">
               <span>{{ $t("Code") }} : {{ item.code }}</span>
               <div class="status">
-                <div class="span" :class="terminalsBGStatusMap.get(item.status)">
+                <div
+                  class="span"
+                  :class="terminalsBGStatusMap.get(item.status)"
+                >
                   <span>{{ terminalsStatusMap.get(item.status)?.name }}</span>
                   <!-- <span v-else>{{ item.sound_source_type }}</span> -->
                 </div>
@@ -70,7 +73,7 @@
       <el-pagination
         v-model:currentPage="form.currentPage"
         v-model:page-size="form.pageSize"
-        :page-sizes="proxy.$user?.config?.pageRule"
+        :page-sizes="userStore?.pageRule"
         layout="total, sizes, prev, pager, next, jumper"
         :total="form.total"
         @size-change="handleSizeChange"
@@ -84,12 +87,13 @@
 import { onBeforeRouteLeave } from "vue-router";
 import { send } from "@/utils/socket";
 
-// 全局属性
-const { proxy } = useCurrentInstance.useCurrentInstance();
-
+const user = getStore.useUserStore();
 const terminals = getStore.useTerminalsStore();
 const systemStore = getStore.useSystemStore();
 // 计算属性 computed
+const userStore = computed(() => {
+  return user.user.user;
+});
 const basic_configs = computed(() => {
   return systemStore.basic_configs;
 });
@@ -227,8 +231,12 @@ const changeVolume = (data: any) => {
 };
 // 处理设置默认获取条件
 const handleGetDefaultCondition = () => {
-  form.layoutArrange = pageSizeStatusMap.get(basic_configs.value.ListDisplaySize)?.string;
-  form.pageSize = pageSizeStatusMap.get(basic_configs.value.ListDisplaySize)?.num;
+  form.layoutArrange = pageSizeStatusMap.get(
+    basic_configs.value.ListDisplaySize
+  )?.string;
+  form.pageSize = pageSizeStatusMap.get(
+    basic_configs.value.ListDisplaySize
+  )?.num;
 };
 
 // 监听

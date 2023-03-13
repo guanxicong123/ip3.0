@@ -24,8 +24,12 @@
             "
             clearable
             @clear="handleDefaultGet"
-            @keyup.enter="useCommonTable.handleKeyupEnter(form.search, handleDefaultGet)"
-            @change="useCommonTable.handleKeyupDelete(form.search, handleDefaultGet)"
+            @keyup.enter="
+              useCommonTable.handleKeyupEnter(form.search, handleDefaultGet)
+            "
+            @change="
+              useCommonTable.handleKeyupDelete(form.search, handleDefaultGet)
+            "
           />
           <el-button
             :icon="Search"
@@ -162,7 +166,10 @@
                   @click="handleMonitorTask(scope.row)"
                 >
                   <template #icon>
-                    <i class="iconfont icon-headset" :title="$t('Click monitor')"></i>
+                    <i
+                      class="iconfont icon-headset"
+                      :title="$t('Click monitor')"
+                    ></i>
                   </template>
                 </el-button>
                 <el-button
@@ -188,7 +195,7 @@
       <el-pagination
         v-model:currentPage="form.currentPage"
         v-model:page-size="form.pageSize"
-        :page-sizes="proxy.$user?.config?.pageRule"
+        :page-sizes="userStore?.pageRule"
         layout="total, sizes, prev, pager, next, jumper"
         :total="form.total"
         @size-change="handleSizeChange"
@@ -213,10 +220,14 @@ const selectMonitoringSpeaker = defineAsyncComponent(
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
+const user = getStore.useUserStore();
 const session = getStore.useSessionStore();
 const terminals = getStore.useTerminalsStore();
 const systemStore = getStore.useSystemStore();
 // 计算属性 computed
+const userStore = computed(() => {
+  return user.user.user;
+});
 const sessionStoreAll = computed(() => {
   return session.allSessionObj;
 });
@@ -297,7 +308,8 @@ const handleReset = () => {
 // 处理排序
 const handleSortChange = (row: { prop: any; order: string | string[] }) => {
   form.orderColumn = row.order ? row.prop : "TaskBeginTime";
-  form.orderType = !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
+  form.orderType =
+    !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
   handleDefaultGet();
 };
 // 处理XXX条/页更改
@@ -353,7 +365,8 @@ const handleStopTask = (row: any) => {
 };
 // 开启监听
 const handleMonitorTask = (row: any) => {
-  const currentTableRow = JSON.parse(localStorage.get("monitoringSpeaker")) || "";
+  const currentTableRow =
+    JSON.parse(localStorage.get("monitoringSpeaker")) || "";
   if (currentTableRow) {
     let func = () => {
       let data = {
@@ -428,10 +441,15 @@ const cellClassName = (row: any) => {
   }
 };
 // 处理监听状态的展示信息
-const handleMonitorTransform = (row: { IsMonitor: number; TaskType: number }) => {
+const handleMonitorTransform = (row: {
+  IsMonitor: number;
+  TaskType: number;
+}) => {
   switch (row.IsMonitor) {
     case 0:
-      return row.TaskType == 19 ? proxy.$t("Monitor") : proxy.$t("Not monitored");
+      return row.TaskType == 19
+        ? proxy.$t("Monitor")
+        : proxy.$t("Not monitored");
     default:
       return terminalsStoreAll.value[row.IsMonitor] && row.TaskType !== 19
         ? terminalsStoreAll.value[row.IsMonitor].EndPointName
@@ -455,6 +473,7 @@ watch(
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   handleGetOnePageData();
+  console.log(proxy);
 });
 </script>
 

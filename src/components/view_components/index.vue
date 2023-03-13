@@ -18,7 +18,10 @@
         popper-class="view-components-popover"
         @show="handleGetOnePageData"
       >
-        <div class="com-index view-components" :style="'height:' + config.height + 'px'">
+        <div
+          class="com-index view-components"
+          :style="'height:' + config.height + 'px'"
+        >
           <div class="com-head">
             <div class="com-head-content com-hc-bg">
               <div class="com-title">{{ config.tableTitle }}</div>
@@ -34,7 +37,10 @@
                   :disabled="paramsConfig.likeName == ''"
                   @click="handleDefaultGet"
                 ></el-button>
-                <el-button :disabled="paramsConfig.likeName == ''" @click="handleReset">
+                <el-button
+                  :disabled="paramsConfig.likeName == ''"
+                  @click="handleReset"
+                >
                   {{ $t("Reset") }}
                 </el-button>
               </div>
@@ -72,7 +78,7 @@
             <el-pagination
               v-model:currentPage="paramsConfig.page"
               v-model:page-size="paramsConfig.limit"
-              :page-sizes="proxy.$user?.config?.pageRule"
+              :page-sizes="userStore?.pageRule"
               layout="total, sizes, prev, pager, next, jumper"
               :total="form.total"
               @size-change="handleSizeChange"
@@ -102,12 +108,22 @@
 </template>
 
 <script lang="ts" setup>
-import { ClickOutside as vClickOutside, ElTable, ElMessage } from "element-plus";
+import {
+  ClickOutside as vClickOutside,
+  ElTable,
+  ElMessage,
+} from "element-plus";
 import { Search } from "@element-plus/icons-vue";
 import $http from "@/utils/axios/index";
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
+
+const user = getStore.useUserStore();
+// 计算属性 computed
+const userStore = computed(() => {
+  return user.user.user;
+});
 
 // 声明父组件传值
 const parentData = defineProps([
@@ -217,7 +233,8 @@ const handleReset = () => {
 // 处理排序
 const handleSortChange = (row: { prop: any; order: string | string[] }) => {
   paramsConfig.orderColumn = row.prop;
-  paramsConfig.orderType = !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
+  paramsConfig.orderType =
+    !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
   handleDefaultGet();
 };
 // 处理XXX条/页更改
@@ -235,7 +252,10 @@ const handleCurrentChange = (val: number) => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
   paramsConfig = Object.assign(
     paramsConfig,
     parentData.paramsConfig ? parentData.paramsConfig : {}

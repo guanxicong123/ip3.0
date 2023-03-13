@@ -11,7 +11,11 @@
         <div class="com-breadcrumb">
           <el-select v-model="form.selectType" @change="handleDefaultGet">
             <template v-for="item in sourceTypeOptions" :key="item.value">
-              <el-option v-if="item.value != 5" :label="item.label" :value="item.value" />
+              <el-option
+                v-if="item.value != 5"
+                :label="item.label"
+                :value="item.value"
+              />
             </template>
           </el-select>
           <el-input
@@ -19,8 +23,12 @@
             :placeholder="$t('Task name')"
             clearable
             @clear="handleDefaultGet"
-            @keyup.enter="useCommonTable.handleKeyupEnter(form.search, handleDefaultGet)"
-            @change="useCommonTable.handleKeyupDelete(form.search, handleDefaultGet)"
+            @keyup.enter="
+              useCommonTable.handleKeyupEnter(form.search, handleDefaultGet)
+            "
+            @change="
+              useCommonTable.handleKeyupDelete(form.search, handleDefaultGet)
+            "
           />
           <el-button
             :icon="Search"
@@ -77,13 +85,23 @@
           <el-table-column type="expand">
             <template #default="props">
               <div class="com-card">
-                <el-card> {{ $t("Start date") }}: {{ props.row.start_date }} </el-card>
-                <el-card> {{ $t("End date") }}: {{ props.row.end_date }} </el-card>
-                <el-card> {{ $t("Task volume") }}: {{ props.row.volume }} </el-card>
-                <el-card> {{ $t("Priority") }}: {{ props.row.priority }} </el-card>
+                <el-card>
+                  {{ $t("Start date") }}: {{ props.row.start_date }}
+                </el-card>
+                <el-card>
+                  {{ $t("End date") }}: {{ props.row.end_date }}
+                </el-card>
+                <el-card>
+                  {{ $t("Task volume") }}: {{ props.row.volume }}
+                </el-card>
+                <el-card>
+                  {{ $t("Priority") }}: {{ props.row.priority }}
+                </el-card>
                 <el-card>
                   {{ $t("Light mode") }}:
-                  {{ props.row.light ? props.row.light.name : $t("Full close") }}
+                  {{
+                    props.row.light ? props.row.light.name : $t("Full close")
+                  }}
                 </el-card>
                 <el-card>
                   {{
@@ -95,7 +113,9 @@
                   {{
                     props.row.type == 1 || props.row.type == 4
                       ? playModelMap.get(props.row.sound_source?.play_model)
-                      : soundQualityMap.get(props.row.sound_source?.sound_quality)
+                      : soundQualityMap.get(
+                          props.row.sound_source?.sound_quality
+                        )
                   }}
                 </el-card>
               </div>
@@ -108,7 +128,11 @@
             width="60"
             :index="typeIndex"
           />
-          <el-table-column prop="name" :label="$t('Task name')" show-overflow-tooltip />
+          <el-table-column
+            prop="name"
+            :label="$t('Task name')"
+            show-overflow-tooltip
+          />
           <el-table-column
             prop="execute_time"
             :label="$t('Execution time')"
@@ -152,7 +176,9 @@
               >
                 <span class="theme">
                   <el-icon class="el-icon--right"><arrow-down /></el-icon>
-                  {{ scope.row.time_type === 0 ? $t("By week") : $t("By date") }}
+                  {{
+                    scope.row.time_type === 0 ? $t("By week") : $t("By date")
+                  }}
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -199,7 +225,11 @@
               <span v-else>--</span>
             </template>
           </el-table-column>
-          <el-table-column prop="type" :label="$t('Sound type')" show-overflow-tooltip>
+          <el-table-column
+            prop="type"
+            :label="$t('Sound type')"
+            show-overflow-tooltip
+          >
             <template #default="scope">
               {{ audioSourceMap.get(scope.row.type) }}
             </template>
@@ -312,7 +342,10 @@
                 @click="handleEnableOrDisable(scope.row)"
               >
                 <template #icon>
-                  <i class="iconfont icon-enable-task" :title="$t('Enable')"></i>
+                  <i
+                    class="iconfont icon-enable-task"
+                    :title="$t('Enable')"
+                  ></i>
                 </template>
               </el-button>
               <el-button
@@ -322,7 +355,10 @@
                 @click="handleEnableOrDisable(scope.row)"
               >
                 <template #icon>
-                  <i class="iconfont icon-disable-task" :title="$t('Disable')"></i>
+                  <i
+                    class="iconfont icon-disable-task"
+                    :title="$t('Disable')"
+                  ></i>
                 </template>
               </el-button>
               <el-button link type="primary">
@@ -330,7 +366,9 @@
                   <i
                     class="iconfont icon-edit"
                     :title="$t('Edit')"
-                    @click="usePublicMethod.clickJump($useRoute.path, scope.row.id)"
+                    @click="
+                      usePublicMethod.clickJump($useRoute.path, scope.row.id)
+                    "
                   ></i>
                 </template>
               </el-button>
@@ -353,7 +391,7 @@
       <el-pagination
         v-model:currentPage="form.currentPage"
         v-model:page-size="form.pageSize"
-        :page-sizes="proxy.$user?.config?.pageRule"
+        :page-sizes="userStore?.pageRule"
         layout="total, sizes, prev, pager, next, jumper"
         :total="form.total"
         @size-change="handleSizeChange"
@@ -391,7 +429,12 @@ interface User {
   repeat_weeks: number;
 }
 
+const user = getStore.useUserStore();
 const systemStore = getStore.useSystemStore();
+// 计算属性 computed
+const userStore = computed(() => {
+  return user.user.user;
+});
 const systemPageSize = computed(() => {
   return systemStore.pageSize?.Timer_PageSize;
 });
@@ -471,7 +514,8 @@ const handleReset = () => {
 // 处理排序
 const handleSortChange = (row: { prop: any; order: string | string[] }) => {
   form.orderColumn = row.prop;
-  form.orderType = !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
+  form.orderType =
+    !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
   handleDefaultGet();
 };
 // 处理XXX条/页更改
@@ -554,7 +598,9 @@ const handleEnableOrDisable = (row: any) => {
         ElMessage({
           type: "success",
           message:
-            status === 1 ? proxy.$t("Enabled succeeded") : proxy.$t("Disable succeeded"),
+            status === 1
+              ? proxy.$t("Enabled succeeded")
+              : proxy.$t("Disable succeeded"),
           grouping: true,
         });
       } else {

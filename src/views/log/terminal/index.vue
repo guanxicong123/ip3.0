@@ -25,7 +25,11 @@
             width="60"
             :index="typeIndex"
           />
-          <el-table-column prop="time" :label="$t('Time')" show-overflow-tooltip />
+          <el-table-column
+            prop="time"
+            :label="$t('Time')"
+            show-overflow-tooltip
+          />
           <el-table-column
             prop="terminal.name"
             :label="$t('Terminal name')"
@@ -51,8 +55,16 @@
             show-overflow-tooltip
             :formatter="formatterStatus"
           />
-          <el-table-column prop="remarks" :label="$t('Remarks')" show-overflow-tooltip />
-          <el-table-column prop="level" :label="$t('Log level')" show-overflow-tooltip>
+          <el-table-column
+            prop="remarks"
+            :label="$t('Remarks')"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="level"
+            :label="$t('Log level')"
+            show-overflow-tooltip
+          >
             <template #default="scope">
               {{ formatterLevel(scope.row) }}
             </template>
@@ -70,7 +82,11 @@
               ></i>
             </template>
           </el-table-column>
-          <el-table-column type="selection" width="44" v-if="userStore.type == 0" />
+          <el-table-column
+            type="selection"
+            width="44"
+            v-if="userStore.type == 0"
+          />
         </el-table>
       </div>
     </div>
@@ -78,7 +94,7 @@
       <el-pagination
         v-model:currentPage="form.currentPage"
         v-model:page-size="form.pageSize"
-        :page-sizes="proxy.$user?.config?.pageRule"
+        :page-sizes="userStore?.pageRule"
         layout="total, sizes, prev, pager, next, jumper"
         :total="form.total"
         @size-change="handleSizeChange"

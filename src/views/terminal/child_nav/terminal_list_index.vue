@@ -124,7 +124,9 @@
               >
                 <template #default="scope">
                   {{
-                    scope.row.TaskName?.length > 0 ? scope.row.TaskName.toString() : "-"
+                    scope.row.TaskName?.length > 0
+                      ? scope.row.TaskName.toString()
+                      : "-"
                   }}
                 </template>
               </el-table-column>
@@ -135,7 +137,7 @@
           <el-pagination
             v-model:currentPage="form.currentPage"
             v-model:page-size="form.pageSize"
-            :page-sizes="proxy.$user?.config?.pageRule"
+            :page-sizes="userStore?.pageRule"
             layout="total, sizes, prev, pager, next, jumper"
             :total="form.total"
             @size-change="handleSizeChange"
@@ -154,9 +156,13 @@ import { GroupsService } from "@/utils/api/groups/inedx";
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
+const user = getStore.useUserStore();
 const terminals = getStore.useTerminalsStore();
 const systemStore = getStore.useSystemStore();
 // 计算属性 computed
+const userStore = computed(() => {
+  return user.user.user;
+});
 const terminalsStoreAll = computed(() => {
   return terminals.allTerminalsObj;
 });
@@ -241,7 +247,10 @@ const handleGetOnePageData = async () => {
   terminals.setTerminalsServersID(form.selectRelayType);
   terminals.setTerminalsStatus(form.selectStatusType);
   terminals.setTerminalsSort(form.orderType, form.orderColumn);
-  terminals.setTerminalsFilterGroups(form.current_group > 0, form.groupOfAllTerminalsIDS);
+  terminals.setTerminalsFilterGroups(
+    form.current_group > 0,
+    form.groupOfAllTerminalsIDS
+  );
   terminals.setTerminalsPage(form.currentPage, form.pageSize);
   terminals.setFilterTerminalsArray();
   terminals.setFilterTerminalsArraySort();
@@ -263,7 +272,8 @@ const handleDefaultGet = () => {
 // 处理排序
 const handleSortChange = (row: { prop: any; order: string | string[] }) => {
   form.orderColumn = row.order ? row.prop : "Status";
-  form.orderType = !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
+  form.orderType =
+    !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
   handleDefaultGet();
 };
 // 处理XXX条/页更改
@@ -324,7 +334,10 @@ watch(
     terminalsStoreStatus.value,
     equipmentListChangeNum.value,
   ],
-  ([newAll, newSearch, newStatus, newNum], [oldAll, oldSearch, oldStatus, oldNum]) => {
+  (
+    [newAll, newSearch, newStatus, newNum],
+    [oldAll, oldSearch, oldStatus, oldNum]
+  ) => {
     if (newNum != oldNum) {
       form.selectStatusType = newStatus;
       form.search = newSearch;
