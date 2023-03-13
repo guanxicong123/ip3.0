@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/Vue-3.2.13-brightgreen.svg" />
+  <img src="https://img.shields.io/badge/Vue-3.2.47-brightgreen.svg" />
   <img src="https://img.shields.io/badge/Pinia-2.0.14-yellow.svg" />
   <img src="https://img.shields.io/badge/Electron-17.4.7-brightgreen.svg" />
-  <img src="https://img.shields.io/badge/TypeScript-4.5.5-blue.svg" />
+  <img src="https://img.shields.io/badge/TypeScript-4.7.4-blue.svg" />
   <img src="https://img.shields.io/badge/Webpack-5.54.0-green.svg" />
   <img src="https://img.shields.io/badge/Element Plus-2.3.0-blue.svg" />
   <img src="https://img.shields.io/badge/Author-HuangMaoFeng-purple.svg" />
