@@ -50,6 +50,7 @@
             :title="$t('Batch deletion')"
             :class="{ 'icon-disabled': form.multipleSelection.length == 0 }"
             @click="handleDelete(form.activeName)"
+            v-if="userStore.type == 0"
           ></i>
           <!-- <el-button type="primary" plain @click="clearAllLog(form.activeName)">
             {{ $t("Clear log") }}
@@ -264,6 +265,12 @@ const exportLog = defineAsyncComponent(() => import("./components/export_log.vue
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
+
+const user = getStore.useUserStore();
+// 计算属性 computed
+const userStore = computed(() => {
+  return user.user.user;
+});
 
 // refs
 const systemRef = ref();

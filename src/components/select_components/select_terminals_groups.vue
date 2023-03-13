@@ -880,7 +880,10 @@ const handleAssemblyDataStructureTerminals = (data: any[]) => {
       item.with_groups_ids.push(0);
     }
     // 当含有八分区数据时
-    if (Object.prototype.hasOwnProperty.call(item.other_config, "amplifier")) {
+    if (
+      item.other_config &&
+      Object.prototype.hasOwnProperty.call(item.other_config, "amplifier")
+    ) {
       const checkedCount = item.other_config.amplifier.length;
       item[config.amplifierColumnName] = item.other_config.amplifier;
       item.checkAll_amplifier = checkedCount == config.amplifierValue.length;

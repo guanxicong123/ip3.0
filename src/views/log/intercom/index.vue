@@ -62,7 +62,11 @@
               {{ formatterLevel(scope.row) }}
             </template>
           </el-table-column>
-          <el-table-column :label="$t('Operation')" width="120">
+          <el-table-column
+            :label="$t('Operation')"
+            width="120"
+            v-if="userStore.type == 0"
+          >
             <template #default="scope">
               <i
                 class="iconfont icon-delete"
@@ -71,7 +75,7 @@
               ></i>
             </template>
           </el-table-column>
-          <el-table-column type="selection" width="44" />
+          <el-table-column type="selection" width="44" v-if="userStore.type == 0" />
         </el-table>
       </div>
     </div>
@@ -105,7 +109,12 @@ interface User {
   level: number;
 }
 
+const user = getStore.useUserStore();
 const systemStore = getStore.useSystemStore();
+// 计算属性 computed
+const userStore = computed(() => {
+  return user.user.user;
+});
 const systemPageSize = computed(() => {
   return systemStore.pageSize?.Log_PageSize;
 });
