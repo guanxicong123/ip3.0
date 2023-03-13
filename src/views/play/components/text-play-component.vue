@@ -55,7 +55,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :xs="80" :sm="80" :md="80" :lg="80" :xl="80" v-show="!ruleForm.is_txt">
+          <!-- <el-col :xs="80" :sm="80" :md="80" :lg="80" :xl="80" v-show="!ruleForm.is_txt">
             <el-form-item>
               <el-checkbox
                 v-model="ruleForm.enabledplayfun"
@@ -76,7 +76,7 @@
                 />
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col
             :xs="props.adaption.xs"
             :sm="props.adaption.sm"

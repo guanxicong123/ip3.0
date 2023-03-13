@@ -54,11 +54,11 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-icon>
+        <!-- <el-icon>
           <template #default>
             <span class="iconfont icon-skin"></span>
           </template>
-        </el-icon>
+        </el-icon> -->
         <el-icon @click="handleMinimize">
           <template #default>
             <span class="iconfont icon-minimize"></span>

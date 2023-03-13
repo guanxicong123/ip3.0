@@ -110,7 +110,7 @@
                     </el-tooltip>
                   </el-form-item>
                 </el-col>
-                <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <!-- <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                   <el-form-item
                     :label="$t('Light configuration')"
                     prop="terminals_light_id"
@@ -142,7 +142,7 @@
                       />
                     </el-select>
                   </el-form-item>
-                </el-col>
+                </el-col> -->
                 <el-col
                   :xs="12"
                   :sm="8"
@@ -393,7 +393,7 @@
 
 <script lang="ts" setup>
 import type { FormInstance } from "element-plus";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import usePublicMethod from "@/utils/global/index";
 import { ValidatorService } from "@/utils/api/validator/index";
 import { TasksService } from "@/utils/api/task/index";
