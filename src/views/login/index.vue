@@ -13,7 +13,7 @@
             <span class="iconfont icon-minimize"></span>
           </template>
         </el-icon>
-        <el-icon>
+        <el-icon @click="is_port = !is_port">
           <template #default>
             <span class="iconfont icon-set-up"></span>
           </template>
@@ -97,15 +97,30 @@
         <el-checkbox v-model="is_checked" :label="$t('Remember password')" />
       </div>
       <div class="login-from-server">
-        <el-input
-          v-model="modelRef.server_ip_address"
-          :placeholder="$t('Server address')"
-          :disabled="isLogin"
-        >
-          <template #prefix>
-            <i class="iconfont icon-the-server"></i>
-          </template>
-        </el-input>
+        <div class="f-l">
+          <el-input
+            v-model="modelRef.server_ip_address"
+            :placeholder="$t('Server address')"
+            :disabled="isLogin"
+          >
+            <template #prefix>
+              <i class="iconfont icon-the-server"></i>
+            </template>
+          </el-input>
+        </div>
+        <template v-if="is_port">
+          :
+          <div class="f-r">
+            <el-input
+              v-model="modelRef.port"
+              :placeholder="$t('Port')"
+              :disabled="isLogin"
+              maxlength="5"
+              @change="handleProtValidator"
+            >
+            </el-input>
+          </div>
+        </template>
       </div>
     </div>
     <div class="broadcast-login-register">
@@ -160,10 +175,12 @@ const modelRef = reactive({
   name: localStorage.get("username") || "",
   password: "",
   server_ip_address: localStorage.get("serverIP") || "",
+  port: localStorage.get("userPort") || "8800",
 });
 // 记住密码
 const is_checked = ref(false);
 const registerStatus: any = ref({});
+const is_port = ref(false);
 
 watch(
   () => modelRef.name,
@@ -172,7 +189,17 @@ watch(
     is_checked.value = false;
   }
 );
-
+// 处理改变端口验证
+const handleProtValidator = () => {
+  modelRef.port = useRegex.replaceEmojiSpaces(modelRef.port).replace(/\b(0+)/gi, "");
+  if (Number(modelRef.port) <= 0) {
+    modelRef.port = "1";
+  }
+  if (Number(modelRef.port) > 65535) {
+    modelRef.port = "65535";
+  }
+  localStorage.set("userPort", modelRef.port);
+};
 // 隐藏
 const handleMinimize = () => {
   window.electronAPI.send("minimize");
@@ -218,7 +245,7 @@ const submit = () => {
       Platform: "PC",
       HostIP: modelRef.server_ip_address,
       ForceLogin: false,
-      server: modelRef.server_ip_address + ":8800",
+      server: modelRef.server_ip_address + ":" + modelRef.port,
     },
     result: 0,
     return_message: "",
@@ -383,6 +410,25 @@ onBeforeUnmount(() => {
 
     .icon-the-server {
       font-size: 12px;
+    }
+    .login-from-server {
+      display: flex;
+      width: 240px;
+      margin: 8px auto 0;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      .el-input {
+        padding-top: 0;
+        width: 100%;
+      }
+      .f-l {
+        flex: 1;
+        min-width: 70%;
+      }
+      .f-r {
+        display: flex;
+      }
     }
   }
 
