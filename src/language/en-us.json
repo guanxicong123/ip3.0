@@ -649,7 +649,7 @@
   "Dongle": "Dongle",
   "Dongle prompt description": "The dongle can only be successfully registered on the computer where the server is installed",
   "Machine code": "Machine code",
-  "Read the current registration code": "Read the current registration code",
+  "Read the current machine code": "Read the current machine code",
   "System registration": "System registration",
   "Hongmeng (Android) registration": "Hongmeng (Android) registration",
   "IOS registration": "IOS registration",
@@ -1098,5 +1098,10 @@
   "Reduce": "Reduce",
   "Audio list": "Audio list",
   "Converting": "Converting",
-  "Conversion succeeded": "Conversion succeeded"
+  "Conversion succeeded": "Conversion succeeded",
+  "Terminal short-circuit output frequency": "Terminal short-circuit output frequency",
+  "Frequency": "Frequency",
+  "Lasts": "Lasts",
+  "Times/second": "Times/second",
+  "Short circuit output prompt": "0 means follow the task time"
 }
