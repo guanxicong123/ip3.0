@@ -62,7 +62,11 @@
                   v-for="item in form.folderData"
                   :key="item.id"
                   @click.stop="handleClickFolder(item)"
-                  :class="form.currentFolder.id == item.id ? 'theme com-select-bg' : ''"
+                  :class="
+                    form.currentFolder.id == item.id
+                      ? 'theme com-select-bg'
+                      : ''
+                  "
                 >
                   <div class="nav-one">
                     <i class="iconfont icon-folder"></i>
@@ -87,7 +91,9 @@
                       <i
                         class="iconfont icon-edit"
                         :title="$t('Edit')"
-                        v-if="item.id > 2 && userStore?.user.id == item.users_id"
+                        v-if="
+                          item.id > 2 && userStore?.user.id == item.users_id
+                        "
                         @click.stop="handleEdit(item)"
                       ></i>
                       <i
@@ -114,7 +120,10 @@
                     </span>
                   </div>
                   <el-tag v-if="item.id > 2">
-                    <i :title="$t('Create user')" class="iconfont icon-gray-user"></i>
+                    <i
+                      :title="$t('Create user')"
+                      class="iconfont icon-gray-user"
+                    ></i>
                     {{ item.user?.name }}
                   </el-tag>
                 </li>
@@ -145,7 +154,12 @@
                 @keyup.enter="
                   useCommonTable.handleKeyupEnter(form.search, handleDefaultGet)
                 "
-                @change="useCommonTable.handleKeyupDelete(form.search, handleDefaultGet)"
+                @change="
+                  useCommonTable.handleKeyupDelete(
+                    form.search,
+                    handleDefaultGet
+                  )
+                "
               />
               <el-button
                 :icon="Search"
@@ -160,7 +174,7 @@
               <i
                 class="iconfont icon-refresh"
                 :title="$t('Refresh')"
-                @click="handleGetOnePageData"
+                @click="handleGetOnePageData(false)"
               ></i>
               <i
                 class="iconfont icon-upload"
@@ -236,7 +250,10 @@
                     @click="handleDownloadOneFile(scope.row)"
                   >
                     <template #icon>
-                      <i class="iconfont icon-download" :title="$t('Download')"></i>
+                      <i
+                        class="iconfont icon-download"
+                        :title="$t('Download')"
+                      ></i>
                     </template>
                   </el-button>
                   <el-button
@@ -397,7 +414,7 @@ const typeIndex = (index: number) => {
   return index + (form.currentPage - 1) * form.pageSize + 1;
 };
 // 处理获取一页数据
-const handleGetOnePageData = async () => {
+const handleGetOnePageData = async (isTrue?: boolean) => {
   form.loading = true;
   await MeidaService.getOnePageMeida({
     likeName: form.search,
@@ -414,7 +431,7 @@ const handleGetOnePageData = async () => {
         form.data = result.data.data;
         form.total = result.data.total;
         // 处理其他地方删除文件夹内的曲目时，更新展示文件夹内的歌曲数量
-        if (form.currentFolder?.medias_count != form.total) {
+        if (isTrue && form.currentFolder?.medias_count != form.total) {
           form.folderData.some((item: { id: number; medias_count: number }) => {
             if (item.id == form.currentFolder?.id) {
               form.folderData[0].medias_count -= item.medias_count;
@@ -452,7 +469,8 @@ const handleReset = () => {
 // 处理排序
 const handleSortChange = (row: { prop: any; order: string | string[] }) => {
   form.orderColumn = row.prop;
-  form.orderType = !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
+  form.orderType =
+    !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
   handleDefaultGet();
 };
 // 处理XXX条/页更改
@@ -499,15 +517,17 @@ const handleDelete = (type: string, row: any) => {
             if (form.data.length <= ids.length && form.currentPage > 1) {
               form.currentPage--;
             }
-            handleGetOnePageData();
+            handleGetOnePageData(true);
             if (form.currentFolder.id === 0) {
               handleGetAllBellsGroups();
             } else {
-              form.folderData.some((item: { id: number; medias_count: number }) => {
-                if (item.id == form.currentFolder.id) {
-                  return (item.medias_count -= ids.length);
+              form.folderData.some(
+                (item: { id: number; medias_count: number }) => {
+                  if (item.id == form.currentFolder.id) {
+                    return (item.medias_count -= ids.length);
+                  }
                 }
-              });
+              );
               form.folderData[0].medias_count -= ids.length;
               form.allSongsTotal -= ids.length;
             }
@@ -548,7 +568,7 @@ const handleDialogVisible = (value: boolean) => {
 const handleSuccessCallback = (data: any) => {
   handleGetAllBellsGroups();
   // 更新当前选中的文件夹展示数据
-  if (data.id == form.currentFolder.id) {
+  if (data?.id == form.currentFolder.id) {
     form.currentFolder.name = data.name;
     localStorage.set("folder", data);
   }
@@ -611,7 +631,10 @@ const handleDownloadOneFile = (item: { id: number; name: string }) => {
   MeidaService.getDownloadOneMeida(item.id)
     .then((result) => {
       form.downloading = false;
-      const isHasURL = Object.prototype.hasOwnProperty.call(result?.data, "url");
+      const isHasURL = Object.prototype.hasOwnProperty.call(
+        result?.data,
+        "url"
+      );
       if (isHasURL) {
         const serverIP = localStorage.get("serverIP");
         const url = "http://" + serverIP + ":81" + result.data.url;
@@ -647,7 +670,10 @@ const handlePackageDownloadFile = () => {
   })
     .then((result) => {
       form.downloading = false;
-      const isHasURL = Object.prototype.hasOwnProperty.call(result?.data, "url");
+      const isHasURL = Object.prototype.hasOwnProperty.call(
+        result?.data,
+        "url"
+      );
       if (isHasURL) {
         const serverIP = localStorage.get("serverIP");
         const url = "http://" + serverIP + ":81" + result.data.url;

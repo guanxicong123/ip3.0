@@ -5,7 +5,10 @@
   @Describe: 上传管理器
 -->
 <template>
-  <div class="com-upload-manager" :class="{ 'is-minimize': uploadMinimizeStore }">
+  <div
+    class="com-upload-manager"
+    :class="{ 'is-minimize': uploadMinimizeStore }"
+  >
     <div class="upload-manager">
       <div
         class="upload-status"
@@ -20,7 +23,9 @@
           </span>
         </div>
         <div class="right">
-          <span class="green"> {{ $t("Success") }} : {{ form.successFiles }} </span>
+          <span class="green">
+            {{ $t("Success") }} : {{ form.successFiles }}
+          </span>
           <span class="red"> {{ $t("Fail") }} : {{ form.errorFiles }} </span>
         </div>
       </div>
@@ -187,13 +192,16 @@ const handleClick = (item: any) => {
     ":81/api/v29+/medias/upload/" +
     form.currentSelected.id;
   // 区分开发环境和生产环境的上传路径
-  form.url = process.env.NODE_ENV === "development" ? developmentUrl : productionUrl;
-  form.showFilesInfo = form.files.filter((row: { postAction: string | string[] }) => {
-    let folderId = row.postAction.slice(row.postAction.lastIndexOf("/") + 1);
-    if (folderId == item.id) {
-      return true;
+  form.url =
+    process.env.NODE_ENV === "development" ? developmentUrl : productionUrl;
+  form.showFilesInfo = form.files.filter(
+    (row: { postAction: string | string[] }) => {
+      let folderId = row.postAction.slice(row.postAction.lastIndexOf("/") + 1);
+      if (folderId == item.id) {
+        return true;
+      }
     }
-  });
+  );
 };
 // 处理关闭弹窗
 const handleClose = () => {
@@ -270,11 +278,16 @@ const inputFilter = (
       form.isFileLarge = true;
     }
     // 去掉重名文件
-    form.files.forEach((file: { name: string | undefined; postAction: string }) => {
-      if (file.postAction === newFile.postAction && file.name === newFile.name) {
-        form.isDuplicateName = true;
+    form.files.forEach(
+      (file: { name: string | undefined; postAction: string }) => {
+        if (
+          file.postAction === newFile.postAction &&
+          file.name === newFile.name
+        ) {
+          form.isDuplicateName = true;
+        }
       }
-    });
+    );
     // 过滤不符合要求的文件（大于500MB和非 form.accept 包含的格式）
     if (form.isFileLarge || form.accept.split(",").indexOf(newFile.type) < 0) {
       ElMessage({
@@ -297,7 +310,10 @@ const inputFilter = (
     }
     // Filter system files or hide files
     // 过滤系统文件 和隐藏文件
-    if (newFile.name && /(\/|^)(Thumbs\.db|desktop\.ini|\..+)$/.test(newFile.name)) {
+    if (
+      newFile.name &&
+      /(\/|^)(Thumbs\.db|desktop\.ini|\..+)$/.test(newFile.name)
+    ) {
       return prevent();
     }
     // Filter php html js file
@@ -316,27 +332,12 @@ const inputFile = (
   if (newFile && !oldFile) {
     // add
     console.log("add", newFile);
+    handleUploadFilesList();
   }
   if (newFile && oldFile) {
     // update
     console.log("update", newFile);
-    if (form.files.length) {
-      /* 如果之前该文件夹有东西, 那么就更新它 */
-      const newFile = form.files.filter((item: { postAction: string | string[] }) => {
-        let folderId = item.postAction.slice(item.postAction.lastIndexOf("/") + 1);
-        if (folderId == form.currentSelected.id) {
-          return true;
-        }
-      });
-      if (form.files.length) {
-        form.showFilesInfo = newFile;
-      } else {
-        /* 否则这个文件夹之前没有东西, 那么就添加新的 */
-        form.showFilesInfo = form.files;
-      }
-    } else {
-      form.showFilesInfo = form.files;
-    }
+    handleUploadFilesList();
     // 进度状态
     handleInitializationParameters();
     if (form.files.length) {
@@ -359,11 +360,9 @@ const inputFile = (
     if (Number.isNaN(form.totalProgress)) {
       form.totalProgress = 0;
     }
+    const total = form.errorFiles + form.successFiles;
     // 是否上传完成
-    if (
-      form.errorFiles + form.successFiles == form.showFilesInfo.length &&
-      form.totalProgress > 0
-    ) {
+    if (total == form.showFilesInfo.length && form.totalProgress > 0) {
       upload.updateUploadCompleted(true);
     }
   }
@@ -383,7 +382,10 @@ const inputFile = (
     console.log("remove", oldFile);
   }
   // 自动上传
-  if (Boolean(newFile) !== Boolean(oldFile) || oldFile?.error !== newFile?.error) {
+  if (
+    Boolean(newFile) !== Boolean(oldFile) ||
+    oldFile?.error !== newFile?.error
+  ) {
     if (newFile !== undefined && !newFile.md5_hash) {
       try {
         const size = newFile.file?.size || 0;
@@ -397,7 +399,9 @@ const inputFile = (
         let md5Next = () => {
           let start = currentChunk * chunkSize,
             end = start + chunkSize >= size ? size : start + chunkSize;
-          fileReader.readAsBinaryString(blobSlice.call(newFile.file, start, end));
+          fileReader.readAsBinaryString(
+            blobSlice.call(newFile.file, start, end)
+          );
         };
         fileReader.onload = (e: any) => {
           spark.appendAsciiStr(e.target?.result);
@@ -433,7 +437,8 @@ const inputFile = (
                 if (result.data == true) {
                   ElMessage({
                     type: "error",
-                    message: newFile.name + "-" + proxy.$t("File already exist"),
+                    message:
+                      newFile.name + "-" + proxy.$t("File already exist"),
                     grouping: true,
                   });
                   handleRemoveFiles(newFile);
@@ -464,11 +469,42 @@ const autoUpload = () => {
     uploadRef.value.active = true;
   }
 };
+// 处理更新文件列表数据
+const handleUploadFilesList = () => {
+  if (form.files.length) {
+    /* 如果之前该文件夹有东西, 那么就更新它 */
+    const newFile = form.files.filter(
+      (item: { postAction: string | string[] }) => {
+        let folderId = item.postAction.slice(
+          item.postAction.lastIndexOf("/") + 1
+        );
+        if (folderId == form.currentSelected.id) {
+          return true;
+        }
+      }
+    );
+    if (form.files.length) {
+      form.showFilesInfo = newFile;
+    } else {
+      /* 否则这个文件夹之前没有东西, 那么就添加新的 */
+      form.showFilesInfo = form.files;
+    }
+  } else {
+    form.showFilesInfo = form.files;
+  }
+};
 
 // 监听变化
 watch(
-  () => [uploadGroupStore.value, uploadSelectedStore.value, uploadShowManagerStore.value],
-  ([newGroup, newSelected, newShowManager], [oldGroup, oldSelected, oldShowManager]) => {
+  () => [
+    uploadGroupStore.value,
+    uploadSelectedStore.value,
+    uploadShowManagerStore.value,
+  ],
+  (
+    [newGroup, newSelected, newShowManager],
+    [oldGroup, oldSelected, oldShowManager]
+  ) => {
     if (newGroup != oldGroup) {
       form.groupData = newGroup;
     }

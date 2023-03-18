@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "34639305",
+      "name": "窗口缩小",
+      "font_class": "reduce",
+      "unicode": "e7c4",
+      "unicode_decimal": 59332
+    },
+    {
       "icon_id": "31543512",
       "name": "Check",
       "font_class": "Check",
