@@ -364,6 +364,13 @@ const inputFile = (
     // 是否上传完成
     if (total == form.showFilesInfo.length && form.totalProgress > 0) {
       upload.updateUploadCompleted(true);
+      MeidaService.getUploadNotifyWs(form.currentSelected.id)
+        .then((result) => {
+          console.log(result, "success");
+        })
+        .catch((error) => {
+          console.log(error, "error");
+        });
     }
   }
   if (!newFile && oldFile) {

@@ -65,6 +65,13 @@ export class MeidaService {
     });
   }
 
+  static async getUploadNotifyWs(id: number): Promise<any> {
+    return $http("/medias/upload-notifyWs/" + id, {
+      method: "get",
+      responseType: "json",
+    });
+  }
+
   // 往下都是媒体文件夹
   static async getAllMeidaGroup(params: any): Promise<any> {
     return $http("/medias-groups/all", {
