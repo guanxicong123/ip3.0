@@ -57,7 +57,6 @@
 </template>
 
 <script lang="ts" setup>
-
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
@@ -79,19 +78,20 @@ const gitRegisterStatus = () => {
 // 提交
 const submit = () => {
   window.electronAPI.send("register-success");
-  proxy.$http1.post("/register", {
-    code: code.value,
-  })
-  .then((result: any) => {
-    if (result.result === 200) {
-      window.electronAPI.send("register-success");
-    }
-  })
-  .then((result: any) => {
-    if (result.result === 200) {
-      close();
-    }
-  });
+  proxy.$http1
+    .post("/register", {
+      code: code.value,
+    })
+    .then((result: any) => {
+      if (result.result === 200) {
+        window.electronAPI.send("register-success");
+      }
+    })
+    .then((result: any) => {
+      if (result.result === 200) {
+        close();
+      }
+    });
 };
 // 关闭
 const close = () => {
@@ -108,13 +108,15 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .broadcast-register {
-  height: 100%;
-  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.5),
-    0px 2px 14px 0px rgba(120, 120, 120, 0.5);
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  margin: 2px;
   border-radius: 4px;
   background-color: $c-fff;
   text-align: center;
   // -webkit-app-region: drag;
+  box-shadow: 1px 2px 4px 0px rgba(0, 0, 0, 0.05),
+    1px 2px 7px 0px rgba(120, 120, 120, 0.1);
   .el-icon {
     position: absolute;
     top: 12px;

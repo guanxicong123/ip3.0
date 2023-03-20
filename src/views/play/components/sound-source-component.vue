@@ -101,6 +101,7 @@
               v-model="ruleForm.life_time"
               format="HH:mm:ss"
               value-format="HH:mm:ss"
+              :clearable="false"
               :disabled="ruleForm.radioVal !== 1 || !props.isEdit"
             />
           </el-form-item>

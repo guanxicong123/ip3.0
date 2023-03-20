@@ -27,11 +27,18 @@
           >
             <div class="li-top">
               <span class="i-span">
-                <span
+                <i
+                  class="iconfont"
+                  :class="terminalsStatusMap.get(4)?.class"
+                  :title="terminalsStatusMap.get(4)?.name"
+                  v-if="item.Disable"
+                ></i>
+                <i
+                  v-else
                   class="iconfont"
                   :class="terminalsStatusMap.get(item.status)?.class"
                   :title="terminalsStatusMap.get(item.status)?.name"
-                ></span>
+                ></i>
               </span>
               <el-popover
                 placement="left"
@@ -58,9 +65,19 @@
               <div class="status">
                 <div
                   class="span"
-                  :class="terminalsBGStatusMap.get(item.status)"
+                  :class="
+                    item.Disable
+                      ? terminalsBGStatusMap.get(4)
+                      : terminalsBGStatusMap.get(item.status)
+                  "
                 >
-                  <span>{{ terminalsStatusMap.get(item.status)?.name }}</span>
+                  <span>
+                    {{
+                      item.Disable
+                        ? terminalsStatusMap.get(4)?.name
+                        : terminalsStatusMap.get(item.status)?.name
+                    }}
+                  </span>
                   <!-- <span v-else>{{ item.sound_source_type }}</span> -->
                 </div>
               </div>
@@ -231,12 +248,8 @@ const changeVolume = (data: any) => {
 };
 // 处理设置默认获取条件
 const handleGetDefaultCondition = () => {
-  form.layoutArrange = pageSizeStatusMap.get(
-    basic_configs.value.ListDisplaySize
-  )?.string;
-  form.pageSize = pageSizeStatusMap.get(
-    basic_configs.value.ListDisplaySize
-  )?.num;
+  form.layoutArrange = pageSizeStatusMap.get(basic_configs.value.ListDisplaySize)?.string;
+  form.pageSize = pageSizeStatusMap.get(basic_configs.value.ListDisplaySize)?.num;
 };
 
 // 监听

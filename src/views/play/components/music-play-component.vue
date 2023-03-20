@@ -69,6 +69,7 @@
               v-model="ruleForm.life_time"
               format="HH:mm:ss"
               value-format="HH:mm:ss"
+              :clearable="false"
               :disabled="ruleForm.type !== 1"
             />
           </el-form-item>

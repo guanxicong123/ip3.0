@@ -138,8 +138,10 @@ onBeforeUnmount(() => {
   }
 
   .el-container {
+    margin: 2px 2px 2px 0;
     border: 1px solid #f5f5f5;
     border-left: none;
+    box-shadow: 5px 5px 20px -4px rgb(0 0 0 / 10%), 5px -5px 20px -4px rgb(0 0 0 / 10%);
   }
 }
 </style>

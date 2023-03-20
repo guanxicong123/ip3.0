@@ -649,7 +649,7 @@
   "Dongle": "加密狗",
   "Dongle prompt description": "加密狗需在安装服务器的电脑中才可注册成功",
   "Machine code": "机器码",
-  "Read the current registration code": "读取当前注册码",
+  "Read the current machine code": "读取当前机器码",
   "System registration": "系统注册",
   "Hongmeng (Android) registration": "鸿蒙（安卓）注册",
   "IOS registration": "IOS注册",
@@ -1098,5 +1098,10 @@
   "Reduce": "缩小",
   "Audio list": "音频列表",
   "Converting": "转换中",
-  "Conversion succeeded": "转换成功"
+  "Conversion succeeded": "转换成功",
+  "Terminal short-circuit output frequency": "终端短路输出频率",
+  "Frequency": "频率",
+  "Lasts": "持续",
+  "Times/second": "次/秒",
+  "Short circuit output prompt": "0表示跟随任务时间"
 }

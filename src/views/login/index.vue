@@ -290,10 +290,14 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 .broadcast-login {
-  width: 100%;
-  height: 100%;
+  width: calc(100% - 4px);
+  height: calc(100% - 2px);
+  margin: 0 2px 2px 2px;
   background-color: $c-fff;
   border-radius: 8px;
+  box-sizing: border-box;
+  box-shadow: 1px 12px 48px 16px rgb(0 0 0 / 5%), 1px 9px 28px 0 rgb(0 0 0 / 6%),
+    1px 6px 6px -8px rgb(0 0 0 / 10%);
 
   .broadcast-login-header {
     position: relative;
