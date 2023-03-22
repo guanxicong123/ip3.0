@@ -5,10 +5,7 @@
   @Describe: 上传管理器
 -->
 <template>
-  <div
-    class="com-upload-manager"
-    :class="{ 'is-minimize': uploadMinimizeStore }"
-  >
+  <div class="com-upload-manager" :class="{ 'is-minimize': uploadMinimizeStore }">
     <div class="upload-manager">
       <div
         class="upload-status"
@@ -23,9 +20,7 @@
           </span>
         </div>
         <div class="right">
-          <span class="green">
-            {{ $t("Success") }} : {{ form.successFiles }}
-          </span>
+          <span class="green"> {{ $t("Success") }} : {{ form.successFiles }} </span>
           <span class="red"> {{ $t("Fail") }} : {{ form.errorFiles }} </span>
         </div>
       </div>
@@ -192,16 +187,13 @@ const handleClick = (item: any) => {
     ":81/api/v29+/medias/upload/" +
     form.currentSelected.id;
   // 区分开发环境和生产环境的上传路径
-  form.url =
-    process.env.NODE_ENV === "development" ? developmentUrl : productionUrl;
-  form.showFilesInfo = form.files.filter(
-    (row: { postAction: string | string[] }) => {
-      let folderId = row.postAction.slice(row.postAction.lastIndexOf("/") + 1);
-      if (folderId == item.id) {
-        return true;
-      }
+  form.url = process.env.NODE_ENV === "development" ? developmentUrl : productionUrl;
+  form.showFilesInfo = form.files.filter((row: { postAction: string | string[] }) => {
+    let folderId = row.postAction.slice(row.postAction.lastIndexOf("/") + 1);
+    if (folderId == item.id) {
+      return true;
     }
-  );
+  });
 };
 // 处理关闭弹窗
 const handleClose = () => {
@@ -278,16 +270,11 @@ const inputFilter = (
       form.isFileLarge = true;
     }
     // 去掉重名文件
-    form.files.forEach(
-      (file: { name: string | undefined; postAction: string }) => {
-        if (
-          file.postAction === newFile.postAction &&
-          file.name === newFile.name
-        ) {
-          form.isDuplicateName = true;
-        }
+    form.files.forEach((file: { name: string | undefined; postAction: string }) => {
+      if (file.postAction === newFile.postAction && file.name === newFile.name) {
+        form.isDuplicateName = true;
       }
-    );
+    });
     // 过滤不符合要求的文件（大于500MB和非 form.accept 包含的格式）
     if (form.isFileLarge || form.accept.split(",").indexOf(newFile.type) < 0) {
       ElMessage({
@@ -310,10 +297,7 @@ const inputFilter = (
     }
     // Filter system files or hide files
     // 过滤系统文件 和隐藏文件
-    if (
-      newFile.name &&
-      /(\/|^)(Thumbs\.db|desktop\.ini|\..+)$/.test(newFile.name)
-    ) {
+    if (newFile.name && /(\/|^)(Thumbs\.db|desktop\.ini|\..+)$/.test(newFile.name)) {
       return prevent();
     }
     // Filter php html js file
@@ -364,13 +348,7 @@ const inputFile = (
     // 是否上传完成
     if (total == form.showFilesInfo.length && form.totalProgress > 0) {
       upload.updateUploadCompleted(true);
-      MeidaService.getUploadNotifyWs(form.currentSelected.id)
-        .then((result) => {
-          console.log(result, "success");
-        })
-        .catch((error) => {
-          console.log(error, "error");
-        });
+      handleUploadNotifyWS();
     }
   }
   if (!newFile && oldFile) {
@@ -389,10 +367,7 @@ const inputFile = (
     console.log("remove", oldFile);
   }
   // 自动上传
-  if (
-    Boolean(newFile) !== Boolean(oldFile) ||
-    oldFile?.error !== newFile?.error
-  ) {
+  if (Boolean(newFile) !== Boolean(oldFile) || oldFile?.error !== newFile?.error) {
     if (newFile !== undefined && !newFile.md5_hash) {
       try {
         const size = newFile.file?.size || 0;
@@ -406,9 +381,7 @@ const inputFile = (
         let md5Next = () => {
           let start = currentChunk * chunkSize,
             end = start + chunkSize >= size ? size : start + chunkSize;
-          fileReader.readAsBinaryString(
-            blobSlice.call(newFile.file, start, end)
-          );
+          fileReader.readAsBinaryString(blobSlice.call(newFile.file, start, end));
         };
         fileReader.onload = (e: any) => {
           spark.appendAsciiStr(e.target?.result);
@@ -436,16 +409,22 @@ const inputFile = (
                   const num = (form.successFiles / form.totalFilesLength) * 100;
                   // num.toFixed(2)四舍五入, 不四舍五入 Math.floor(num)
                   form.totalProgress = num.toFixed(2);
-                  form.showFilesInfo.push(newFile);
+                  if (!form.showFilesInfo.includes(newFile)) {
+                    form.showFilesInfo.push(newFile);
+                  }
                   form.speed = 4194304;
-                  upload.updateUploadCompleted(true);
+                  const total = form.errorFiles + form.successFiles;
+                  // 是否上传完成
+                  if (total == form.showFilesInfo.length && form.totalProgress > 0) {
+                    upload.updateUploadCompleted(true);
+                    handleUploadNotifyWS();
+                  }
                 }
                 // 文件夹内已存在文件，则提示，否则上传
                 if (result.data == true) {
                   ElMessage({
                     type: "error",
-                    message:
-                      newFile.name + "-" + proxy.$t("File already exist"),
+                    message: newFile.name + "-" + proxy.$t("File already exist"),
                     grouping: true,
                   });
                   handleRemoveFiles(newFile);
@@ -480,16 +459,12 @@ const autoUpload = () => {
 const handleUploadFilesList = () => {
   if (form.files.length) {
     /* 如果之前该文件夹有东西, 那么就更新它 */
-    const newFile = form.files.filter(
-      (item: { postAction: string | string[] }) => {
-        let folderId = item.postAction.slice(
-          item.postAction.lastIndexOf("/") + 1
-        );
-        if (folderId == form.currentSelected.id) {
-          return true;
-        }
+    const newFile = form.files.filter((item: { postAction: string | string[] }) => {
+      let folderId = item.postAction.slice(item.postAction.lastIndexOf("/") + 1);
+      if (folderId == form.currentSelected.id) {
+        return true;
       }
-    );
+    });
     if (form.files.length) {
       form.showFilesInfo = newFile;
     } else {
@@ -500,18 +475,21 @@ const handleUploadFilesList = () => {
     form.showFilesInfo = form.files;
   }
 };
+// 处理通知服务器更新md5-upload接口
+const handleUploadNotifyWS = () => {
+  MeidaService.getUploadNotifyWs(form.currentSelected.id)
+    .then((result) => {
+      console.log(result, "success");
+    })
+    .catch((error) => {
+      console.log(error, "error");
+    });
+};
 
 // 监听变化
 watch(
-  () => [
-    uploadGroupStore.value,
-    uploadSelectedStore.value,
-    uploadShowManagerStore.value,
-  ],
-  (
-    [newGroup, newSelected, newShowManager],
-    [oldGroup, oldSelected, oldShowManager]
-  ) => {
+  () => [uploadGroupStore.value, uploadSelectedStore.value, uploadShowManagerStore.value],
+  ([newGroup, newSelected, newShowManager], [oldGroup, oldSelected, oldShowManager]) => {
     if (newGroup != oldGroup) {
       form.groupData = newGroup;
     }
