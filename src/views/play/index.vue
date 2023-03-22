@@ -47,11 +47,8 @@
         </div>
         <div class="content-center">
           <p>
-            {{
-              playCenterData.TaskID !== playSubscriptionTask.TaskID
-                ? playCenterData.name
-                : playSubscriptionTask.MusicName
-            }}
+            <!-- 使用当前正在执行任务的数组来显示播放媒体名称。socket使用task_status这个状态的信息 -->
+            {{sessionStoreAll[playCenterData.TaskID]?.TaskShowInfo}}
           </p>
           <div class="progress" v-if="handleTaskProgress() && playCenterData.TaskID">
             <el-slider
