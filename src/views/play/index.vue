@@ -766,7 +766,7 @@ const handleTaskAttribute = (row: any) => {
   if (row.type === 1) {
     //远程任务-音乐播放
     if (row.mediasIds.length === 0)
-      return proxy.$message.warning(proxy.$t('"No sound source"'));
+      return proxy.$message.warning(proxy.$t("No sound source"));
     data = {
       TaskAudioType: 6,
       RemoteID: row.id,
@@ -785,7 +785,7 @@ const handleTaskAttribute = (row: any) => {
     //快捷音源
     if (row.sound_source.type === 1) {
       if (row.mediasIds.length === 0)
-        return proxy.$message.warning(proxy.$t('"No sound source"'));
+        return proxy.$message.warning(proxy.$t("No sound source"));
       //音乐播放
       data = {
         TaskAudioType: 6,
