@@ -1103,5 +1103,6 @@
   "Frequency": "频率",
   "Lasts": "持续",
   "Times/second": "次/秒",
-  "Short circuit output prompt": "0表示跟随任务时间"
+  "Short circuit output prompt": "0表示跟随任务时间",
+  "Mix configuration tips": "即将应用，修改配置会结束正在执行的任务，是否继续？"
 }
