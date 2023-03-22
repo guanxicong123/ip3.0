@@ -306,6 +306,9 @@ const session = getStore.useSessionStore();
 const storePlay = getStore.usePlayStore();
 const systemStore = getStore.useSystemStore();
 // 计算属性 computed
+const remoteTaskDisplay: any = computed(() => {
+  return systemStore.functional_configs.remoteTaskDisplay;
+});
 const sessionStoreAll = computed(() => {
   return session.allSessionObj;
 });
@@ -915,9 +918,12 @@ const handelDelLocalRask = (row: any) => {
 };
 // 获取所有任务
 const getTaskAll = () => {
-  Promise.all([getBroadcastingAll(), getTaskLocalAll()]).then((data: any) => {
-    tableDataAll.value = [...data[0], ...data[1]];
-    form.data = filterData();
+  return new Promise((resolve) => {
+    Promise.all([getBroadcastingAll(), getTaskLocalAll()]).then((data: any) => {
+      tableDataAll.value = [...data[0], ...data[1]];
+      form.data = filterData();
+      resolve(form.data);
+    });
   });
 };
 // 获取所有播放任务
@@ -997,6 +1003,20 @@ const filterData = () => {
 };
 
 // 监听变化
+
+// 根据权限，再去获取任务列表数据
+watch(
+  remoteTaskDisplay,
+  (newVal) => {
+    newVal && getTaskAll().then((formData:any)=>{
+      if (formData.length > 0) {
+        handleSelectionClick(formData[0]);
+        multipleTableRef.value?.setCurrentRow(formData[0]);
+      }
+    });
+  },
+  { immediate: true }
+);
 watch(
   () => sessionStoreAll.value,
   (newData) => {
@@ -1060,16 +1080,7 @@ watch(playCenterData, (newVal, oldVal) => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  Promise.all([getBroadcastingAll(), getTaskLocalAll(), getPrioritySetting()]).then(
-    (data: any) => {
-      tableDataAll.value = [...data[0], ...data[1]];
-      form.data = [...data[0], ...data[1]];
-      if (form.data.length > 0) {
-        handleSelectionClick(form.data[0]);
-        multipleTableRef.value?.setCurrentRow(form.data[0]);
-      }
-    }
-  );
+  getPrioritySetting();
   if (JSON.stringify($useRoute.params) != "{}") {
     handlePlayTask($useRoute.params);
   }
