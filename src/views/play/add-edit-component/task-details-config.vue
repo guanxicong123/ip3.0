@@ -339,7 +339,7 @@ watch(taskDataDetailed, (newVal: any) => {
   editStatus.value = false;
   ruleForm.type = newVal.type;
   if (newVal.type === 1) {
-    ruleForm.data = [...newVal.medias_groups, ...newVal.medias];
+    ruleForm.data = [...newVal.medias, ...newVal.medias_groups];
   }
   if (newVal.type === 10 || newVal.type === 12 || newVal.type === 13) {
     ruleForm.data = newVal.content;
