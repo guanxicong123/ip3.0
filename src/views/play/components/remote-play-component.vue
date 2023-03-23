@@ -79,6 +79,7 @@
             <el-input-number
               v-model="ruleForm.play_number"
               :min="1"
+              :max="9999"
               :value-on-clear="ruleForm.play_number"
               controls-position="right"
               :disabled="ruleForm.radioVal !== 2"
