@@ -1047,7 +1047,11 @@ watch(playSubscriptionTask, (newVal) => {
   }
 });
 watch(playCenterData, (newVal, oldVal) => {
-  form.volume = newVal?.TaskVolume ? newVal?.TaskVolume : newVal?.volume;
+  if(newVal?.TaskVolume || newVal?.TaskVolume === 0){
+    form.volume = newVal?.TaskVolume
+  }else {
+    form.volume = newVal?.volume
+  }
   if (newVal?.TaskID === oldVal?.TaskID) return;
   const newValType =
     newVal.type === 1 ||
