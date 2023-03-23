@@ -153,7 +153,7 @@ const startRemotePlay = (row: any,playMediaName?:string) => {
       data: {
         TaskID: row.TaskID,
         ControlCode: "play",
-        ControlValue: playMediaName,
+        ControlValue: playMediaName || '',
       },
       result: 0,
       return_message: "",
