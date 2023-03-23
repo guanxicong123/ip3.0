@@ -4,7 +4,6 @@ import i18n from "@/utils/language";
 import router from "./router";
 import store from "./store";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
-import { Md5 } from "ts-md5";
 import language from "@/utils/global/language";
 import routerBefore from "@/utils/global/router_before";
 import "@/assets/font/iconfont.js";
@@ -37,7 +36,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 const global = app.config.globalProperties; //原型链
-global.$md5 = Md5;
 global.$message = ElMessage;
 
 global.$http = reactive($http);
