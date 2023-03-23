@@ -282,11 +282,11 @@ const handleDelete = (type: string, row: any) => {
 const formatterStatus = (row: User) => {
   switch (row.status) {
     case 0:
-      return "掉线";
+      return proxy.$t("Disconnection");
     case 1:
-      return "上线";
+      return proxy.$t("Go online");
     case 2:
-      return "故障";
+      return proxy.$t("Fault");
     default:
       return "";
   }
