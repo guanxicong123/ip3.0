@@ -1,3 +1,4 @@
+import { InternalAxiosRequestConfig, AxiosResponse } from "axios";
 import { AxiosCanceler } from "./axios_cancel";
 // import qs from "qs"; // qs是axios自带的序列化参数方式
 import { ElMessage } from "element-plus";
@@ -83,7 +84,7 @@ const $http = axios.create({
 });
 // 请求拦截器
 $http.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     // 在请求开始前，对之前的请求做检查，重复就取消操作
     // axiosCancel.removePending(config)
     // 将当前请求添加到 pending 中
@@ -110,7 +111,7 @@ $http.interceptors.request.use(
 );
 // 响应拦截器
 $http.interceptors.response.use(
-  (response) => {
+  (response: AxiosResponse) => {
     // 在请求结束后，移除本次请求
     // axiosCancel.removePending(response)
     const status = response.status;

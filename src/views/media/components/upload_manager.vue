@@ -136,7 +136,7 @@
 import { ElMessage } from "element-plus";
 import VueUploadComponent from "vue-upload-component";
 import type { VueUploadItem } from "vue-upload-component";
-import { Md5 } from "ts-md5/dist/md5";
+import { Md5 } from "ts-md5";
 import { MeidaService } from "@/utils/api/media";
 import usePublicMethod from "@/utils/global/index";
 
