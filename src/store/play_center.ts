@@ -3,6 +3,7 @@ export interface playState {
   playStatusData: any;
   playSubscriptionTask: any;
   playTaskStaging: Array<any>;
+  switchPlayMediaNameMap:any;
 }
 export const usePlayStore = defineStore({
   id: "play_center",
@@ -11,6 +12,7 @@ export const usePlayStore = defineStore({
     playStatusData: {},
     playSubscriptionTask: {},
     playTaskStaging: [], //用于储存
+    switchPlayMediaNameMap:{}, // 创建任务后时候，用于切换到某个媒体播放
   }),
   actions: {
     setPlayVoice(data: any) {
@@ -31,5 +33,8 @@ export const usePlayStore = defineStore({
         })
       }
     },
+    setSwitchPlayMediaNameMap(TaskID : string, playName : string){
+      this.switchPlayMediaNameMap[TaskID] = playName
+    }
   },
 });

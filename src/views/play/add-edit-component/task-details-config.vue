@@ -124,7 +124,7 @@
         </el-table>
       </div>
       <div class="com-table" v-if="ruleForm.type === 1">
-        <el-table :data="ruleForm.data" style="width: 100%" height="100%">
+        <el-table :data="ruleForm.data" style="width: 100%" height="100%" @row-dblclick="handelRowDblclick">
           <el-table-column type="index" label="No." width="80" />
           <el-table-column prop="name" :label="$t('Name')" show-overflow-tooltip>
             <template #default="scope">
@@ -161,7 +161,7 @@
     </div>
     <div class="com-main" v-else>
       <div class="com-table" v-if="taskDataDetailed.fast_terminals_id === 0">
-        <el-table :data="taskTerminalAll" height="100%">
+        <el-table :data="taskTerminalAll" height="100%" @row-dblclick="handelRowDblclick">
           <el-table-column type="index" label="No." width="80" />
           <el-table-column prop="name" :label="$t('Name')" show-overflow-tooltip>
             <template #default="scope">
@@ -316,7 +316,18 @@ const mediaDialogVisible = ref(false); //选择媒体对话框
 const taskTerminalAll: any = ref([]); //任务终端
 const terminaDialogVisible = ref(false); //快捷终端弹框
 const terminaSelectVisible = ref(false); //终端选择弹框
+const storePlay = getStore.usePlayStore();
+const session = getStore.useSessionStore();
+const sessionStoreAll = computed(() => {
+  return session.allSessionObj;
+});
 
+// 播放模式
+const taskPlayMode = new Map([
+  [0, "normal_play"],
+  [1, "loop_play"],
+  [2, "random_play"],
+]);
 const isConfigure = computed(() => {
   return activeName.value === "configure";
 });
@@ -346,8 +357,228 @@ watch(taskDataDetailed, (newVal: any) => {
   }
 });
 
+// 当前任务是否正在执行
+const isExecuted = computed(()=>{
+  return Object.keys(sessionStoreAll.value).findIndex((taskId:any)=>{
+    if(sessionStoreAll.value[taskId].RemoteTaskID === taskDataDetailed.value.id){
+      // 添加当前正在执行的任务的【播放媒体名称】 与 【执行任务ID】
+      taskDataDetailed.value.TaskShowInfo = sessionStoreAll.value[taskId].TaskShowInfo
+      taskDataDetailed.value.TaskID = taskId
+      return true
+    }else {
+      return false
+    }
+  }) !== -1
+})
+// 任务属性
+const handleTaskAttribute = (row: any) => {
+  let data = null;
+  if (row.type === 1) {
+    //远程任务-音乐播放
+    if (row.mediasIds.length === 0)
+      return proxy.$message.warning(proxy.$t("No sound source"));
+    data = {
+      TaskAudioType: 6,
+      RemoteID: row.id,
+      RemoteType: "remote_play",
+      RemoteAudioProp: {
+        MusicIDs: row.mediasIds,
+        LimitTime: row.sound_source.life_time
+          ? usePublicMethod.timeToSec(row.sound_source.life_time, 1)
+          : 0,
+        PlayMode: taskPlayMode.get(row.sound_source.play_model),
+        PlayTimes: row.sound_source?.play_number || 0,
+      },
+    };
+  }
+  if (row.type === 4) {
+    //快捷音源
+    if (row.sound_source.type === 1) {
+      if (row.mediasIds.length === 0)
+        return proxy.$message.warning(proxy.$t("No sound source"));
+      //音乐播放
+      data = {
+        TaskAudioType: 6,
+        RemoteID: row.id,
+        RemoteType: "remote_play",
+        RemoteAudioProp: {
+          TaskAudioType: 1,
+          MusicIDs: row.mediasIds,
+          LimitTime: row.sound_source.life_time
+            ? usePublicMethod.timeToSec(row.sound_source.life_time, 1)
+            : 0,
+          PlayMode: taskPlayMode.get(row.sound_source.play_model),
+          PlayTimes: row.sound_source?.play_number || 0,
+        },
+      };
+    }
+    if (row.sound_source.type === 2) {
+      //声卡采集
+      if (row.fast_sound.fast_source.sound_card) {
+        data = {
+          TaskAudioType: 6,
+          RemoteID: row.id,
+          RemoteType: "remote_play",
+          RemoteAudioProp: {
+            TaskAudioType: 3,
+            AudioCard: row.fast_sound.fast_source.sound_card,
+            LimitTime: 0,
+          },
+        };
+      } else {
+        proxy.$message.warning(proxy.$t("No sound card"));
+      }
+    }
+    if (row.sound_source.type === 3) {
+      //终端采集
+      if (row.fast_sound.fast_source.terminals_id) {
+        data = {
+          TaskAudioType: 6,
+          RemoteID: row.id,
+          RemoteType: "remote_play",
+          RemoteAudioProp: {
+            TaskAudioType: 2,
+            CollectID: row.fast_sound.fast_source.terminals_id
+              ? row.fast_sound.fast_source.terminals_id
+              : 0,
+            SelfCheck: 0,
+          },
+        };
+      } else {
+        proxy.$message.warning(proxy.$t("No acquisition terminal"));
+      }
+    }
+  }
+  return data;
+};
+// 任务类型
+const handleTaskTypeMap = (row: any) => {
+  if ((row.type === 4 && row.sound_source.type === 1) || row.type === 1) {
+    //快捷音源-媒体音乐 && 远程任务（媒体音乐播放）
+    return 15;
+  }
+  if (row.type === 4 && row.sound_source.type === 2) {
+    //快捷音源-声卡采集 &&
+    return 13;
+  }
+  if (row.type === 4 && row.sound_source.type === 3) {
+    //快捷音源-终端采集 &&
+    return 14;
+  }
+  if (row.type === 10) {
+    return 0;
+  }
+  // return type
+};
+// 订阅任务 触发媒体进度条信息获取
+const subscribeTask = (row: any) => {
+  let data = {
+    company: "BL",
+    actioncode: "c2ms_subscribe_task_progress_bar",
+    token: "",
+    data: {
+      TaskID: row.TaskID,
+    },
+    result: 0,
+    return_message: "",
+  };
+  send(data);
+};
+// 创建一个远程媒体任务
+const createExecutedTask = (row:any,playMediaName:string)=>{
+  let TaskProp = handleTaskAttribute(row);
+  if ( row.terminalsIds.length === 0)
+    return proxy.$message.warning(proxy.$t("No play terminal"));
+  if (TaskProp?.TaskAudioType) {
+    let TaskID = usePublicMethod.generateUUID();
+    let TaskType = handleTaskTypeMap( row);
+    let data = {
+      company: "BL",
+      actioncode: "c2ms_create_server_task",
+      data: {
+        EndPointsAdditionalProp: {},
+        EndPointList:  row.terminalsIds, //终端ID合集
+        TaskID: TaskID, //UUID
+        TaskName:  row.name, //任务名称
+        Priority:  row.priority, //优先级
+        Volume:  row.volume, //音量
+        TaskType: TaskType, //任务类型
+        UserID: localStorage.get("LoginUserID"), // 操作用户id
+        TaskProp: TaskProp,
+      },
+    };
+    if (TaskType === 15) {
+      storePlay.changePlayTaskStaging({
+        key: "add",
+        value: TaskID,
+      });
+    }
+    send(data);
+    // 创建成功后，播放的媒体名称
+    storePlay.setSwitchPlayMediaNameMap(TaskID,playMediaName)
+    // 创建成功后，订阅任务
+    session.addWaitExecutionEvent(TaskID,()=>{subscribeTask({TaskID})})
+  }
+}
+// 创建一个本地媒体任务
+const createLocalExecutedTask = (row:any,playMediaName:string)=>{
+  let data = {
+    company: "BL",
+    actioncode: "c2ms_create_local_task",
+    data: {
+      TaskID: row.taskid,
+      FirstIndex: row.type === 10 && row.content.length > 0 ? row.content[0].taskid : 0,
+    },
+    result: 0,
+    return_message: "",
+  };
+  if (row.type === 10) {
+    storePlay.changePlayTaskStaging({
+      key: "add",
+      value: row.taskid,
+    });
+  }
+  send(data);
+  storePlay.setSwitchPlayMediaNameMap(row,playMediaName)
+  session.addWaitExecutionEvent(row,()=>{subscribeTask(row)})
+}
+// 播放任务
+const handlePlayTask = (row:any) => {
+  // 判断当前选中任务是否是已执行任务
+  if(isExecuted.value){
+    // 判断当前播放媒体是不是就是选中媒体
+    if(row.name !== taskDataDetailed.value.TaskShowInfo){
+      switchMedia(taskDataDetailed.value.TaskID,row.name)
+      subscribeTask(taskDataDetailed.value)
+    }
+  }else {
+    // 先判断任务类型
+    if (taskDataDetailed.value.type < 10) {
+      createExecutedTask(taskDataDetailed.value,row.name)
+    } else {
+      createLocalExecutedTask(taskDataDetailed.value,row.name)
+    }
+  }
+};
+// 切换到某个媒体进行播放
+const switchMedia = (TaskID:any,MusicName:any)=>{
+  let data = {
+      company: "BL",
+      actioncode: "c2ms_control_task",
+      token: "",
+      data: {
+        TaskID: TaskID,
+        ControlCode: "play",
+        ControlValue: MusicName,
+      },
+      result: 0,
+      return_message: "",
+    };
+    send(data);
+}
+
 const handelRowDblclick = (row: any, column: any, event: any) => {
-  console.log(row, column, event);
+  handlePlayTask(row)
 };
 
 // 切换tabs

@@ -142,7 +142,7 @@ const requestFunction = (actionCode: string) => {
   return send(baseParams);
 };
 // 发起远程音乐播放任务
-const startRemotePlay = (row: any) => {
+const startRemotePlay = (row: any,playMediaName?:string) => {
   if (
     getStore.usePlayStore().playTaskStaging.includes(row.TaskID) &&
     row.RemoteType !== "manual_alarm"
@@ -154,7 +154,7 @@ const startRemotePlay = (row: any) => {
       data: {
         TaskID: row.TaskID,
         ControlCode: "play",
-        ControlValue: "",
+        ControlValue: playMediaName,
       },
       result: 0,
       return_message: "",
@@ -276,10 +276,10 @@ const handlerMsg = (msg: any) => {
       getStore.usePlayStore().setPlayStatus(msg.data);
       break;
     case "ms2c_create_server_task":
-      startRemotePlay(msg.data);
+      startRemotePlay(msg.data,getStore.usePlayStore().switchPlayMediaNameMap[msg.data.TaskID]);
       break;
     case "ms2c_create_local_task":
-      startRemotePlay(msg.data);
+      startRemotePlay(msg.data,getStore.usePlayStore().switchPlayMediaNameMap[msg.data.TaskID]);
       break;
     case "ms2c_control_task": // 播放中心任务状态改变
       break;
