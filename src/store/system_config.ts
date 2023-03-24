@@ -184,8 +184,7 @@ export const useSystemStore = defineStore({
     getProductKey() {
       $http1.get("/register").then((result: any) => {
         if (result.result === 200) {
-          this.opcodes = result.data.ProductKey;
-          this.opcodes = "14827-67853-39229-50676-09802-52491-53438";
+          this.opcodes = result.data.ProductKey || "14827-67853-39229-50676-09802-52491-53438";
         }
       });
     },

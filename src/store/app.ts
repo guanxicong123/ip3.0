@@ -3,7 +3,7 @@ export interface AppState {
   is_websocekt: boolean;
   is_login: boolean;
   is_login_status: number;
-  is_registration_window: boolean;
+  register_detail:any;
 }
 export const useAppStore = defineStore({
   id: "app",
@@ -11,20 +11,24 @@ export const useAppStore = defineStore({
     is_websocekt: false, //是否连接
     is_login: false, //是否登录中
     is_login_status: 0, // 登录次数
-    is_registration_window: true, //是否显示注册窗口
+    register_detail: {
+      EffectiveTime:'',
+      ProductKey:'',
+      freeTime:0,
+      isRegister:false
+    }
   }),
   actions: {
     // 改变webscoet连接状态
     changeWsStatus(is_websocekt: boolean) {
       this.is_websocekt = is_websocekt;
     },
+    updateRegisterDetail(data:any) {
+      this.register_detail = data
+    },
     // 改变登录状态
     changeLoginStatus(status: boolean) {
       this.is_login = status;
-    },
-    // 改变注册窗口
-    changeRegistrationWindow(status: boolean) {
-      this.is_registration_window = status
     },
     // 登录成功返回信息
     loginSuccessData(data: any) {

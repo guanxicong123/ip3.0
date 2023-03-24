@@ -175,7 +175,7 @@ async function createWindow() {
     );
   });
   ipcMain.on("register-success", ()=> {
-    win.webContents.send("register-refresh", 1)
+    win.webContents.send("register-success",1)
   })
   // 监听渲染进程发出的download事件
   ipcMain.on("download", (evt, args) => {
