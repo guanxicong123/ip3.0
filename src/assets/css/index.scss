@@ -168,18 +168,6 @@
     }
   }
 }
-.com-form-item-custom {
-  min-width: 274px;
-  margin-right: 80.5px;
-  margin-bottom: 18px;
-  .el-checkbox {
-    height: 30px;
-  }
-  .el-input,
-  .el-select {
-    display: flex;
-  }
-}
 .com-add-bottom {
   padding-bottom: 80px;
 }
@@ -202,9 +190,6 @@
   box-sizing: border-box;
 }
 // Element plus 样式修改
-// .el-popper {
-//   width: auto !important;
-// }
 .el-table {
   thead {
     // 表格-title
