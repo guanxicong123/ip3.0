@@ -849,7 +849,10 @@ const handleGetEditData = async () => {
             }
           });
         });
-        if (result.data.type === 1) {
+        if (
+          result.data.type === 1 ||
+          (result.data.type === 4 && result.data.sound_source.type === 1)
+        ) {
           const executionTimeData = result.data.execute_time.split(",");
           executionTimeData.forEach((item: any) => {
             form.executionTimeData.push({
