@@ -10,7 +10,7 @@ export const useAppStore = defineStore({
   state: (): AppState => ({
     is_websocekt: false, //是否连接
     is_login: false, //是否登录中
-    is_login_status: 0,
+    is_login_status: 0, // 登录次数
     is_registration_window: true, //是否显示注册窗口
   }),
   actions: {
@@ -29,6 +29,7 @@ export const useAppStore = defineStore({
     // 登录成功返回信息
     loginSuccessData(data: any) {
       this.is_login = false;
+      this.is_login_status++;
       localStorage.set("LoginUserID", data.data.UserID);
       // 登录成功获取路由权限数据
       getStore

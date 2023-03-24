@@ -15,7 +15,7 @@
       <img class="logo-imag" src="@/assets/images/login-logo.png" />
       <div
         class="broadcast-register-meagess"
-        v-if="registerStatus?.freeTime > 0 && !isRegister"
+        v-if="registerStatus?.freeTime > 0 && !isRegister && !isLoginStatus"
       >
         <p>
           {{ $t("Trial Expiration Prompt") }}
@@ -63,7 +63,9 @@ const { proxy } = useCurrentInstance.useCurrentInstance();
 const registerStatus: any = ref({});
 const isRegister = ref(false);
 const code = ref("");
-
+const isLoginStatus = computed(()=>{
+  return getStore.useAppStore().is_login_status !== 0
+})
 // 获取注册状态
 const gitRegisterStatus = () => {
   proxy.$http1.get("/register").then((result: any) => {
