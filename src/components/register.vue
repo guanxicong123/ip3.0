@@ -15,7 +15,7 @@
       <img class="logo-imag" src="@/assets/images/login-logo.png" />
       <div
         class="broadcast-register-meagess"
-        v-if="registerStatus?.freeTime > 0 && !isRegister"
+        v-if="!isShowRegister"
       >
         <p>
           {{ $t("Trial Expiration Prompt") }}
@@ -35,11 +35,11 @@
         </div>
       </div>
       <div class="broadcast-register-button">
-        <template v-if="!isRegister">
+        <template v-if="!isShowRegister">
           <el-button class="button-cancel" @click="close">
             {{ $t("On trial") }}
           </el-button>
-          <el-button type="primary" @click="isRegister = true">
+          <el-button type="primary" @click="isShowRegister = true">
             {{ $t("Register") }}
           </el-button>
         </template>
@@ -59,9 +59,10 @@
 <script lang="ts" setup>
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
+const registerStatus: any = ref({})
 
-const registerStatus: any = ref({});
-const isRegister = ref(false);
+// 当前是否呈现注册页面
+const isShowRegister = ref(false)
 const code = ref("");
 
 // 获取注册状态
@@ -70,14 +71,13 @@ const gitRegisterStatus = () => {
     if (result.result === 200) {
       registerStatus.value = result.data;
       if (registerStatus.value?.freeTime === 0) {
-        isRegister.value = true;
+        isShowRegister.value = true;
       }
     }
   });
 };
 // 提交
 const submit = () => {
-  window.electronAPI.send("register-success");
   proxy.$http1
     .post("/register", {
       code: code.value,
@@ -85,13 +85,9 @@ const submit = () => {
     .then((result: any) => {
       if (result.result === 200) {
         window.electronAPI.send("register-success");
+        close()
       }
     })
-    .then((result: any) => {
-      if (result.result === 200) {
-        close();
-      }
-    });
 };
 // 关闭
 const close = () => {

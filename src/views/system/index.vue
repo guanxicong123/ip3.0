@@ -304,9 +304,6 @@ const system_configs = computed(() => {
 const basic_configs = computed(() => {
   return systemStore.basic_configs;
 });
-const opcodes = computed(() => {
-  return systemStore.opcodes;
-});
 const functional_configs = computed(() => {
   return systemStore.functional_configs;
 });
@@ -480,7 +477,9 @@ watch(
 onMounted(() => {
   formatData();
   switch_form.value = JSON.parse(JSON.stringify(functional_configs.value));
-  form.ProductKey = opcodes.value;
+  systemStore.getProductKey().then((opcodes:any)=>{
+    form.ProductKey = opcodes
+  })
   getAlarmTask();
 });
 </script>
