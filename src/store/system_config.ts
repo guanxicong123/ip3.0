@@ -15,7 +15,6 @@ export interface systemState {
   system_configs: any;
   basic_configs: any;
   router_data: any;
-  opcodes: string;
   pageSize: any;
   priorityData: any;
 }
@@ -105,7 +104,6 @@ export const useSystemStore = defineStore({
       Log_PageSize: 20,
     },
     router_data: [],
-    opcodes: "",
     priorityData: new Map(), //
   }),
 
@@ -182,10 +180,14 @@ export const useSystemStore = defineStore({
     },
     // 获取机器码
     getProductKey() {
-      $http1.get("/register").then((result: any) => {
-        if (result.result === 200) {
-          this.opcodes = result.data.ProductKey || "14827-67853-39229-50676-09802-52491-53438";
-        }
+      return new Promise((resolve,reject)=>{
+          $http1.get("/register").then((result: any) => {
+          if (result.result === 200) {
+            resolve(result.data.ProductKey || "14827-67853-39229-50676-09802-52491-53438")
+          }else {
+            reject()
+          }
+        })
       });
     },
     // 获取所有系统优先级
