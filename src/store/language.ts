@@ -17,5 +17,10 @@ export const useLanguageStore = defineStore({
       this.language.version = data.version;
       this.language.theme = data.theme;
     },
+    // 单独更新当前选中语言
+    updateCurrentLanguage(language: string) {
+      this.language.language = language
+      localStorage.set("lang", language);
+    },
   },
 });

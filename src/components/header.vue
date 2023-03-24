@@ -189,11 +189,8 @@ const handleCommandUser = (command: string | number | object) => {
 };
 // 切换语言文本
 const handleCommand = (command: string) => {
-  console.log(form.selectedLang, command);
   if (form.selectedLang != command) {
-    form.selectedLang = command;
-    localStorage.set("lang", command);
-    getStore.useLanguageStore().updateLanguage(command);
+    getStore.useLanguageStore().updateCurrentLanguage(command);
     window.location.reload();
   }
 };
@@ -259,6 +256,7 @@ const getUserMe = () => {
 const getLanguage = () => {
   SystemService.language()
     .then((result) => {
+      form.languagesList = result.data.languagesMap
       getStore.useLanguageStore().updateLanguage(result.data);
     })
     .catch(() => {});
@@ -269,7 +267,6 @@ watch(
   [langStore],
   ([newLang], [oldLang]) => {
     if (newLang != oldLang) {
-      form.languagesList = newLang.languagesMap;
       form.selectedLang = newLang.language;
       form.version = newLang.version;
     }
