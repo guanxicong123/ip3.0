@@ -834,6 +834,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .com-select-media-group {
+  position: relative;
   display: flex;
   align-items: center;
   height: 300px;
