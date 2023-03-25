@@ -203,7 +203,6 @@
       :dialogAlertData="callPoliceWarningDialog.warningList"
       @requestDispose="callPoliceWarningDialog.clearWarning"
       :dialogTitle="$t('Terminal or User call the police prompt')"
-      :isCallPolice="true"
     />
   </div>
 </template>
