@@ -469,6 +469,7 @@ const changeConfig = (model: string) => {
         grouping: true,
       });
       systemStore.updateSystemConfig(send_data);
+      systemStore.getConfigInfo()
     }
   });
 };

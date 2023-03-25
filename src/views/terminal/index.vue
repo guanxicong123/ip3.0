@@ -647,7 +647,6 @@ const alarmTalkTask = () => {
     send(data);
     return;
   }
-  callPoliceWarningDialog.visibleDialog = true
   
   // 获取报警终端  
   // callPoliceWarningDialog.warningList =  checked_terminals.value.map(((termId:any)=>{
@@ -669,6 +668,7 @@ const alarmTalkTask = () => {
       ),
     };
     callPoliceWarningDialog.warningList = [warningData]
+    callPoliceWarningDialog.visibleDialog = true
   }
   proxy.$http
     .get("/details/" + system_configs.value.AlarmID, {
