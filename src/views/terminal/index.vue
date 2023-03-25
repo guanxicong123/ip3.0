@@ -657,15 +657,19 @@ const alarmTalkTask = () => {
   //     return term.EndPointID === termId
   //   })
   // }))
-  const warningData = {
-    EndPointName: userStore.user.user.name,
-    EndPointIP: '-',
-    OfflineTime: usePublicMethod.formatDate(
-      new Date().toLocaleString(),
-      "YYYY-MM-DD HH:mm:ss"
-    ),
-  };
-  callPoliceWarningDialog.warningList = [warningData]
+  // 如果人工报警提示开启，就进行提示
+  const alertMessage = JSON.parse(localStorage.get("alertMessage"));
+  if(alertMessage.EnabledPersonAlert){
+    const warningData = {
+      EndPointName: userStore.user.user.name,
+      EndPointIP: '-',
+      OfflineTime: usePublicMethod.formatDate(
+        new Date().toLocaleString(),
+        "YYYY-MM-DD HH:mm:ss"
+      ),
+    };
+    callPoliceWarningDialog.warningList = [warningData]
+  }
   proxy.$http
     .get("/details/" + system_configs.value.AlarmID, {
       params: {
