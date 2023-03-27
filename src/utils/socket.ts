@@ -40,6 +40,7 @@ const registerWebSocket = async () => {
       } else {
         login();
       }
+      loadingInstance?.close();
     };
     //WebSocket通知
     socket.onmessage = ({ data }: any) => {
@@ -100,6 +101,10 @@ const reload = () => {
     socketStatus && registerWebSocket();
     // message.error("服务器连接断开")
   }, 3000);
+  loadingInstance = ElLoading.service({
+    text: $t.t("Attempting to reconnect to logical server"),
+    background: "rgba(0, 0, 0, 0.7)",
+  });
 };
 // 初始化ws连接
 const socketLogin = (data: any) => {
