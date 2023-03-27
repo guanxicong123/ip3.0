@@ -934,7 +934,7 @@
   "Upload filter exceed prompt": "已自动过滤超出部分",
   "Upload filter name prompt": "已自动过滤重名的文件",
   "Upload filter type prompt": "已自动过滤不符合要求的文件（大于500MB/非mp3/ogg/wav/aac/flac/amr/opus格式）",
-  "Upload filter non bin prompt": "已自动过滤不符合要求的文件（大于500MB/非Bin格式）",
+  "Upload filter file size prompt": "已自动过滤不符合要求的文件（大于500MB）",
   "Upload filter disable time prompt": "已自动过滤重复遥控器禁用时间段",
   "Upload filter freeze time prompt": "已自动过滤重复冻结时间段",
   "Upload filter effective time prompt": "已自动过滤重复有效时间段",
