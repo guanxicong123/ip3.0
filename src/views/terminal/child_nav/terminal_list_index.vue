@@ -59,6 +59,7 @@
               v-loading="form.loading"
               element-loading-text="Loading..."
               element-loading-background="rgba(0, 0, 0, 0.7)"
+              @cell-contextmenu="(row,column,cell,event)=>handleContextMenu(row,event)"
             >
               <el-table-column type="selection" width="44" />
               <el-table-column
@@ -146,12 +147,14 @@
         </div>
       </div>
     </div>
+    <right-menu :rightclickInfo="rightclickInfo" @changeSpeaker="handleSelectSpeakerTerminal"></right-menu>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ElTable, ElMessage } from "element-plus";
 import { GroupsService } from "@/utils/api/groups/inedx";
+import rightMenu from "@/components/RightMenu/rightMenu.vue"
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
@@ -212,10 +215,14 @@ const form = reactive<any>({
 // 表格类型格式转换
 const terminalsStatusMap = useFormatMap.terminalsStatusMap;
 
-const { updateCheckedTerminals }: any = inject("checkedAll");
+const { updateCheckedTerminals,handleSelectSpeakerTerminal }: any = inject("checkedAll");
 // 获取refs
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
+
+// 右键菜单列表
+const rightclickInfo = ref({})
+
 // 处理点击切换分组
 const handleClickGroup = (val: any) => {
   let arrayIDS = [];
@@ -325,6 +332,24 @@ const getTerminalGroupAll = () => {
       console.log(error);
     });
 };
+
+// 处理右键事件
+const handleContextMenu = (row:any,event:any)=>{
+  rightclickInfo.value = {
+    position: {
+      x: event.clientX,
+      y: event.clientY,
+    },
+    menulists: [
+      {
+        fnName: "changeSpeaker",
+        params: { row, event },
+        btnName: "设置为主讲终端",
+      },
+    ],
+  };
+  event.preventDefault(); // 阻止默认的鼠标右击事件
+}
 
 // 监听变化
 watch(

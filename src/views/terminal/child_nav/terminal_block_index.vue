@@ -17,6 +17,7 @@
           <li
             v-for="item in form.data"
             :key="item.EndPointID"
+            @contextmenu="handleContextMenu(item, $event)"
             :class="{
               selected: form.multipleSelection.includes(item.EndPointID),
               'four-six': form.layoutArrange == '4x6',
@@ -97,12 +98,17 @@
         @current-change="handleCurrentChange"
       />
     </div>
+    <right-menu
+      :rightclickInfo="rightclickInfo"
+      @changeSpeaker="handleSelectSpeakerTerminal"
+    ></right-menu>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { onBeforeRouteLeave } from "vue-router";
 import { send } from "@/utils/socket";
+import rightMenu from "@/components/RightMenu/rightMenu.vue";
 
 const user = getStore.useUserStore();
 const terminals = getStore.useTerminalsStore();
@@ -139,6 +145,7 @@ const {
   is_checked_all,
   handleUpdateCheckedAll,
   handleIsCheckedAll,
+  handleSelectSpeakerTerminal,
 }: any = inject("checkedAll");
 
 const { select_terminal }: any = inject("select_terminal");
@@ -173,6 +180,10 @@ const pageSizeStatusMap = new Map([
   [1, { num: 18, string: "3x6" }],
   [2, { num: 24, string: "4x6" }],
 ]);
+
+// 右键菜单列表
+const rightclickInfo = ref({});
+
 // 处理获取一页数据
 const handleGetOnePageData = async () => {
   terminals.setTerminalsSearchString(form.search);
@@ -248,8 +259,30 @@ const changeVolume = (data: any) => {
 };
 // 处理设置默认获取条件
 const handleGetDefaultCondition = () => {
-  form.layoutArrange = pageSizeStatusMap.get(basic_configs.value.ListDisplaySize)?.string;
-  form.pageSize = pageSizeStatusMap.get(basic_configs.value.ListDisplaySize)?.num;
+  form.layoutArrange = pageSizeStatusMap.get(
+    basic_configs.value.ListDisplaySize
+  )?.string;
+  form.pageSize = pageSizeStatusMap.get(
+    basic_configs.value.ListDisplaySize
+  )?.num;
+};
+
+// 处理右键事件
+const handleContextMenu = (row: any, event: any) => {
+  rightclickInfo.value = {
+    position: {
+      x: event.clientX,
+      y: event.clientY,
+    },
+    menulists: [
+      {
+        fnName: "changeSpeaker",
+        params: { row, event },
+        btnName: "设置为主讲终端",
+      },
+    ],
+  };
+  event.preventDefault(); // 阻止默认的鼠标右击事件
 };
 
 // 监听
