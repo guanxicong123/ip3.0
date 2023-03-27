@@ -57,7 +57,7 @@
         </div>
         <div class="com-button">
           <span class="monitor-speaker">{{ $t("Speaker terminal") }}</span>
-          <select-speaker-terminal />
+          <select-speaker-terminal ref="selectSpeakerTerminalRef"/>
         </div>
       </div>
     </div>
@@ -310,6 +310,11 @@ const checked_all = ref(false);
 // 是否点击了全选按钮-给子组件做判断处理事件
 const is_checked_all = ref(false);
 
+const selectSpeakerTerminalRef = ref()
+// 处理主动选中主讲终端
+const handleSelectSpeakerTerminal = ({row}:{row:any})=>{
+  selectSpeakerTerminalRef.value.handleRowClick(row)
+}
 // 处理全选
 const handleCheckedAll = () => {
   is_checked_all.value = true;
@@ -771,6 +776,7 @@ provide("checkedAll", {
   handleIsCheckedAll,
   checked_terminals,
   updateCheckedTerminals,
+  handleSelectSpeakerTerminal,
 });
 // 传给方块视图页面
 provide("select_terminal", {
