@@ -223,6 +223,12 @@ const handlerMsg = (msg: any) => {
         getStore.useSessionStore().updateSession(msg.data.TaskInfoArray);
       },
     ],
+    [
+      "broadcast_studio_update",
+      () => {
+        getStore.usePlayStore().setIsLatestTaskStatus(false);
+      },
+    ],
   ]);
   if (msg.result !== 200) {
     // 登录失败
