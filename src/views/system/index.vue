@@ -266,6 +266,7 @@
               type="text"
               auto-complete="off"
               v-model="form.code"
+              :disabled="form.codeIsDisable"
               :placeholder="$t('Please enter')"
             >
             </el-input>
@@ -297,6 +298,7 @@ import { ElMessage } from "element-plus";
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
 const systemStore = getStore.useSystemStore();
+const appStoreStore = getStore.useAppStore();
 // 计算属性 computed
 const system_configs = computed(() => {
   return systemStore.system_configs;
@@ -340,6 +342,7 @@ const form = reactive({
   reminder_configuration: [], // 提醒配置
   ProductKey: "",
   code: "",
+  codeIsDisable:false
 });
 
 const func_manage_dialog = ref(false);
@@ -390,7 +393,14 @@ const handleFuncManage = () => {
 // 注册弹窗
 const registerManage = () => {
   register_manage_dialog.value = true;
-  form.code = "";
+  // 若是永久用户，注册码自动填充且无法编辑
+  if(appStoreStore.register_detail.freeTime < 0){
+    form.code = appStoreStore.register_detail.RegisterCode;
+    form.codeIsDisable = true;
+  }else {
+    form.code = '';
+    form.codeIsDisable = false;
+  }
 };
 // 注册操作
 const confirmRegister = () => {
@@ -459,6 +469,7 @@ const changeConfig = (model: string) => {
         grouping: true,
       });
       systemStore.updateSystemConfig(send_data);
+      systemStore.getConfigInfo()
     }
   });
 };

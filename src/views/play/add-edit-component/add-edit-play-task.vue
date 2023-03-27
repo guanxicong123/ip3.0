@@ -212,10 +212,10 @@
       <div class="button button-cancel" @click="$useRouter.push('/play')">
         {{ $t("Return") }}
       </div>
-      <div class="button button-submit" @click="submitTask">
+      <div class="button button-submit" @click="submitTask(ruleFormRef)">
         {{ $t("Save") }}
       </div>
-      <div class="button button-submit" @click="submitTaskPlay">
+      <div class="button button-submit" @click="submitTaskPlay(ruleFormRef)">
         {{ $t("Save and play") }}
       </div>
     </div>
@@ -415,93 +415,102 @@ const requestGroups = (data: any) => {
   terminals_groups.value = data;
 };
 // 提交任务并播放
-const submitTaskPlay = () => {
-  if (!executionregiontype.value && !fast_terminals_id.value)
-    return proxy.$message.warning(proxy.$t("Please select a shortcut terminal"));
-  if (
-    executionregiontype.value &&
-    terminals.value.length === 0 &&
-    terminals_groups.value.length === 0
-  ) {
-    return proxy.$message.warning(proxy.$t("Please select a terminal or group"));
-  }
-
-  let data = getBasicData();
-
-  if (ruleForm.type === 10) {
-    createLocalAudio(data).then((result: any) => {
-      let taskData = {
-        taskid: result?.taskid,
-        content: data.content,
-      };
-      $useRouter.push({
-        name: "play",
-        params: taskData,
-      });
-    });
-  } else if (ruleForm.type === 11) {
-    createTxstPlay(data).then((result: any) => {
-      let taskData = {
-        taskid: result?.taskid,
-        content: data.content,
-      };
-      $useRouter.push({
-        name: "play",
-        params: taskData,
-      });
-    });
-  } else if (ruleForm.type === 1) {
-    createRemteTask(data).then((result: any) => {
-      $useRouter.push({
-        name: "play",
-        params: result,
-      });
-    });
-  } else if (ruleForm.type === 12) {
-    createSoundSourceCollection(data).then((result: any) => {
-      let taskData = {
-        taskid: result?.taskid,
-        content: data.content,
-      };
-      $useRouter.push({
-        name: "play",
-        params: taskData,
-      });
-    });
-  } else {
-    createQuickSou(data).then((result: any) => {
-      $useRouter.push({
-        name: "play",
-        params: result,
-      });
-    });
-  }
+const submitTaskPlay = (formEl:FormInstance | undefined) => {
+  if(!formEl) return 
+  formEl.validate(valid=>{
+    if(valid){
+      if (!executionregiontype.value && !fast_terminals_id.value)
+        return proxy.$message.warning(proxy.$t("Please select a shortcut terminal"));
+      if (
+        executionregiontype.value &&
+        terminals.value.length === 0 &&
+        terminals_groups.value.length === 0
+      ) {
+        return proxy.$message.warning(proxy.$t("Please select a terminal or group"));
+      }
+    
+      let data = getBasicData();
+    
+      if (ruleForm.type === 10) {
+        createLocalAudio(data).then((result: any) => {
+          let taskData = {
+            taskid: result?.taskid,
+            content: data.content,
+          };
+          $useRouter.push({
+            name: "play",
+            params: taskData,
+          });
+        });
+      } else if (ruleForm.type === 11) {
+        createTxstPlay(data).then((result: any) => {
+          let taskData = {
+            taskid: result?.taskid,
+            content: data.content,
+          };
+          $useRouter.push({
+            name: "play",
+            params: taskData,
+          });
+        });
+      } else if (ruleForm.type === 1) {
+        createRemteTask(data).then((result: any) => {
+          $useRouter.push({
+            name: "play",
+            params: result,
+          });
+        });
+      } else if (ruleForm.type === 12) {
+        createSoundSourceCollection(data).then((result: any) => {
+          let taskData = {
+            taskid: result?.taskid,
+            content: data.content,
+          };
+          $useRouter.push({
+            name: "play",
+            params: taskData,
+          });
+        });
+      } else {
+        createQuickSou(data).then((result: any) => {
+          $useRouter.push({
+            name: "play",
+            params: result,
+          });
+        });
+      }
+    }
+  })
 };
 // 提交任务
-const submitTask = () => {
-  if (!executionregiontype.value && !fast_terminals_id.value)
-    return proxy.$message.warning(proxy.$t("Please select a shortcut terminal"));
-  if (
-    executionregiontype.value &&
-    terminals.value.length === 0 &&
-    terminals_groups.value.length === 0
-  ) {
-    return proxy.$message.warning(proxy.$t("Please select a terminal or group"));
-  }
-
-  let data = getBasicData();
-
-  if (ruleForm.type === 10) {
-    createLocalAudio(data);
-  } else if (ruleForm.type === 11) {
-    createTxstPlay(data);
-  } else if (ruleForm.type === 1) {
-    createRemteTask(data);
-  } else if (ruleForm.type === 12) {
-    createSoundSourceCollection(data);
-  } else {
-    createQuickSou(data);
-  }
+const submitTask = (formEl:FormInstance | undefined) => {
+  if(!formEl) return 
+  formEl.validate(valid=>{
+    if(valid){
+      if (!executionregiontype.value && !fast_terminals_id.value)
+        return proxy.$message.warning(proxy.$t("Please select a shortcut terminal"));
+      if (
+        executionregiontype.value &&
+        terminals.value.length === 0 &&
+        terminals_groups.value.length === 0
+      ) {
+        return proxy.$message.warning(proxy.$t("Please select a terminal or group"));
+      }
+      let data = getBasicData();
+    
+      if (ruleForm.type === 10) {
+        createLocalAudio(data);
+      } else if (ruleForm.type === 11) {
+        createTxstPlay(data);
+      } else if (ruleForm.type === 1) {
+        createRemteTask(data);
+      } else if (ruleForm.type === 12) {
+        createSoundSourceCollection(data);
+      } else {
+        createQuickSou(data);
+      }
+    }
+  })
 };
 const getBasicData = () => {
   let data = Object.assign(ruleForm, {

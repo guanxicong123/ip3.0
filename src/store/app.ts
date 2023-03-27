@@ -15,7 +15,8 @@ export const useAppStore = defineStore({
       EffectiveTime:'',
       ProductKey:'',
       freeTime:0,
-      isRegister:false
+      isRegister:false,
+      RegisterCode:'',
     }
   }),
   actions: {

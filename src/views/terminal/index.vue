@@ -198,6 +198,12 @@
         </span>
       </template>
     </el-dialog>
+    <dialongWarningMessage
+      v-model:dialogVisible="callPoliceWarningDialog.visibleDialog"
+      :dialogAlertData="callPoliceWarningDialog.warningList"
+      @requestDispose="callPoliceWarningDialog.clearWarning"
+      :dialogTitle="$t('Terminal or User call the police prompt')"
+    />
   </div>
 </template>
 
@@ -209,13 +215,16 @@ import { send } from "@/utils/socket";
 const selectSpeakerTerminal = defineAsyncComponent(
   () => import("./components/select_speaker_terminal.vue")
 );
-
+const dialongWarningMessage = defineAsyncComponent(
+  () => import("@/components/dialong_warning_message.vue")
+);
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
 const terminals = getStore.useTerminalsStore();
 const session = getStore.useSessionStore();
 const systemStore = getStore.useSystemStore();
+const userStore = getStore.useUserStore();
 // 计算属性 computed
 const basic_configs = computed(() => {
   return systemStore.basic_configs;
@@ -330,7 +339,12 @@ const updateCheckedTerminals = (data: any) => {
 const setUp = () => {
   set_dialog.value = true;
 };
-
+// 报警警告弹窗详情
+const callPoliceWarningDialog = reactive<any>({
+  visibleDialog:false,
+  warningList:[],
+  clearWarning:()=>{}
+})
 // 终端 <-> 分组切换-状态状态显示方式DisplayType 0：方块视图 1：列表视图
 const changeRouter = (name: string) => {
   form.loading = true;
@@ -487,6 +501,11 @@ const functronButtonTask = (type: number) => {
     initiatedTalkTask(filter_initiator_terminals, currentTableRow.EndPointID);
   }
   if (type === 17) {
+    if (filter_initiator_terminals.length > 1) {
+      return proxy.$message.error(
+        proxy.$t("Only one monitor receiving terminal can be selected")
+      );
+    }
     monitorTalkTask(filter_initiator_terminals, currentTableRow.EndPointID);
   }
 };
@@ -626,6 +645,29 @@ const alarmTalkTask = () => {
     };
     send(data);
     return;
+  }
+  
+  // 获取报警终端  
+  // callPoliceWarningDialog.warningList =  checked_terminals.value.map(((termId:any)=>{
+  //   return terminalsStoreOnePage.value.find((term:any)=>{
+  //     console.log(term.EndPointID,termId,'term.EndpointID === termId');
+      
+  //     return term.EndPointID === termId
+  //   })
+  // }))
+  // 如果人工报警提示开启，就进行提示
+  const alertMessage = JSON.parse(localStorage.get("alertMessage"));
+  if(alertMessage.EnabledPersonAlert){
+    const warningData = {
+      EndPointName: userStore.user.user.name,
+      EndPointIP: '-',
+      OfflineTime: usePublicMethod.formatDate(
+        new Date().toLocaleString(),
+        "YYYY-MM-DD HH:mm:ss"
+      ),
+    };
+    callPoliceWarningDialog.warningList = [warningData]
+    callPoliceWarningDialog.visibleDialog = true
   }
   proxy.$http
     .get("/details/" + system_configs.value.AlarmID, {
