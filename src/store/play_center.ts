@@ -4,6 +4,7 @@ export interface playState {
   playSubscriptionTask: any;
   playTaskStaging: Array<any>;
   switchPlayMediaNameMap:any;
+  isLatestTaskStatus:boolean;
 }
 export const usePlayStore = defineStore({
   id: "play_center",
@@ -13,6 +14,7 @@ export const usePlayStore = defineStore({
     playSubscriptionTask: {},
     playTaskStaging: [], //用于储存
     switchPlayMediaNameMap:{}, // 创建任务后时候，用于切换到某个媒体播放
+    isLatestTaskStatus:true, // 当前是否为最新的任务列表
   }),
   actions: {
     setPlayVoice(data: any) {
@@ -35,6 +37,9 @@ export const usePlayStore = defineStore({
     },
     setSwitchPlayMediaNameMap(TaskID : string, playName : string){
       this.switchPlayMediaNameMap[TaskID] = playName
+    },
+    setIsLatestTaskStatus(flog:boolean){
+      this.isLatestTaskStatus = flog
     }
   },
 });
