@@ -337,6 +337,10 @@ const playCenterData = computed(() => {
   }
 });
 
+const isLatestTaskStatus: any = computed(()=>{
+  return storePlay.isLatestTaskStatus
+})
+
 interface User {
   date: string;
   name: string;
@@ -921,6 +925,8 @@ const getTaskAll = () => {
     Promise.all([getBroadcastingAll(), getTaskLocalAll()]).then((data: any) => {
       tableDataAll.value = [...data[0], ...data[1]];
       form.data = filterData();
+      // 每次请求完最新的数据后，需要把全局的task状态设置为true
+      storePlay.setIsLatestTaskStatus(true)
       resolve(form.data);
     });
   });
@@ -1080,6 +1086,11 @@ watch(playCenterData, (newVal, oldVal) => {
     if (oldValType) unsubscribeTask(oldVal);
   }
 });
+
+// 当task信息在其他端 更新的时候，需要重新请求task的数据
+watch(isLatestTaskStatus,()=>{
+  getTaskAll()
+})
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
