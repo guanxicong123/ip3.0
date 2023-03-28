@@ -1103,5 +1103,8 @@
   "Mix configuration tips": "即将应用，修改配置会结束正在执行的任务，是否继续？",
   "Upgrade firmware successful prompt": "开始升级固件成功，请在升级状态查看升级进度",
   "Upgrade firmware failure prompt": "开始升级固件失败，请检查后重新升级",
-  "One-click restart prompt": "即将重启服务，请等待服务启动成功再操作界面，是否继续？"
+  "One-click restart prompt": "即将重启服务，请等待服务启动成功再操作界面，是否继续？",
+  "MD5 validation successful": "MD5效验成功",
+  "MD5 validation failed": "MD5效验失败",
+  "Upgrade complete": "升级完成"
 }

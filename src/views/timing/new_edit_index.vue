@@ -368,8 +368,8 @@
                 @requestTerminals="handleRequestTerminals"
                 @requestGroups="handleRequestTerminalsGroups"
                 @requestQuickTerminals="handleRequestQuickTerminals"
-                :responseTerminals="ruleForm.terminals"
-                :responseGroups="ruleForm.terminals_groups"
+                :responseTerminals="form.old_terminals"
+                :responseGroups="form.old_terminals_groups"
                 :responseQuickTerminals="form.quick_terminal"
                 :changeTerminalsVolume="ruleForm.volume"
                 :responseOpenVolume="ruleForm.is_open"
@@ -431,6 +431,8 @@ const form = reactive<any>({
   lightData: [], // 灯光配置数据
   ledData: [], // LED配置数据
   fast_sound_type: 0, // 快捷音源类型
+  old_terminals: [], // 终端
+  old_terminals_groups: [], // 终端分组
 });
 // 提交表单字段
 const ruleForm = reactive<any>({
@@ -449,8 +451,6 @@ const ruleForm = reactive<any>({
   fast_terminals_id: 0, // 快捷终端id
   fast_sound_id: 0, // 快捷音源id
   fast_sound: {}, // 快捷音源
-  terminals: [], // 终端
-  terminals_groups: [], // 终端分组
   medias: [], // 媒体
   medias_groups: [], // 媒体文件夹
   sound_source: {}, // 音源设置
@@ -842,6 +842,8 @@ const handleGetEditData = async () => {
     .then((result) => {
       if (result.data) {
         form.old_name = result.data.name;
+        form.old_terminals = result.result.terminals;
+        form.old_terminals_groups = result.result.terminals_groups;
         Object.keys(ruleForm).forEach((item) => {
           Object.keys(result.data).forEach((row) => {
             if (item === row) {

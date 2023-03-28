@@ -1103,5 +1103,8 @@
   "Mix configuration tips": "Upcoming application, modifying the configuration will end the task being performed. Do you want to continue?",
   "Upgrade firmware successful prompt": "Start upgrade firmware successfully, check upgrade progress in upgrade status",
   "Upgrade firmware failure prompt": "Start upgrade firmware failed, please check and upgrade again",
-  "One-click restart prompt": "The service will be restarted soon. Please wait for the service to start successfully before operating the interface. Do you want to continue?"
+  "One-click restart prompt": "The service will be restarted soon. Please wait for the service to start successfully before operating the interface. Do you want to continue?",
+  "MD5 validation successful": "MD5 validation successful",
+  "MD5 validation failed": "MD5 validation failed",
+  "Upgrade complete": "Upgrade complete"
 }
