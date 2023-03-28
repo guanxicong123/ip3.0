@@ -575,23 +575,29 @@ const handleClearAllExecutionTime = () => {
 // 处理添加执行时间
 const handleSelectExecutionTime = () => {
   let num = 0;
+  let isRadio = false;
   if (ruleForm.execute_time !== "") {
     if (form.executionTimeData.length > 0) {
       form.executionTimeData.forEach((item: { value: any }) => {
-        // 当选有重复执行时间给提示
+        if (Object.prototype.hasOwnProperty.call(item, "isRadio")) {
+          item.value = ruleForm.execute_time;
+          isRadio = true;
+        }
         if (item.value === ruleForm.execute_time) {
           num = num + 1;
         }
       });
       // 当没有重复执行时间给添加进数组
-      if (num < 1) {
+      if (num < 1 && !isRadio) {
         form.executionTimeData.push({
           value: ruleForm.execute_time,
+          isRadio: true,
         });
       }
     } else {
       form.executionTimeData.push({
         value: ruleForm.execute_time,
+        isRadio: true,
       });
     }
   }
@@ -860,6 +866,11 @@ const handleGetEditData = async () => {
             form.executionTimeData.push({
               value: item,
             });
+          });
+        } else {
+          form.executionTimeData.push({
+            value: ruleForm.execute_time,
+            isRadio: true,
           });
         }
         if (result.data.type === 4) {
