@@ -39,7 +39,10 @@
           v-if="!isMusicPlay && seleQuickMusic?.type"
         >
           <el-form-item :label="$t('Acquisition sound quality')">
-            <el-select v-model="ruleForm.sound_quality" :disabled="!props.isEdit">
+            <el-select
+              v-model="ruleForm.sound_quality"
+              :disabled="!props.isEdit"
+            >
               <el-option
                 v-for="item in audioQualityOptions"
                 :key="item.value"
@@ -173,7 +176,7 @@ const emit = defineEmits([
 
 const ruleForm = reactive({
   id: -1, //快捷音源配置id
-  type: 0, //选择的快捷音源类型
+  type: 1, //选择的快捷音源类型
   sound_quality: 1, //采集音质
   play_model: 0, //播放模式
   life_time: "00:00:00", //持续时间
