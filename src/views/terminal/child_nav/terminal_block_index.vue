@@ -245,11 +245,11 @@ const handleCheckedAll = () => {
 const changeVolume = (data: any) => {
   let send_data = {
     company: "BL",
-    actioncode: "c2ls_set_terminal_volume",
+    actioncode: "c2ms_set_terminal_volume",
     token: "",
     data: {
-      TerminalID: String(data.EndPointID),
-      Volume: String(data.volume),
+      EndPointList: [data.EndPointID],
+      Volume: data.volume,
     },
     result: 0,
     return_message: "",
