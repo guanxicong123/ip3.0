@@ -103,7 +103,7 @@ const groupStoreSearch = computed(() => {
   return terminals.searchGroupString;
 });
 const systemPageSize = computed(() => {
-  return systemStore.pageSize?.Group_PageSize;
+  return systemStore.pageSize?.Group_PageSize || 20;
 });
 
 const form = reactive<any>({
