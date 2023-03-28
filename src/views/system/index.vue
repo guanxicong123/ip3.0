@@ -24,23 +24,28 @@
             </div>
           </div>
           <div class="com-form">
-            <el-form class="special-class" label-position="top" :inline="true">
-              <div class="com-form-item-custom">
-                <el-checkbox
-                  v-model="form.one_key_alarm"
-                  :label="$t('Enable one-button alarm function')"
-                />
-              </div>
-              <el-form-item :label="$t('Alarm track')">
-                <el-select v-model="form.alarm_track">
-                  <el-option
-                    v-for="item in form.alarmTrackOptions"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
+            <el-form label-position="top">
+              <el-row :gutter="60">
+                <el-col :xs="12" :sm="12" :md="12" :lg="8" :xl="8">
+                  <el-checkbox
+                    v-model="form.one_key_alarm"
+                    :label="$t('Enable one-button alarm function')"
+                    style="margin-top: 30px"
                   />
-                </el-select>
-              </el-form-item>
+                </el-col>
+                <el-col :xs="12" :sm="12" :md="12" :lg="8" :xl="8">
+                  <el-form-item :label="$t('Alarm track')">
+                    <el-select v-model="form.alarm_track">
+                      <el-option
+                        v-for="item in form.alarmTrackOptions"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
             </el-form>
           </div>
           <div class="com-head">
@@ -56,37 +61,45 @@
             </div>
           </div>
           <div class="com-form">
-            <el-form label-position="top" :inline="true">
-              <el-form-item :label="$t('Device status default')">
-                <el-select v-model="form.default_terminal_status">
-                  <el-option
-                    v-for="(item, keys) in form.terminalStatusOptions"
-                    :key="keys"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-              <el-form-item :label="$t('Default display module')">
-                <el-select v-model="form.default_presentation_module">
-                  <el-option
-                    v-for="(item, keys) in form.presentationModuleOptions"
-                    :key="keys"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-              <el-form-item :label="$t('Terminal sequencing')">
-                <el-select v-model="form.default_terminal_sort">
-                  <el-option
-                    v-for="(item, keys) in form.terminalSortOptions"
-                    :key="keys"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
+            <el-form label-position="top">
+              <el-row :gutter="60">
+                <el-col :xs="12" :sm="12" :md="12" :lg="8" :xl="8">
+                  <el-form-item :label="$t('Device status default')">
+                    <el-select v-model="form.default_terminal_status">
+                      <el-option
+                        v-for="(item, keys) in form.terminalStatusOptions"
+                        :key="keys"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :xs="12" :sm="12" :md="12" :lg="8" :xl="8">
+                  <el-form-item :label="$t('Default display module')">
+                    <el-select v-model="form.default_presentation_module">
+                      <el-option
+                        v-for="(item, keys) in form.presentationModuleOptions"
+                        :key="keys"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :xs="12" :sm="12" :md="12" :lg="8" :xl="8">
+                  <el-form-item :label="$t('Terminal sequencing')">
+                    <el-select v-model="form.default_terminal_sort">
+                      <el-option
+                        v-for="(item, keys) in form.terminalSortOptions"
+                        :key="keys"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
             </el-form>
           </div>
           <div class="com-head">
@@ -253,6 +266,7 @@
               type="text"
               auto-complete="off"
               v-model="form.code"
+              :disabled="form.codeIsDisable"
               :placeholder="$t('Please enter')"
             >
             </el-input>
@@ -284,15 +298,13 @@ import { ElMessage } from "element-plus";
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
 const systemStore = getStore.useSystemStore();
+const appStoreStore = getStore.useAppStore();
 // 计算属性 computed
 const system_configs = computed(() => {
   return systemStore.system_configs;
 });
 const basic_configs = computed(() => {
   return systemStore.basic_configs;
-});
-const opcodes = computed(() => {
-  return systemStore.opcodes;
 });
 const functional_configs = computed(() => {
   return systemStore.functional_configs;
@@ -330,6 +342,7 @@ const form = reactive({
   reminder_configuration: [], // 提醒配置
   ProductKey: "",
   code: "",
+  codeIsDisable:false
 });
 
 const func_manage_dialog = ref(false);
@@ -380,7 +393,14 @@ const handleFuncManage = () => {
 // 注册弹窗
 const registerManage = () => {
   register_manage_dialog.value = true;
-  form.code = "";
+  // 若是永久用户，注册码自动填充且无法编辑
+  if(appStoreStore.register_detail.freeTime < 0){
+    form.code = appStoreStore.register_detail.RegisterCode;
+    form.codeIsDisable = true;
+  }else {
+    form.code = '';
+    form.codeIsDisable = false;
+  }
 };
 // 注册操作
 const confirmRegister = () => {
@@ -449,6 +469,7 @@ const changeConfig = (model: string) => {
         grouping: true,
       });
       systemStore.updateSystemConfig(send_data);
+      systemStore.getConfigInfo()
     }
   });
 };
@@ -467,7 +488,9 @@ watch(
 onMounted(() => {
   formatData();
   switch_form.value = JSON.parse(JSON.stringify(functional_configs.value));
-  form.ProductKey = opcodes.value;
+  systemStore.getProductKey().then((opcodes:any)=>{
+    form.ProductKey = opcodes
+  })
   getAlarmTask();
 });
 </script>
@@ -562,7 +585,7 @@ onMounted(() => {
 
 .com-button {
   .el-button {
-    width: 70px;
+    min-width: 70px;
     height: 30px;
     background: #e7f1fb;
     border-radius: 4px;
@@ -572,25 +595,12 @@ onMounted(() => {
 }
 
 .com-form {
-  .el-form {
-    display: flex;
-    justify-content: space-between;
-
-    .el-form-item:last-child {
-      margin-right: 0;
+  .check-box-group {
+    label {
+      min-width: 24%;
+      margin-right: 1%;
     }
   }
-
-  .special-class {
-    display: flex;
-    justify-content: flex-start;
-  }
-
-  .check-box-group {
-    display: flex;
-    justify-content: space-between;
-  }
-
   .func-switch-class {
     display: flex;
     justify-content: flex-start;
@@ -612,7 +622,7 @@ onMounted(() => {
   }
 
   .el-button {
-    width: 98px;
+    min-width: 98px;
     height: 30px;
     margin-right: 84px;
     background: #0070ee;

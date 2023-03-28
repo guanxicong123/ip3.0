@@ -153,7 +153,7 @@
 <script lang="ts" setup>
 import { socketLogin, socket } from "@/utils/socket";
 import usePublicMethod from "@/utils/global/index";
-
+import { ElMessage } from "element-plus";
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
@@ -166,9 +166,6 @@ const isWebsocekt = computed(() => {
 const isLogin = computed(() => {
   return store.is_login;
 }); //是否登录
-const isRegistrationWindow = computed(() => {
-  return store.is_registration_window;
-}); //是否显示注册窗口
 
 // 表单值
 const modelRef = reactive({
@@ -208,8 +205,16 @@ const handleMinimize = () => {
 const close = () => {
   window.electronAPI.send("close");
 };
+//是否重新登录
+const isLoginStatus = computed(()=>{
+  return getStore.useAppStore().is_login_status !== 0
+})
 // 注册触发事件
-window.electronAPI.handleRegisterRefresh((event: any, value: any) => {
+window.electronAPI.handleRegisterSuccess((event: any, value: any) => {
+  ElMessage({
+    type: "success",
+    message:proxy.$t("Register succeeded"),
+  });
   gitRegisterStatus();
 });
 // 获取注册状态
@@ -218,9 +223,8 @@ const gitRegisterStatus = () => {
     proxy.$http1.get("/register").then((result: any) => {
       if (result.result === 200) {
         registerStatus.value = result.data;
-        if (!registerStatus.value.isRegister) {
-          resolve();
-        }
+        store.updateRegisterDetail(result.data)
+        resolve(result.data);
       }
     });
   });
@@ -258,10 +262,10 @@ const submit = () => {
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  gitRegisterStatus().then(() => {
-    if (isRegistrationWindow.value) {
+  gitRegisterStatus().then((res:any) => {
+    // 未注册且不是重新登录，弹出【试用注册引导窗】
+    if(!res.isRegister && !isLoginStatus){
       window.electronAPI.send("register-window");
-      store.changeRegistrationWindow(false);
     }
   });
   if (socket) {
@@ -290,10 +294,14 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 .broadcast-login {
-  width: 100%;
-  height: 100%;
+  width: calc(100% - 4px);
+  height: calc(100% - 2px);
+  margin: 0 2px 2px 2px;
   background-color: $c-fff;
   border-radius: 8px;
+  box-sizing: border-box;
+  box-shadow: 1px 12px 48px 16px rgb(0 0 0 / 5%), 1px 9px 28px 0 rgb(0 0 0 / 6%),
+    1px 6px 6px -8px rgb(0 0 0 / 10%);
 
   .broadcast-login-header {
     position: relative;

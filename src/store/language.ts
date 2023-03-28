@@ -4,7 +4,7 @@ export const useLanguageStore = defineStore({
     return {
       language: {
         languagesMap: {},
-        language: "zh-cn",
+        language: localStorage.get("lang") || "zh-cn",
         version: "",
         theme: 0,
       },
@@ -13,7 +13,14 @@ export const useLanguageStore = defineStore({
   actions: {
     // 更新语言信息
     updateLanguage(data: any) {
-      this.language = data;
+      this.language.languagesMap = data.languagesMap;
+      this.language.version = data.version;
+      this.language.theme = data.theme;
+    },
+    // 单独更新当前选中语言
+    updateCurrentLanguage(language: string) {
+      this.language.language = language
+      localStorage.set("lang", language);
     },
   },
 });

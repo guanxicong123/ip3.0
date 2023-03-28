@@ -160,7 +160,7 @@
               <i
                 class="iconfont icon-refresh"
                 :title="$t('Refresh')"
-                @click="handleGetOnePageData"
+                @click="handleGetOnePageData(false)"
               ></i>
               <i
                 class="iconfont icon-upload"
@@ -365,6 +365,10 @@ const handleDeleteMediaGroup = (row: any) => {
             form.folderData = form.folderData.filter((item: { id: number }) => {
               return item.id != row.id;
             });
+            form.folderData[0].medias_count = row.medias_count;
+            if (form.currentFolder.id == 0) {
+              handleGetOnePageData();
+            }
             if (row.id == form.currentFolder.id) {
               form.currentFolder = form.folderData[0];
               handleClickFolder(form.folderData[0]);
@@ -397,7 +401,7 @@ const typeIndex = (index: number) => {
   return index + (form.currentPage - 1) * form.pageSize + 1;
 };
 // 处理获取一页数据
-const handleGetOnePageData = async () => {
+const handleGetOnePageData = async (isTrue?: boolean) => {
   form.loading = true;
   await MeidaService.getOnePageMeida({
     likeName: form.search,
@@ -414,7 +418,7 @@ const handleGetOnePageData = async () => {
         form.data = result.data.data;
         form.total = result.data.total;
         // 处理其他地方删除文件夹内的曲目时，更新展示文件夹内的歌曲数量
-        if (form.currentFolder?.medias_count != form.total) {
+        if (isTrue && form.currentFolder?.medias_count != form.total) {
           form.folderData.some((item: { id: number; medias_count: number }) => {
             if (item.id == form.currentFolder?.id) {
               form.folderData[0].medias_count -= item.medias_count;
@@ -499,7 +503,7 @@ const handleDelete = (type: string, row: any) => {
             if (form.data.length <= ids.length && form.currentPage > 1) {
               form.currentPage--;
             }
-            handleGetOnePageData();
+            handleGetOnePageData(true);
             if (form.currentFolder.id === 0) {
               handleGetAllBellsGroups();
             } else {
@@ -548,7 +552,7 @@ const handleDialogVisible = (value: boolean) => {
 const handleSuccessCallback = (data: any) => {
   handleGetAllBellsGroups();
   // 更新当前选中的文件夹展示数据
-  if (data.id == form.currentFolder.id) {
+  if (data?.id == form.currentFolder.id) {
     form.currentFolder.name = data.name;
     localStorage.set("folder", data);
   }

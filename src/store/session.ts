@@ -9,6 +9,7 @@ interface SessionParams<T = any> {
   pageSize: number;
   taskType: number;
   searchString: string;
+  waitExecutedMap: any;
 }
 
 export const useSessionStore = defineStore({
@@ -25,6 +26,7 @@ export const useSessionStore = defineStore({
       pageSize: 20, // 每页/条
       taskType: 0, // 任务类型
       searchString: "", // 搜索字段
+      waitExecutedMap: {}, // 待任务创建后触发的事件映射表
     };
   },
   actions: {
@@ -44,6 +46,7 @@ export const useSessionStore = defineStore({
           item.EndPointListArray = [];
         }
         this.allSessionObj[item.TaskID] = item;
+        this.executedWaitEvent(item.TaskID)
       }
     },
     // 设置任务类型
@@ -156,5 +159,22 @@ export const useSessionStore = defineStore({
       this.allFilterSession = [];
       this.sessionsLocalKey = [];
     },
+    // 执行 待执行事件
+    executedWaitEvent(TaskID : string) {
+      if(this.waitExecutedMap[TaskID]){
+        this.waitExecutedMap[TaskID].map((cb:any)=>{
+          cb()
+        })
+        delete this.waitExecutedMap[TaskID]
+      }
+    },
+    // 添加 待执行事件
+    addWaitExecutionEvent(TaskID : string, cb : any){
+      const events = this.waitExecutedMap[TaskID] || []
+      events.push(cb)
+      this.waitExecutedMap[TaskID] = events
+    },
+    
+
   },
 });

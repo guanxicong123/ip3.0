@@ -61,6 +61,14 @@ export class MeidaService {
       method: "post",
       responseType: "json",
       data: params,
+      timeout: 0, // 默认值是 `0` (永不超时)
+    });
+  }
+
+  static async getUploadNotifyWs(id: number): Promise<any> {
+    return $http("/medias/upload-notifyWs/" + id, {
+      method: "get",
+      responseType: "json",
     });
   }
 

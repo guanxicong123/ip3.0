@@ -1,4 +1,3 @@
-import usePublicMethod from "@/utils/global/index";
 import $http from "@/utils/axios/local_index";
 import i18n from "@/utils/language";
 

@@ -1,18 +1,13 @@
 @import 'reset.scss';
 @import 'add_select.scss';
 
-html {
-  width: calc(100% - 8px);
-  height: calc(100% - 8px);
-  margin: 4px;
-  box-shadow: 2px 12px 48px 16px rgb(0 0 0 / 5%), 2px 9px 28px 0 rgb(0 0 0 / 6%), 2px 6px 6px -8px rgb(0 0 0 / 10%);
-}
 #app {
   width: 100%;
   height: 100%;
   color: $c-000;
   font-size: 14px;
   font-family: MicrosoftYaHei;
+  overflow: hidden;
 }
 .icon {
   width: 1em;
@@ -173,18 +168,6 @@ html {
     }
   }
 }
-.com-form-item-custom {
-  min-width: 274px;
-  margin-right: 80.5px;
-  margin-bottom: 18px;
-  .el-checkbox {
-    height: 30px;
-  }
-  .el-input,
-  .el-select {
-    display: flex;
-  }
-}
 .com-add-bottom {
   padding-bottom: 80px;
 }
@@ -207,9 +190,6 @@ html {
   box-sizing: border-box;
 }
 // Element plus 样式修改
-// .el-popper {
-//   width: auto !important;
-// }
 .el-table {
   thead {
     // 表格-title

@@ -50,7 +50,7 @@
             :title="$t('Batch deletion')"
             :class="{ 'icon-disabled': form.multipleSelection.length == 0 }"
             @click="handleDelete(form.activeName)"
-            v-if="userStore.type == 0"
+            v-if="userStore?.type == 0"
           ></i>
           <!-- <el-button type="primary" plain @click="clearAllLog(form.activeName)">
             {{ $t("Clear log") }}

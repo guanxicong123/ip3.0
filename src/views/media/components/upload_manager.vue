@@ -136,7 +136,7 @@
 import { ElMessage } from "element-plus";
 import VueUploadComponent from "vue-upload-component";
 import type { VueUploadItem } from "vue-upload-component";
-import { Md5 } from "ts-md5/dist/md5";
+import { Md5 } from "ts-md5";
 import { MeidaService } from "@/utils/api/media";
 import usePublicMethod from "@/utils/global/index";
 
@@ -316,27 +316,12 @@ const inputFile = (
   if (newFile && !oldFile) {
     // add
     console.log("add", newFile);
+    handleUploadFilesList();
   }
   if (newFile && oldFile) {
     // update
     console.log("update", newFile);
-    if (form.files.length) {
-      /* 如果之前该文件夹有东西, 那么就更新它 */
-      const newFile = form.files.filter((item: { postAction: string | string[] }) => {
-        let folderId = item.postAction.slice(item.postAction.lastIndexOf("/") + 1);
-        if (folderId == form.currentSelected.id) {
-          return true;
-        }
-      });
-      if (form.files.length) {
-        form.showFilesInfo = newFile;
-      } else {
-        /* 否则这个文件夹之前没有东西, 那么就添加新的 */
-        form.showFilesInfo = form.files;
-      }
-    } else {
-      form.showFilesInfo = form.files;
-    }
+    handleUploadFilesList();
     // 进度状态
     handleInitializationParameters();
     if (form.files.length) {
@@ -359,12 +344,11 @@ const inputFile = (
     if (Number.isNaN(form.totalProgress)) {
       form.totalProgress = 0;
     }
+    const total = form.errorFiles + form.successFiles;
     // 是否上传完成
-    if (
-      form.errorFiles + form.successFiles == form.showFilesInfo.length &&
-      form.totalProgress > 0
-    ) {
+    if (total == form.showFilesInfo.length && form.totalProgress > 0) {
       upload.updateUploadCompleted(true);
+      handleUploadNotifyWS();
     }
   }
   if (!newFile && oldFile) {
@@ -425,9 +409,16 @@ const inputFile = (
                   const num = (form.successFiles / form.totalFilesLength) * 100;
                   // num.toFixed(2)四舍五入, 不四舍五入 Math.floor(num)
                   form.totalProgress = num.toFixed(2);
-                  form.showFilesInfo.push(newFile);
+                  if (!form.showFilesInfo.includes(newFile)) {
+                    form.showFilesInfo.push(newFile);
+                  }
                   form.speed = 4194304;
-                  upload.updateUploadCompleted(true);
+                  const total = form.errorFiles + form.successFiles;
+                  // 是否上传完成
+                  if (total == form.showFilesInfo.length && form.totalProgress > 0) {
+                    upload.updateUploadCompleted(true);
+                    handleUploadNotifyWS();
+                  }
                 }
                 // 文件夹内已存在文件，则提示，否则上传
                 if (result.data == true) {
@@ -463,6 +454,36 @@ const autoUpload = () => {
   if (!uploadRef.value?.active && form.md5Finish >= form.files.length) {
     uploadRef.value.active = true;
   }
+};
+// 处理更新文件列表数据
+const handleUploadFilesList = () => {
+  if (form.files.length) {
+    /* 如果之前该文件夹有东西, 那么就更新它 */
+    const newFile = form.files.filter((item: { postAction: string | string[] }) => {
+      let folderId = item.postAction.slice(item.postAction.lastIndexOf("/") + 1);
+      if (folderId == form.currentSelected.id) {
+        return true;
+      }
+    });
+    if (form.files.length) {
+      form.showFilesInfo = newFile;
+    } else {
+      /* 否则这个文件夹之前没有东西, 那么就添加新的 */
+      form.showFilesInfo = form.files;
+    }
+  } else {
+    form.showFilesInfo = form.files;
+  }
+};
+// 处理通知服务器更新md5-upload接口
+const handleUploadNotifyWS = () => {
+  MeidaService.getUploadNotifyWs(form.currentSelected.id)
+    .then((result) => {
+      console.log(result, "success");
+    })
+    .catch((error) => {
+      console.log(error, "error");
+    });
 };
 
 // 监听变化

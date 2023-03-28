@@ -775,18 +775,15 @@ const setEditDataIDS = (data: any[]) => {
 const handleEditTerminalsData = () => {
   form.selectedMediaID = setEditDataIDS(parentData.responseMedia);
   let allData = [];
-  let selectedData = [];
   for (let index = 0; index < form.allMediaData.length; index++) {
     const item = form.allMediaData[index];
     // 根据编辑界面返回的媒体ids，直接做对应处理
-    if (form.selectedMediaID.includes(item.id)) {
-      selectedData.push(item);
-    } else {
+    if (!form.selectedMediaID.includes(item.id)) {
       allData.push(item);
     }
   }
   form.allMediaData = allData;
-  form.selectedMediaData = selectedData;
+  form.selectedMediaData = parentData.responseMedia || [];
   handleUpdateSelectedMedia();
 };
 // 处理编辑界面传递回来的已选择分组数据
@@ -837,6 +834,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .com-select-media-group {
+  position: relative;
   display: flex;
   align-items: center;
   height: 300px;

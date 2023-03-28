@@ -271,7 +271,10 @@ watch(
     deep: true,
   }
 );
-
+// 暴露方法
+defineExpose({
+  handleRowClick
+});
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   // 刷新页面时，获取下当前选中表格行

@@ -943,10 +943,11 @@ watch(
       // 文本播放
       if (form.sound_source.type == 5) {
         form.broadcast_number = newSoundSource.play_number;
+        changeTextPlayEstimatedTime();
       }
     }
     // 编辑回传的快捷音源
-    if (newFastSoundSource != oldFastSoundSource) {
+    if (newFastSoundSource && newFastSoundSource != oldFastSoundSource) {
       form.sound_source.id = newFastSoundSource.id;
       form.sound_source.name = newFastSoundSource.name;
       form.sound_source.type = newFastSoundSource.type;

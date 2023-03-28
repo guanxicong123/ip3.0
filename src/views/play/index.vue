@@ -47,11 +47,8 @@
         </div>
         <div class="content-center">
           <p>
-            {{
-              playCenterData.TaskID !== playSubscriptionTask.TaskID
-                ? playCenterData.name
-                : playSubscriptionTask.MusicName
-            }}
+            <!-- 使用当前正在执行任务的数组来显示播放媒体名称。socket使用task_status这个状态的信息 -->
+            {{sessionStoreAll[playCenterData.TaskID]?.TaskShowInfo}}
           </p>
           <div class="progress" v-if="handleTaskProgress() && playCenterData.TaskID">
             <el-slider
@@ -306,6 +303,9 @@ const session = getStore.useSessionStore();
 const storePlay = getStore.usePlayStore();
 const systemStore = getStore.useSystemStore();
 // 计算属性 computed
+const remoteTaskDisplay: any = computed(() => {
+  return systemStore.functional_configs.remoteTaskDisplay;
+});
 const sessionStoreAll = computed(() => {
   return session.allSessionObj;
 });
@@ -337,6 +337,10 @@ const playCenterData = computed(() => {
   }
 });
 
+const isLatestTaskStatus: any = computed(()=>{
+  return storePlay.isLatestTaskStatus
+})
+
 interface User {
   date: string;
   name: string;
@@ -365,7 +369,9 @@ const form = reactive<any>({
 
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
-const priorityData = new Map();
+const priorityData = computed(()=>{
+  return getStore.useSystemStore().priorityData
+})
 const tableDataAll: any = ref([]);
 const selectTaskData: any = ref({}); //选中的任务数据(http)
 // 路由
@@ -766,7 +772,7 @@ const handleTaskAttribute = (row: any) => {
   if (row.type === 1) {
     //远程任务-音乐播放
     if (row.mediasIds.length === 0)
-      return proxy.$message.warning(proxy.$t('"No sound source"'));
+      return proxy.$message.warning(proxy.$t("No sound source"));
     data = {
       TaskAudioType: 6,
       RemoteID: row.id,
@@ -785,7 +791,7 @@ const handleTaskAttribute = (row: any) => {
     //快捷音源
     if (row.sound_source.type === 1) {
       if (row.mediasIds.length === 0)
-        return proxy.$message.warning(proxy.$t('"No sound source"'));
+        return proxy.$message.warning(proxy.$t("No sound source"));
       //音乐播放
       data = {
         TaskAudioType: 6,
@@ -915,9 +921,14 @@ const handelDelLocalRask = (row: any) => {
 };
 // 获取所有任务
 const getTaskAll = () => {
-  Promise.all([getBroadcastingAll(), getTaskLocalAll()]).then((data: any) => {
-    tableDataAll.value = [...data[0], ...data[1]];
-    form.data = filterData();
+  return new Promise((resolve) => {
+    Promise.all([getBroadcastingAll(), getTaskLocalAll()]).then((data: any) => {
+      tableDataAll.value = [...data[0], ...data[1]];
+      form.data = filterData();
+      // 每次请求完最新的数据后，需要把全局的task状态设置为true
+      storePlay.setIsLatestTaskStatus(true)
+      resolve(form.data);
+    });
   });
 };
 // 获取所有播放任务
@@ -958,16 +969,16 @@ const getTaskLocalAll = () => {
   });
 };
 // 获取所有系统优先级
-const getPrioritySetting = () => {
-  return new Promise((resolve, reject) => {
-    proxy.$http.get("/priority-setting").then((restlu: any) => {
-      restlu.data.forEach((item: { task_type: any; priority: any }) => {
-        priorityData.set(item.task_type, item.priority);
-      });
-      resolve(restlu.data);
-    });
-  });
-};
+// const getPrioritySetting = () => {
+//   return new Promise((resolve, reject) => {
+//     proxy.$http.get("/priority-setting").then((restlu: any) => {
+//       restlu.data.forEach((item: { task_type: any; priority: any }) => {
+//         priorityData.set(item.task_type, item.priority);
+//       });
+//       resolve(restlu.data);
+//     })
+//   });
+// };
 const formatTooltip = (seconds: number) => {
   if (seconds) {
     let data = seconds;
@@ -997,6 +1008,20 @@ const filterData = () => {
 };
 
 // 监听变化
+
+// 根据权限，再去获取任务列表数据
+watch(
+  remoteTaskDisplay,
+  (newVal) => {
+    newVal && getTaskAll().then((formData:any)=>{
+      if (formData.length > 0) {
+        handleSelectionClick(formData[0]);
+        multipleTableRef.value?.setCurrentRow(formData[0]);
+      }
+    });
+  },
+  { immediate: true }
+);
 watch(
   () => sessionStoreAll.value,
   (newData) => {
@@ -1030,7 +1055,11 @@ watch(playSubscriptionTask, (newVal) => {
   }
 });
 watch(playCenterData, (newVal, oldVal) => {
-  form.volume = newVal?.TaskVolume ? newVal?.TaskVolume : newVal?.volume;
+  if(newVal?.TaskVolume || newVal?.TaskVolume === 0){
+    form.volume = newVal?.TaskVolume
+  }else {
+    form.volume = newVal?.volume
+  }
   if (newVal?.TaskID === oldVal?.TaskID) return;
   const newValType =
     newVal.type === 1 ||
@@ -1058,18 +1087,15 @@ watch(playCenterData, (newVal, oldVal) => {
   }
 });
 
+// 当task信息在其他端 更新的时候，需要重新请求task的数据
+watch(isLatestTaskStatus,()=>{
+  getTaskAll()
+})
+
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  Promise.all([getBroadcastingAll(), getTaskLocalAll(), getPrioritySetting()]).then(
-    (data: any) => {
-      tableDataAll.value = [...data[0], ...data[1]];
-      form.data = [...data[0], ...data[1]];
-      if (form.data.length > 0) {
-        handleSelectionClick(form.data[0]);
-        multipleTableRef.value?.setCurrentRow(form.data[0]);
-      }
-    }
-  );
+  // 直接使用socket中的值代替,不需要在当前页面另外请求，不然会切换语言的时候会出现两个相同请求同时发起，然后这个被取消掉，导致页面展示，优先级位置数据有问题
+  // getPrioritySetting()
   if (JSON.stringify($useRoute.params) != "{}") {
     handlePlayTask($useRoute.params);
   }

@@ -2,7 +2,6 @@ import { ElMessage, ElNotification, ElLoading } from "element-plus";
 import i18n from "@/utils/language";
 import router from "../router";
 
-
 const $t: any = i18n.global;
 
 let loadingInstance: any;
@@ -41,6 +40,7 @@ const registerWebSocket = async () => {
       } else {
         login();
       }
+      loadingInstance?.close();
     };
     //WebSocket通知
     socket.onmessage = ({ data }: any) => {
@@ -101,6 +101,10 @@ const reload = () => {
     socketStatus && registerWebSocket();
     // message.error("服务器连接断开")
   }, 3000);
+  loadingInstance = ElLoading.service({
+    text: $t.t("Attempting to reconnect to logical server"),
+    background: "rgba(0, 0, 0, 0.7)",
+  });
 };
 // 初始化ws连接
 const socketLogin = (data: any) => {
@@ -142,7 +146,7 @@ const requestFunction = (actionCode: string) => {
   return send(baseParams);
 };
 // 发起远程音乐播放任务
-const startRemotePlay = (row: any) => {
+const startRemotePlay = (row: any,playMediaName?:string) => {
   if (
     getStore.usePlayStore().playTaskStaging.includes(row.TaskID) &&
     row.RemoteType !== "manual_alarm"
@@ -154,7 +158,7 @@ const startRemotePlay = (row: any) => {
       data: {
         TaskID: row.TaskID,
         ControlCode: "play",
-        ControlValue: "",
+        ControlValue: playMediaName || '',
       },
       result: 0,
       return_message: "",
@@ -219,6 +223,12 @@ const handlerMsg = (msg: any) => {
         getStore.useSessionStore().updateSession(msg.data.TaskInfoArray);
       },
     ],
+    [
+      "broadcast_studio_update",
+      () => {
+        getStore.usePlayStore().setIsLatestTaskStatus(false);
+      },
+    ],
   ]);
   if (msg.result !== 200) {
     // 登录失败
@@ -227,12 +237,11 @@ const handlerMsg = (msg: any) => {
       socket.close();
     }
     if (msg.actioncode === "cs2ms_net_disconnect") {
-      console.log('服务器断开连接')
       loadingInstance = ElLoading.service({
-        text: '正在尝试重新连接逻辑服务器...',
-        background: 'rgba(0, 0, 0, 0.7)',
-      })
-      return
+        text: $t.t("Attempting to reconnect to logical server"),
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      return;
     }
     return ElMessage({
       type: "error",
@@ -276,15 +285,17 @@ const handlerMsg = (msg: any) => {
       getStore.usePlayStore().setPlayStatus(msg.data);
       break;
     case "ms2c_create_server_task":
-      startRemotePlay(msg.data);
+      startRemotePlay(msg.data,getStore.usePlayStore().switchPlayMediaNameMap[msg.data.TaskID]);
       break;
     case "ms2c_create_local_task":
-      startRemotePlay(msg.data);
+      startRemotePlay(msg.data,getStore.usePlayStore().switchPlayMediaNameMap[msg.data.TaskID]);
       break;
     case "ms2c_control_task": // 播放中心任务状态改变
       break;
     case "cs2ms_net_reconnect": // 服务器重连
-      loadingInstance?.close()
+      getStore.useSessionStore().clearSession();
+      getStore.useTerminalsStore().clearTerminals();
+      loadingInstance?.close();
       initRequest();
       break;
     case "ms2c_stop_task":
