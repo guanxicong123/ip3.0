@@ -214,6 +214,7 @@ window.electronAPI.handleRegisterSuccess((event: any, value: any) => {
   ElMessage({
     type: "success",
     message:proxy.$t("Register succeeded"),
+    grouping: true,
   });
   gitRegisterStatus();
 });
