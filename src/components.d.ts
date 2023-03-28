@@ -61,7 +61,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Select_group_radio: typeof import('./components/select_components/select_group_radio.vue')['default']
-    Select_media_group: typeof import('./components/select_components/select_media_group.vue')['default']
+    Select_media_group: typeof import('./components/select_media_group.vue')['default']
     Select_media_radio: typeof import('./components/select_components/select_media_radio.vue')['default']
     Select_shortcut_sound_source: typeof import('./components/select_shortcut_sound_source.vue')['default']
     Select_shortcut_sound_source_radio: typeof import('./components/select_components/select_shortcut_sound_source_radio.vue')['default']

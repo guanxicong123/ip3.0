@@ -265,7 +265,7 @@
   "Task log": "任务日志",
   "Full screen": "全屏",
   "Exit full screen": "退出全屏",
-  "Quick entry configuration": "快捷入口配置",
+  "Quick configuration": "快捷配置",
   "Fast entry configured": "已配置快捷入口",
   "Configurable shortcut entrance": "可配置快捷入口",
   "Number of entrances": "入口数量",
@@ -670,14 +670,6 @@
   "Download link": "下载链接",
   "Upgrade status": "升级状态",
   "Upgrade progress": "升级进度",
-  "Start downloading firmware": "开始下载固件",
-  "Firmware download succeeded": "固件下载成功",
-  "Firmware download failed": "固件下载失败",
-  "Firmware detection succeeded, start upgrading": "固件检测成功，开始升级",
-  "Firmware detection failed": "固件检测失败",
-  "Firmware upgrade succeeded": "固件升级成功",
-  "Firmware upgrade timeout": "固件升级超时",
-  "Waiting to download firmware": "等待下载固件",
   "System log": "系统日志",
   "Broadcast log": "广播日志",
   "Intercom log": "对讲日志",
@@ -1111,5 +1103,8 @@
   "Mix configuration tips": "即将应用，修改配置会结束正在执行的任务，是否继续？",
   "Upgrade firmware successful prompt": "开始升级固件成功，请在升级状态查看升级进度",
   "Upgrade firmware failure prompt": "开始升级固件失败，请检查后重新升级",
-  "One-click restart prompt": "即将重启服务，请等待服务启动成功再操作界面，是否继续？"
+  "One-click restart prompt": "即将重启服务，请等待服务启动成功再操作界面，是否继续？",
+  "MD5 validation successful": "MD5效验成功",
+  "MD5 validation failed": "MD5效验失败",
+  "Upgrade complete": "升级完成"
 }

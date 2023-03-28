@@ -30,7 +30,6 @@
 
 <script lang="ts" setup>
 import { registerWebSocket } from "@/utils/socket";
-import { send } from "@/utils/socket";
 
 // defineAsyncComponent 异步组件-懒加载子组件
 const uploadManager = defineAsyncComponent(
