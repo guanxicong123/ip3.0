@@ -254,7 +254,6 @@ const changeVolume = (data: any) => {
     result: 0,
     return_message: "",
   };
-  console.log("send_data", send_data);
   send(send_data);
 };
 // 处理设置默认获取条件

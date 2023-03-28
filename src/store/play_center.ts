@@ -5,6 +5,7 @@ export interface playState {
   playTaskStaging: Array<any>;
   switchPlayMediaNameMap:any;
   isLatestTaskStatus:boolean;
+  isLatestTaskDetail:boolean;
 }
 export const usePlayStore = defineStore({
   id: "play_center",
@@ -15,6 +16,7 @@ export const usePlayStore = defineStore({
     playTaskStaging: [], //用于储存
     switchPlayMediaNameMap:{}, // 创建任务后时候，用于切换到某个媒体播放
     isLatestTaskStatus:true, // 当前是否为最新的任务列表
+    isLatestTaskDetail:true, // 当前是否为最新的任务详情
   }),
   actions: {
     setPlayVoice(data: any) {
@@ -40,6 +42,9 @@ export const usePlayStore = defineStore({
     },
     setIsLatestTaskStatus(flog:boolean){
       this.isLatestTaskStatus = flog
+    },
+    setIsLatestTaskDetail(flog:boolean) {
+      this.isLatestTaskDetail = flog
     }
   },
 });

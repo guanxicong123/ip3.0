@@ -301,6 +301,9 @@ const handlerMsg = (msg: any) => {
     case "ms2c_stop_task":
       getStore.useSessionStore().removeSession(msg.data);
       break;
+    case "ms2c_set_task_volume": // 设置任务音量
+      getStore.usePlayStore().setIsLatestTaskDetail(false);
+      break;
   }
 };
 

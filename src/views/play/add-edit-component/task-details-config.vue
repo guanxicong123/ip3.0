@@ -194,7 +194,7 @@
           >
             <template #default="scope">
               {{
-                scope.row.hasOwnProperty("terminals_id") ? scope.row.default_volume : "-"
+                scope.row.hasOwnProperty("terminals_id") ? allTerminalsObj[scope.row.terminals_id]?.Volume : "-"
               }}
             </template>
           </el-table-column>
@@ -293,6 +293,7 @@ const { proxy } = useCurrentInstance.useCurrentInstance();
 const props: any = defineProps({
   selectTaskData: Object,
   playCenterData: Object,
+  currentVolume: Number
 });
 const ruleForm: any = reactive({
   type: 1,
@@ -339,7 +340,88 @@ const terminasNumber = computed(() => {
 const musicsNumber = computed(() => {
   return [1, 10].includes(taskDataDetailed.value.type) ? ruleForm.data.length : "";
 });
+// 当前是否为最新的任务详情，若不是，重新请求当前任务详情
+const isLatestTaskDetail: any = computed(()=>{
+  return storePlay.isLatestTaskDetail
+})
+const allTerminalsObj: any = computed(()=>{
+  return getStore.useTerminalsStore().allTerminalsObj
+})
 
+/**
+ * 编辑任务
+ *  1. 编辑本地任务
+ *  2. 编辑远程播放任务
+ */
+// 编辑本地播放任务
+const editLocalAudio = (data:any)=>{
+  proxy.$http1
+    .put(
+      "/task",
+      data
+    )
+    .then((result: any) => {
+      if (result.result === 200) {
+        handleSelectionData(props.selectTaskData);
+      }
+    });
+}
+// 编辑远程播放任务
+const editRemteTask = (data:any)=>{
+  proxy.$http
+    .put(
+      "/broadcasting/" + data.id,
+      data
+    )
+    .then((result: any) => {
+      if (result.result === 200) {
+        handleSelectionData(props.selectTaskData);
+      }
+    });
+}
+// 修改终端音量
+const changeTerminalVolume = (data: any) => {
+  let send_data = {
+    company: "BL",
+    actioncode: "c2ms_set_terminal_volume",
+    token: "",
+    data: {
+      EndPointList: [...data.EndPointID],
+      Volume: data.volume,
+    },
+    result: 0,
+    return_message: "",
+  };
+  send(send_data);
+};
+const editTaskDetail = (taskDetail:any)=>{
+  // 1. 发一个改变任务音量，c2ms_set_task_volume ；在/play/index.vue 音量条改变就发送，
+  // 2. 发一个改变终端音量，c2ms_set_terminal_volume
+  let changeTerminalVolumeData = {
+    EndPointID:taskTerminalAll.value.map((item:any)=>{
+      return item.id
+    }),
+    volume:props.currentVolume
+  }
+  changeTerminalVolume(changeTerminalVolumeData)
+  // 3. 发起修改任务详情中的声音
+  const localmusic = [10,11,12]
+  taskDetail.volume = props.currentVolume
+  if(localmusic.includes(taskDetail.type)){
+    editLocalAudio(taskDetail)
+  }else {
+    editRemteTask(taskDetail);
+  }
+
+}
+watch(
+  isLatestTaskDetail,
+  (newVal: any) => {
+    if(!newVal){
+      editTaskDetail(taskDataDetailed.value)
+    }
+  }
+);
 watch(
   () => props.selectTaskData,
   (newVal: any) => {
@@ -963,6 +1045,8 @@ const handleDelete = (row: any) => {
 // 获取选中任务详情信息
 const handleSelectionData = (row: any) => {
   return new Promise((resolve: any, reject: any) => {
+    // 更新完任务详情，设置当前为最新任务详情版本
+    storePlay.setIsLatestTaskDetail(true)
     if (row.type < 10) {
       proxy.$http
         .get("/details/" + row.id, {

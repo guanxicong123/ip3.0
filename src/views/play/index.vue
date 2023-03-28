@@ -276,6 +276,7 @@
         <task-details-config
           :selectTaskData="selectTaskData"
           :playCenterData="playCenterData"
+          :currentVolume="form.volume"
         >
         </task-details-config>
       </div>
@@ -337,6 +338,7 @@ const playCenterData = computed(() => {
   }
 });
 
+// 当前是否为最新的任务，若不是，重新请求所有任务
 const isLatestTaskStatus: any = computed(()=>{
   return storePlay.isLatestTaskStatus
 })
@@ -705,6 +707,7 @@ const handleControlValuev = (type: string) => {
 };
 // 音量调节
 const handleVolumeTask = (volume: any) => {
+  // 当前有任务在播放
   if (playCenterData.value?.TaskID) {
     let data = {
       company: "BL",
