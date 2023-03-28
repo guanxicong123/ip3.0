@@ -947,7 +947,7 @@ watch(
       }
     }
     // 编辑回传的快捷音源
-    if (newFastSoundSource != oldFastSoundSource) {
+    if (newFastSoundSource && newFastSoundSource != oldFastSoundSource) {
       form.sound_source.id = newFastSoundSource.id;
       form.sound_source.name = newFastSoundSource.name;
       form.sound_source.type = newFastSoundSource.type;
