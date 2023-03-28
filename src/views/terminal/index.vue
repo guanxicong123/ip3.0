@@ -88,6 +88,7 @@
           color="#4900EE"
           :loading="startButton.status && startButton.type === 1"
           @click="functronButtonTask(1)"
+          :disabled="!judgeButtonStatus(4) && sessionsData.length"
         >
           {{
             judgeButtonStatus(5) &&
@@ -105,6 +106,7 @@
             judgeButtonStatus(5) &&
             sessionsData[0]?.TaskName.indexOf($t('Regional broadcasting')) === -1
           "
+          :disabled="!judgeButtonStatus(5) && sessionsData.length"
         >
           {{ $t("End broadcast") }}
         </el-button>
@@ -114,6 +116,7 @@
           @click="functronButtonTask(5)"
           :loading="startButton.status && startButton.type === 5"
           v-else
+          :disabled="!judgeButtonStatus(5) && sessionsData.length"
         >
           {{ $t("Broadcast") }}
         </el-button>
@@ -123,6 +126,7 @@
           v-if="$useRoute.name != 'group'"
           @click="functronButtonTask(4)"
           :loading="startButton.status && startButton.type === 4"
+          :disabled="!judgeButtonStatus(4) && sessionsData.length"
         >
           {{ judgeButtonStatus(4) ? $t("End the intercom") : $t("Intercom") }}
         </el-button>
@@ -131,9 +135,10 @@
           color="#06BA7D"
           v-if="$useRoute.name != 'group'"
           @click="functronButtonTask(17)"
-          :loading="startButton.status && startButton.type === 19"
+          :loading="startButton.status && startButton.type === 17"
+          :disabled="!judgeButtonStatus(17) && sessionsData.length"
         >
-          {{ judgeButtonStatus(19) ? $t("End listening") : $t("Monitor") }}
+          {{ judgeButtonStatus(17) ? $t("End listening") : $t("Monitor") }}
         </el-button>
         <el-button
           v-if="system_configs.EnabledAlarm"
@@ -241,7 +246,7 @@ const sessionsLocalKey = computed(() => {
 });
 const sessionsData: any = computed(() => {
   return Object.values(session.allSessionObj).filter((item: any) => {
-    if ([4, 5].includes(item.TaskType) && sessionsLocalKey.value.includes(item.TaskID)) {
+    if ([4, 5,17].includes(item.TaskType) && sessionsLocalKey.value.includes(item.TaskID)) {
       return item;
     }
     if (
