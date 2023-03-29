@@ -233,13 +233,29 @@ const gitRegisterStatus = () => {
 // 提交
 const submit = () => {
   if (!registerStatus.value?.isRegister && registerStatus.value?.freeTime === 0)
-    return proxy.$message.warning(proxy.$t("Unregistered"));
+    return proxy.$message({
+      type:'warning',
+      message:proxy.$t("Unregistered"),
+      grouping:true
+    })
   if (!modelRef.name)
-    return proxy.$message.warning(proxy.$t("Please enter the account number"));
+    return proxy.$message({
+      type:'warning',
+      message:proxy.$t("Please enter the account number"),
+      grouping:true
+    })
   if (!modelRef.password)
-    return proxy.$message.warning(proxy.$t("Please input a password"));
+    return proxy.$message({
+      type:'warning',
+      message:proxy.$t("Please input a password"),
+      grouping:true
+    })
   if (!modelRef.server_ip_address)
-    return proxy.$message.warning(proxy.$t("Please enter the server address"));
+    return proxy.$message({
+      type:'warning',
+      message:proxy.$t("Please enter the server address"),
+      grouping:true
+    })
   let data = {
     company: "BL",
     actioncode: "c2ms_user_login",

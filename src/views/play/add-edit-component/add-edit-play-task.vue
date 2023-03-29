@@ -420,13 +420,21 @@ const submitTaskPlay = (formEl:FormInstance | undefined) => {
   formEl.validate(valid=>{
     if(valid){
       if (!executionregiontype.value && !fast_terminals_id.value)
-        return proxy.$message.warning(proxy.$t("Please select a shortcut terminal"));
+        return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select a shortcut terminal"),
+          grouping:true
+        });
       if (
         executionregiontype.value &&
         terminals.value.length === 0 &&
         terminals_groups.value.length === 0
       ) {
-        return proxy.$message.warning(proxy.$t("Please select a terminal or group"));
+        return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select a terminal or group"),
+          grouping:true
+        });
       }
     
       let data = getBasicData();
@@ -488,13 +496,21 @@ const submitTask = (formEl:FormInstance | undefined) => {
   formEl.validate(valid=>{
     if(valid){
       if (!executionregiontype.value && !fast_terminals_id.value)
-        return proxy.$message.warning(proxy.$t("Please select a shortcut terminal"));
+        return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select a shortcut terminal"),
+          grouping:true
+        });
       if (
         executionregiontype.value &&
         terminals.value.length === 0 &&
         terminals_groups.value.length === 0
       ) {
-        return proxy.$message.warning(proxy.$t("Please select a terminal or group"));
+        return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select a terminal or group"),
+          grouping:true
+        });
       }
       let data = getBasicData();
     
@@ -524,7 +540,11 @@ const getBasicData = () => {
 const createQuickSou = (data: any) => {
   return new Promise((resolve, reject) => {
     if (!ruleForm.fast_sound_id)
-      return proxy.$message.warning(proxy.$t("Please select a shortcut sound source"));
+      return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select a shortcut sound source"),
+          grouping:true
+        });
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http
         .put(
@@ -560,12 +580,20 @@ const createQuickSou = (data: any) => {
 const createLocalAudio = (data: any) => {
   return new Promise((resolve, reject) => {
     if (ruleForm.content.length === 0)
-      return proxy.$message.warning(proxy.$t("Please select a media file"));
+      return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select a media file"),
+          grouping:true
+        });
     if (
       musicPlayForm.value?.play_model !== 0 &&
       musicPlayForm.value?.life_time === "00:00:00"
     )
-      return proxy.$message.warning(proxy.$t("Please select the duration"));
+      return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select the duration"),
+          grouping:true
+        });
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http1
         .put(
@@ -596,12 +624,20 @@ const createLocalAudio = (data: any) => {
 const createRemteTask = (data: any) => {
   return new Promise((resolve, reject) => {
     if (ruleForm.medias.length === 0 && ruleForm.medias_groups.length === 0)
-      return proxy.$message.warning(proxy.$t("Please select a media file"));
+      return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select a media file"),
+          grouping:true
+        });
     if (
       remotePlayForm.value?.play_model !== 0 &&
       remotePlayForm.value?.life_time === "00:00:00"
     )
-      return proxy.$message.warning(proxy.$t("Please select the duration"));
+      return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select the duration"),
+          grouping:true
+        });
 
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http
@@ -638,11 +674,23 @@ const createRemteTask = (data: any) => {
 const createTxstPlay = (data: any) => {
   return new Promise((resolve, reject) => {
     if (tsctFormData.value.is_txt && tsctFormData.value.txtpath === "")
-      return proxy.$message.warning(proxy.$t("Please select a path"));
+      return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select a path"),
+          grouping:true
+        });
     if (!tsctFormData.value.is_txt && tsctFormData.value.ttscontent === "")
-      return proxy.$message.warning(proxy.$t("Please enter the text content"));
+      return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please enter the text content"),
+          grouping:true
+        });
     if (!tsctFormData.value.ttsenginename)
-      return proxy.$message.warning(proxy.$t("Please select to play voice"));
+      return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select to play voice"),
+          grouping:true
+        });
 
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http1
@@ -689,17 +737,27 @@ const createSoundSourceCollection = (data: any) => {
         sourAcquisiFrom.value.selectVal.id ||
         JSON.stringify(sourAcquisiFrom.value.selectVal) === "{}"
       )
-        return proxy.$message.warning(proxy.$t("Please select a sound card"));
+        return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select a sound card"),
+          grouping:true
+        });
       if (sourAcquisiFrom.value.record && sourAcquisiFrom.value.recordpath === "")
-        return proxy.$message.warning(
-          proxy.$t("Please select the recording saving path")
-        );
+        return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select the recording saving path"),
+          grouping:true
+        });
       fromData["soundcard"] = sourAcquisiFrom.value.selectVal;
       fromData["record"] = sourAcquisiFrom.value.record;
       fromData["recordpath"] = sourAcquisiFrom.value.recordpath;
     } else {
       if (sourAcquisiFrom.value.selectVal === "" || !sourAcquisiFrom.value.selectVal.id)
-        return proxy.$message.warning(proxy.$t("Please select the acquisition terminal"));
+        return proxy.$message({
+          type:'warning',
+          message:proxy.$t("Please select the acquisition terminal"),
+          grouping:true
+        });
       fromData["terminalID"] = sourAcquisiFrom.value.selectVal.id;
     }
 
