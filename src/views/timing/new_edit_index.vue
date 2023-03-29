@@ -377,18 +377,19 @@
               />
             </div>
           </el-form>
-          <div class="com-form-button">
-            <el-button plain @click="usePublicMethod.clickBack()">
-              {{ $t("Cancel") }}
-            </el-button>
-            <el-button type="primary" @click="handleSubmitFormSave(ruleFormRef)">
-              {{ $t("Save") }}
-            </el-button>
-          </div>
         </el-scrollbar>
+        <div class="timing-bottom-btn">
+          <el-button class="button  button-cancel" plain @click="usePublicMethod.clickBack()">
+            {{ $t("Cancel") }}
+          </el-button>
+          <el-button class="button" type="primary" @click="handleSubmitFormSave(ruleFormRef)">
+            {{ $t("Save") }}
+          </el-button>
+        </div>
       </div>
     </div>
   </div>
+  
 </template>
 
 <script lang="ts" setup>
@@ -1009,6 +1010,39 @@ onBeforeRouteLeave((to, from, next) => {
         padding: 0 12px;
       }
     }
+  }
+}
+.com-table{
+  height: calc(100% - 68px);
+}
+.timing-bottom-btn{
+  position: fixed;
+  bottom: 0;
+  left: 136px;
+  width: calc(100% - 136px);
+  height: 68px;
+  border-top: 1px solid #e0e2e3;
+  text-align: right;
+  background-color: #fff;
+
+  .button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 6px 20px;
+    border-radius: 4px;
+    margin-right: 10px;
+    color: #ffffff;
+    font-size: 14px;
+    font-family: MicrosoftYaHei;
+    cursor: pointer;
+
+    &:last-child {
+      margin-right: 40px;
+    }
+  }
+  .button-cancel {
+    color: #7992d5;
+    background-color: #e1eafd;
   }
 }
 </style>
