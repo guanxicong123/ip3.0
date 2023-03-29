@@ -88,37 +88,23 @@
           color="#4900EE"
           :loading="startButton.status && startButton.type === 1"
           @click="functronButtonTask(1)"
-          :disabled="!judgeButtonStatus(4) && sessionsData.length"
+          :disabled="!judgeButtonStatus(1) && sessionsData.length"
         >
           {{
-            judgeButtonStatus(5) &&
-            sessionsData[0]?.TaskName.indexOf($t("Regional broadcasting")) !== -1
+            judgeButtonStatus(1)
               ? $t("End broadcast")
               : $t("Regional broadcasting")
           }}
         </el-button>
+        
         <el-button
           type="primary"
           color="#467CF7"
           @click="functronButtonTask(5)"
           :loading="startButton.status && startButton.type === 5"
-          v-if="
-            judgeButtonStatus(5) &&
-            sessionsData[0]?.TaskName.indexOf($t('Regional broadcasting')) === -1
-          "
           :disabled="!judgeButtonStatus(5) && sessionsData.length"
         >
-          {{ $t("End broadcast") }}
-        </el-button>
-        <el-button
-          type="primary"
-          color="#467CF7"
-          @click="functronButtonTask(5)"
-          :loading="startButton.status && startButton.type === 5"
-          v-else
-          :disabled="!judgeButtonStatus(5) && sessionsData.length"
-        >
-          {{ $t("Broadcast") }}
+          {{ judgeButtonStatus(5)? $t("End broadcast") : $t("Broadcast") }}
         </el-button>
         <el-button
           type="primary"
@@ -239,6 +225,9 @@ const priorityData = computed(() => {
 });
 const terminalsStoreOnePage = computed(() => {
   return terminals.onePageTerminals;
+});
+const allTerminalsObj = computed(() => {
+  return terminals.allTerminalsObj;
 });
 const sessionsLocalKey = computed(() => {
   //当前客户端发起任务
@@ -453,10 +442,7 @@ const filterCheckedTerminals = () => {
 
 // 功能按钮
 const functronButtonTask = (type: number) => {
-  startButton.value.type = type;
-  startButton.value.status = true;
-  let taskType = type === 1 ? 5 : type;
-  if (judgeButtonStatus(taskType)) {
+  if (judgeButtonStatus(type)) {
     //存在任务且点击是当前任务按钮，结束任务
     let data = {
       company: "BL",
@@ -471,70 +457,115 @@ const functronButtonTask = (type: number) => {
     send(data);
     return;
   }
-  // 存在任务时
+  // 已存在任务时，且不是当前点击的任务
   if (sessionsData.value.length > 0) {
-    startButton.value.status = false;
     return proxy.$message({
       type:'warning',
       message:proxy.$t("Please select an idle speaker terminal"),
       grouping:true
     });
   }
+  // 当前选中的主讲终端
   const currentTableRow = JSON.parse(localStorage.get("speakerTerminal")) || "";
+  // 未选中主讲终端
   if (!currentTableRow) {
-    startButton.value.status = false;
     return proxy.$message({
-      type:'error',
+      type:'warning',
       message:proxy.$t("Please select an idle speaker terminal"),
       grouping:true
     });
   }
+  // 主讲终端离线
+  if(allTerminalsObj.value[currentTableRow.EndPointID]?.Status === 0){
+    return proxy.$message({
+      type:'error',
+      message:proxy.$t("The speaker terminal is offline"),
+      grouping:true
+    });
+  }
+  // 全区广播，只要保证主讲终端在线就行
   if (type === 1) {
     regionalBroadcasting(currentTableRow);
     return;
   }
-  let filter_initiator_terminals = filterCheckedTerminals().filter((item: number) => {
-    return item !== currentTableRow.EndPointID;
-  });
+  // 未选接收终端
   if (checked_terminals.value.length === 0) {
-    startButton.value.status = false;
     return proxy.$message({
-      type:'error',
-      message:proxy.$t("Please select a terminal"),
+      type:'warning',
+      message:proxy.$t("Please select receiving terminal"),
       grouping:true
     });
   }
-  if (filter_initiator_terminals.length === 0 && checked_terminals.value.length > 0) {
-    startButton.value.status = false;
+  // 选中的接收终端详情数组
+  let filter_checked_terminals_detail_list:any = checked_terminals.value.map((id:any)=>{
+    return allTerminalsObj.value[id]
+  })
+  // 选中的在线的接收终端ids
+  let filter_initiator_terminals = filterCheckedTerminals().filter((item: number) => {
+    return item !== currentTableRow.EndPointID;
+  });
+  
+  // 是否存在 在线的接收终端
+  let isHasInitiatorTerminalsOnline:boolean = filter_checked_terminals_detail_list.some((terminal:any)=>{
+    return terminal.Status !== 0
+  })
+  // 接收终端均离线
+  if(!isHasInitiatorTerminalsOnline){
+    return proxy.$message({
+      type:'error',
+      message:proxy.$t("The receiving terminal is offline"),
+      grouping:true
+    });
+  }
+  // 选中终端中，没有可执行的任务终端
+  if(!filter_initiator_terminals.length && checked_terminals.value.length > 0){
     return proxy.$message({
       type:'error',
       message:proxy.$t("There is no executable task terminal in the selected terminal"),
       grouping:true
     });
   }
+  // 切换按钮loading
+  startButton.value.status = true;
+  startButton.value.type = type;
   if (type === 5) {
     originateBroadcast(filter_initiator_terminals, currentTableRow.EndPointID);
+    startButton.value.status = false;
   }
   if (type === 4) {
-    startButton.value.status = false;
-    if (filter_initiator_terminals.length > 1) {
+    // 对讲接收终端只能选择一个
+    if (checked_terminals.value.length > 1) {
+      startButton.value.status = false;
       return proxy.$message({
-        type:'error',
-        message:proxy.$t("Only one intercom receiving terminal can be selected"),
+        type:'warning',
+        message:proxy.$t("Intercom receiving terminal can only choose one"),
         grouping:true
       });
     }
     initiatedTalkTask(filter_initiator_terminals, currentTableRow.EndPointID);
+    startButton.value.status = false;
   }
   if (type === 17) {
-    if (filter_initiator_terminals.length > 1) {
+    // 监听接收终端只能选择一个
+    if (checked_terminals.value.length > 1) {
+      startButton.value.status = false;
       return proxy.$message({
-        type:'error',
-        message:proxy.$t("Only one monitor receiving terminal can be selected"),
+        type:'warning',
+        message:proxy.$t("Only one monitoring terminal can be selected"),
+        grouping:true
+      });
+    }
+    // 监听任务只能为空闲终端,主讲终端与接收终端都嘚是空闲状态
+    if(allTerminalsObj.value[currentTableRow.EndPointID].Status !== 1 || allTerminalsObj.value[filter_initiator_terminals[0]].Status !== 1){
+      startButton.value.status = false;
+      return proxy.$message({
+        type:'warning',
+        message:proxy.$t("The monitoring task can only be an idle terminal"),
         grouping:true
       });
     }
     monitorTalkTask(filter_initiator_terminals, currentTableRow.EndPointID);
+    startButton.value.status = false;
   }
 };
 // 全区广播任务
@@ -756,9 +787,17 @@ const alarmTalkTask = () => {
 };
 // 判断按钮状态
 const judgeButtonStatus = (type: number) => {
+  // 全区广播转换
   let status = sessionsData.value.some((item: any) => {
+    let isTaskTypeTrue = item.TaskType === type
+    if(type === 1 && item.TaskType === 5 && sessionsData.value.length > 0 && sessionsData.value[0].TaskName.indexOf(proxy.$t('Regional broadcasting')) !== -1){
+      isTaskTypeTrue = true
+    }
+    if(type === 5 && item.TaskType === 5 && sessionsData.value.length > 0 && sessionsData.value[0].TaskName.indexOf(proxy.$t('Regional broadcasting')) !== -1){
+      isTaskTypeTrue = false
+    }
     return (
-      item.TaskType === type &&
+      isTaskTypeTrue &&
       Number(localStorage.get("LoginUserID")) === item.TaskIniatorID
     );
   });

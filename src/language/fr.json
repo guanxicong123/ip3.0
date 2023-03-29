@@ -1079,8 +1079,6 @@
   "No execution terminal": "没有执行终端",
   "Play configuration": "播放配置",
   "There is no executable task terminal in the selected terminal": "选中终端中没有可执行任务终端",
-  "Only one intercom receiving terminal can be selected": "只能选一个对讲接收终端",
-  "Only one monitor receiving terminal can be selected": "只能选一个监听接收终端",
   "Save and play": "保存并播放",
   "Remote play": "远程播放",
   "Play list": "播放列表",
@@ -1106,5 +1104,12 @@
   "One-click restart prompt": "即将重启服务，请等待服务启动成功再操作界面，是否继续？",
   "MD5 validation successful": "MD5效验成功",
   "MD5 validation failed": "MD5效验失败",
-  "Upgrade complete": "升级完成"
+  "Upgrade complete": "升级完成",
+  "The monitoring task can only be an idle terminal": "监听任务只能为空闲终端",
+  "The speaker terminal is offline": "主讲终端已离线",
+  "The receiving terminal is offline": "接收终端已离线",
+  "Intercom receiving terminal can only choose one": "对讲接收终端只能选择一个",
+  "Only one monitoring terminal can be selected": "监听接收终端只能选择一个",
+  "Please select receiving terminal": "请选择接收终端",
+  "Task initiation failed": "任务发起失败"
 }
