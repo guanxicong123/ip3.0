@@ -20,7 +20,12 @@
           @change="handleCheckedWeekChange"
           style="width: 100%"
         >
-          <el-checkbox v-for="item in weekOptions" :key="item" :label="item">
+          <el-checkbox
+            v-for="item in weekOptions"
+            :key="item"
+            :label="item"
+            :disabled="form.selectedWeek.length > 0 && !form.selectedWeek.includes(item)"
+          >
             {{ formatterWeeksType(item) }}
           </el-checkbox>
         </el-checkbox-group>
@@ -171,6 +176,7 @@ const form = reactive<any>({
   dayData: "", // 日期
   dayOptions: [], // 日期数组
   clone_day: "", // 克隆日期-月份
+  selectedWeek: [], // 已选择星期几数组
 });
 let config = reactive<any>({
   showMonth: true, //是否显示月期
@@ -226,16 +232,28 @@ const handleTabClick = (tab: TabsPaneContext) => {
 };
 // 处理周期全选
 const handleCheckAllWeekChange = () => {
-  form.weekData = form.weekCheckAll ? weekOptions : [];
+  form.weekData = form.weekCheckAll
+    ? form.selectedWeek.length > 0
+      ? form.selectedWeek
+      : weekOptions
+    : [];
   let checkedCount = form.weekData.length;
-  form.weekIndeterminate = checkedCount > 0 && checkedCount < weekOptions.length;
+  form.weekIndeterminate =
+    checkedCount > 0 &&
+    checkedCount <
+      (form.selectedWeek.length > 0 ? form.selectedWeek.length : weekOptions.length);
   emit("requestWeekData", form.weekData);
 };
 // 处理周期单选
 const handleCheckedWeekChange = () => {
   let checkedCount = form.weekData.length;
-  form.weekIndeterminate = checkedCount > 0 && checkedCount < weekOptions.length;
-  form.weekCheckAll = checkedCount === weekOptions.length;
+  form.weekIndeterminate =
+    checkedCount > 0 &&
+    checkedCount <
+      (form.selectedWeek.length > 0 ? form.selectedWeek.length : weekOptions.length);
+  form.weekCheckAll =
+    checkedCount ===
+    (form.selectedWeek.length > 0 ? form.selectedWeek.length : weekOptions.length);
   emit("requestWeekData", form.weekData);
 };
 // 处理月期全选
@@ -379,14 +397,38 @@ const handleFilterDate = () => {
   });
   handleUpdateRequestDayData();
 };
+// 处理过滤不在已选择日期范围内的周几
+const handleFilterWeek = () => {
+  form.selectedWeek = [];
+  const start = new Date(parentData.minDay).getTime();
+  const end = new Date(parentData.maxDay).getTime();
+  const day = 24 * 60 * 60 * 1000; // 一天的毫秒时间
+  // 循环开始日期到结束日期，将包含的周几添加进去form.selectedWeek
+  for (let i = start; i <= end; i += day) {
+    let week = new Date(i).getDay();
+    week = week == 0 ? 7 : week;
+    if (!form.selectedWeek.includes(week)) {
+      form.selectedWeek.push(week);
+    }
+  }
+  // 过滤已选择的周几
+  form.weekData = form.weekData.filter((item: number) => {
+    return form.selectedWeek.includes(item);
+  });
+  emit("requestWeekData", form.weekData);
+};
 // 处理编辑界面传递回来的数据
 const handleEditWeekData = () => {
   form.weekData = [];
   parentData?.responseWeekData.forEach((item: { repeat_weeks: number }) => {
     form.weekData.push(item.repeat_weeks);
   });
-  form.weekCheckAll = form.weekData.length == weekOptions.length;
-  form.weekIndeterminate = form.weekData.length < weekOptions.length;
+  form.weekCheckAll =
+    form.weekData.length ==
+    (form.selectedWeek.length > 0 ? form.selectedWeek.length : weekOptions.length);
+  form.weekIndeterminate =
+    form.weekData.length <
+    (form.selectedWeek.length > 0 ? form.selectedWeek.length : weekOptions.length);
   emit("requestWeekData", form.weekData);
 };
 const handleEditMonthData = () => {
@@ -442,6 +484,13 @@ watch(
     }
     if (newMin != oldMin || newMax != oldMax) {
       handleFilterDate();
+      if (newMax) {
+        handleFilterWeek();
+      } else {
+        form.selectedWeek = [];
+        form.weekData = [];
+        form.weekCheckAll = form.weekIndeterminate = false;
+      }
     }
     if (
       newType != oldType ||
