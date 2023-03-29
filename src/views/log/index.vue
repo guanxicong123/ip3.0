@@ -41,6 +41,16 @@
         </div>
         <div class="com-button">
           <i
+            class="iconfont icon-execution-failed"
+            :title="$t('Clear log')"
+            @click="clearAllLog(form.activeName)"
+          ></i>
+          <i
+            class="iconfont icon-download"
+            :title="$t('Export log')"
+            @click="form.logDialogVisible = true"
+          ></i>
+          <i
             class="iconfont icon-refresh"
             :title="$t('Refresh')"
             @click="handleRefresh(form.activeName)"
@@ -52,12 +62,6 @@
             @click="handleDelete(form.activeName)"
             v-if="userStore?.type == 0"
           ></i>
-          <!-- <el-button type="primary" plain @click="clearAllLog(form.activeName)">
-            {{ $t("Clear log") }}
-          </el-button>
-          <el-button type="primary" plain @click="form.logDialogVisible = true">
-            {{ $t("Export log") }}
-          </el-button> -->
         </div>
       </div>
       <template v-if="form.isAdvancedSearch">
@@ -349,15 +353,8 @@ const taskTypeOptions = [
 //   { value: 2, label: proxy.$t("End broadcast") },
 // ];
 // 处理导出日志弹窗的响应展示/关闭
-const handleLogDialogVisible = (value: boolean, src: any) => {
+const handleLogDialogVisible = (value: boolean) => {
   form.logDialogVisible = value;
-  const url = "http:/" + src;
-  const index = src.lastIndexOf("/");
-  const fileName = src.substring(index + 1, url.length);
-  window.electronAPI.send("download", {
-    downloadPath: url, // 下载链接
-    fileName: fileName, // 下载文件名，需要包含后缀名
-  });
 };
 // 处理点击tabs选项
 const handleClick = (tab: TabsPaneContext) => {
@@ -707,7 +704,7 @@ const clearAllLog = (name: string) => {
         },
       })
       .then((result: any) => {
-        if (result.data) {
+        if (result.data >= 0) {
           ElMessage({
             type: "success",
             message: proxy.$t("Log cleared successfully"),
@@ -717,7 +714,7 @@ const clearAllLog = (name: string) => {
         } else {
           ElMessage({
             type: "error",
-            message: proxy.$t("Clearing failed"),
+            message: result.return_message,
             grouping: true,
           });
         }

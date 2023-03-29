@@ -722,7 +722,7 @@ onMounted(() => {
   });
   // 下载成功
   window.electronAPI.on("download-done", (event: any, data: any) => {
-    let message = proxy.$("Download succeeded");
+    let message = proxy.$t("Download succeeded");
     ElMessage({
       type: "success",
       message: message,
@@ -733,7 +733,7 @@ onMounted(() => {
   });
   // 下载失败
   window.electronAPI.on("download-failed", (event: any, data: any) => {
-    let message = proxy.$("Download failed");
+    let message = proxy.$t("Download failed");
     ElMessage({
       type: "error",
       message: message,

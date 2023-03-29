@@ -67,7 +67,7 @@
           <el-table-column
             :label="$t('Operation')"
             width="120"
-            v-if="userStore.type == 0"
+            v-if="userStore?.type == 0"
           >
             <template #default="scope">
               <i
@@ -80,7 +80,7 @@
           <el-table-column
             type="selection"
             width="44"
-            v-if="userStore.type == 0"
+            v-if="userStore?.type == 0"
           />
         </el-table>
       </div>
