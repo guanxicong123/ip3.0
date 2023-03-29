@@ -243,6 +243,15 @@ const handlerMsg = (msg: any) => {
       });
       return;
     }
+    // 创建任务发起失败
+    if (msg.actioncode === "ms2c_create_server_task") {
+      ElMessage({
+        type: "error",
+        message: msg.return_message || $t.t("Task initiation failed"),
+        grouping: true,
+      });
+      return;
+    }
     return ElMessage({
       type: "error",
       message: msg.return_message,

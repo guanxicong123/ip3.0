@@ -1079,8 +1079,6 @@
   "No execution terminal": "No execution terminal",
   "Play configuration": "Play configuration",
   "There is no executable task terminal in the selected terminal": "There is no executable task terminal in the selected terminal",
-  "Only one intercom receiving terminal can be selected": "Only one intercom receiving terminal can be selected",
-  "Only one monitor receiving terminal can be selected": "Only one monitor receiving terminal can be selected",
   "Save and play": "Save and play",
   "Remote play": "Remote play",
   "Play list": "Play list",
@@ -1106,5 +1104,12 @@
   "One-click restart prompt": "The service will be restarted soon. Please wait for the service to start successfully before operating the interface. Do you want to continue?",
   "MD5 validation successful": "MD5 validation successful",
   "MD5 validation failed": "MD5 validation failed",
-  "Upgrade complete": "Upgrade complete"
+  "Upgrade complete": "Upgrade complete",
+  "The monitoring task can only be an idle terminal": "The monitoring task can only be an idle terminal",
+  "The speaker terminal is offline": "The speaker terminal is offline",
+  "The receiving terminal is offline": "The receiving terminal is offline",
+  "Intercom receiving terminal can only choose one": "Intercom receiving terminal can only choose one",
+  "Only one monitoring terminal can be selected": "Only one monitoring terminal can be selected",
+  "Please select receiving terminal": "Please select receiving terminal",
+  "Task initiation failed": "Task initiation failed"
 }
