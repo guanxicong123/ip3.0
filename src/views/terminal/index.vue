@@ -57,7 +57,7 @@
         </div>
         <div class="com-button">
           <span class="monitor-speaker">{{ $t("Speaker terminal") }}</span>
-          <select-speaker-terminal ref="selectSpeakerTerminalRef"/>
+          <select-speaker-terminal ref="selectSpeakerTerminalRef" :sessionsData="sessionsData"/>
         </div>
       </div>
     </div>

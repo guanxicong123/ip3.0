@@ -128,7 +128,7 @@ i
         </div>
       </div>
     </el-popover>
-    <el-button ref="viewRef" v-click-outside="onClickOutside">
+    <el-button ref="viewRef" v-click-outside="onClickOutside" :disabled="sessionsData.length !== 0">
       {{ form.currentSelectedName }}
     </el-button>
   </div>
@@ -145,6 +145,13 @@ import useCommonTable from "@/utils/global/common_table_search";
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
+
+const props = defineProps({
+  sessionsData:{
+    type:Array,
+    default:()=>[]
+  }
+})
 
 const user = getStore.useUserStore();
 const terminals = getStore.useTerminalsStore();
@@ -198,6 +205,7 @@ const handleRowClick = (row: any) => {
   };
   form.currentSelectedName = row.EndPointName;
   localStorage.set("speakerTerminal", JSON.stringify(data));
+  unref(popoverRef).hide?.()
 };
 // 当前选中高亮
 const handleRowClassName = (row: { row: any }) => {
