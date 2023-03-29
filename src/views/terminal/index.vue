@@ -57,7 +57,7 @@
         </div>
         <div class="com-button">
           <span class="monitor-speaker">{{ $t("Speaker terminal") }}</span>
-          <select-speaker-terminal ref="selectSpeakerTerminalRef" :sessionsData="sessionsData"/>
+          <select-speaker-terminal ref="selectSpeakerTerminalRef" :sessionsData="sessionsData_NonAlarm"/>
         </div>
       </div>
     </div>
@@ -88,7 +88,7 @@
           color="#4900EE"
           :loading="startButton.status && startButton.type === 1"
           @click="functronButtonTask(1)"
-          :disabled="!judgeButtonStatus(1) && sessionsData.length"
+          :disabled="!judgeButtonStatus(1) && sessionsData_NonAlarm.length"
         >
           {{
             judgeButtonStatus(1)
@@ -102,7 +102,7 @@
           color="#467CF7"
           @click="functronButtonTask(5)"
           :loading="startButton.status && startButton.type === 5"
-          :disabled="!judgeButtonStatus(5) && sessionsData.length"
+          :disabled="!judgeButtonStatus(5) && sessionsData_NonAlarm.length"
         >
           {{ judgeButtonStatus(5)? $t("End broadcast") : $t("Broadcast") }}
         </el-button>
@@ -112,7 +112,7 @@
           v-if="$useRoute.name != 'group'"
           @click="functronButtonTask(4)"
           :loading="startButton.status && startButton.type === 4"
-          :disabled="!judgeButtonStatus(4) && sessionsData.length"
+          :disabled="!judgeButtonStatus(4) && sessionsData_NonAlarm.length"
         >
           {{ judgeButtonStatus(4) ? $t("End the intercom") : $t("Intercom") }}
         </el-button>
@@ -122,7 +122,7 @@
           v-if="$useRoute.name != 'group'"
           @click="functronButtonTask(17)"
           :loading="startButton.status && startButton.type === 17"
-          :disabled="!judgeButtonStatus(17) && sessionsData.length"
+          :disabled="!judgeButtonStatus(17) && sessionsData_NonAlarm.length"
         >
           {{ judgeButtonStatus(17) ? $t("End listening") : $t("Monitor") }}
         </el-button>
@@ -146,7 +146,7 @@
             'icon-volume-level-3': form.volume > 60 && form.volume < 101,
           }"
         ></i>
-        <el-slider v-model="form.volume" />
+        <el-slider v-model="form.volume" @change="hadnleChangeVolume"/>
         <span>{{ form.volume }}</span>
       </div>
     </div>
@@ -233,6 +233,14 @@ const sessionsLocalKey = computed(() => {
   //当前客户端发起任务
   return session.sessionsLocalKey;
 });
+// 广播，监听，对讲任务的集合（非报警）
+const sessionsData_NonAlarm:any = computed(() => {
+  return Object.values(session.allSessionObj).filter((item: any) => {
+    if ([4, 5,17].includes(item.TaskType) && sessionsLocalKey.value.includes(item.TaskID)) {
+      return item;
+    }
+  })
+})
 const sessionsData: any = computed(() => {
   return Object.values(session.allSessionObj).filter((item: any) => {
     if ([4, 5,17].includes(item.TaskType) && sessionsLocalKey.value.includes(item.TaskID)) {
@@ -443,13 +451,17 @@ const filterCheckedTerminals = () => {
 // 功能按钮
 const functronButtonTask = (type: number) => {
   if (judgeButtonStatus(type)) {
+    type = type === 1?5:type;
+    const currentTask = sessionsData.value.find((task:any)=>{
+      return task.TaskType === type
+    })
     //存在任务且点击是当前任务按钮，结束任务
     let data = {
       company: "BL",
       actioncode: "c2ms_stop_task",
       token: "",
       data: {
-        TaskID: sessionsData.value[0].TaskID,
+        TaskID: currentTask.TaskID,
       },
       result: 0,
       return_message: "",
@@ -458,7 +470,7 @@ const functronButtonTask = (type: number) => {
     return;
   }
   // 已存在任务时，且不是当前点击的任务
-  if (sessionsData.value.length > 0) {
+  if (sessionsData_NonAlarm.value.length > 0) {
     return proxy.$message({
       type:'warning',
       message:proxy.$t("Please select an idle speaker terminal"),
@@ -695,13 +707,18 @@ const alarmTalkTask = () => {
   startButton.value.type = 3;
   startButton.value.status = true;
   if (judgeButtonStatus(3)) {
+    const currentTask = sessionsData.value.find((task:any)=>{
+      return task.TaskType === 3
+    })
+    console.log(currentTask,'currentTask');
+    
     //存在任务且点击是当前任务按钮，结束任务
     let data = {
       company: "BL",
       actioncode: "c2ms_stop_task",
       token: "",
       data: {
-        TaskID: sessionsData.value[0].TaskID,
+        TaskID: currentTask.TaskID,
       },
       result: 0,
       return_message: "",
@@ -787,9 +804,9 @@ const alarmTalkTask = () => {
 };
 // 判断按钮状态
 const judgeButtonStatus = (type: number) => {
-  // 全区广播转换
   let status = sessionsData.value.some((item: any) => {
     let isTaskTypeTrue = item.TaskType === type
+    // 全区广播转换
     if(type === 1 && item.TaskType === 5 && sessionsData.value.length > 0 && sessionsData.value[0].TaskName.indexOf(proxy.$t('Regional broadcasting')) !== -1){
       isTaskTypeTrue = true
     }
@@ -802,6 +819,7 @@ const judgeButtonStatus = (type: number) => {
     );
   });
   if (sessionsData.value.length > 0 && status) {
+    console.log(111);
     return true;
   }
   return false;
@@ -833,6 +851,22 @@ const handleGetDefaultRouter = () => {
     $useRouter.push("/terminal/group");
   }
 };
+// 处理 音量的改变
+const hadnleChangeVolume = (volume:any)=>{
+  let data = {
+    company: "BL",
+    actioncode: "c2ms_set_task_volume",
+    token: "",
+    data: {
+      TaskID: sessionsData.value[0].TaskID,
+      Volume : volume
+    },
+    result: 0,
+    return_message: "",
+  };
+  send(data);
+  return;
+}
 
 // 供给数据
 provide("checkedAll", {
