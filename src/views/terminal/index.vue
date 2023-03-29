@@ -266,7 +266,7 @@ const form = reactive<any>({
   speaker_terminal: "", // 主讲终端
   speakerTerminalOptions: [],
   terminalStatusOptions: useFormatMap.terminalStatusOptions,
-  volume: 0, // 音量
+  volume: sessionsData_NonAlarm.value[0]?.TaskVolume || 0, // 音量
   view_value: "list",
   select_terminal: "3x6",
   loading: false, // 等待加载数据状态
