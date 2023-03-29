@@ -281,7 +281,7 @@ const submit = () => {
 onMounted(() => {
   gitRegisterStatus().then((res:any) => {
     // 未注册且不是重新登录，弹出【试用注册引导窗】
-    if(!res.isRegister && !isLoginStatus){
+    if(!res.isRegister && !isLoginStatus.value){
       window.electronAPI.send("register-window");
     }
   });
