@@ -393,6 +393,7 @@ const handleFuncManage = () => {
 // 注册弹窗
 const registerManage = () => {
   register_manage_dialog.value = true;
+  form.ProductKey = appStoreStore.register_detail.ProductKey;
   // 若是永久用户，注册码自动填充且无法编辑
   if(appStoreStore.register_detail.freeTime < 0){
     form.code = appStoreStore.register_detail.RegisterCode;
@@ -402,6 +403,17 @@ const registerManage = () => {
     form.codeIsDisable = false;
   }
 };
+// 获取注册状态
+const gitRegisterStatus = () => {
+  return new Promise<void>((resolve, reject) => {
+    proxy.$http1.get("/register").then((result: any) => {
+      if (result.result === 200) {
+        appStoreStore.updateRegisterDetail(result.data)
+        resolve(result.data);
+      }
+    });
+  });
+};
 // 注册操作
 const confirmRegister = () => {
   proxy.$http1
@@ -410,7 +422,6 @@ const confirmRegister = () => {
     })
     .then((result: any) => {
       if (result.result === 200) {
-        if (result.data.code === 200) {
           ElMessage({
             type: "success",
             message: proxy.$t("Register succeeded"),
@@ -424,7 +435,8 @@ const confirmRegister = () => {
             grouping: true,
           });
         }
-      }
+        // 重新获取注册信息
+        gitRegisterStatus()
     });
 };
 // 系统配置各模块配置数据处理
@@ -487,10 +499,9 @@ watch(
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   formatData();
+  // 先获取注册信息并存储
+  gitRegisterStatus()
   switch_form.value = JSON.parse(JSON.stringify(functional_configs.value));
-  systemStore.getProductKey().then((opcodes:any)=>{
-    form.ProductKey = opcodes
-  })
   getAlarmTask();
 });
 </script>

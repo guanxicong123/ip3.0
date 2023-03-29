@@ -204,6 +204,7 @@ const handleRowClick = (row: any) => {
     };
     form.currentSelectedName = row.EndPointName;
     localStorage.set("monitoringSpeaker", JSON.stringify(data));
+    unref(popoverRef).hide?.()
   } else {
     ElMessage({
       type: "warning",

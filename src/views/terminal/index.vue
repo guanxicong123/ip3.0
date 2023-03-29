@@ -57,7 +57,7 @@
         </div>
         <div class="com-button">
           <span class="monitor-speaker">{{ $t("Speaker terminal") }}</span>
-          <select-speaker-terminal ref="selectSpeakerTerminalRef"/>
+          <select-speaker-terminal ref="selectSpeakerTerminalRef" :sessionsData="sessionsData"/>
         </div>
       </div>
     </div>
@@ -474,12 +474,20 @@ const functronButtonTask = (type: number) => {
   // 存在任务时
   if (sessionsData.value.length > 0) {
     startButton.value.status = false;
-    return proxy.$message.warning(proxy.$t("Please select an idle speaker terminal"));
+    return proxy.$message({
+      type:'warning',
+      message:proxy.$t("Please select an idle speaker terminal"),
+      grouping:true
+    });
   }
   const currentTableRow = JSON.parse(localStorage.get("speakerTerminal")) || "";
   if (!currentTableRow) {
     startButton.value.status = false;
-    return proxy.$message.error(proxy.$t("Please select an idle speaker terminal"));
+    return proxy.$message({
+      type:'error',
+      message:proxy.$t("Please select an idle speaker terminal"),
+      grouping:true
+    });
   }
   if (type === 1) {
     regionalBroadcasting(currentTableRow);
@@ -490,13 +498,19 @@ const functronButtonTask = (type: number) => {
   });
   if (checked_terminals.value.length === 0) {
     startButton.value.status = false;
-    return proxy.$message.error(proxy.$t("Please select a terminal"));
+    return proxy.$message({
+      type:'error',
+      message:proxy.$t("Please select a terminal"),
+      grouping:true
+    });
   }
   if (filter_initiator_terminals.length === 0 && checked_terminals.value.length > 0) {
     startButton.value.status = false;
-    return proxy.$message.error(
-      proxy.$t("There is no executable task terminal in the selected terminal")
-    );
+    return proxy.$message({
+      type:'error',
+      message:proxy.$t("There is no executable task terminal in the selected terminal"),
+      grouping:true
+    });
   }
   if (type === 5) {
     originateBroadcast(filter_initiator_terminals, currentTableRow.EndPointID);
@@ -504,17 +518,21 @@ const functronButtonTask = (type: number) => {
   if (type === 4) {
     startButton.value.status = false;
     if (filter_initiator_terminals.length > 1) {
-      return proxy.$message.error(
-        proxy.$t("Only one intercom receiving terminal can be selected")
-      );
+      return proxy.$message({
+        type:'error',
+        message:proxy.$t("Only one intercom receiving terminal can be selected"),
+        grouping:true
+      });
     }
     initiatedTalkTask(filter_initiator_terminals, currentTableRow.EndPointID);
   }
   if (type === 17) {
     if (filter_initiator_terminals.length > 1) {
-      return proxy.$message.error(
-        proxy.$t("Only one monitor receiving terminal can be selected")
-      );
+      return proxy.$message({
+        type:'error',
+        message:proxy.$t("Only one monitor receiving terminal can be selected"),
+        grouping:true
+      });
     }
     monitorTalkTask(filter_initiator_terminals, currentTableRow.EndPointID);
   }
@@ -556,7 +574,11 @@ const regionalBroadcasting = (currentTableRow: any) => {
     };
     send(send_data);
   } else {
-    proxy.$message.error(proxy.$t("No execution terminal"));
+    proxy.$message({
+      type:'error',
+      message:proxy.$t("No execution terminal"),
+      grouping:true
+    });
   }
 };
 // 发起广播任务

@@ -125,7 +125,11 @@ const handleSelectedPath = (data: any) => {
 };
 const handleConfirm = () => {
   if (selectPath.value === "")
-    return proxy.$message.warning(proxy.$t("Please select a path"));
+    return proxy.$message({
+      type:'warning',
+      message:proxy.$t("Please select a path"),
+      grouping:true
+    });
   ruleForm.recordpath = selectPath.value;
   folderDialogVisible.value = false;
 };

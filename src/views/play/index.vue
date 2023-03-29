@@ -620,7 +620,11 @@ const handlePlayTask = (row: any) => {
         let row = result.data;
         let TaskProp = handleTaskAttribute(row);
         if (row.terminalsIds.length === 0)
-          return proxy.$message.warning(proxy.$t("No play terminal"));
+          return proxy.$message({
+            type:'warning',
+            message:proxy.$t("No play terminal"),
+            grouping:true
+          })
         if (TaskProp?.TaskAudioType) {
           let TaskID = usePublicMethod.generateUUID();
           let TaskType = handleTaskTypeMap(row);
@@ -775,7 +779,11 @@ const handleTaskAttribute = (row: any) => {
   if (row.type === 1) {
     //远程任务-音乐播放
     if (row.mediasIds.length === 0)
-      return proxy.$message.warning(proxy.$t("No sound source"));
+      return proxy.$message({
+        type:'warning',
+        message:proxy.$t("No sound source"),
+        grouping:true
+      })
     data = {
       TaskAudioType: 6,
       RemoteID: row.id,
@@ -794,7 +802,11 @@ const handleTaskAttribute = (row: any) => {
     //快捷音源
     if (row.sound_source.type === 1) {
       if (row.mediasIds.length === 0)
-        return proxy.$message.warning(proxy.$t("No sound source"));
+        return proxy.$message({
+          type:'warning',
+          message:proxy.$t("No sound source"),
+          grouping:true
+        })
       //音乐播放
       data = {
         TaskAudioType: 6,
@@ -825,7 +837,11 @@ const handleTaskAttribute = (row: any) => {
           },
         };
       } else {
-        proxy.$message.warning(proxy.$t("No sound card"));
+        proxy.$message({
+          type:'warning',
+          message:proxy.$t("No sound card"),
+          grouping:true
+        })
       }
     }
     if (row.sound_source.type === 3) {
@@ -844,7 +860,11 @@ const handleTaskAttribute = (row: any) => {
           },
         };
       } else {
-        proxy.$message.warning(proxy.$t("No acquisition terminal"));
+        proxy.$message({
+          type:'warning',
+          message:proxy.$t("No acquisition terminal"),
+          grouping:true
+        })
       }
     }
   }
