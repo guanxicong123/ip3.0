@@ -37,46 +37,46 @@
                 <i
                   v-else
                   class="iconfont"
-                  :class="terminalsStatusMap.get(item.status)?.class"
-                  :title="terminalsStatusMap.get(item.status)?.name"
+                  :class="terminalsStatusMap.get(item.Status)?.class"
+                  :title="terminalsStatusMap.get(item.Status)?.name"
                 ></i>
               </span>
               <el-popover
                 placement="left"
                 trigger="click"
                 popper-class="terminal-volume-popper"
-                :disabled="item.status !== 1 && item.status !== 2"
+                :disabled="item.Status !== 1 && item.Status !== 2"
                 :persistent="false"
               >
-                <el-slider v-model="item.volume" @change="changeVolume(item)" />
+                <el-slider v-model="item.Volume" @change="changeVolume(item)" />
                 <template #reference>
                   <div class="i-volume" @click.stop>
                     <span class="iconfont icon-volume"></span>
-                    <span>{{ item.volume }}</span>
+                    <span>{{ item.Volume }}</span>
                   </div>
                 </template>
               </el-popover>
             </div>
             <div class="li-center">
-              <p class="name" :title="item.name">{{ item.name }}</p>
-              <p :title="item.ip_address">{{ item.ip_address }}</p>
+              <p class="name" :title="item.EndPointName">{{ item.EndPointName }}</p>
+              <p :title="item.EndPointIP">{{ item.EndPointIP }}</p>
             </div>
             <div class="li-bottom">
-              <span>{{ $t("Code") }} : {{ item.code }}</span>
+              <span>{{ $t("Code") }} : {{ item.CallCode }}</span>
               <div class="status">
                 <div
                   class="span"
                   :class="
                     item.Disable
                       ? terminalsBGStatusMap.get(4)
-                      : terminalsBGStatusMap.get(item.status)
+                      : terminalsBGStatusMap.get(item.Status)
                   "
                 >
                   <span>
                     {{
                       item.Disable
                         ? terminalsStatusMap.get(4)?.name
-                        : terminalsStatusMap.get(item.status)?.name
+                        : terminalsStatusMap.get(item.Status)?.name
                     }}
                   </span>
                   <!-- <span v-else>{{ item.sound_source_type }}</span> -->
@@ -249,7 +249,7 @@ const changeVolume = (data: any) => {
     token: "",
     data: {
       EndPointList: [data.EndPointID],
-      Volume: data.volume,
+      Volume: data.Volume,
     },
     result: 0,
     return_message: "",

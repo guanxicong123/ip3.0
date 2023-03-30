@@ -195,7 +195,6 @@ const handlerMsg = (msg: any) => {
     [
       "terminal_status",
       () => {
-        getStore.useTerminalStore().getTerminalData(msg.data);
         getStore.useTerminalsStore().updateTerminals(msg.data.EndPointsArray);
       },
     ],
@@ -271,7 +270,6 @@ const handlerMsg = (msg: any) => {
       getStore.useSessionStore().updateSession(msg.data.TaskInfoArray);
       break;
     case "ms2c_get_server_terminals_status": // 所有终端状态
-      getStore.useTerminalStore().getTerminalData(msg.data);
       getStore.useTerminalsStore().updateTerminals(msg.data.EndPointsArray);
       break;
     case "ms2c_get_tts_engine_info": // 播放语音(TTS引擎)

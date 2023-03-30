@@ -78,7 +78,7 @@
           :label="$t('Terminal IP')"
           show-overflow-tooltip
         />
-        <el-table-column prop="call_code" :label="$t('Call code')" />
+        <el-table-column prop="call_code" :label="$t('Call code')" show-overflow-tooltip/>
       </el-table>
     </el-dialog>
   </div>
@@ -164,11 +164,13 @@ const cleanCheckedTerminalIds = () => {
   updateCheckedTerminals(checked_terminals_ids);
 };
 // 分组终端详情显示
-const viewGroupInfo = (item: { name: string; terminals: object }) => {
+const viewGroupInfo = (item: { name: string; terminals: Array<any>; call_code: string }) => {
   show_group_info.value = true;
   group_title.value = item.name;
-  form.table_data = item.terminals;
-  console.log(item.terminals);
+  form.table_data = item.terminals.map((terminal:any)=>{
+    terminal.call_code = item.call_code
+    return terminal
+  })
 };
 // 处理全选
 const handleCheckedAll = () => {

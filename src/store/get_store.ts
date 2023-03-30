@@ -4,7 +4,6 @@ import { useUserStore } from "./user";
 import { useSessionStore } from "./session";
 import { useUploadStore } from "./upload_manager";
 import { useSystemStore } from "./system_config";
-import { useTerminalStore } from "./terminal";
 import { useTerminalsStore } from "./terminals";
 import { usePlayStore } from "./play_center";
 import { useTTSStore } from "./tts";
@@ -16,7 +15,6 @@ const getStore = {
   useSessionStore,
   useUploadStore,
   useSystemStore,
-  useTerminalStore,
   useTerminalsStore,
   usePlayStore,
   useTTSStore,

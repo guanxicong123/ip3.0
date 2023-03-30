@@ -393,8 +393,8 @@ const handleReset = () => {
 // 过滤出在线终端
 const cleanOnLineTerminal = () => {
   form.speakerTerminalOptions = terminalsStoreOnePage.value.filter(
-    (item: { status: number }) => {
-      return item.status === 1 || item.status === 2;
+    (item: { Status: number }) => {
+      return item.Status === 1 || item.Status === 2;
     }
   );
 };
