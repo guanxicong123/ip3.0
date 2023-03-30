@@ -1111,5 +1111,7 @@
   "Intercom receiving terminal can only choose one": "对讲接收终端只能选择一个",
   "Only one monitoring terminal can be selected": "监听接收终端只能选择一个",
   "Please select receiving terminal": "请选择接收终端",
-  "Task initiation failed": "任务发起失败"
+  "Task initiation failed": "任务发起失败",
+  "Client alarm task": "客户端人工报警任务",
+  "Client": "客户端"
 }

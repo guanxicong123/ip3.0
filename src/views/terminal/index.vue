@@ -229,21 +229,21 @@ const terminalsStoreOnePage = computed(() => {
 const allTerminalsObj = computed(() => {
   return terminals.allTerminalsObj;
 });
-const sessionsLocalKey = computed(() => {
-  //当前客户端发起任务
-  return session.sessionsLocalKey;
-});
-// 广播，监听，对讲任务的集合（非报警）
+// 判断是否为当前客户端发起的任务
+const isClientSendTask = (task:any)=>{
+ return task.TaskName.indexOf('Client') !== -1 || task.TaskName.indexOf('客户端') !== -1;
+};
+// 广播，监听，对讲任务的集合（非报警） & 是客户端发起的任务，因为管控端返回的数据是带token的，可以确定是当前用户
 const sessionsData_NonAlarm:any = computed(() => {
   return Object.values(session.allSessionObj).filter((item: any) => {
-    if ([4, 5,17].includes(item.TaskType) && sessionsLocalKey.value.includes(item.TaskID)) {
+    if ([4, 5,17].includes(item.TaskType) && isClientSendTask(item)) {
       return item;
     }
   })
 })
 const sessionsData: any = computed(() => {
   return Object.values(session.allSessionObj).filter((item: any) => {
-    if ([4, 5,17].includes(item.TaskType) && sessionsLocalKey.value.includes(item.TaskID)) {
+    if ([4, 5,17].includes(item.TaskType) && isClientSendTask(item)) {
       return item;
     }
     if (
@@ -769,7 +769,7 @@ const alarmTalkTask = () => {
             EndPointsAdditionalProp: {},
             EndPointList: row.terminalsIds,
             TaskID: usePublicMethod.generateUUID(),
-            TaskName: row.name,
+            TaskName: proxy.$t("Client alarm task") + "(" + localStorage.get("username") + ")",
             Priority: row.priority,
             Volume: row.volume,
             TaskType: 15,
@@ -819,7 +819,6 @@ const judgeButtonStatus = (type: number) => {
     );
   });
   if (sessionsData.value.length > 0 && status) {
-    console.log(111);
     return true;
   }
   return false;
@@ -914,6 +913,10 @@ watch(
     deep: true,
   }
 );
+// 任务复现时候，为声音重新赋值
+watch(sessionsData_NonAlarm,(newVal:any)=>{
+  form.volume = newVal[0]?.TaskVolume || 0
+})
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {

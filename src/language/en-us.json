@@ -1111,5 +1111,7 @@
   "Intercom receiving terminal can only choose one": "Intercom receiving terminal can only choose one",
   "Only one monitoring terminal can be selected": "Only one monitoring terminal can be selected",
   "Please select receiving terminal": "Please select receiving terminal",
-  "Task initiation failed": "Task initiation failed"
+  "Task initiation failed": "Task initiation failed",
+  "Client alarm task": "Client alarm task",
+  "Client": "Client"
 }
