@@ -43,7 +43,7 @@ const dialongWarningMessage = defineAsyncComponent(
 const { proxy } = useCurrentInstance.useCurrentInstance();
 const upload = getStore.useUploadStore();
 const store = getStore.useAppStore();
-const storeTerminal = getStore.useTerminalStore();
+const storeTerminals = getStore.useTerminalsStore();
 
 const timeToken: any = ref(null);
 const timeoutToken: any = ref(null);
@@ -57,7 +57,7 @@ const isWebsocekt = computed(() => {
   return store.is_websocekt;
 });
 const terminalAlertData = computed(() => {
-  return storeTerminal.terminal_Alert_data;
+  return storeTerminals.terminalAlertdata;
 });
 
 // 监听变化
@@ -85,7 +85,7 @@ watch(
 );
 
 const clearTerminalWarning = () => {
-  storeTerminal.clearAlertData();
+  storeTerminals.clearAlertData();
 };
 // 定时延长token有效期
 const refreshToken = () => {

@@ -94,6 +94,7 @@ async function createWindow() {
   }
 
   ipcMain.on("register-window", () => {
+    if(calendarWin) return calendarWin.show()
     openCalendarWindow();
   });
   // ipcMain 修改主进程，监听渲染进程的消息，并根据消息执行相应的动作

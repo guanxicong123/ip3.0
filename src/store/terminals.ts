@@ -15,8 +15,9 @@ interface TerminalsParams<T = any> {
   terminalType: number;
   searchGroupString: string;
   equipmentListChangeNum: number;
+  terminalAlertdata: Array<any>
 }
-
+import $http from "@/utils/axios/local_index";
 export const useTerminalsStore = defineStore({
   id: "terminals",
   state: (): TerminalsParams => {
@@ -37,11 +38,13 @@ export const useTerminalsStore = defineStore({
       terminalType: 0, // 终端类型
       searchGroupString: "", // 搜索分组字段-区别searchString
       equipmentListChangeNum: 0, // 设备列表改变状态次数-避免设备状态-主讲终端组件交互干扰到数据
+      terminalAlertdata: [], // 离线终端警告信息
     };
   },
   actions: {
     // 更新终端数据
     updateTerminals(data: any[]) {
+      const alertMessage = JSON.parse(localStorage.get("alertMessage")); //警告消息（离线提醒是否开启）
       for (let index = 0; index < data.length; index++) {
         const item = data[index];
         const ipArr = item.EndPointIP.split(".");
@@ -66,6 +69,28 @@ export const useTerminalsStore = defineStore({
             item.EndPointProp.PowerControl.length
           ),
         };
+        // 数据状态由非离线状态转换为离线状态触发
+        if (
+          this.allTerminalsObj[item.EndPointID]?.Status !== 0 &&
+          item.Status === 0
+        ) {
+          // 启用终端离线提醒
+          if (alertMessage?.EnabledTerminalOffAlert) {
+            const Alertdata = {
+              EndPointName: item.EndPointName,
+              EndPointIP: item.EndPointIP,
+              OfflineTime: usePublicMethod.formatDate(
+                new Date().toLocaleString(),
+                "YYYY-MM-DD HH:mm:ss"
+              ),
+            };
+            this.terminalAlertdata.push(Alertdata)
+          }
+          // 启用终端离线铃声提醒
+          if (alertMessage?.EnabledTerminalOffRingfAlert) {
+            $http.get("/tools/palyring");
+          }
+        }
         this.allTerminalsObj[item.EndPointID] = item;
       }
     },
@@ -248,6 +273,10 @@ export const useTerminalsStore = defineStore({
     // 设置设备列表改变次数
     setEquipmentListChangeNum(num: number) {
       this.equipmentListChangeNum += num;
+    },
+    // 清楚离线终端数据
+    clearAlertData() {
+      this.terminalAlertdata = [];
     },
   },
 });
