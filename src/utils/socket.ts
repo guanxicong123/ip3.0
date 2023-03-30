@@ -206,12 +206,6 @@ const handlerMsg = (msg: any) => {
       },
     ],
     [
-      "terminals_group_info",
-      () => {
-        getStore.useTerminalStore().getTerminalGroup(msg.data);
-      },
-    ],
-    [
       "task_stop",
       () => {
         getStore.useSessionStore().removeSession(msg.data);
@@ -257,9 +251,6 @@ const handlerMsg = (msg: any) => {
       message: msg.return_message,
       grouping: true,
     });
-  }
-  if (msg.actioncode === "ls2c_set_terminal_volume") {
-    getStore.useTerminalStore().setTerminalVolume(msg.data);
   }
   // 前端主动发起请求，响应后的返回数据
   switch (msg.actioncode) {
