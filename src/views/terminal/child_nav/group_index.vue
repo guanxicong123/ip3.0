@@ -159,7 +159,7 @@ const cleanCheckedTerminalIds = () => {
     }
   });
   terminals_arr.map((item: any) => {
-    checked_terminals_ids.push(item.EndpointID);
+    checked_terminals_ids.push(item.terminals_id);
   });
   updateCheckedTerminals(checked_terminals_ids);
 };
