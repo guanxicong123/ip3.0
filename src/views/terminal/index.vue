@@ -857,19 +857,21 @@ const handleGetDefaultRouter = () => {
 };
 // 处理 音量的改变
 const hadnleChangeVolume = (volume:any)=>{
-  let data = {
-    company: "BL",
-    actioncode: "c2ms_set_task_volume",
-    token: "",
-    data: {
-      TaskID: sessionsData.value[0].TaskID,
-      Volume : volume
-    },
-    result: 0,
-    return_message: "",
-  };
-  send(data);
-  return;
+  if(sessionsData_NonAlarm.value.length){
+    let data = {
+      company: "BL",
+      actioncode: "c2ms_set_task_volume",
+      token: "",
+      data: {
+        TaskID: sessionsData_NonAlarm.value[0].TaskID,
+        Volume : volume
+      },
+      result: 0,
+      return_message: "",
+    };
+    send(data);
+    return;
+  }
 }
 
 // 供给数据
@@ -921,7 +923,7 @@ watch(
 );
 // 任务复现时候，为声音重新赋值
 watch(sessionsData_NonAlarm,(newVal:any)=>{
-  form.volume = newVal[0]?.TaskVolume || 0
+  form.volume = newVal[0]?.TaskVolume || form.volume
 })
 
 // mounted 实例挂载完成后被调用
