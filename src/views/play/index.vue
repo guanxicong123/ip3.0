@@ -159,7 +159,7 @@
         </div>
       </div>
     </div>
-    <div class="play-right" v-if="!form.fullscreen_satus">
+    <div class="play-right" v-show="!form.fullscreen_satus">
       <div class="right-top">
         <div class="com-index">
           <div class="com-head">
