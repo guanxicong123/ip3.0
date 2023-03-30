@@ -62,16 +62,8 @@
               {{ scope.row.end_time }} ({{ scope.row.life_time }})
             </template>
           </el-table-column>
-          <el-table-column
-            prop="remarks"
-            :label="$t('Remarks')"
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="level"
-            :label="$t('Log level')"
-            show-overflow-tooltip
-          >
+          <el-table-column prop="remarks" :label="$t('Remarks')" show-overflow-tooltip />
+          <el-table-column prop="level" :label="$t('Log level')" show-overflow-tooltip>
             <template #default="scope">
               {{ formatterLevel(scope.row) }}
             </template>
@@ -79,7 +71,7 @@
           <el-table-column
             :label="$t('Operation')"
             width="120"
-            v-if="userStore.type == 0"
+            v-if="userStore?.type == 0"
           >
             <template #default="scope">
               <i
@@ -89,11 +81,7 @@
               ></i>
             </template>
           </el-table-column>
-          <el-table-column
-            type="selection"
-            width="44"
-            v-if="userStore.type == 0"
-          />
+          <el-table-column type="selection" width="44" v-if="userStore?.type == 0" />
         </el-table>
       </div>
     </div>

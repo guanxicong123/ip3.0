@@ -10,15 +10,12 @@
     width="420px"
     destroy-on-close
     append-to-body
-    :show-close="false"
+    class="com-default-dialog"
     @close="emit('show', false)"
   >
-    <template #header="{ close, titleId, titleClass }">
+    <template #header="{ titleId, titleClass }">
       <div class="com-dialog-header">
         <span :id="titleId" :class="titleClass">{{ form.title }}</span>
-        <span class="dialog-icon">
-          <el-icon @click="close"><Close /></el-icon>
-        </span>
       </div>
     </template>
     <div class="com-export-log">
@@ -56,10 +53,7 @@
           >
             {{ $t("Select all") }}
           </el-checkbox>
-          <el-checkbox-group
-            v-model="form.log_type"
-            @change="handleCheckedChange"
-          >
+          <el-checkbox-group v-model="form.log_type" @change="handleCheckedChange">
             <el-checkbox
               v-for="item in logTypeOptions"
               :key="item.label"
@@ -92,7 +86,7 @@ import { ExportLogService } from "@/utils/api/log";
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
 // 声明触发事件
-const emit = defineEmits(["show"]);
+const emit = defineEmits(["show", "success"]);
 // 声明父组件传值
 const parentData = defineProps(["isShow"]);
 
@@ -217,17 +211,17 @@ const handleExportLog = async (formEl: FormInstance | undefined) => {
       };
       ExportLogService.exprtLog(params)
         .then((result) => {
-          const isHasURL = Object.prototype.hasOwnProperty.call(
-            result.data,
-            "url"
-          );
+          const isHasURL = Object.prototype.hasOwnProperty.call(result.data, "url");
+          const serverIP = localStorage.get("serverIP");
           if (isHasURL) {
             let src = result.data.url;
-            emit("show", false, src);
-            ElMessage({
-              type: "success",
-              message: proxy.$t("Export succeeded"),
-              grouping: true,
+            const index = src.lastIndexOf("/");
+            const fileName = src.substring(index + 1, src.length);
+            const url = "http://" + serverIP + ":81/excel/" + fileName;
+            console.log(url, fileName);
+            window.electronAPI.send("download", {
+              downloadPath: url, // 下载链接
+              fileName: fileName, // 下载文件名，需要包含后缀名
             });
           } else {
             ElMessage({
@@ -269,7 +263,33 @@ watch(
 );
 
 // mounted 实例挂载完成后被调用
-onMounted(() => {});
+onMounted(() => {
+  // 下载正在进行中
+  window.electronAPI.on("download-progress", (event: any, data: any) => {
+    console.log(data);
+  });
+  // 下载成功
+  window.electronAPI.on("download-done", (event: any, data: any) => {
+    let message = proxy.$t("Download succeeded");
+    ElMessage({
+      type: "success",
+      message: message,
+      grouping: true,
+    });
+    emit("show", false);
+    console.log(data);
+  });
+  // 下载失败
+  window.electronAPI.on("download-failed", (event: any, data: any) => {
+    let message = proxy.$t("Download failed");
+    ElMessage({
+      type: "error",
+      message: message,
+      grouping: true,
+    });
+    console.log(data);
+  });
+});
 </script>
 
 <style lang="scss" scoped>
