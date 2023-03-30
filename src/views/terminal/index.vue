@@ -88,7 +88,7 @@
           color="#4900EE"
           :loading="startButton.status && startButton.type === 1"
           @click="functronButtonTask(1)"
-          :disabled="!judgeButtonStatus(1) && sessionsData_NonAlarm.length"
+          :disabled="!judgeButtonStatus(1) && sessionsData_NonAlarm.length > 0"
         >
           {{
             judgeButtonStatus(1)
@@ -102,7 +102,7 @@
           color="#467CF7"
           @click="functronButtonTask(5)"
           :loading="startButton.status && startButton.type === 5"
-          :disabled="!judgeButtonStatus(5) && sessionsData_NonAlarm.length"
+          :disabled="!judgeButtonStatus(5) && sessionsData_NonAlarm.length > 0"
         >
           {{ judgeButtonStatus(5)? $t("End broadcast") : $t("Broadcast") }}
         </el-button>
@@ -112,7 +112,7 @@
           v-if="$useRoute.name != 'group'"
           @click="functronButtonTask(4)"
           :loading="startButton.status && startButton.type === 4"
-          :disabled="!judgeButtonStatus(4) && sessionsData_NonAlarm.length"
+          :disabled="!judgeButtonStatus(4) && sessionsData_NonAlarm.length > 0"
         >
           {{ judgeButtonStatus(4) ? $t("End the intercom") : $t("Intercom") }}
         </el-button>
@@ -122,7 +122,7 @@
           v-if="$useRoute.name != 'group'"
           @click="functronButtonTask(17)"
           :loading="startButton.status && startButton.type === 17"
-          :disabled="!judgeButtonStatus(17) && sessionsData_NonAlarm.length"
+          :disabled="!judgeButtonStatus(17) && sessionsData_NonAlarm.length > 0"
         >
           {{ judgeButtonStatus(17) ? $t("End listening") : $t("Monitor") }}
         </el-button>
