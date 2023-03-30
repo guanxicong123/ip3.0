@@ -12,6 +12,7 @@ const usePublicMethod = {
     getStore.useSessionStore().clearSession();
     getStore.useTTSStore().clearTTS();
     getStore.useUploadStore().updateShowUploadManager(false);
+    window.electronAPI.send("login-window");
   },
   // 设置一小时刷新一次token
   setTokenMonitorTime() {
