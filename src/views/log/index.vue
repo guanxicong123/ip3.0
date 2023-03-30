@@ -41,12 +41,12 @@
         </div>
         <div class="com-button">
           <i
-            class="iconfont icon-execution-failed"
+            class="iconfont icon-clear-log"
             :title="$t('Clear log')"
             @click="clearAllLog(form.activeName)"
           ></i>
           <i
-            class="iconfont icon-download"
+            class="iconfont icon-export"
             :title="$t('Export log')"
             @click="form.logDialogVisible = true"
           ></i>
