@@ -79,7 +79,7 @@
           />
           <span class="checked-num">
             <template v-if="checked_terminals.length > 0">
-              ( <span class="theme">{{ checked_terminals.length }}</span> )
+              ( <span class="theme">{{$useRoute.name != 'group'? checked_terminals.length: checked_Group.length }}</span> )
             </template>
           </span>
         </template>
@@ -337,10 +337,15 @@ const handleUpdateCheckedAll = (value: boolean) => {
 
 //定义已勾选的终端数据
 const checked_terminals: any = ref([]);
-
+// 定义已勾选的分组
+const checked_Group: any = ref([])
 // 更新已勾选终端数据
 const updateCheckedTerminals = (data: any) => {
   checked_terminals.value = data;
+};
+// 更新已勾选分组个数
+const updateCheckedGroup = (data: any) => {
+  checked_Group.value = data;
 };
 
 const setUp = () => {
@@ -876,6 +881,7 @@ provide("checkedAll", {
   checked_terminals,
   updateCheckedTerminals,
   handleSelectSpeakerTerminal,
+  updateCheckedGroup,
 });
 // 传给方块视图页面
 provide("select_terminal", {

@@ -129,6 +129,7 @@ const {
   handleUpdateCheckedAll,
   handleIsCheckedAll,
   updateCheckedTerminals,
+  updateCheckedGroup
 }: any = inject("checkedAll");
 // 获取refs
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
@@ -162,6 +163,8 @@ const cleanCheckedTerminalIds = () => {
     checked_terminals_ids.push(item.terminals_id);
   });
   updateCheckedTerminals(checked_terminals_ids);
+  // 更新选中的分组
+  updateCheckedGroup(form.multipleSelection)
 };
 // 分组终端详情显示
 const viewGroupInfo = (item: { name: string; terminals: Array<any>; call_code: string }) => {
