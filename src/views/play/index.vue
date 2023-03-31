@@ -1092,21 +1092,13 @@ watch(playCenterData, (newVal, oldVal) => {
     oldVal.type === 1 ||
     oldVal.type === 10 ||
     (oldVal.type === 4 && oldVal.sound_source.type === 1);
-  if (!newValType && oldValType && oldVal?.TaskID) {
-    unsubscribeTask(oldVal);
-  }
   if (newVal?.TaskID && !oldVal.TaskID) {
     //新任务详情存在任务,旧任务详情无执行任务
     if (newValType) subscribeTask(newVal);
   }
   if (newVal?.TaskID && oldVal?.TaskID && newVal?.TaskID !== oldVal?.TaskID) {
     //新旧任务都存在TaskID,但是任务不相同,判断为切换了任务详情
-    if (oldValType) unsubscribeTask(oldVal);
     if (newValType) subscribeTask(newVal);
-  }
-  if (!newVal?.TaskID && oldVal?.TaskID && newVal?.name !== oldVal?.name) {
-    //判断为切换了任务详情,新的任务详情不存在任务
-    if (oldValType) unsubscribeTask(oldVal);
   }
 });
 
