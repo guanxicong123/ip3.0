@@ -253,7 +253,10 @@ const sessionsData: any = computed(() => {
     ) {
       return item;
     }
-  });
+    // 把报警任务放到最后面
+  }).sort((a:any,b:any)=>{
+    return b.TaskType - a.TaskType
+  })
 });
 const system_configs = computed(() => {
   return systemStore.system_configs;
@@ -922,7 +925,7 @@ watch(
   }
 );
 // 任务复现时候，为声音重新赋值
-watch(sessionsData_NonAlarm,(newVal:any)=>{
+watch(sessionsData,(newVal:any)=>{
   form.volume = newVal[0]?.TaskVolume || form.volume
 })
 
