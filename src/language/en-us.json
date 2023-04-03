@@ -1113,5 +1113,6 @@
   "Please select receiving terminal": "Please select receiving terminal",
   "Task initiation failed": "Task initiation failed",
   "Client alarm task": "Client alarm task",
-  "Client": "Client"
+  "Client": "Client",
+  "This user cannot modify the username": "This user cannot modify the username"
 }

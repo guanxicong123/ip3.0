@@ -89,7 +89,7 @@ const validateName = (rule: any, value: any, callback: any) => {
     data: { name: value },
   })
     .then((result) => {
-      if (result.result?.status) {
+      if (result.data?.status) {
         callback();
       } else {
         callback(new Error(proxy.$t("Name already exists")));
@@ -130,9 +130,10 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
             });
             usePublicMethod.signOut();
           } else {
+            let errorMsg = result.data?.message === '该用户不能修改用户名'? "This user cannot modify the username":result.data?.message
             ElMessage({
               type: "error",
-              message: result.result?.message,
+              message: proxy.$t(errorMsg),
               grouping: true,
             });
           }
