@@ -746,8 +746,6 @@ const alarmTalkTask = () => {
     };
     // 设置人工报警信息
     terminals.setManualAlarmTerminal([warningData])
-    // 重新设置当前报警信息
-    terminals.setAlarmTerminalList(terminals.alarmTerminalData)
     // 打开报警 警告弹窗
     terminals.resetAlarmTerminalWarning(true)
   }

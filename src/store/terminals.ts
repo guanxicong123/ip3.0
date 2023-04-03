@@ -16,7 +16,9 @@ interface TerminalsParams<T = any> {
   searchGroupString: string;
   equipmentListChangeNum: number;
   terminalAlertdata: Array<any>;
+  allWarningTerminalData: Array<any>;
   alarmTerminalData: Array<any>;
+  fireTerminalData: Array<any>;
   alarmTerminalShow: boolean;
   manualAlarmTerminal: Array<any>;
 }
@@ -42,9 +44,11 @@ export const useTerminalsStore = defineStore({
       searchGroupString: "", // 搜索分组字段-区别searchString
       equipmentListChangeNum: 0, // 设备列表改变状态次数-避免设备状态-主讲终端组件交互干扰到数据
       terminalAlertdata: [], // 离线终端警告信息
-      alarmTerminalData: [], // 所有报警信息
-      alarmTerminalShow: false, // 报警终端弹窗显示
+      allWarningTerminalData: [], // 当前展示的所有报警信息
+      alarmTerminalData: [], // 终端报警信息
+      fireTerminalData: [], // 火警 报警信息
       manualAlarmTerminal: [], // 人工报警信息
+      alarmTerminalShow: false, // 报警终端弹窗显示
     };
   },
   actions: {
@@ -287,17 +291,44 @@ export const useTerminalsStore = defineStore({
     // 重新设置报警 警告弹窗
     resetAlarmTerminalWarning(flog:boolean){
       const alertMessage = JSON.parse(localStorage.get("alertMessage")); //警告消息（人工报警提醒是否开启）
+      // 报警与火警提示都没有打开
+      if(!alertMessage.EnabledPersonAlert && !alertMessage.EnabledFireAlert){
+        return 
+      }
+      this.alarmTerminalShow = flog
+      // 报警与火警提示都打开
+      if(alertMessage.EnabledPersonAlert && alertMessage.EnabledFireAlert){
+        this.allWarningTerminalData = [...this.alarmTerminalData,...this.manualAlarmTerminal]
+        this.fireTerminalData.map(item=>{
+          const flog:boolean = this.allWarningTerminalData.some(allItem=>{
+            return allItem.EndPointIP === item.EndPointIP
+          })
+          if(!flog){
+            this.allWarningTerminalData.push(item)
+          }
+        })
+        return 
+      }
+      // 只打开报警提示
       if(alertMessage.EnabledPersonAlert){
-        this.alarmTerminalShow = flog
+        this.allWarningTerminalData = [...this.alarmTerminalData,...this.manualAlarmTerminal]
+      }
+      // 只打开火警提示
+      if(alertMessage.EnabledFireAlert){
+        this.allWarningTerminalData = [...this.fireTerminalData]
       }
     },
     // 设置人工报警任务
     setManualAlarmTerminal(data:any) {
       this.manualAlarmTerminal = data
     },
-    // 设置已报警的终端列表
+    // 设置火警 报警任务
+    setFireTerminalData(data:any) {
+      this.fireTerminalData = data
+    },
+    // 设置终端报警 任务 
     setAlarmTerminalList(terminals:any) {
-      this.alarmTerminalData = [...this.manualAlarmTerminal,...terminals]
+      this.alarmTerminalData = terminals
     }
   },
 });

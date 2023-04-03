@@ -27,7 +27,7 @@
          :alarmDialog="true"
           v-model:dialogVisible="dialogVisibleAlarmTerminal"
           @requestDispose="resetAlarmTerminalWarning"
-          :dialogAlertData="alarmTerminalData"
+          :dialogAlertData="allWarningTerminalData"
           :dialogTitle="$t('Terminal or User call the police prompt')"
         />
       </el-main>
@@ -70,8 +70,8 @@ const isWebsocekt = computed(() => {
 const terminalAlertData = computed(() => {
   return storeTerminals.terminalAlertdata;
 });
-const alarmTerminalData:any = computed(()=>{
-  return storeTerminals.alarmTerminalData
+const allWarningTerminalData:any = computed(()=>{
+  return storeTerminals.allWarningTerminalData
 })
 
 // 监听变化
@@ -102,7 +102,8 @@ watch(
   () => storeTerminals.allTerminalsObj,
   (newData,oldData) => {
     let flog = false
-    let alarmTerminalLis:any = []
+    let alarmTerminalList:any = []
+    let fireTerminalList
     Object.values(newData).forEach((terminal:any) => {
       // 把所有报警任务的终端信息收集
       if(terminal.TaskType.includes(3)){
@@ -114,15 +115,34 @@ watch(
             "YYYY-MM-DD HH:mm:ss"
           ),
         };
-        alarmTerminalLis.unshift(Alertdata)
+        alarmTerminalList.unshift(Alertdata)
         // 如果该终端的报警任务的刚刚执行的，就弹出警告
         if(!flog && oldData[terminal.EndPointID].TaskType?.includes(3)){
           flog = true
         }
       }
+      if(terminal.TaskType.includes(1)){
+        const Alertdata = {
+          EndPointName: terminal.EndPointName,
+          EndPointIP: terminal.EndPointIP,
+          OfflineTime: usePublicMethod.formatDate(
+            new Date().toLocaleString(),
+            "YYYY-MM-DD HH:mm:ss"
+          ),
+        };
+        fireTerminalList.unshift(Alertdata)
+        // 如果该火警任务的刚刚执行的，就弹出警告
+        if(!flog && oldData[terminal.EndPointID].TaskType?.includes(1)){
+          flog = true
+        }
+      }
     });
+    // 存入 火警 警告任务
+    storeTerminals.setFireTerminalData(fireTerminalList)
+    // 存入 报警 警告任务
+    storeTerminals.setAlarmTerminalList(alarmTerminalList)
+    // 警告弹窗显示
     storeTerminals.resetAlarmTerminalWarning(flog)
-    storeTerminals.setAlarmTerminalList(alarmTerminalLis)
   },
   {
     deep: true,
