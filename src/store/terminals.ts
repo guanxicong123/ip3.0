@@ -286,7 +286,10 @@ export const useTerminalsStore = defineStore({
     },
     // 重新设置报警 警告弹窗
     resetAlarmTerminalWarning(flog:boolean){
-      this.alarmTerminalShow = flog
+      const alertMessage = JSON.parse(localStorage.get("alertMessage")); //警告消息（人工报警提醒是否开启）
+      if(alertMessage.EnabledPersonAlert){
+        this.alarmTerminalShow = flog
+      }
     },
     // 设置人工报警任务
     setManualAlarmTerminal(data:any) {
@@ -294,12 +297,7 @@ export const useTerminalsStore = defineStore({
     },
     // 设置已报警的终端列表
     setAlarmTerminalList(terminals:any) {
-      const alertMessage = JSON.parse(localStorage.get("alertMessage")); //警告消息（人工报警提醒是否开启）
-      if(alertMessage.EnabledPersonAlert){
-        this.alarmTerminalData = [...this.manualAlarmTerminal,...terminals]
-      }else {
-        this.alarmTerminalData = terminals
-      }
+      this.alarmTerminalData = [...this.manualAlarmTerminal,...terminals]
     }
   },
 });
