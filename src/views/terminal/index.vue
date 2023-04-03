@@ -189,12 +189,6 @@
         </span>
       </template>
     </el-dialog>
-    <dialongWarningMessage
-      v-model:dialogVisible="callPoliceWarningDialog.visibleDialog"
-      :dialogAlertData="callPoliceWarningDialog.warningList"
-      @requestDispose="callPoliceWarningDialog.clearWarning"
-      :dialogTitle="$t('Terminal or User call the police prompt')"
-    />
   </div>
 </template>
 
@@ -354,12 +348,6 @@ const updateCheckedGroup = (data: any) => {
 const setUp = () => {
   set_dialog.value = true;
 };
-// 报警警告弹窗详情
-const callPoliceWarningDialog = reactive<any>({
-  visibleDialog:false,
-  warningList:[],
-  clearWarning:()=>{}
-})
 // 终端 <-> 分组切换-状态状态显示方式DisplayType 0：方块视图 1：列表视图
 const changeRouter = (name: string) => {
   form.loading = true;
@@ -732,6 +720,8 @@ const alarmTalkTask = () => {
       return_message: "",
     };
     send(data);
+    // 结束人工报警任务，清楚store中存储的人工报警数据
+    terminals.setManualAlarmTerminal([])
     return;
   }
   
@@ -754,8 +744,12 @@ const alarmTalkTask = () => {
         "YYYY-MM-DD HH:mm:ss"
       ),
     };
-    callPoliceWarningDialog.warningList = [warningData]
-    callPoliceWarningDialog.visibleDialog = true
+    // 设置人工报警信息
+    terminals.setManualAlarmTerminal([warningData])
+    // 重新设置当前报警信息
+    terminals.setAlarmTerminalList(terminals.alarmTerminalData)
+    // 打开报警 警告弹窗
+    terminals.resetAlarmTerminalWarning(true)
   }
   proxy.$http
     .get("/details/" + system_configs.value.AlarmID, {

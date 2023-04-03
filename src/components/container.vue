@@ -23,6 +23,13 @@
           @requestDispose="clearTerminalWarning"
           :dialogTitle="$t('Terminal offline prompt')"
         />
+        <dialongWarningMessage
+         :alarmDialog="true"
+          v-model:dialogVisible="dialogVisibleAlarmTerminal"
+          @requestDispose="resetAlarmTerminalWarning"
+          :dialogAlertData="alarmTerminalData"
+          :dialogTitle="$t('Terminal or User call the police prompt')"
+        />
       </el-main>
     </el-container>
   </el-container>
@@ -51,6 +58,10 @@ const timeoutToken: any = ref(null);
 const showUploadManager = ref(false);
 // 是否显示终端警告对话框
 const dialogVisibleTerminal = ref(false);
+// 是否显示终端 报警 警告对话框
+const dialogVisibleAlarmTerminal = computed(()=>{
+  return storeTerminals.alarmTerminalShow
+})
 // 计算属性 computed
 const uploadStore = computed(() => upload.showUploadManager);
 const isWebsocekt = computed(() => {
@@ -59,6 +70,9 @@ const isWebsocekt = computed(() => {
 const terminalAlertData = computed(() => {
   return storeTerminals.terminalAlertdata;
 });
+const alarmTerminalData:any = computed(()=>{
+  return storeTerminals.alarmTerminalData
+})
 
 // 监听变化
 watch(
@@ -83,10 +97,45 @@ watch(
     deep: true,
   }
 );
-
+// 对全部终端进行监听，获取最新的报警终端信息，存在store中
+watch(
+  () => storeTerminals.allTerminalsObj,
+  (newData,oldData) => {
+    let flog = false
+    let alarmTerminalLis:any = []
+    Object.values(newData).forEach((terminal:any) => {
+      // 把所有报警任务的终端信息收集
+      if(terminal.TaskType.includes(3)){
+        const Alertdata = {
+          EndPointName: terminal.EndPointName,
+          EndPointIP: terminal.EndPointIP,
+          OfflineTime: usePublicMethod.formatDate(
+            new Date().toLocaleString(),
+            "YYYY-MM-DD HH:mm:ss"
+          ),
+        };
+        alarmTerminalLis.unshift(Alertdata)
+        // 如果该终端的报警任务的刚刚执行的，就弹出警告
+        if(!flog && oldData[terminal.EndPointID].TaskType?.includes(3)){
+          flog = true
+        }
+      }
+    });
+    storeTerminals.resetAlarmTerminalWarning(flog)
+    storeTerminals.setAlarmTerminalList(alarmTerminalLis)
+  },
+  {
+    deep: true,
+    immediate:true,
+  }
+);
 const clearTerminalWarning = () => {
   storeTerminals.clearAlertData();
 };
+const resetAlarmTerminalWarning = () => {
+  storeTerminals.resetAlarmTerminalWarning(false)
+};
+
 // 定时延长token有效期
 const refreshToken = () => {
   timeoutToken.value = null;

@@ -25,7 +25,7 @@
     >
       <el-table-column
         property="EndPointName"
-        :label="$t('Terminal')"
+        :label="parentData.alarmDialog?$t('terminal/username'):$t('Terminal')"
         width="150"
         sortable
       />
@@ -40,6 +40,7 @@ const parentData = defineProps({
   dialogVisible: Boolean,
   dialogTitle: String,
   dialogAlertData: Array,
+  alarmDialog:Boolean,
 });
 const parentEmit = defineEmits(["update:dialogVisible", "requestDispose"]);
 

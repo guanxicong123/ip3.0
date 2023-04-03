@@ -1114,5 +1114,6 @@
   "Task initiation failed": "任务发起失败",
   "Client alarm task": "客户端人工报警任务",
   "Client": "客户端",
-  "This user cannot modify the username": "该用户不能修改用户名"
+  "This user cannot modify the username": "该用户不能修改用户名",
+  "terminal/username": "终端/用户名"
 }

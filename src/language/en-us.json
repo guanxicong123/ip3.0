@@ -1114,5 +1114,6 @@
   "Task initiation failed": "Task initiation failed",
   "Client alarm task": "Client alarm task",
   "Client": "Client",
-  "This user cannot modify the username": "This user cannot modify the username"
+  "This user cannot modify the username": "This user cannot modify the username",
+  "terminal/username": "terminal/username"
 }

@@ -15,7 +15,10 @@ interface TerminalsParams<T = any> {
   terminalType: number;
   searchGroupString: string;
   equipmentListChangeNum: number;
-  terminalAlertdata: Array<any>
+  terminalAlertdata: Array<any>;
+  alarmTerminalData: Array<any>;
+  alarmTerminalShow: boolean;
+  manualAlarmTerminal: Array<any>;
 }
 import $http from "@/utils/axios/local_index";
 export const useTerminalsStore = defineStore({
@@ -39,6 +42,9 @@ export const useTerminalsStore = defineStore({
       searchGroupString: "", // 搜索分组字段-区别searchString
       equipmentListChangeNum: 0, // 设备列表改变状态次数-避免设备状态-主讲终端组件交互干扰到数据
       terminalAlertdata: [], // 离线终端警告信息
+      alarmTerminalData: [], // 所有报警信息
+      alarmTerminalShow: false, // 报警终端弹窗显示
+      manualAlarmTerminal: [], // 人工报警信息
     };
   },
   actions: {
@@ -278,5 +284,22 @@ export const useTerminalsStore = defineStore({
     clearAlertData() {
       this.terminalAlertdata = [];
     },
+    // 重新设置报警 警告弹窗
+    resetAlarmTerminalWarning(flog:boolean){
+      this.alarmTerminalShow = flog
+    },
+    // 设置人工报警任务
+    setManualAlarmTerminal(data:any) {
+      this.manualAlarmTerminal = data
+    },
+    // 设置已报警的终端列表
+    setAlarmTerminalList(terminals:any) {
+      const alertMessage = JSON.parse(localStorage.get("alertMessage")); //警告消息（人工报警提醒是否开启）
+      if(alertMessage.EnabledPersonAlert){
+        this.alarmTerminalData = [...this.manualAlarmTerminal,...terminals]
+      }else {
+        this.alarmTerminalData = terminals
+      }
+    }
   },
 });
