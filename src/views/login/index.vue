@@ -154,6 +154,7 @@
 import { socketLogin, socket } from "@/utils/socket";
 import usePublicMethod from "@/utils/global/index";
 import { ElMessage } from "element-plus";
+import $http from "@/utils/axios/index";
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
@@ -232,6 +233,9 @@ const gitRegisterStatus = () => {
 };
 // 提交
 const submit = () => {
+  // 登录前，把http的baseURL改为以最新的登录的ip地址进行请求
+  localStorage.set("serverIP", modelRef.server_ip_address);
+  $http.defaults.baseURL =  "http://" + localStorage.get("serverIP") + ":81/api/v29+"
   if (!registerStatus.value?.isRegister && registerStatus.value?.freeTime === 0)
     return proxy.$message({
       type:'warning',
@@ -273,7 +277,6 @@ const submit = () => {
   };
   store.changeLoginStatus(true);
   socketLogin(data);
-  localStorage.set("serverIP", modelRef.server_ip_address);
   localStorage.set("username", modelRef.name);
 };
 
