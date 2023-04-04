@@ -283,10 +283,8 @@ const handlerMsg = (msg: any) => {
       getStore.usePlayStore().setPlayStatus(msg.data);
       break;
     case "ms2c_create_server_task":
-      startRemotePlay(msg.data,getStore.usePlayStore().switchPlayMediaNameMap[msg.data.TaskID]);
       break;
     case "ms2c_create_local_task":
-      startRemotePlay(msg.data,getStore.usePlayStore().switchPlayMediaNameMap[msg.data.TaskID]);
       break;
     case "ms2c_control_task": // 播放中心任务状态改变
       break;
@@ -298,6 +296,7 @@ const handlerMsg = (msg: any) => {
       break;
     case "ms2c_stop_task":
       getStore.useSessionStore().removeSession(msg.data);
+      getStore.usePlayStore().removeSubscriptionTask(msg.data);
       break;
     case "ms2c_set_task_volume": // 设置任务音量
       getStore.usePlayStore().setIsLatestTaskDetail(false);

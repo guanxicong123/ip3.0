@@ -706,8 +706,6 @@ const alarmTalkTask = () => {
     const currentTask = sessionsData.value.find((task:any)=>{
       return task.TaskType === 3
     })
-    console.log(currentTask,'currentTask');
-    
     //存在任务且点击是当前任务按钮，结束任务
     let data = {
       company: "BL",

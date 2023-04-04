@@ -1,9 +1,8 @@
 export interface playState {
   playVoiceData: any;
   playStatusData: any;
-  playSubscriptionTask: any;
+  allPlaySubscriptionTaskMap: any;
   playTaskStaging: Array<any>;
-  switchPlayMediaNameMap:any;
   isLatestTaskStatus:boolean;
   isLatestTaskDetail:boolean;
 }
@@ -12,11 +11,10 @@ export const usePlayStore = defineStore({
   state: (): playState => ({
     playVoiceData: [],
     playStatusData: {},
-    playSubscriptionTask: {},
+    allPlaySubscriptionTaskMap: {},
     playTaskStaging: [], //用于储存
-    switchPlayMediaNameMap:{}, // 创建任务后时候，用于切换到某个媒体播放
     isLatestTaskStatus:true, // 当前是否为最新的任务列表
-    isLatestTaskDetail:true, // 当前是否为最新的任务详情
+    isLatestTaskDetail:true, // 当前是否为最新的任务详情 
   }),
   actions: {
     setPlayVoice(data: any) {
@@ -26,7 +24,13 @@ export const usePlayStore = defineStore({
       this.playStatusData = data;
     },
     setPlayTaskStatus(data: any) {
-      this.playSubscriptionTask = data[0];
+      // 把所有的订阅任务 的进度条信息存储
+      data.forEach((task:any)=>{
+        this.allPlaySubscriptionTaskMap[task.TaskID] = task
+      })
+    },
+    removeSubscriptionTask(data:any) {
+      delete this.allPlaySubscriptionTaskMap[data.TaskID]
     },
     changePlayTaskStaging(data: any) {
       if (data.key === "add") {
@@ -36,9 +40,6 @@ export const usePlayStore = defineStore({
           return item !== data.value
         })
       }
-    },
-    setSwitchPlayMediaNameMap(TaskID : string, playName : string){
-      this.switchPlayMediaNameMap[TaskID] = playName
     },
     setIsLatestTaskStatus(flog:boolean){
       this.isLatestTaskStatus = flog

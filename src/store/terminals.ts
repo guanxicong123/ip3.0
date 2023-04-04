@@ -299,7 +299,7 @@ export const useTerminalsStore = defineStore({
       // 报警与火警提示都打开
       if(alertMessage.EnabledPersonAlert && alertMessage.EnabledFireAlert){
         this.allWarningTerminalData = [...this.alarmTerminalData,...this.manualAlarmTerminal]
-        this.fireTerminalData.map(item=>{
+        this.fireTerminalData?.map(item=>{
           const flog:boolean = this.allWarningTerminalData.some(allItem=>{
             return allItem.EndPointIP === item.EndPointIP
           })

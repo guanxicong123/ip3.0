@@ -24,7 +24,7 @@
           :class="
             playCenterData?.TaskID &&
             ((playCenterData?.TaskType === 15 &&
-              playSubscriptionTask?.PlayStatus === 'play') ||
+              playStatusData?.PlayStatus === 'play') ||
               playCenterData?.TaskType !== 15)
               ? 'playing'
               : ''
@@ -37,7 +37,7 @@
             @dblclick="
               playCenterData?.TaskID
                 ? handleTaskButton()
-                  ? playSubscriptionTask?.PlayStatus === 'play'
+                  ? playStatusData?.PlayStatus === 'play'
                     ? handlePauseTask(playCenterData)
                     : handlePlayTask(playCenterData)
                   : handleStopTask(playCenterData)
@@ -48,14 +48,20 @@
         <div class="content-center">
           <p>
             <!-- 使用当前正在执行任务的数组来显示播放媒体名称。socket使用task_status这个状态的信息 -->
-            {{sessionStoreAll[playCenterData.TaskID]?.TaskShowInfo}}
+            {{ form.song_name }}
+            <!-- {{sessionStoreAll[playCenterData.TaskID]?.TaskShowInfo}} -->
           </p>
-          <div class="progress" v-if="handleTaskProgress() && playCenterData.TaskID">
+          <div
+            class="progress"
+            v-if="handleTaskProgress() && playCenterData.TaskID"
+          >
             <el-slider
               v-model="form.current_duration"
               :max="form.total_duration"
               :format-tooltip="formatTooltip"
-              @change="handleChangeSliderProgressBar(playCenterData, 'progress')"
+              @change="
+                handleChangeSliderProgressBar(playCenterData, 'progress')
+              "
               :show-tooltip="false"
               @click="form.isChangeProgressBar = false"
             />
@@ -89,17 +95,17 @@
           <i
             class="iconfont"
             :class="
-              playCenterData.TaskID && playSubscriptionTask?.PlayStatus === 'play'
+              playCenterData.TaskID && playStatusData?.PlayStatus === 'play'
                 ? 'icon-suspend'
                 : 'icon-play'
             "
             :title="
-              playCenterData.TaskID && playSubscriptionTask?.PlayStatus === 'play'
+              playCenterData.TaskID && playStatusData?.PlayStatus === 'play'
                 ? $t('Suspend')
                 : $t('Play')
             "
             @click="
-              playCenterData.TaskID && playSubscriptionTask?.PlayStatus === 'play'
+              playCenterData.TaskID && playStatusData?.PlayStatus === 'play'
                 ? handlePauseTask(playCenterData)
                 : handlePlayTask(playCenterData)
             "
@@ -183,7 +189,11 @@
                 </el-button>
               </div>
               <div class="com-button">
-                <i class="iconfont icon-add" :title="$t('Add')" @click="addPlayTask"></i>
+                <i
+                  class="iconfont icon-add"
+                  :title="$t('Add')"
+                  @click="addPlayTask"
+                ></i>
                 <i
                   class="iconfont icon-delete"
                   :class="{ 'icon-disabled': multipleSelection.length == 0 }"
@@ -250,7 +260,11 @@
                         <i class="iconfont icon-play" :title="$t('Play')"></i>
                       </template>
                     </el-button>
-                    <el-button link type="danger" @click.stop="handleEditTask(scope.row)">
+                    <el-button
+                      link
+                      type="danger"
+                      @click.stop="handleEditTask(scope.row)"
+                    >
                       <template #icon>
                         <i class="iconfont icon-edit" :title="$t('Edit')"></i>
                       </template>
@@ -261,7 +275,10 @@
                       @click.stop="handleDeleteTask(scope.row)"
                     >
                       <template #icon>
-                        <i class="iconfont icon-delete" :title="$t('Delete')"></i>
+                        <i
+                          class="iconfont icon-delete"
+                          :title="$t('Delete')"
+                        ></i>
                       </template>
                     </el-button>
                   </template>
@@ -311,13 +328,7 @@ const sessionStoreAll = computed(() => {
   return session.allSessionObj;
 });
 // 当前任务播放状态
-const playStatusData: any = computed(() => {
-  return storePlay.playStatusData;
-});
-// 订阅模式数据
-const playSubscriptionTask: any = computed(() => {
-  return storePlay.playSubscriptionTask;
-});
+const playStatusData: any = ref({});
 // 获取当前显示任务的执行数据
 const playCenterShowData = computed(() => {
   return form.sessionsData.filter((item: any) => {
@@ -339,9 +350,9 @@ const playCenterData = computed(() => {
 });
 
 // 当前是否为最新的任务，若不是，重新请求所有任务
-const isLatestTaskStatus: any = computed(()=>{
-  return storePlay.isLatestTaskStatus
-})
+const isLatestTaskStatus: any = computed(() => {
+  return storePlay.isLatestTaskStatus;
+});
 
 interface User {
   date: string;
@@ -371,9 +382,9 @@ const form = reactive<any>({
 
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const multipleSelection = ref<User[]>([]);
-const priorityData = computed(()=>{
-  return getStore.useSystemStore().priorityData
-})
+const priorityData = computed(() => {
+  return getStore.useSystemStore().priorityData;
+});
 const tableDataAll: any = ref([]);
 const selectTaskData: any = ref({}); //选中的任务数据(http)
 // 路由
@@ -495,16 +506,16 @@ const handleDeleteAll = () => {
         LocalDataID.push(item.id);
       }
     });
-    Promise.all([handelDelServeRask(serverDataID), handelDelLocalRask(LocalDataID)]).then(
-      () => {
-        getTaskAll();
-      }
-    );
+    Promise.all([
+      handelDelServeRask(serverDataID),
+      handelDelLocalRask(LocalDataID),
+    ]).then(() => {
+      getTaskAll();
+    });
   });
 };
 // 获取选中任务详情信息
 const handleSelectionClick = (row: any) => {
-  if (selectTaskData.value === row) return;
   if (row.type < 10) {
     selectTaskData.value = row;
   } else {
@@ -535,7 +546,9 @@ const handleRowDblclick = (row: any) => {
 const handleDecideStatus = (row: any) => {
   if (row.type < 10) {
     return form.sessionsData.some((item: any) => {
-      return item.RemoteTaskID === row.id && item.SubTaskTypeName == "remote_play";
+      return (
+        item.RemoteTaskID === row.id && item.SubTaskTypeName == "remote_play"
+      );
     });
   }
   if (row.type >= 10) {
@@ -605,6 +618,7 @@ const handlePlayTask = (row: any) => {
     send(data);
     return;
   }
+  // 远程任务
   if (row.type < 10) {
     proxy.$http
       .get("/details/" + row.id, {
@@ -618,13 +632,13 @@ const handlePlayTask = (row: any) => {
       })
       .then((result: any) => {
         let row = result.data;
-        let TaskProp = handleTaskAttribute(row);
+        let TaskProp: any = handleTaskAttribute(row);
         if (row.terminalsIds.length === 0)
           return proxy.$message({
-            type:'warning',
-            message:proxy.$t("No play terminal"),
-            grouping:true
-          })
+            type: "warning",
+            message: proxy.$t("No play terminal"),
+            grouping: true,
+          });
         if (TaskProp?.TaskAudioType) {
           let TaskID = usePublicMethod.generateUUID();
           let TaskType = handleTaskTypeMap(row);
@@ -653,12 +667,13 @@ const handlePlayTask = (row: any) => {
         }
       });
   } else {
+    // 本地任务
     let data = {
       company: "BL",
       actioncode: "c2ms_create_local_task",
       data: {
         TaskID: row.taskid,
-        FirstIndex: row.type === 10 && row.content.length > 0 ? row.content[0].taskid : 0,
+        FirstIndex: 0, // 固定打开第一首
       },
       result: 0,
       return_message: "",
@@ -692,7 +707,6 @@ const handleSwitchTask = (row: any, type: string) => {
 };
 // 处理改变播放进度条
 const handleChangeSliderProgressBar = (row: any, type: string) => {
-  console.log(form.isChangeProgressBar);
   handleSwitchTask(row, type),
     setTimeout(() => {
       form.isChangeProgressBar = true;
@@ -740,20 +754,6 @@ const subscribeTask = (row: any) => {
   };
   send(data);
 };
-// 取消任务订阅
-const unsubscribeTask = (row: any) => {
-  let data = {
-    company: "BL",
-    actioncode: "c2ms_unsubscribe_task_progress_bar",
-    token: "",
-    data: {
-      TaskID: row.TaskID,
-    },
-    result: 0,
-    return_message: "",
-  };
-  send(data);
-};
 // 任务类型
 const handleTaskTypeMap = (row: any) => {
   if ((row.type === 4 && row.sound_source.type === 1) || row.type === 1) {
@@ -780,10 +780,10 @@ const handleTaskAttribute = (row: any) => {
     //远程任务-音乐播放
     if (row.mediasIds.length === 0)
       return proxy.$message({
-        type:'warning',
-        message:proxy.$t("No sound source"),
-        grouping:true
-      })
+        type: "warning",
+        message: proxy.$t("No sound source"),
+        grouping: true,
+      });
     data = {
       TaskAudioType: 6,
       RemoteID: row.id,
@@ -803,10 +803,10 @@ const handleTaskAttribute = (row: any) => {
     if (row.sound_source.type === 1) {
       if (row.mediasIds.length === 0)
         return proxy.$message({
-          type:'warning',
-          message:proxy.$t("No sound source"),
-          grouping:true
-        })
+          type: "warning",
+          message: proxy.$t("No sound source"),
+          grouping: true,
+        });
       //音乐播放
       data = {
         TaskAudioType: 6,
@@ -838,10 +838,10 @@ const handleTaskAttribute = (row: any) => {
         };
       } else {
         proxy.$message({
-          type:'warning',
-          message:proxy.$t("No sound card"),
-          grouping:true
-        })
+          type: "warning",
+          message: proxy.$t("No sound card"),
+          grouping: true,
+        });
       }
     }
     if (row.sound_source.type === 3) {
@@ -861,10 +861,10 @@ const handleTaskAttribute = (row: any) => {
         };
       } else {
         proxy.$message({
-          type:'warning',
-          message:proxy.$t("No acquisition terminal"),
-          grouping:true
-        })
+          type: "warning",
+          message: proxy.$t("No acquisition terminal"),
+          grouping: true,
+        });
       }
     }
   }
@@ -949,7 +949,7 @@ const getTaskAll = () => {
       tableDataAll.value = [...data[0], ...data[1]];
       form.data = filterData();
       // 每次请求完最新的数据后，需要把全局的task状态设置为true
-      storePlay.setIsLatestTaskStatus(true)
+      storePlay.setIsLatestTaskStatus(true);
       resolve(form.data);
     });
   });
@@ -1011,7 +1011,9 @@ const formatTooltip = (seconds: number) => {
         : "0" + Math.floor(data / 3600);
     data -= 3600 * Number(hour);
     let min =
-      Math.floor(data / 60) >= 10 ? Math.floor(data / 60) : "0" + Math.floor(data / 60);
+      Math.floor(data / 60) >= 10
+        ? Math.floor(data / 60)
+        : "0" + Math.floor(data / 60);
     data -= 60 * Number(min);
     let sec = data >= 10 ? data : "0" + data;
     return hour + ":" + min + ":" + sec;
@@ -1036,18 +1038,30 @@ const filterData = () => {
 watch(
   remoteTaskDisplay,
   (newVal) => {
-    newVal && getTaskAll().then((formData:any)=>{
-      if (formData.length > 0) {
-        handleSelectionClick(formData[0]);
-        multipleTableRef.value?.setCurrentRow(formData[0]);
-      }
-    });
+    newVal &&
+      getTaskAll().then((formData: any) => {
+        if (formData.length > 0) {
+          handleSelectionClick(formData[0]);
+          multipleTableRef.value?.setCurrentRow(formData[0]);
+        }
+      });
   },
   { immediate: true }
+);
+// 当前选中的 执行任务详情
+let currentPerformTask: any = ref({});
+watch(
+  [() => storePlay.allPlaySubscriptionTaskMap, () => sessionStoreAll.value],
+  ([newVal, newSession]) => {
+    currentPerformTask.value = getCurrentPerformTask(selectTaskData.value);
+    playStatusData.value = newVal[currentPerformTask.value?.TaskID] || {};
+  },
+  { deep: true }
 );
 watch(
   () => sessionStoreAll.value,
   (newData) => {
+    // 过滤属于播放中心的任务
     form.sessionsData = Object.values(newData).filter((item: any) => {
       return [12, 13, 14, 15].includes(item.TaskType);
     });
@@ -1058,6 +1072,20 @@ watch(
     deep: true,
   }
 );
+const getCurrentPerformTask = (row: any) => {
+  // 远程任务
+  if (row.type < 10) {
+    return form.sessionsData.find((item: any) => {
+      return item.RemoteTaskID === row.id;
+    });
+  }
+  // 本地任务
+  if (row.type >= 10) {
+    return form.sessionsData.find((item: any) => {
+      return item.TaskID === row.taskid;
+    });
+  }
+};
 watch(playStatusData, (newVal) => {
   if (form.isChangeProgressBar) {
     form.current_duration = newVal.CurrentTime;
@@ -1065,23 +1093,13 @@ watch(playStatusData, (newVal) => {
   form.total_duration = newVal.TotalTime;
   form.song_name = newVal.MusicName;
   form.play_status = newVal.PlayStatus;
-});
-watch(playSubscriptionTask, (newVal) => {
-  if (newVal?.TaskID === playCenterData.value?.TaskID) {
-    if (form.isChangeProgressBar) {
-      form.current_duration = newVal.CurrentTime;
-    }
-    form.total_duration = newVal.TotalTime;
-    form.song_name = newVal.MusicName;
-    form.play_status = newVal.PlayStatus;
-    form.play_model = playModeNum.get(newVal.PlayModel);
-  }
+  form.play_model = playModeNum.get(newVal.PlayModel);
 });
 watch(playCenterData, (newVal, oldVal) => {
-  if(newVal?.TaskVolume || newVal?.TaskVolume === 0){
-    form.volume = newVal?.TaskVolume
-  }else {
-    form.volume = newVal?.volume
+  if (newVal?.TaskVolume || newVal?.TaskVolume === 0) {
+    form.volume = newVal?.TaskVolume;
+  } else {
+    form.volume = newVal?.volume;
   }
   if (newVal?.TaskID === oldVal?.TaskID) return;
   const newValType =
@@ -1103,9 +1121,9 @@ watch(playCenterData, (newVal, oldVal) => {
 });
 
 // 当task信息在其他端 更新的时候，需要重新请求task的数据
-watch(isLatestTaskStatus,()=>{
-  getTaskAll()
-})
+watch(isLatestTaskStatus, () => {
+  getTaskAll();
+});
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
