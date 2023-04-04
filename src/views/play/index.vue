@@ -1129,8 +1129,11 @@ watch(isLatestTaskStatus, () => {
 onMounted(() => {
   // 直接使用socket中的值代替,不需要在当前页面另外请求，不然会切换语言的时候会出现两个相同请求同时发起，然后这个被取消掉，导致页面展示，优先级位置数据有问题
   // getPrioritySetting()
-  if (JSON.stringify($useRoute.params) != "{}") {
-    handlePlayTask($useRoute.params);
+  if (JSON.stringify($useRoute.query) != "{}") {
+    handlePlayTask($useRoute.query);
+    nextTick(()=>{
+      handleSelectionClick($useRoute.query)
+    })
   }
 });
 </script>

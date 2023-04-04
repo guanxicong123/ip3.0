@@ -438,52 +438,52 @@ const submitTaskPlay = (formEl:FormInstance | undefined) => {
       }
     
       let data = getBasicData();
-    
       if (ruleForm.type === 10) {
         createLocalAudio(data).then((result: any) => {
           let taskData = {
-            taskid: result?.taskid,
+            TaskID: result?.taskid,
             content: data.content,
           };
           $useRouter.push({
             name: "play",
-            params: taskData,
+            query:taskData
           });
         });
       } else if (ruleForm.type === 11) {
         createTxstPlay(data).then((result: any) => {
           let taskData = {
-            taskid: result?.taskid,
+            TaskID: result?.taskid,
             content: data.content,
           };
           $useRouter.push({
             name: "play",
-            params: taskData,
+            query:taskData
           });
         });
       } else if (ruleForm.type === 1) {
         createRemteTask(data).then((result: any) => {
           $useRouter.push({
             name: "play",
-            params: result,
+            query:result
           });
         });
       } else if (ruleForm.type === 12) {
         createSoundSourceCollection(data).then((result: any) => {
           let taskData = {
-            taskid: result?.taskid,
+            TaskID: result?.taskid,
             content: data.content,
+            type:result?.type
           };
           $useRouter.push({
             name: "play",
-            params: taskData,
+            query:taskData,
           });
         });
       } else {
         createQuickSou(data).then((result: any) => {
           $useRouter.push({
             name: "play",
-            params: result,
+            query:result
           });
         });
       }
@@ -650,7 +650,7 @@ const createRemteTask = (data: any) => {
         .then((result: any) => {
           if (result.result === 200) {
             resolve(result.data);
-            $useRouter.push("/play");
+            // $useRouter.push("/play");
           }
         });
     } else {
@@ -664,7 +664,7 @@ const createRemteTask = (data: any) => {
         .then((result: any) => {
           if (result.result === 200) {
             resolve(result.data);
-            $useRouter.push("/play");
+            // $useRouter.push("/play");
           }
         });
     }
@@ -891,6 +891,8 @@ onMounted(() => {
 });
 
 onBeforeRouteLeave((to, from, next) => {
+  console.log(to,from,next,'路由守卫');
+  
   if (to.path === "/play" || to.path === "/") {
     next();
   } else {
