@@ -222,6 +222,19 @@ const handlerMsg = (msg: any) => {
         getStore.usePlayStore().setIsLatestTaskStatus(false);
       },
     ],
+    [
+      "user_info_update",
+      () => {
+        if (localStorage.getItem("LoginUserID") == msg.data.UserID) {
+          usePublicMethod.signOut();
+          ElMessage({
+            type: "error",
+            message: $t.t("User name or pwd change"),
+            grouping: true,
+          });
+        }
+      },
+    ],
   ]);
   if (msg.result !== 200) {
     // 登录失败

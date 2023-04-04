@@ -49,11 +49,11 @@ const usePublicMethod = {
         ? "0" + Math.floor(second % 60)
         : Math.floor(second % 60);
 
-    if (isLimit && h > 23) return "23:59:59";
+    if (isLimit && Number(h) > 23) return "23:59:59";
 
-    if (m > 59) m = 59;
+    if (Number(m) > 59) m = 59;
 
-    if (s > 59) s = 59;
+    if (Number(s) > 59) s = 59;
 
     return h + ":" + m + ":" + s;
   },
@@ -222,6 +222,70 @@ const usePublicMethod = {
         v = c == "x" ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
+  },
+  // 16进制转rgb
+  hexToRgb(hexStr: string, index: number) {
+    // 十六进制颜色值的正则表达式
+    const reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+    let sColor = hexStr.toLowerCase();
+    if (sColor && reg.test(sColor)) {
+      if (sColor.length === 4) {
+        let sColorNew = "#";
+        for (let i = 1; i < 4; i += 1) {
+          sColorNew += sColor.slice(i, i + 1).concat(sColor.slice(i, i + 1));
+        }
+        sColor = sColorNew;
+      }
+      // 处理六位的颜色值, 转为RGB
+      const sColorChange = [];
+      for (let i = 1; i < 7; i += 2) {
+        sColorChange.push(parseInt(`0x${sColor.slice(i, i + 2)}`));
+      }
+      // 倒叙，数值越大，颜色越浅
+      const num = 1 - index * 0.1;
+      const rgbText = `rgba(${sColorChange.join(",")}, ${num})`;
+      // 浅色系
+      const grayLevel =
+        sColorChange[0] * 0.299 +
+        sColorChange[1] * 0.587 +
+        sColorChange[2] * 0.114;
+      return grayLevel >= 192 ? "true" : rgbText;
+    } else {
+      return sColor;
+    }
+  },
+  // rgb转16进制
+  rgbToHex(rgbStr: string) {
+    // 十六进制颜色值的正则表达式
+    const reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+    if (/^(rgb|RGB)/.test(rgbStr)) {
+      const aColor = rgbStr.replace(/(?:\(|\)|rgb|RGB)*/g, "").split(",");
+      let strHex = "#";
+      for (let i = 0; i < aColor.length; i++) {
+        let hex = Number(aColor[i]).toString(16).padStart(2, "0");
+        if (hex === "0") {
+          hex += hex;
+        }
+        strHex += hex;
+      }
+      if (strHex.length !== 7) {
+        strHex = rgbStr;
+      }
+      return strHex;
+    } else if (reg.test(rgbStr)) {
+      const aNum = rgbStr.replace(/#/, "").split("");
+      if (aNum.length === 6) {
+        return rgbStr;
+      } else if (aNum.length === 3) {
+        let numHex = "#";
+        for (let i = 0; i < aNum.length; i += 1) {
+          numHex += aNum[i] + aNum[i];
+        }
+        return numHex;
+      }
+    } else {
+      return rgbStr;
+    }
   },
   debounce(fn: () => void, wait: number | undefined) {
     // 清除上一次延时器
