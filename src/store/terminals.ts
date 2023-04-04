@@ -295,6 +295,10 @@ export const useTerminalsStore = defineStore({
       if(!alertMessage.EnabledPersonAlert && !alertMessage.EnabledFireAlert){
         return 
       }
+      // 关闭弹窗后，删除里面的数据
+      if(!flog){
+        this.allWarningTerminalData = []
+      }
       this.alarmTerminalShow = flog
       // 报警与火警提示都打开
       if(alertMessage.EnabledPersonAlert && alertMessage.EnabledFireAlert){
@@ -312,6 +316,7 @@ export const useTerminalsStore = defineStore({
       // 只打开报警提示
       if(alertMessage.EnabledPersonAlert){
         this.allWarningTerminalData = [...this.alarmTerminalData,...this.manualAlarmTerminal]
+        return
       }
       // 只打开火警提示
       if(alertMessage.EnabledFireAlert){

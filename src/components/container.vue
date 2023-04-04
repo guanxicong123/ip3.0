@@ -60,7 +60,7 @@ const showUploadManager = ref(false);
 const dialogVisibleTerminal = ref(false);
 // 是否显示终端 报警 警告对话框
 const dialogVisibleAlarmTerminal = computed(()=>{
-  return storeTerminals.alarmTerminalShow
+  return storeTerminals.alarmTerminalShow && allWarningTerminalData.length !== 0
 })
 // 计算属性 computed
 const uploadStore = computed(() => upload.showUploadManager);
