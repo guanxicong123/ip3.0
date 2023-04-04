@@ -99,50 +99,6 @@ const useFormatMap = {
     [19, $t.t("Task monitoring")],
     [20, $t.t("Local task")],
   ]),
-  // 状态标识图标
-  iconOptions: [
-    { class: "icon-fire-alarm red", name: $t.t("Fire alarm") },
-    { class: "icon-call-alarm", name: $t.t("Call the police") },
-    { class: "icon-intercom red", name: $t.t("Intercom") },
-    { class: "icon-broadcast fault", name: $t.t("Broadcast") },
-    {
-      class: "icon-telephone online",
-      name: $t.t("Telephone broadcasting"),
-    },
-    { class: "icon-patrol", name: $t.t("Timing patrol") },
-    { class: "icon-tasks online", name: $t.t("Timing task") },
-    {
-      class: "icon-remote-control-task fault",
-      name: $t.t("Remote control task"),
-    },
-    { class: "icon-text-play", name: $t.t("Text play") },
-    { class: "icon-map-short-circuit", name: $t.t("Short circuit input") },
-    { class: "icon-tamper-alarm", name: $t.t("Tamper alarm") },
-    {
-      class: "icon-map-terminal-collection fault",
-      name: $t.t("Terminal acquisition"),
-    },
-    {
-      class: "icon-map-sound-card fault",
-      name: $t.t("Sound card acquisition"),
-    },
-    // {
-    //   class: "icon-sound-source fault",
-    //   name: $t.t("Sound source acquisition"),
-    // },
-    { class: "icon-music-play", name: $t.t("Music play") },
-    { class: "icon-on-demand", name: $t.t("Terminal on-demand") },
-    {
-      class: "icon-environmental",
-      name: $t.t("Environmental monitoring"),
-    },
-    { class: "icon-task-monitoring fault", name: $t.t("Task monitoring") },
-    { class: "icon-terminals-status online", name: $t.t("Idle") },
-    { class: "icon-terminals-status busy", name: $t.t("Busy") },
-    { class: "icon-terminals-status freeze", name: $t.t("Freeze") },
-    { class: "icon-terminals-status fault", name: $t.t("Fault") },
-    { class: "icon-terminals-status offline", name: $t.t("Offline") },
-  ],
   serversTypeOptions: [
     { value: "0X00", label: $t.t("Control service") },
     { value: "0X01", label: $t.t("Relay service") },

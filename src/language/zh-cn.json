@@ -1113,5 +1113,7 @@
   "Please select receiving terminal": "请选择接收终端",
   "Task initiation failed": "任务发起失败",
   "Client alarm task": "客户端人工报警任务",
-  "Client": "客户端"
+  "Client": "客户端",
+  "The color should not be too light": "颜色不能太浅",
+  "User name or pwd change": "用户名或密码已经被修改，请重新登录"
 }

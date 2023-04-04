@@ -1113,5 +1113,7 @@
   "Please select receiving terminal": "Please select receiving terminal",
   "Task initiation failed": "Task initiation failed",
   "Client alarm task": "Client alarm task",
-  "Client": "Client"
+  "Client": "Client",
+  "The color should not be too light": "The color should not be too light",
+  "User name or pwd change": "Username or password has been modified, please log in again"
 }
