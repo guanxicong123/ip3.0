@@ -956,7 +956,6 @@ const getTaskAll = () => {
       form.data = filterData();
       // 如果query有值，既点击“保存且播放”
       if(currentQuery.id){
-        
         nextTick(()=>{
           let currentRowIndex = 0
           const currentRow = form.data.find((item:any,index:number)=>{
@@ -972,9 +971,9 @@ const getTaskAll = () => {
             handleSelectionClick(currentRow)
             multipleTableRef.value?.setScrollTop(currentRowIndex * 45 - 100)
           }
-          
-          
         })
+      }else {
+        form.data.length > 0 && multipleTableRef.value?.setCurrentRow(form.data[0])
       }
       // 每次请求完最新的数据后，需要把全局的task状态设置为true
       storePlay.setIsLatestTaskStatus(true);

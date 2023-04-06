@@ -512,6 +512,9 @@ const submitTask = (formEl:FormInstance | undefined) => {
       } else {
         createQuickSou(data);
       }
+      $useRouter.push({
+        name: "play",
+      });
     }
   })
 };
