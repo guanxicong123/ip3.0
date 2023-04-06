@@ -2,7 +2,7 @@
   @Author: hmf
   @CreateDate: 2022-10-30
   @FilePath: src\views\media\components\upload_manager.vue
-  @Describe: 上传管理器
+  @Describe: 上传管理器-媒体库
 -->
 <template>
   <div class="com-upload-manager" :class="{ 'is-minimize': uploadMinimizeStore }">
@@ -344,9 +344,8 @@ const inputFile = (
     if (Number.isNaN(form.totalProgress)) {
       form.totalProgress = 0;
     }
-    const total = form.errorFiles + form.successFiles;
     // 是否上传完成
-    if (total == form.showFilesInfo.length && form.totalProgress > 0) {
+    if (uploadRef.value?.uploaded) {
       upload.updateUploadCompleted(true);
       handleUploadNotifyWS();
     }
@@ -413,9 +412,8 @@ const inputFile = (
                     form.showFilesInfo.push(newFile);
                   }
                   form.speed = 4194304;
-                  const total = form.errorFiles + form.successFiles;
                   // 是否上传完成
-                  if (total == form.showFilesInfo.length && form.totalProgress > 0) {
+                  if (uploadRef.value?.uploaded) {
                     upload.updateUploadCompleted(true);
                     handleUploadNotifyWS();
                   }
