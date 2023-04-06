@@ -971,6 +971,7 @@ const getTaskAll = () => {
             handleSelectionClick(currentRow)
             multipleTableRef.value?.setScrollTop(currentRowIndex * 45 - 100)
           }
+          currentQuery = {}
         })
       }else {
         form.data.length > 0 && multipleTableRef.value?.setCurrentRow(form.data[0])
@@ -1151,6 +1152,7 @@ watch(playCenterData, (newVal, oldVal) => {
 watch(isLatestTaskStatus, () => {
   getTaskAll();
 });
+// 保存当前的query，为了提前清除掉route上的query，不然清除query会刷新一次页面，导致表格选中效果消失
 let currentQuery:any = {}
 // mounted 实例挂载完成后被调用
 onMounted(() => {
