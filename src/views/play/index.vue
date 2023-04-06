@@ -543,17 +543,18 @@ const handleRowDblclick = (row: any) => {
   }
 };
 // 判断任务是否执行中
-const handleDecideStatus = (row: any) => {
+const handleDecideStatus = (row: any,sessions?:any) => {
+  let sessionsData = sessions || form.sessionsData
   if (row.type < 10) {
-    return form.sessionsData.some((item: any) => {
+    return sessionsData.some((item: any) => {
       return (
-        item.RemoteTaskID === row.id && item.SubTaskTypeName == "remote_play"
+        item.RemoteTaskID == row.id && item.SubTaskTypeName == "remote_play"
       );
     });
   }
   if (row.type >= 10) {
-    return form.sessionsData.some((item: any) => {
-      return item.TaskID === row.taskid;
+    return sessionsData.some((item: any) => {
+      return item.TaskID == row.taskid;
     });
   }
 };
@@ -601,8 +602,9 @@ const handlePauseTask = (row: any) => {
   }
 };
 // 播放任务
-const handlePlayTask = (row: any) => {
-  if (row.TaskID) {
+const handlePlayTask = (row: any,isOnlyPlay = false) => {
+  if (row.TaskID && !isOnlyPlay) {
+    // 当任务存在，而又是需要实现播放的任务
     let data = {
       company: "BL",
       actioncode: "c2ms_control_task",
@@ -617,6 +619,10 @@ const handlePlayTask = (row: any) => {
     };
     send(data);
     return;
+  }
+  // 若传入的row中没有TaskID 而是任务列表中的row，判断任务是否在执行，
+  if(isOnlyPlay && handleDecideStatus(row,Object.values(Object.values(session.allSessionObj)))){
+    return
   }
   // 远程任务
   if (row.type < 10) {
@@ -948,6 +954,28 @@ const getTaskAll = () => {
     Promise.all([getBroadcastingAll(), getTaskLocalAll()]).then((data: any) => {
       tableDataAll.value = [...data[0], ...data[1]];
       form.data = filterData();
+      // 如果query有值，既点击“保存且播放”
+      if(currentQuery.id){
+        
+        nextTick(()=>{
+          let currentRowIndex = 0
+          const currentRow = form.data.find((item:any,index:number)=>{
+            if(item.id == currentQuery.id){
+              currentRowIndex = index
+              return true
+            }
+            return false
+          })
+          
+          if(currentRow){
+            multipleTableRef.value?.setCurrentRow(currentRow)
+            handleSelectionClick(currentRow)
+            multipleTableRef.value?.setScrollTop(currentRowIndex * 45 - 100)
+          }
+          
+          
+        })
+      }
       // 每次请求完最新的数据后，需要把全局的task状态设置为true
       storePlay.setIsLatestTaskStatus(true);
       resolve(form.data);
@@ -1124,16 +1152,19 @@ watch(playCenterData, (newVal, oldVal) => {
 watch(isLatestTaskStatus, () => {
   getTaskAll();
 });
-
+let currentQuery:any = {}
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   // 直接使用socket中的值代替,不需要在当前页面另外请求，不然会切换语言的时候会出现两个相同请求同时发起，然后这个被取消掉，导致页面展示，优先级位置数据有问题
   // getPrioritySetting()
-  if (JSON.stringify($useRoute.query) != "{}") {
-    handlePlayTask($useRoute.query);
-    nextTick(()=>{
-      handleSelectionClick($useRoute.query)
-    })
+  // 从任务编辑返回play页面，如果是点击 “保存并播放”
+  if (JSON.stringify($useRoute.query.id)) {
+    // 要实现任务播放，若正在播放，就继续播放
+    handlePlayTask($useRoute.query, true);
+    // 记录query值，用于判断切换任务列表当前选中的row
+    currentQuery = $useRoute.query
+    // 播放完后，清楚query的值。
+    $useRouter.replace({query:{}})
   }
 });
 </script>

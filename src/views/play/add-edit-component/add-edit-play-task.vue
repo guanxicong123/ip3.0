@@ -440,24 +440,16 @@ const submitTaskPlay = (formEl:FormInstance | undefined) => {
       let data = getBasicData();
       if (ruleForm.type === 10) {
         createLocalAudio(data).then((result: any) => {
-          let taskData = {
-            TaskID: result?.taskid,
-            content: data.content,
-          };
           $useRouter.push({
             name: "play",
-            query:taskData
+            query:result
           });
         });
       } else if (ruleForm.type === 11) {
         createTxstPlay(data).then((result: any) => {
-          let taskData = {
-            TaskID: result?.taskid,
-            content: data.content,
-          };
           $useRouter.push({
             name: "play",
-            query:taskData
+            query:result
           });
         });
       } else if (ruleForm.type === 1) {
@@ -469,14 +461,9 @@ const submitTaskPlay = (formEl:FormInstance | undefined) => {
         });
       } else if (ruleForm.type === 12) {
         createSoundSourceCollection(data).then((result: any) => {
-          let taskData = {
-            TaskID: result?.taskid,
-            content: data.content,
-            type:result?.type
-          };
           $useRouter.push({
             name: "play",
-            query:taskData,
+            query:result,
           });
         });
       } else {
@@ -891,8 +878,6 @@ onMounted(() => {
 });
 
 onBeforeRouteLeave((to, from, next) => {
-  console.log(to,from,next,'路由守卫');
-  
   if (to.path === "/play" || to.path === "/") {
     next();
   } else {
