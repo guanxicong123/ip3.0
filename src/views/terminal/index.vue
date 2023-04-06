@@ -41,6 +41,7 @@
           <el-input
             v-model="form.search"
             :placeholder="form.search_placeholder"
+            @input="handleFilter"
             clearable
           />
           <el-button
