@@ -185,7 +185,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
 };
 // 处理获取编辑数据
 const handleGetEditData = async (data: any) => {
-  form.old_name = parentData.editInfor.name;
+  form.old_name = data.name;
   Object.keys(ruleForm).forEach((item) => {
     Object.keys(data).forEach((row) => {
       if (item === row) {
@@ -202,13 +202,12 @@ watch(
   (newShow) => {
     form.dialogVisible = newShow;
     if (newShow) {
+      form.id = parentData.editInfor?.id;
       if (parentData.editInfor?.id > 0) {
-        form.id = parentData.editInfor?.id;
         form.loading = true;
         form.title = proxy.$t("Edit");
         handleGetEditData(parentData.editInfor);
       } else {
-        form.id = 0;
         form.title = proxy.$t("Newly build");
       }
     } else {

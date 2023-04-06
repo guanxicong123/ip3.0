@@ -24,8 +24,12 @@
             "
             clearable
             @clear="handleDefaultGet"
-            @keyup.enter="useCommonTable.handleKeyupEnter(form.search, handleDefaultGet)"
-            @change="useCommonTable.handleKeyupDelete(form.search, handleDefaultGet)"
+            @keyup.enter="
+              useCommonTable.handleKeyupEnter(form.search, handleDefaultGet)
+            "
+            @change="
+              useCommonTable.handleKeyupDelete(form.search, handleDefaultGet)
+            "
           />
           <el-button
             :icon="Search"
@@ -158,11 +162,14 @@
                 <el-button
                   link
                   type="primary"
-                  v-if="scope.row.IsMonitor < 1"
+                  v-if="!scope.row.IsMonitor"
                   @click="handleMonitorTask(scope.row)"
                 >
                   <template #icon>
-                    <i class="iconfont icon-headset" :title="$t('Click monitor')"></i>
+                    <i
+                      class="iconfont icon-headset"
+                      :title="$t('Click monitor')"
+                    ></i>
                   </template>
                 </el-button>
                 <el-button
@@ -301,7 +308,8 @@ const handleReset = () => {
 // 处理排序
 const handleSortChange = (row: { prop: any; order: string | string[] }) => {
   form.orderColumn = row.order ? row.prop : "TaskBeginTime";
-  form.orderType = !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
+  form.orderType =
+    !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
   handleDefaultGet();
 };
 // 处理XXX条/页更改
@@ -357,7 +365,8 @@ const handleStopTask = (row: any) => {
 };
 // 开启监听
 const handleMonitorTask = (row: any) => {
-  const currentTableRow = JSON.parse(localStorage.get("monitoringSpeaker")) || "";
+  const currentTableRow =
+    JSON.parse(localStorage.get("monitoringSpeaker")) || "";
   if (currentTableRow) {
     let func = () => {
       let data = {
@@ -432,14 +441,17 @@ const cellClassName = (row: any) => {
   }
 };
 // 处理监听状态的展示信息
-const handleMonitorTransform = (row: { IsMonitor: number; TaskType: number }) => {
-  switch (row.IsMonitor) {
-    case 0:
-      return row.TaskType == 19 ? proxy.$t("Monitor") : proxy.$t("Not monitored");
-    default:
-      return terminalsStoreAll.value[row.IsMonitor] && row.TaskType !== 19
-        ? terminalsStoreAll.value[row.IsMonitor].EndPointName
-        : proxy.$t("Monitor");
+const handleMonitorTransform = (row: {
+  IsMonitor: number;
+  TaskType: number;
+  MonitorEndPointID: number;
+}) => {
+  if (row.IsMonitor) {
+    return terminalsStoreAll.value[row.MonitorEndPointID] && row.TaskType !== 19
+      ? terminalsStoreAll.value[row.MonitorEndPointID].EndPointName
+      : proxy.$t("Monitor");
+  } else {
+    return row.TaskType == 19 ? proxy.$t("Monitor") : proxy.$t("Not monitored");
   }
 };
 
