@@ -82,7 +82,10 @@
             <div class="scroll-bar">
               <el-scrollbar>
                 <ul class="scroll-ul">
-                  <template v-for="item in form.allTerminalsData" :key="item.id">
+                  <template
+                    v-for="item in form.allTerminalsData"
+                    :key="item.id"
+                  >
                     <li
                       @click="selectTerminal(item)"
                       v-if="
@@ -91,8 +94,12 @@
                       "
                       v-show="
                         !form.searchTerminalsVisible ||
-                        item[config.searchColumnName].match(form.searchTerminalsReg) ||
-                        item[config.searchColumnIP].match(form.searchTerminalsReg)
+                        item[config.searchColumnName].match(
+                          form.searchTerminalsReg
+                        ) ||
+                        item[config.searchColumnIP].match(
+                          form.searchTerminalsReg
+                        )
                       "
                     >
                       {{ item.name }}
@@ -179,7 +186,8 @@
           >
             <el-icon
               @click="
-                form.selectedSearchTerminalsVisible = !form.selectedSearchTerminalsVisible
+                form.selectedSearchTerminalsVisible =
+                  !form.selectedSearchTerminalsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -208,12 +216,19 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template v-for="(item, index) in form.selectedTerminalsData" :key="item.id">
+            <template
+              v-for="(item, index) in form.selectedTerminalsData"
+              :key="item.id"
+            >
               <li
                 v-show="
                   !form.selectedSearchTerminalsVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
-                  item[config.searchColumnIP].match(form.selectedSearchTerminalsReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchTerminalsReg
+                  ) ||
+                  item[config.searchColumnIP].match(
+                    form.selectedSearchTerminalsReg
+                  )
                 "
               >
                 <div class="item-terminals">
@@ -233,7 +248,9 @@
                     :key="key"
                     :style="row.style"
                     :title="
-                      row.column !== config.terminalsColumnVolume ? item[row.column] : ''
+                      row.column !== config.terminalsColumnVolume
+                        ? item[row.column]
+                        : ''
                     "
                   >
                     <el-input-number
@@ -313,12 +330,14 @@
         >
           <template
             v-if="
-              item.column !== config.searchColumnName || !form.selectedSearchGroupsVisible
+              item.column !== config.searchColumnName ||
+              !form.selectedSearchGroupsVisible
             "
           >
             <el-icon
               @click="
-                form.selectedSearchGroupsVisible = !form.selectedSearchGroupsVisible
+                form.selectedSearchGroupsVisible =
+                  !form.selectedSearchGroupsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -345,11 +364,16 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template v-for="(item, index) in form.selectedGroupsData" :key="item.id">
+            <template
+              v-for="(item, index) in form.selectedGroupsData"
+              :key="item.id"
+            >
               <li
                 v-show="
                   !form.selectedSearchGroupsVisible ||
-                  item[config.searchColumnName].match(form.selectedSearchGroupsReg)
+                  item[config.searchColumnName].match(
+                    form.selectedSearchGroupsReg
+                  )
                 "
               >
                 <div class="item-terminals group">
@@ -358,7 +382,9 @@
                     :key="key"
                     :style="row.style"
                     :title="
-                      row.column !== config.terminalsColumnVolume ? item[row.column] : ''
+                      row.column !== config.terminalsColumnVolume
+                        ? item[row.column]
+                        : ''
                     "
                   >
                     <el-input-number
@@ -606,7 +632,8 @@ const handleUpdateSelectedGroups = () => {
       selectedName += item.name + ",";
       // 开启修改终端音量
       if (parentData.openTerminalsVolume) {
-        request[config.terminalsColumnVolume] = item[config.terminalsColumnVolume];
+        request[config.terminalsColumnVolume] =
+          item[config.terminalsColumnVolume];
         request.is_lock = item.is_lock;
       }
       request[config.groupsRequestColumnName] = item[config.groupsColumnName];
@@ -632,13 +659,16 @@ const handleUpdateSelectedTerminals = () => {
       selectedName += item.name + ",";
       // 开启修改终端音量
       if (parentData.openTerminalsVolume) {
-        request[config.terminalsColumnVolume] = item[config.terminalsColumnVolume];
+        request[config.terminalsColumnVolume] =
+          item[config.terminalsColumnVolume];
         request.is_lock = item.is_lock;
       }
-      request[config.terminalsRequestColumnName] = item[config.terminalsColumnName];
+      request[config.terminalsRequestColumnName] =
+        item[config.terminalsColumnName];
 
       if (config.selectAmplifier) {
-        request[config.amplifierRequestColumnName] = item[config.amplifierColumnName];
+        request[config.amplifierRequestColumnName] =
+          item[config.amplifierColumnName];
       }
 
       request = Object.assign(request, config.terminalsOtherData);
@@ -654,18 +684,15 @@ const deselectAll = () => {
   if (form.activeName === "first") {
     let selected: any[] = [];
     let noSelect: any[] = [];
-    form.selectedTerminalsData.forEach(
-      (item: { [x: string]: string; ip_address: string }) => {
-        if (form.selectedSearchTerminals) {
-          item[config.searchColumnName].match(form.selectedSearchTerminalsReg) ||
-          item.ip_address.match(form.selectedSearchTerminalsReg)
-            ? selected.push(item)
-            : noSelect.push(item);
-        } else {
-          selected.push(item);
-        }
-      }
-    );
+    form.selectedTerminalsData.forEach((item: { [x: string]: string }) => {
+      const search = form.selectedSearchTerminalsVisible
+        ? form.selectedSearchTerminalsReg
+        : "";
+      item[config.searchColumnName].match(search) ||
+      item[config.searchColumnIP].match(search)
+        ? selected.push(item)
+        : noSelect.push(item);
+    });
     form.allTerminalsData = Array.from(selected.concat(form.allTerminalsData));
     form.selectedTerminalsData = Array.from(noSelect);
     handleUpdateSelectedTerminals();
@@ -675,13 +702,11 @@ const deselectAll = () => {
     let selected: any[] = [];
     let noSelected: any[] = [];
     form.selectedGroupsData.forEach((item: { [x: string]: string }) => {
-      if (form.selectedSearchGroups) {
-        item[config.searchColumnName].match(form.selectedSearchGroupsReg)
-          ? selected.push(item)
-          : noSelected.push(item);
-      } else {
-        selected.push(item);
-      }
+      item[config.searchColumnName].match(
+        form.selectedSearchGroupsVisible ? form.selectedSearchGroupsReg : ""
+      )
+        ? selected.push(item)
+        : noSelected.push(item);
     });
     form.allGroupsData = Array.from(selected.concat(form.allGroupsData));
     form.selectedGroupsData = Array.from(noSelected);
@@ -694,16 +719,21 @@ const selectAll = () => {
     let selected: any[] = [];
     let noSelect: any[] = [];
     form.allTerminalsData.forEach(
-      (item: { [x: string]: string; groups_id: any; ip_address: string }) => {
+      (item: { [x: string]: string; with_groups_ids: any }) => {
+        const search = form.searchTerminalsVisible
+          ? form.searchTerminalsReg
+          : "";
         (form.currentGroupsID == -1 ||
-          item.groups_id.indexOf(form.currentGroupsID) >= 0) &&
-        (item[config.searchColumnName].match(form.searchTerminalsReg) ||
-          item.ip_address.match(form.searchTerminalsReg))
+          item.with_groups_ids.indexOf(form.currentGroupsID) >= 0) &&
+        (item[config.searchColumnName].match(search) ||
+          item[config.searchColumnIP].match(search))
           ? selected.push(item)
           : noSelect.push(item);
       }
     );
-    form.selectedTerminalsData = Array.from(selected.concat(form.selectedTerminalsData));
+    form.selectedTerminalsData = Array.from(
+      selected.concat(form.selectedTerminalsData)
+    );
     form.allTerminalsData = Array.from(noSelect);
     handleUpdateSelectedTerminals();
   }
@@ -712,11 +742,15 @@ const selectAll = () => {
     let selected: any[] = [];
     let noSelect: any[] = [];
     form.allGroupsData.forEach((item: { [x: string]: string }) => {
-      item[config.searchColumnName].match(form.searchGroupsReg)
+      item[config.searchColumnName].match(
+        form.searchGroupsVisible ? form.searchGroupsReg : ""
+      )
         ? selected.push(item)
         : noSelect.push(item);
     });
-    form.selectedGroupsData = Array.from(selected.concat(form.selectedGroupsData));
+    form.selectedGroupsData = Array.from(
+      selected.concat(form.selectedGroupsData)
+    );
     form.allGroupsData = Array.from(noSelect);
     handleUpdateSelectedGroups();
   }
@@ -725,9 +759,11 @@ const selectAll = () => {
 const selectTerminal = (row: { id: number }) => {
   if (form.selectedTerminalsID.indexOf(row.id) < 0) {
     form.selectedTerminalsData.push(Object.assign({}, row));
-    form.allTerminalsData = form.allTerminalsData.filter((item: { id: number }) => {
-      return row.id !== item.id;
-    });
+    form.allTerminalsData = form.allTerminalsData.filter(
+      (item: { id: number }) => {
+        return row.id !== item.id;
+      }
+    );
     handleUpdateSelectedTerminals();
   }
 };
@@ -757,9 +793,11 @@ const selectGroup = (row: { id: number }) => {
 const deleteGroup = (row: { id: number }) => {
   if (form.selectedGroupsID.indexOf(row.id) >= 0) {
     form.allGroupsData.unshift(Object.assign({}, row));
-    form.selectedGroupsData = form.selectedGroupsData.filter((item: { id: number }) => {
-      return row.id !== item.id;
-    });
+    form.selectedGroupsData = form.selectedGroupsData.filter(
+      (item: { id: number }) => {
+        return row.id !== item.id;
+      }
+    );
     handleUpdateSelectedGroups();
   }
 };
@@ -774,7 +812,8 @@ const handleCheckAllAmplifierChange = (item: any) => {
 const handleSelectAmplifierChange = (item: any) => {
   const checkedCount = item[config.amplifierColumnName].length;
   item.checkAll_amplifier = checkedCount === config.amplifierValue.length;
-  item.isIndeterminate = checkedCount > 0 && checkedCount < config.amplifierValue.length;
+  item.isIndeterminate =
+    checkedCount > 0 && checkedCount < config.amplifierValue.length;
   handleUpdateSelectedTerminals();
 };
 // 设置tab当前选择状态
@@ -794,7 +833,9 @@ const setCurrentTabSelectStatus = () => {
 // 处理改变自定义单个终端音量
 const handleChangeCustomVolume = (item: any) => {
   item.is_lock =
-    item[config.terminalsColumnVolume] === parentData.changeTerminalsVolume ? 0 : 1;
+    item[config.terminalsColumnVolume] === parentData.changeTerminalsVolume
+      ? 0
+      : 1;
   handleUpdateSelectedTerminals();
 };
 // 设置改变各个数组的终端音量
@@ -1007,7 +1048,8 @@ const handleExcludeTerminals = (data: any) => {
   if (parentData.excludeTerminalsIDS?.length > 0) {
     form.allTerminalsData = data.filter((item: { id: number }) => {
       return (
-        !parentData.excludeTerminalsIDS.includes(item.id) && !arrayIDS.includes(item.id)
+        !parentData.excludeTerminalsIDS.includes(item.id) &&
+        !arrayIDS.includes(item.id)
       );
     });
   } else {
@@ -1077,8 +1119,22 @@ watch(
     parentData.changeTerminalsVolume,
   ],
   (
-    [newExcludeTerminals, newTerminals, newGroups, newSearch, newOpenVolume, newVolume],
-    [oldExcludeTerminals, oldTerminals, oldGroups, oldSearch, oldOpenVolume, oldVolume]
+    [
+      newExcludeTerminals,
+      newTerminals,
+      newGroups,
+      newSearch,
+      newOpenVolume,
+      newVolume,
+    ],
+    [
+      oldExcludeTerminals,
+      oldTerminals,
+      oldGroups,
+      oldSearch,
+      oldOpenVolume,
+      oldVolume,
+    ]
   ) => {
     handleSetShowColumn(newOpenVolume);
     // 开启并修改终端音量

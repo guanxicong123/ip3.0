@@ -541,18 +541,13 @@ const deselectAll = () => {
   if (form.activeName === "first") {
     let selected: any[] = [];
     let noSelect: any[] = [];
-    form.selectedMediaData.forEach(
-      (item: { [x: string]: string; ip_address: string }) => {
-        if (form.selectedSearchMedia) {
-          item[config.searchColumnName].match(form.selectedSearchMediaReg) ||
-          item.ip_address.match(form.selectedSearchMediaReg)
-            ? selected.push(item)
-            : noSelect.push(item);
-        } else {
-          selected.push(item);
-        }
-      }
-    );
+    form.selectedMediaData.forEach((item: { [x: string]: string }) => {
+      item[config.searchColumnName].match(
+        form.selectedSearchMediaVisible ? form.selectedSearchMediaReg : ""
+      )
+        ? selected.push(item)
+        : noSelect.push(item);
+    });
     form.allMediaData = Array.from(selected.concat(form.allMediaData));
     form.selectedMediaData = Array.from(noSelect);
     handleUpdateSelectedMedia();
@@ -562,13 +557,11 @@ const deselectAll = () => {
     let selected: any[] = [];
     let noSelected: any[] = [];
     form.selectedGroupsData.forEach((item: { [x: string]: string }) => {
-      if (form.selectedSearchGroups) {
-        item[config.searchColumnName].match(form.selectedSearchGroupsReg)
-          ? selected.push(item)
-          : noSelected.push(item);
-      } else {
-        selected.push(item);
-      }
+      item[config.searchColumnName].match(
+        form.selectedSearchGroupsVisible ? form.selectedSearchGroupsReg : ""
+      )
+        ? selected.push(item)
+        : noSelected.push(item);
     });
     form.allGroupsData = Array.from(selected.concat(form.allGroupsData));
     form.selectedGroupsData = Array.from(noSelected);
@@ -584,7 +577,9 @@ const selectAll = () => {
       (item: { [x: string]: string; medias_groups_id: any }) => {
         (form.currentGroupsID <= 0 ||
           item.medias_groups_id == form.currentGroupsID) &&
-        item[config.searchColumnName].match(form.searchMediaReg)
+        item[config.searchColumnName].match(
+          form.searchMediaVisible ? form.searchMediaReg : ""
+        )
           ? selected.push(item)
           : noSelect.push(item);
       }
@@ -600,7 +595,9 @@ const selectAll = () => {
     let selected: any[] = [];
     let noSelect: any[] = [];
     form.allGroupsData.forEach((item: { [x: string]: string }) => {
-      item[config.searchColumnName].match(form.searchGroupsReg)
+      item[config.searchColumnName].match(
+        form.searchGroupsVisible ? form.searchGroupsReg : ""
+      )
         ? selected.push(item)
         : noSelect.push(item);
     });

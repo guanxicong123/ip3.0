@@ -166,15 +166,11 @@
         >
           <template
             v-if="
-              item.column !== config.searchColumnName ||
-              !form.selectedSearchMediaVisible
+              item.column !== config.searchColumnName || !form.selectedSearchMediaVisible
             "
           >
             <el-icon
-              @click="
-                form.selectedSearchMediaVisible =
-                  !form.selectedSearchMediaVisible
-              "
+              @click="form.selectedSearchMediaVisible = !form.selectedSearchMediaVisible"
               v-if="item.column === config.searchColumnName"
             >
               <Search />
@@ -202,16 +198,11 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template
-              v-for="(item, index) in form.selectedMediaData"
-              :key="item.id"
-            >
+            <template v-for="(item, index) in form.selectedMediaData" :key="item.id">
               <li
                 v-show="
                   !form.selectedSearchMediaVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchMediaReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchMediaReg)
                 "
                 class="drag"
                 draggable="true"
@@ -232,9 +223,7 @@
                         row.column === "key"
                           ? index + 1
                           : row.column === "length"
-                          ? usePublicMethod.convertSongDuration(
-                              item[row.column]
-                            )
+                          ? usePublicMethod.convertSongDuration(item[row.column])
                           : item[row.column]
                       }}
                     </span>
@@ -266,14 +255,12 @@
         >
           <template
             v-if="
-              item.column !== config.searchColumnName ||
-              !form.selectedSearchGroupsVisible
+              item.column !== config.searchColumnName || !form.selectedSearchGroupsVisible
             "
           >
             <el-icon
               @click="
-                form.selectedSearchGroupsVisible =
-                  !form.selectedSearchGroupsVisible
+                form.selectedSearchGroupsVisible = !form.selectedSearchGroupsVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -300,16 +287,11 @@
       <div class="custom-right-content">
         <el-scrollbar>
           <ul class="scroll-ul">
-            <template
-              v-for="(item, index) in form.selectedGroupsData"
-              :key="item.id"
-            >
+            <template v-for="(item, index) in form.selectedGroupsData" :key="item.id">
               <li
                 v-show="
                   !form.selectedSearchGroupsVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchGroupsReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchGroupsReg)
                 "
               >
                 <div class="item-media">
@@ -324,9 +306,7 @@
                         row.column === "key"
                           ? index + 1
                           : row.column === "length"
-                          ? usePublicMethod.convertSongDuration(
-                              Number(item[row.column])
-                            )
+                          ? usePublicMethod.convertSongDuration(Number(item[row.column]))
                           : item[row.column]
                       }}
                     </span>
@@ -346,11 +326,7 @@
     </div>
     <p class="com-second-tip">
       {{ $t("Play time is about") }}:
-      {{
-        usePublicMethod.convertSongDuration(
-          form.mediaSecond + form.groupsSecond
-        )
-      }}
+      {{ usePublicMethod.convertSongDuration(form.mediaSecond + form.groupsSecond) }}
     </p>
   </div>
 </template>
@@ -568,18 +544,13 @@ const deselectAll = () => {
   if (form.activeName === "first") {
     let selected: any[] = [];
     let noSelect: any[] = [];
-    form.selectedMediaData.forEach(
-      (item: { [x: string]: string; ip_address: string }) => {
-        if (form.selectedSearchMedia) {
-          item[config.searchColumnName].match(form.selectedSearchMediaReg) ||
-          item.ip_address.match(form.selectedSearchMediaReg)
-            ? selected.push(item)
-            : noSelect.push(item);
-        } else {
-          selected.push(item);
-        }
-      }
-    );
+    form.selectedMediaData.forEach((item: { [x: string]: string }) => {
+      item[config.searchColumnName].match(
+        form.selectedSearchMediaVisible ? form.selectedSearchMediaReg : ""
+      )
+        ? selected.push(item)
+        : noSelect.push(item);
+    });
     form.allMediaData = Array.from(selected.concat(form.allMediaData));
     form.selectedMediaData = Array.from(noSelect);
     handleUpdateSelectedMedia();
@@ -589,13 +560,11 @@ const deselectAll = () => {
     let selected: any[] = [];
     let noSelected: any[] = [];
     form.selectedGroupsData.forEach((item: { [x: string]: string }) => {
-      if (form.selectedSearchGroups) {
-        item[config.searchColumnName].match(form.selectedSearchGroupsReg)
-          ? selected.push(item)
-          : noSelected.push(item);
-      } else {
-        selected.push(item);
-      }
+      item[config.searchColumnName].match(
+        form.selectedSearchGroupsVisible ? form.selectedSearchGroupsReg : ""
+      )
+        ? selected.push(item)
+        : noSelected.push(item);
     });
     form.allGroupsData = Array.from(selected.concat(form.allGroupsData));
     form.selectedGroupsData = Array.from(noSelected);
@@ -607,18 +576,15 @@ const selectAll = () => {
   if (form.activeName === "first") {
     let selected: any[] = [];
     let noSelect: any[] = [];
-    form.allMediaData.forEach(
-      (item: { [x: string]: string; medias_groups_id: any }) => {
-        (form.currentGroupsID <= 0 ||
-          item.medias_groups_id == form.currentGroupsID) &&
-        item[config.searchColumnName].match(form.searchMediaReg)
-          ? selected.push(item)
-          : noSelect.push(item);
-      }
-    );
-    form.selectedMediaData = Array.from(
-      selected.concat(form.selectedMediaData)
-    );
+    form.allMediaData.forEach((item: { [x: string]: string; medias_groups_id: any }) => {
+      (form.currentGroupsID <= 0 || item.medias_groups_id == form.currentGroupsID) &&
+      item[config.searchColumnName].match(
+        form.searchMediaVisible ? form.searchMediaReg : ""
+      )
+        ? selected.push(item)
+        : noSelect.push(item);
+    });
+    form.selectedMediaData = Array.from(selected.concat(form.selectedMediaData));
     form.allMediaData = Array.from(noSelect);
     handleUpdateSelectedMedia();
   }
@@ -627,13 +593,13 @@ const selectAll = () => {
     let selected: any[] = [];
     let noSelect: any[] = [];
     form.allGroupsData.forEach((item: { [x: string]: string }) => {
-      item[config.searchColumnName].match(form.searchGroupsReg)
+      item[config.searchColumnName].match(
+        form.searchGroupsVisible ? form.searchGroupsReg : ""
+      )
         ? selected.push(item)
         : noSelect.push(item);
     });
-    form.selectedGroupsData = Array.from(
-      selected.concat(form.selectedGroupsData)
-    );
+    form.selectedGroupsData = Array.from(selected.concat(form.selectedGroupsData));
     form.allGroupsData = Array.from(noSelect);
     handleUpdateSelectedGroups();
   }
@@ -652,11 +618,9 @@ const selectTerminal = (row: { id: number }) => {
 const deleteTerminal = (row: { id: number }) => {
   if (form.selectedMediaID.indexOf(row.id) >= 0) {
     form.allMediaData.unshift(Object.assign({}, row));
-    form.selectedMediaData = form.selectedMediaData.filter(
-      (item: { id: number }) => {
-        return row.id !== item.id;
-      }
-    );
+    form.selectedMediaData = form.selectedMediaData.filter((item: { id: number }) => {
+      return row.id !== item.id;
+    });
     handleUpdateSelectedMedia();
   }
 };
@@ -674,11 +638,9 @@ const selectGroup = (row: { id: number }) => {
 const deleteGroup = (row: { id: number }) => {
   if (form.selectedGroupsID.indexOf(row.id) >= 0) {
     form.allGroupsData.unshift(Object.assign({}, row));
-    form.selectedGroupsData = form.selectedGroupsData.filter(
-      (item: { id: number }) => {
-        return row.id !== item.id;
-      }
-    );
+    form.selectedGroupsData = form.selectedGroupsData.filter((item: { id: number }) => {
+      return row.id !== item.id;
+    });
     handleUpdateSelectedGroups();
   }
 };
@@ -823,10 +785,8 @@ watch(
 );
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  setCurrentTabSelectStatus();
   config.isSelectMedia && handleGetAllMeida();
   handleGetAllGroups();
 });
