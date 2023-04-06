@@ -532,6 +532,8 @@ const handleClickClosePopover = () => {
   form.searchTerminalsVisible = false;
   form.searchGroups = "";
   form.searchGroupsVisible = false;
+  handleTerminalsSearch()
+  handleGroupsSearch()
 };
 // 处理点击关闭已选择终端/分组的搜索框
 const handleClickCloSesearchInput = () => {
@@ -539,6 +541,8 @@ const handleClickCloSesearchInput = () => {
   form.selectedSearchTerminalsVisible = false;
   form.selectedSearchGroups = "";
   form.selectedSearchGroupsVisible = false;
+  handleSelectedTerminalsSearch()
+  handleSelectedGroupsSearch()
 };
 // 处理终端搜索
 const handleTerminalsSearch = () => {

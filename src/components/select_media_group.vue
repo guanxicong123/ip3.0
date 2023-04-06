@@ -459,6 +459,8 @@ const handleClickClosePopover = () => {
   form.searchMediaVisible = false;
   form.searchGroups = "";
   form.searchGroupsVisible = false;
+  handleMediaSearch()
+  handleGroupsSearch()
 };
 // 处理点击关闭已选择媒体/媒体文件夹的搜索框
 const handleClickCloSesearchInput = () => {
@@ -470,6 +472,8 @@ const handleClickCloSesearchInput = () => {
 // 处理媒体搜索
 const handleMediaSearch = () => {
   let string = useRegex.replaceRegString(form.searchMedia);
+  console.log(string,'string');
+  
   form.searchMediaReg = new RegExp(string, "gmi");
 };
 // 处理已选媒体搜索
