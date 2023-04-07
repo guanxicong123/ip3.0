@@ -60,9 +60,10 @@
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
 const registerStatus: any = ref({})
+const $useRoute = useRoute();
 
 // 当前是否呈现注册页面
-const isShowRegister = ref(false)
+const isShowRegister = ref($useRoute.query.name === 'register')
 const code = ref("");
 
 // 获取注册状态
@@ -94,7 +95,7 @@ const close = () => {
   window.electronAPI.send("register-close");
   if (registerStatus.value?.freeTime === 0) {
     //未注册，使用时长为0，关闭时连带关闭主窗口
-    window.electronAPI.send("close");
+    // window.electronAPI.send("close");
   }
 };
 onMounted(() => {

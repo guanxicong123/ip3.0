@@ -125,19 +125,20 @@
     </div>
     <div class="broadcast-login-register">
       <span
-        v-if="!registerStatus?.isRegister && registerStatus?.freeTime === 0"
+        v-if="!registerStatus?.isRegister"
         class="register-no"
+        @click="openRegisterWindow"
       >
         {{ $t("Unregistered") }}
       </span>
       <span
-        v-if="!registerStatus?.isRegister && registerStatus?.freeTime > 0"
+        v-if="registerStatus?.isRegister && registerStatus?.freeTime > 0"
         class="register-lifespan"
       >
         {{ $t("Term of validity") }} :&nbsp;
         {{ usePublicMethod.specifyDate(registerStatus?.freeTime) }}
       </span>
-      <span v-if="registerStatus?.isRegister" class="register-lifespan">
+      <span v-if="registerStatus?.isRegister && registerStatus?.freeTime < 0" class="register-lifespan">
         {{ $t("Term of validity") }} : 0000-00-00
       </span>
     </div>
@@ -279,7 +280,9 @@ const submit = () => {
   socketLogin(data);
   localStorage.set("username", modelRef.name);
 };
-
+const openRegisterWindow = ()=>{
+  window.electronAPI.send("register-window",'register');
+}
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   gitRegisterStatus().then((res:any) => {
