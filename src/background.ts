@@ -66,7 +66,7 @@ async function createWindow() {
   // 定义calendar窗体
   let calendarWin: any = null;
   // 创建calendar窗口方法
-  const openCalendarWindow = () => {
+  const openCalendarWindow = (name:any) => {
     calendarWin = new BrowserWindow({
       width: 450,
       height: 260,
@@ -82,7 +82,7 @@ async function createWindow() {
         webSecurity: false,
       },
     });
-    calendarWin.loadURL(isDevelopment + '#/register');
+    calendarWin.loadURL(isDevelopment + `#/register?name=${name}`);
 
     calendarWin.on("closed", () => {
       calendarWin = null;
@@ -93,9 +93,9 @@ async function createWindow() {
     })
   }
 
-  ipcMain.on("register-window", () => {
+  ipcMain.on("register-window", (event:any,name) => {
     if(calendarWin) return calendarWin.show()
-    openCalendarWindow();
+    openCalendarWindow(name);
   });
   // ipcMain 修改主进程，监听渲染进程的消息，并根据消息执行相应的动作
   // open-devtools
