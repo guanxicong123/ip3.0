@@ -10,9 +10,9 @@ const path = require("path");
 const pathSrc = path.resolve(__dirname, "src");
 
 module.exports = defineConfig({
-  transpileDependencies: true,
-  lintOnSave: false,
-  parallel: false,
+  transpileDependencies: true, // 以避免构建后的代码中出现未转译的第三方依赖；Default `false` babel-loader 会忽略所有node_modules中的文件
+  lintOnSave: false, // 取消在开发环境下通过eslint-loader 在每次保存时 lint 代码。
+  parallel: false, // 不在生产构建的时候，使用多线程来构建项目，Default 默认启用 thread-loader
   pluginOptions: {
     electronBuilder: {
       preload: "src/preload.ts",
@@ -61,7 +61,7 @@ module.exports = defineConfig({
           ],
         },
         dmg: {
-          // macOSdmg
+          // macOSdmg macOS系统上常用的安装包格式
           contents: [
             {
               x: 410,
@@ -93,6 +93,7 @@ module.exports = defineConfig({
    */
   chainWebpack(config) {
     // 移除 prefetch 插件
+    // prefetch 插件 通常用于在路由导航时 自动预加载页面资源，以提升用户体验，不过可能导致首屏展示到用户可操作性的时间增加
     config.plugins.delete("prefetch");
     // set environment variables 消除 vue-i18n 的 esm-bundler 构建警告
     // 详情查看 https://github.com/intlify/vue-i18n-next/issues/789
@@ -128,8 +129,8 @@ module.exports = defineConfig({
         // 目标文件
         include: [
           /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
-          /\.vue$/,
-          /\.vue\?vue/, // .vue
+          /\.vue$/, // .vue
+          /\.vue\?vue/, 
           /\.md$/, // .md
         ],
         // 全局注册导入，详情看 auto-imports.d.ts 文件
@@ -199,6 +200,9 @@ module.exports = defineConfig({
   css: {
     loaderOptions: {
       scss: {
+        // 注意：在 sass-loader v8 中，这个选项名是 "prependData"
+        // 但是在配置 `prependData` 选项的时候
+        // `scss` 语法会要求语句结尾必须有分号，`sass` 则要求必须没有分号
         additionalData: `
                   @import "@/assets/css/color.scss";
                 `,
