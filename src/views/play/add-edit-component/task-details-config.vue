@@ -1078,6 +1078,8 @@ const getTimes = (file: any) => {
 // 上移
 const handleMoveUp = (row: any, index: number) => {
   if (index === 0) return;
+  row.index--
+  ruleForm.data[index-1].index++
   ruleForm.data[index] = ruleForm.data.splice(
     index - 1,
     1,
@@ -1089,13 +1091,15 @@ const handleMoveUp = (row: any, index: number) => {
     })
     .then((result: any) => {
       if (result.result === 200) {
-        //
+        //  
       }
     });
 };
 // 下移
 const handleMoveDown = (row: any, index: number) => {
   if (index + 1 === ruleForm.data.length) return;
+  row.index++
+  ruleForm.data[index+1].index--
   ruleForm.data[index] = ruleForm.data.splice(
     index + 1,
     1,
@@ -1126,6 +1130,9 @@ const handleDelete = (row: any) => {
           ruleForm.data = ruleForm.data.filter((item: any) => {
             return item !== row;
           });
+          ruleForm.data.map((item:any,index:number)=>{
+            item.index = index
+          })
         }
       });
     return;
