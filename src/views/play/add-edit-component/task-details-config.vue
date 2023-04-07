@@ -99,7 +99,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column width="120">
+          <el-table-column width="120" v-if="!isExecuted">
             <template #default="scope">
               <el-button
                 link
@@ -115,7 +115,7 @@
                 link
                 type="primary"
                 @click="handleMoveDown(scope.row, scope.$index)"
-                :disabled="scope.$index + 1 === ruleForm.data.length"
+                :disabled="scope.$index + 1 === ruleForm.data.length "
               >
                 <template #icon>
                   <i
