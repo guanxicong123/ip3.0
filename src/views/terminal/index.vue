@@ -814,7 +814,7 @@ const judgeButtonStatus = (type: number) => {
     }
     return (
       isTaskTypeTrue &&
-      Number(localStorage.get("LoginUserID")) === item.TaskIniatorID
+      Number(localStorage.get("LoginUserID")) === item.UserID
     );
   });
   if (sessionsData.value.length > 0 && status) {
