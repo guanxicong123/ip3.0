@@ -117,8 +117,8 @@ const requestAcquisitionTerminal = (data: any) => {
   ruleForm.selectVal = data;
 };
 // 选中的音源类型
-const requestType = (data: any) => {
-  ruleForm.type = data;
+const requestType = (type: any) => {
+  ruleForm.type = type;
 };
 const handleSelectedPath = (data: any) => {
   selectPath.value = data;

@@ -77,7 +77,7 @@
               </el-col>
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <el-form-item :label="$t('Sound type')">
-                  <el-select v-model="ruleForm.type">
+                  <el-select v-model="ruleForm.type" @change="changeSoundType">
                     <el-option
                       v-for="item in typeOptions"
                       :key="item.value"
@@ -99,7 +99,10 @@
         <div class="from-alert">
           <span>{{ $t("Play configuration") }}</span>
           <div class="play-task-configure-music" v-if="ruleForm.type === 10">
-            <span class="iconfont icon-delete" @click="deteleSelectMusic"></span>
+            <span
+              class="iconfont icon-delete"
+              @click="deteleSelectMusic"
+            ></span>
             <el-upload
               v-model:file-list="fileList"
               ref="uploadRef"
@@ -192,7 +195,9 @@
                 </span>
                 <span>
                   {{ $t("Selected groups") }}:
-                  <span class="head-add-color">{{ terminals_groups.length }}</span>
+                  <span class="head-add-color">{{
+                    terminals_groups.length
+                  }}</span>
                 </span>
               </div>
               <terminals-select-components
@@ -257,6 +262,11 @@ const ruleForm: any = reactive({
   name: "", //任务名称
   serverIP: localStorage.get("serverIP"), //服务器IP
   userID: localStorage.get("LoginUserID"), //用户ID
+  // 优先级：
+  // 1. 快捷音源：对应的是当前选中的快捷音源里面的任务类型是什么，其优先级就是根据它的任务类型去选着
+  // 2. 音乐播放与远程任务，对应的也是web端的音乐播放的优先级
+  // 3. 文本播放就是正常对应web端的文本播放
+  // 4. 声源采集是根据其下一级选中的是声卡还是终端采集分别对应web端的声卡采集，终端采集
   priority: 50, //任务优先级
   volume: 70, //任务音量
   fast_sound_id: 0, //快捷音源id
@@ -312,6 +322,10 @@ const typePriority = new Map([
   [13, 14], //终端采集
 ]);
 
+const changeSoundType = (soundType: number) => {
+  typePriorityNum.value = soundType;
+  getPrioritySetting();
+};
 const ruleFormRef = ref<FormInstance>();
 // 验证
 const validateName = (rule: any, value: any, callback: any) => {
@@ -320,7 +334,9 @@ const validateName = (rule: any, value: any, callback: any) => {
   if (!useRegex.validateEmpty(value)) {
     return callback(new Error(proxy.$t("Please enter")));
   } else if (!useRegex.validateName(value)) {
-    return callback(new Error(proxy.$t("The name does not conform to the rule")));
+    return callback(
+      new Error(proxy.$t("The name does not conform to the rule"))
+    );
   }
   return callback();
 };
@@ -400,6 +416,8 @@ const requestRemotePlay = (data: any) => {
 // 选择音源采集配置
 const requestSourceAcquisition = (data: any) => {
   sourAcquisiFrom.value = data;
+  // typePriority中，1是远程播放，2是声卡采集，3是终端采集，
+  typePriorityNum.value = data.type === 1 ? 2 : 3;
 };
 // 选中的快捷终端
 const handleSelectedConfigure = (data: any) => {
@@ -415,15 +433,15 @@ const requestGroups = (data: any) => {
   terminals_groups.value = data;
 };
 // 提交任务并播放
-const submitTaskPlay = (formEl:FormInstance | undefined) => {
-  if(!formEl) return 
-  formEl.validate(valid=>{
-    if(valid){
+const submitTaskPlay = (formEl: FormInstance | undefined) => {
+  if (!formEl) return;
+  formEl.validate((valid) => {
+    if (valid) {
       if (!executionregiontype.value && !fast_terminals_id.value)
         return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select a shortcut terminal"),
-          grouping:true
+          type: "warning",
+          message: proxy.$t("Please select a shortcut terminal"),
+          grouping: true,
         });
       if (
         executionregiontype.value &&
@@ -431,62 +449,62 @@ const submitTaskPlay = (formEl:FormInstance | undefined) => {
         terminals_groups.value.length === 0
       ) {
         return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select a terminal or group"),
-          grouping:true
+          type: "warning",
+          message: proxy.$t("Please select a terminal or group"),
+          grouping: true,
         });
       }
-    
+
       let data = getBasicData();
       if (ruleForm.type === 10) {
         createLocalAudio(data).then((result: any) => {
           $useRouter.push({
             name: "play",
-            query:result
+            query: result,
           });
         });
       } else if (ruleForm.type === 11) {
         createTxstPlay(data).then((result: any) => {
           $useRouter.push({
             name: "play",
-            query:result
+            query: result,
           });
         });
       } else if (ruleForm.type === 1) {
         createRemteTask(data).then((result: any) => {
           $useRouter.push({
             name: "play",
-            query:result
+            query: result,
           });
         });
       } else if (ruleForm.type === 12) {
         createSoundSourceCollection(data).then((result: any) => {
           $useRouter.push({
             name: "play",
-            query:result,
+            query: result,
           });
         });
       } else {
         createQuickSou(data).then((result: any) => {
           $useRouter.push({
             name: "play",
-            query:result
+            query: result,
           });
         });
       }
     }
-  })
+  });
 };
 // 提交任务
-const submitTask = (formEl:FormInstance | undefined) => {
-  if(!formEl) return 
-  formEl.validate(valid=>{
-    if(valid){
+const submitTask = (formEl: FormInstance | undefined) => {
+  if (!formEl) return;
+  formEl.validate((valid) => {
+    if (valid) {
       if (!executionregiontype.value && !fast_terminals_id.value)
         return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select a shortcut terminal"),
-          grouping:true
+          type: "warning",
+          message: proxy.$t("Please select a shortcut terminal"),
+          grouping: true,
         });
       if (
         executionregiontype.value &&
@@ -494,13 +512,13 @@ const submitTask = (formEl:FormInstance | undefined) => {
         terminals_groups.value.length === 0
       ) {
         return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select a terminal or group"),
-          grouping:true
+          type: "warning",
+          message: proxy.$t("Please select a terminal or group"),
+          grouping: true,
         });
       }
       let data = getBasicData();
-    
+
       if (ruleForm.type === 10) {
         createLocalAudio(data);
       } else if (ruleForm.type === 11) {
@@ -516,11 +534,12 @@ const submitTask = (formEl:FormInstance | undefined) => {
         name: "play",
       });
     }
-  })
+  });
 };
 const getBasicData = () => {
   let data = Object.assign(ruleForm, {
-    fast_terminals_id: executionregiontype.value !== 0 ? 0 : fast_terminals_id.value,
+    fast_terminals_id:
+      executionregiontype.value !== 0 ? 0 : fast_terminals_id.value,
     terminals: executionregiontype.value ? terminals.value : [],
     terminals_groups: executionregiontype.value ? terminals_groups.value : [],
   });
@@ -531,10 +550,10 @@ const createQuickSou = (data: any) => {
   return new Promise((resolve, reject) => {
     if (!ruleForm.fast_sound_id)
       return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select a shortcut sound source"),
-          grouping:true
-        });
+        type: "warning",
+        message: proxy.$t("Please select a shortcut sound source"),
+        grouping: true,
+      });
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http
         .put(
@@ -571,19 +590,19 @@ const createLocalAudio = (data: any) => {
   return new Promise((resolve, reject) => {
     if (ruleForm.content.length === 0)
       return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select a media file"),
-          grouping:true
-        });
+        type: "warning",
+        message: proxy.$t("Please select a media file"),
+        grouping: true,
+      });
     if (
       musicPlayForm.value?.play_model !== 0 &&
       musicPlayForm.value?.life_time === "00:00:00"
     )
       return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select the duration"),
-          grouping:true
-        });
+        type: "warning",
+        message: proxy.$t("Please select the duration"),
+        grouping: true,
+      });
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http1
         .put(
@@ -615,19 +634,19 @@ const createRemteTask = (data: any) => {
   return new Promise((resolve, reject) => {
     if (ruleForm.medias.length === 0 && ruleForm.medias_groups.length === 0)
       return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select a media file"),
-          grouping:true
-        });
+        type: "warning",
+        message: proxy.$t("Please select a media file"),
+        grouping: true,
+      });
     if (
       remotePlayForm.value?.play_model !== 0 &&
       remotePlayForm.value?.life_time === "00:00:00"
     )
       return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select the duration"),
-          grouping:true
-        });
+        type: "warning",
+        message: proxy.$t("Please select the duration"),
+        grouping: true,
+      });
 
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http
@@ -665,22 +684,22 @@ const createTxstPlay = (data: any) => {
   return new Promise((resolve, reject) => {
     if (tsctFormData.value.is_txt && tsctFormData.value.txtpath === "")
       return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select a path"),
-          grouping:true
-        });
+        type: "warning",
+        message: proxy.$t("Please select a path"),
+        grouping: true,
+      });
     if (!tsctFormData.value.is_txt && tsctFormData.value.ttscontent === "")
       return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please enter the text content"),
-          grouping:true
-        });
+        type: "warning",
+        message: proxy.$t("Please enter the text content"),
+        grouping: true,
+      });
     if (!tsctFormData.value.ttsenginename)
       return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select to play voice"),
-          grouping:true
-        });
+        type: "warning",
+        message: proxy.$t("Please select to play voice"),
+        grouping: true,
+      });
 
     if ($useRoute.query.id && $useRoute.query.id !== "0") {
       proxy.$http1
@@ -728,25 +747,31 @@ const createSoundSourceCollection = (data: any) => {
         JSON.stringify(sourAcquisiFrom.value.selectVal) === "{}"
       )
         return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select a sound card"),
-          grouping:true
+          type: "warning",
+          message: proxy.$t("Please select a sound card"),
+          grouping: true,
         });
-      if (sourAcquisiFrom.value.record && sourAcquisiFrom.value.recordpath === "")
+      if (
+        sourAcquisiFrom.value.record &&
+        sourAcquisiFrom.value.recordpath === ""
+      )
         return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select the recording saving path"),
-          grouping:true
+          type: "warning",
+          message: proxy.$t("Please select the recording saving path"),
+          grouping: true,
         });
       fromData["soundcard"] = sourAcquisiFrom.value.selectVal;
       fromData["record"] = sourAcquisiFrom.value.record;
       fromData["recordpath"] = sourAcquisiFrom.value.recordpath;
     } else {
-      if (sourAcquisiFrom.value.selectVal === "" || !sourAcquisiFrom.value.selectVal.id)
+      if (
+        sourAcquisiFrom.value.selectVal === "" ||
+        !sourAcquisiFrom.value.selectVal.id
+      )
         return proxy.$message({
-          type:'warning',
-          message:proxy.$t("Please select the acquisition terminal"),
-          grouping:true
+          type: "warning",
+          message: proxy.$t("Please select the acquisition terminal"),
+          grouping: true,
         });
       fromData["terminalID"] = sourAcquisiFrom.value.selectVal.id;
     }
