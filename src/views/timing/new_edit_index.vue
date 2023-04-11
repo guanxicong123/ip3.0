@@ -379,17 +379,24 @@
           </el-form>
         </el-scrollbar>
         <div class="timing-bottom-btn">
-          <el-button class="button  button-cancel" plain @click="usePublicMethod.clickBack()">
+          <el-button
+            class="button button-cancel"
+            plain
+            @click="usePublicMethod.clickBack()"
+          >
             {{ $t("Cancel") }}
           </el-button>
-          <el-button class="button" type="primary" @click="handleSubmitFormSave(ruleFormRef)">
+          <el-button
+            class="button"
+            type="primary"
+            @click="handleSubmitFormSave(ruleFormRef)"
+          >
             {{ $t("Save") }}
           </el-button>
         </div>
       </div>
     </div>
   </div>
-  
 </template>
 
 <script lang="ts" setup>
@@ -441,7 +448,7 @@ const ruleForm = reactive<any>({
   start_date: "", // 开始日期
   end_date: "", // 结束日期
   volume: 70, // 任务音量
-  priority: 60, // 优先级
+  priority: 50, // 优先级
   terminals_light_id: 0, // 灯光配置
   led_config_id: 0, // LED配置
   execute_time: "", // 执行时间
@@ -849,8 +856,8 @@ const handleGetEditData = async () => {
     .then((result) => {
       if (result.data) {
         form.old_name = result.data.name;
-        form.old_terminals = result.result.terminals;
-        form.old_terminals_groups = result.result.terminals_groups;
+        form.old_terminals = result.data.terminals;
+        form.old_terminals_groups = result.data.terminals_groups;
         Object.keys(ruleForm).forEach((item) => {
           Object.keys(result.data).forEach((row) => {
             if (item === row) {
@@ -1012,10 +1019,10 @@ onBeforeRouteLeave((to, from, next) => {
     }
   }
 }
-.com-table{
+.com-table {
   height: calc(100% - 68px);
 }
-.timing-bottom-btn{
+.timing-bottom-btn {
   position: fixed;
   bottom: 0;
   left: 136px;
