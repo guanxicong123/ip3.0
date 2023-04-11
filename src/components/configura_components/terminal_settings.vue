@@ -7,7 +7,7 @@
 <template>
   <div class="com-terminal-settings">
     <el-tabs v-model="form.activeName" @tab-click="handleTabClick">
-      <el-tab-pane :name="1" lazy>
+      <el-tab-pane :name="1">
         <template #label>
           <span class="custom-tabs-label">
             {{ $t("Fast terminal") }}
@@ -34,12 +34,7 @@
           </el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane
-        :label="$t('Terminal selection')"
-        :name="2"
-        lazy
-        v-if="form.view_mode == 1"
-      >
+      <el-tab-pane :label="$t('Terminal selection')" :name="2" v-if="form.view_mode == 1">
         <el-checkbox
           v-if="config.isSelectOpenTerminalVolume"
           v-model="form.open_terminal_volume"
@@ -182,13 +177,15 @@ const handleRequestConfigure = (data: any) => {
 };
 // 处理设置编辑数据
 const handleSetEditData = () => {
-  if (
-    (!parentData?.responseTerminals && !parentData?.responseGroups) ||
-    (parentData?.responseTerminals?.length < 1 && parentData?.responseGroups?.length < 1)
-  ) {
+  if (parentData.responseQuickTerminals?.id > 0) {
     form.activeName = 1;
     handleRequestConfigure(parentData?.responseQuickTerminals);
-  } else {
+  }
+  console.log(form.terminals, parentData, "999");
+  if (
+    parentData?.responseTerminals?.length > 0 ||
+    parentData?.responseGroups?.length > 0
+  ) {
     form.activeName = 2;
     form.terminals = parentData?.responseTerminals;
     form.terminals_groups = parentData?.responseGroups;
@@ -201,39 +198,88 @@ const handleSetEditData = () => {
 
 // 监听变化
 watch(
-  () => [
-    parentData?.responseTerminals,
-    parentData?.responseGroups,
-    parentData?.responseQuickTerminals,
-    parentData?.showSearch,
-    userStore.value?.user?.users_config,
-  ],
-  (
-    [newTerminals, newGroups, newQuickTerminals, newSearch, newMode],
-    [oldTerminals, oldGroups, oldQuickTerminals, oldSearch, oldMode]
-  ) => {
-    if (
-      newTerminals != oldTerminals ||
-      newGroups != oldGroups ||
-      newQuickTerminals != oldQuickTerminals
-    ) {
-      handleSetEditData();
-    }
+  userStore.value?.user?.users_config,
+  (newMode) => {
     // 界面模式
-    if (newMode != oldMode) {
-      form.view_mode = newMode.view_mode;
-      if (form.activeName == 2 && form.view_mode == 2) {
-        form.activeName = 1;
-        emit("requestType", form.activeName);
-        emit("requestQuickTerminals", 0);
-      }
-    }
-    if (newSearch != oldSearch) {
-      form.showSearch = !form.showSearch;
+    form.view_mode = newMode?.view_mode;
+    if (form.activeName == 2 && form.view_mode == 2) {
+      form.activeName = 1;
+      emit("requestType", form.activeName);
+      emit("requestQuickTerminals", 0);
     }
   },
   {
     // 设置首次进入执行方法 immediate
+    // immediate: true,
+    deep: true,
+  }
+);
+watch(
+  () => {
+    return parentData?.showSearch;
+  },
+  () => {
+    form.showSearch = !form.showSearch;
+  },
+  {
+    // 初始化立即执行
+    // immediate: true,
+    deep: true,
+  }
+);
+watch(
+  parentData.responseTerminals,
+  () => {
+    form.activeName = 2;
+    form.terminals = parentData?.responseTerminals;
+    console.log(form.terminals);
+    emit("requestType", form.activeName);
+  },
+  {
+    // 初始化立即执行
+    // immediate: true,
+    deep: true,
+  }
+);
+watch(
+  parentData.responseGroups,
+  () => {
+    form.activeName = 2;
+    form.terminals_groups = parentData?.responseGroups;
+    emit("requestType", form.activeName);
+  },
+  {
+    // 初始化立即执行
+    // immediate: true,
+    deep: true,
+  }
+);
+watch(
+  () => {
+    return parentData.responseQuickTerminals;
+  },
+  () => {
+    if (parentData.responseQuickTerminals) {
+      form.activeName = 1;
+      handleRequestConfigure(parentData?.responseQuickTerminals);
+      emit("requestType", form.activeName);
+    }
+  },
+  {
+    // 初始化立即执行
+    // immediate: true,
+    deep: true,
+  }
+);
+watch(
+  () => {
+    return parentData.responseOpenVolume;
+  },
+  () => {
+    form.open_terminal_volume = true;
+  },
+  {
+    // 初始化立即执行
     // immediate: true,
     deep: true,
   }
@@ -244,7 +290,9 @@ onMounted(() => {
   config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   myConfigTerminal.selectAmplifier = config.selectAmplifier;
   form.view_mode = userStore.value?.user?.users_config?.view_mode;
-  handleSetEditData();
+  setTimeout(() => {
+    handleSetEditData();
+  }, 500);
 });
 </script>
 
