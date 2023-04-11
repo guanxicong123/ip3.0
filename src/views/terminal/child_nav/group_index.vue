@@ -78,7 +78,11 @@
           :label="$t('Terminal IP')"
           show-overflow-tooltip
         />
-        <el-table-column prop="call_code" :label="$t('Call code')" show-overflow-tooltip/>
+        <el-table-column
+          prop="call_code"
+          :label="$t('Call code')"
+          show-overflow-tooltip
+        />
       </el-table>
     </el-dialog>
   </div>
@@ -129,7 +133,7 @@ const {
   handleUpdateCheckedAll,
   handleIsCheckedAll,
   updateCheckedTerminals,
-  updateCheckedGroup
+  updateCheckedGroup,
 }: any = inject("checkedAll");
 // 获取refs
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
@@ -164,16 +168,20 @@ const cleanCheckedTerminalIds = () => {
   });
   updateCheckedTerminals(checked_terminals_ids);
   // 更新选中的分组
-  updateCheckedGroup(form.multipleSelection)
+  updateCheckedGroup(form.multipleSelection);
 };
 // 分组终端详情显示
-const viewGroupInfo = (item: { name: string; terminals: Array<any>; call_code: string }) => {
+const viewGroupInfo = (item: {
+  name: string;
+  terminals: Array<any>;
+  call_code: string;
+}) => {
   show_group_info.value = true;
   group_title.value = item.name;
-  form.table_data = item.terminals.map((terminal:any)=>{
-    terminal.call_code = item.call_code
-    return terminal
-  })
+  form.table_data = item.terminals.map((terminal: any) => {
+    terminal.call_code = item.call_code;
+    return terminal;
+  });
 };
 // 处理全选
 const handleCheckedAll = () => {
@@ -216,6 +224,34 @@ const handleCurrentChange = (val: number) => {
   handleGetOnePageData();
   multipleTableRef.value?.setScrollTop(0);
 };
+// 遵循“忙碌(2)>空闲(1)>冻结(4)>故障(3)>离线(0)”的排序规则，分组状态为当前终端状态排序最前者。
+const groupStatusMap = new Map([
+  [0, 0],
+  [3, 1],
+  [4, 2],
+  [1, 3],
+  [2, 4],
+]);
+// 给分组手动添加默认状态，然后根据终端状态来更新
+// 遵循“忙碌(2)>空闲(1)>冻结(4)>故障(3)>离线(0)”的排序规则，分组状态为当前终端状态排序最前者。
+const setGroupStatus = (groupData: Array<any>) => {
+  return groupData.map((item: any) => {
+    let groupStatus = 0;
+    let priority = 0;
+    if(item.terminals.length > 0){
+      item.terminals.forEach((terminal: { id: number }) => {
+        let newPriority =
+          groupStatusMap.get(terminalsStoreAll.value[terminal.id]?.Status) || 0;
+        if (newPriority > priority) {
+          priority = newPriority
+          groupStatus = terminalsStoreAll.value[terminal.id]?.Status;
+        }
+      });
+    } 
+    item.status = groupStatus;
+    return item
+  });
+};
 // 处理获取一页数据
 const handleGetOnePageData = () => {
   GroupsService.getOnePageGroups({
@@ -231,11 +267,8 @@ const handleGetOnePageData = () => {
       if (result.data?.data) {
         form.data = result.data.data;
         form.total = result.data.total;
-        // 给分组手动添加默认状态，然后根据终端状态来更新
-        // 遵循“忙碌>空闲>冻结>故障>离线”的排序规则，分组状态为当前终端状态排序最前者。
-        form.data.map((item: any) => {
-          item.status = 1;
-        });
+
+        form.data = setGroupStatus(form.data);
       } else {
         ElMessage({
           type: "error",
@@ -257,12 +290,8 @@ onBeforeRouteLeave((to, from) => {
 
 // 监听变化
 watch(
-  () => [terminalsStoreAll.value, groupStoreSearch.value, checked_all.value],
-  ([newAll, newSearch, newCheck], [oldAll, oldSearch, oldCheck]) => {
-    // 设备状态数据
-    if (newAll != oldAll) {
-      console.log(newAll);
-    }
+  () => [groupStoreSearch.value, checked_all.value],
+  ([ newSearch, newCheck], [oldAll, oldSearch, oldCheck]) => {
     // 搜索数据
     if (newSearch != oldSearch) {
       form.search = newSearch;
@@ -283,7 +312,13 @@ watch(
     deep: true,
   }
 );
-
+watch(
+  terminalsStoreAll,
+  () => {
+    form.data = setGroupStatus(form.data);
+  },
+  { deep: true }
+);
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   handleGetOnePageData();
