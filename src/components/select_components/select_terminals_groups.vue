@@ -1150,14 +1150,20 @@ onMounted(() => {
           .custom-tabs-label {
             height: 100%;
             i {
+              display: inline-flex;
+              justify-content: center;
+              align-items: center;
               height: 100%;
               font-size: 16px;
               margin-right: 5px;
               vertical-align: top;
             }
             span {
-              display: inline-block;
+              display: inline-flex;
+              justify-content: center;
+              align-items: center;
               max-width: 80%;
+              height: 100%;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;

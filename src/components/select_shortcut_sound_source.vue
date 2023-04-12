@@ -9,9 +9,7 @@
     <div class="com-select-left">
       <div class="custom-title">
         <template v-if="!form.searchConfigureVisible">
-          <el-icon
-            @click="form.searchConfigureVisible = !form.searchConfigureVisible"
-          >
+          <el-icon @click="form.searchConfigureVisible = !form.searchConfigureVisible">
             <Search />
           </el-icon>
           <span> {{ $t("Configuration name") }} </span>
@@ -56,10 +54,7 @@
         </el-scrollbar>
       </div>
     </div>
-    <div
-      class="com-select-right"
-      v-show="form.selectedConfigureData.type === 1"
-    >
+    <div class="com-select-right" v-show="form.selectedConfigureData.type === 1">
       <div class="custom-title">
         {{ config.musicTitle }}
       </div>
@@ -77,8 +72,7 @@
           >
             <el-icon
               @click="
-                form.selectedSearchConfigureVisible =
-                  !form.selectedSearchConfigureVisible
+                form.selectedSearchConfigureVisible = !form.selectedSearchConfigureVisible
               "
               v-if="item.column === config.searchColumnName"
             >
@@ -112,9 +106,7 @@
               <li
                 v-show="
                   !form.selectedSearchConfigureVisible ||
-                  item[config.searchColumnName].match(
-                    form.selectedSearchConfigureReg
-                  )
+                  item[config.searchColumnName].match(form.selectedSearchConfigureReg)
                 "
               >
                 <div
@@ -127,16 +119,12 @@
                     {{
                       row.column === "key"
                         ? index + 1
-                        : row.column === "list" &&
-                          item.hasOwnProperty("medias_id")
+                        : row.column === "list" && item.hasOwnProperty("medias_id")
                         ? "-"
                         : item[row.column]
                     }}
                     <view-components-popover
-                      v-if="
-                        row.column === 'list' &&
-                        !item.hasOwnProperty('medias_id')
-                      "
+                      v-if="row.column === 'list' && !item.hasOwnProperty('medias_id')"
                       :myConfig="mediaConfig"
                       :url="'/medias'"
                       :mediasGroupsID="item.id"
@@ -301,10 +289,7 @@ onMounted(() => {
   getSoundSource().then(() => {
     setCurrentTabSelectStatus(parentData.responseConfigure);
   });
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
 });
 </script>
 
@@ -416,6 +401,7 @@ onMounted(() => {
 
     i {
       font-size: 16px;
+      cursor: pointer;
     }
 
     .el-icon:hover {
