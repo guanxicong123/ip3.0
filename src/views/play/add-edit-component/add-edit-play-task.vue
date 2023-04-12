@@ -37,7 +37,7 @@
                     v-model="ruleForm.volume"
                     :min="0"
                     :max="100"
-                    :value-on-clear="ruleForm.volume"
+                    :value-on-clear="0"
                     controls-position="right"
                   />
                   <el-tooltip
@@ -63,7 +63,7 @@
                     v-model="ruleForm.priority"
                     :min="1"
                     :max="100"
-                    :value-on-clear="ruleForm.priority"
+                    :value-on-clear="1"
                     controls-position="right"
                   />
                   <el-tooltip
@@ -99,10 +99,7 @@
         <div class="from-alert">
           <span>{{ $t("Play configuration") }}</span>
           <div class="play-task-configure-music" v-if="ruleForm.type === 10">
-            <span
-              class="iconfont icon-delete"
-              @click="deteleSelectMusic"
-            ></span>
+            <span class="iconfont icon-delete" @click="deteleSelectMusic"></span>
             <el-upload
               v-model:file-list="fileList"
               ref="uploadRef"
@@ -195,9 +192,7 @@
                 </span>
                 <span>
                   {{ $t("Selected groups") }}:
-                  <span class="head-add-color">{{
-                    terminals_groups.length
-                  }}</span>
+                  <span class="head-add-color">{{ terminals_groups.length }}</span>
                 </span>
               </div>
               <terminals-select-components
@@ -334,9 +329,7 @@ const validateName = (rule: any, value: any, callback: any) => {
   if (!useRegex.validateEmpty(value)) {
     return callback(new Error(proxy.$t("Please enter")));
   } else if (!useRegex.validateName(value)) {
-    return callback(
-      new Error(proxy.$t("The name does not conform to the rule"))
-    );
+    return callback(new Error(proxy.$t("The name does not conform to the rule")));
   }
   return callback();
 };
@@ -538,8 +531,7 @@ const submitTask = (formEl: FormInstance | undefined) => {
 };
 const getBasicData = () => {
   let data = Object.assign(ruleForm, {
-    fast_terminals_id:
-      executionregiontype.value !== 0 ? 0 : fast_terminals_id.value,
+    fast_terminals_id: executionregiontype.value !== 0 ? 0 : fast_terminals_id.value,
     terminals: executionregiontype.value ? terminals.value : [],
     terminals_groups: executionregiontype.value ? terminals_groups.value : [],
   });
@@ -751,10 +743,7 @@ const createSoundSourceCollection = (data: any) => {
           message: proxy.$t("Please select a sound card"),
           grouping: true,
         });
-      if (
-        sourAcquisiFrom.value.record &&
-        sourAcquisiFrom.value.recordpath === ""
-      )
+      if (sourAcquisiFrom.value.record && sourAcquisiFrom.value.recordpath === "")
         return proxy.$message({
           type: "warning",
           message: proxy.$t("Please select the recording saving path"),
@@ -764,10 +753,7 @@ const createSoundSourceCollection = (data: any) => {
       fromData["record"] = sourAcquisiFrom.value.record;
       fromData["recordpath"] = sourAcquisiFrom.value.recordpath;
     } else {
-      if (
-        sourAcquisiFrom.value.selectVal === "" ||
-        !sourAcquisiFrom.value.selectVal.id
-      )
+      if (sourAcquisiFrom.value.selectVal === "" || !sourAcquisiFrom.value.selectVal.id)
         return proxy.$message({
           type: "warning",
           message: proxy.$t("Please select the acquisition terminal"),

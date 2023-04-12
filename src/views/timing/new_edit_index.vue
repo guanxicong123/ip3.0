@@ -70,7 +70,7 @@
                       v-model="ruleForm.volume"
                       :min="0"
                       :max="100"
-                      :value-on-clear="ruleForm.volume"
+                      :value-on-clear="0"
                       controls-position="right"
                     />
                     <el-tooltip
@@ -98,7 +98,7 @@
                       v-model="ruleForm.priority"
                       :min="1"
                       :max="100"
-                      :value-on-clear="ruleForm.priority"
+                      :value-on-clear="1"
                       controls-position="right"
                     />
                     <el-tooltip
@@ -235,7 +235,7 @@
                               v-model="form.interval_time"
                               :min="1"
                               :max="1440"
-                              :value-on-clear="form.interval_time"
+                              :value-on-clear="1"
                               controls-position="right"
                             />
                           </el-form-item>

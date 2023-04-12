@@ -39,10 +39,7 @@
           v-if="!isMusicPlay && seleQuickMusic?.type"
         >
           <el-form-item :label="$t('Acquisition sound quality')">
-            <el-select
-              v-model="ruleForm.sound_quality"
-              :disabled="!props.isEdit"
-            >
+            <el-select v-model="ruleForm.sound_quality" :disabled="!props.isEdit">
               <el-option
                 v-for="item in audioQualityOptions"
                 :key="item.value"
@@ -130,7 +127,7 @@
               v-model="ruleForm.play_number"
               :min="1"
               :max="9999"
-              :value-on-clear="ruleForm.play_number"
+              :value-on-clear="1"
               controls-position="right"
               :disabled="ruleForm.radioVal !== 2 || !props.isEdit"
             />

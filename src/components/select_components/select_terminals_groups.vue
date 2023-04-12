@@ -248,7 +248,7 @@
                       v-model="item[row.column]"
                       :min="0"
                       :max="100"
-                      :value-on-clear="item[row.column]"
+                      :value-on-clear="0"
                       controls-position="right"
                       @change="handleChangeCustomVolume(item)"
                     />
@@ -367,7 +367,7 @@
                       v-model="item[row.column]"
                       :min="0"
                       :max="100"
-                      :value-on-clear="item[row.column]"
+                      :value-on-clear="0"
                       controls-position="right"
                       @change="handleUpdateSelectedGroups"
                     />

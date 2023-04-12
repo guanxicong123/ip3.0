@@ -131,7 +131,7 @@
                 controls-position="right"
                 maxlength="4"
                 :disabled="!props.isEdit"
-                :value-on-clear="ruleForm.repeattime"
+                :value-on-clear="1"
               />
             </el-form-item>
           </el-col>
@@ -172,7 +172,7 @@ const props: any = defineProps({
 const emit = defineEmits(["update:tsctFormData"]);
 
 const ruleForm: any = reactive({
-  ttsenginename: getStore.usePlayStore().playVoiceData[0]?.EngineName || '', //"tts引擎名称"
+  ttsenginename: getStore.usePlayStore().playVoiceData[0]?.EngineName || "", //"tts引擎名称"
   is_txt: true, //是否是文本
   ttsspeed: 5, // 播放语速
   repeattime: 1, //播放次数
