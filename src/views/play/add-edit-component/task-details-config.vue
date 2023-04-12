@@ -446,7 +446,7 @@ const editTaskDetail = (taskDetail: any) => {
   changeTerminalVolume(changeTerminalVolumeData);
   // 3. 发起修改任务详情中的声音
   const localmusic = [10, 11, 12];
-  taskDetail.volume = props.currentVolume;
+  taskDetail.volume = props.currentVolume || 0;
   if (localmusic.includes(taskDetail.type)) {
     editLocalAudio(taskDetail);
   } else {
