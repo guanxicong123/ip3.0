@@ -718,8 +718,8 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
         form.type === 1 && form.medias.length < 1 && form.medias_groups.length < 1;
       // 音源设置 - 音源采集
       let isSound =
-        (form.type === 2 && form.sound_source.sound_card == "") ||
-        (form.type === 3 && form.sound_source.terminals_name == "");
+        (form.type === 2 && !form.sound_source.sound_card) ||
+        (form.type === 3 && !form.sound_source.terminals_name);
 
       if (isQuick || isMusic || isSound) {
         return handleReturnError(proxy.$t("Please select a sound source"));
