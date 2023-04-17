@@ -79,7 +79,15 @@
           height="100%"
           @row-dblclick="handelRowDblclick"
         >
-          <el-table-column type="index" label="No." width="80" />
+          <el-table-column type="index" label="No." width="80" >
+            <template #default="scope">
+              {{ scope.row.index + 1 }}
+              <span link title="文件不存在" class="textNoExist" v-if="!scope.row.isexist" >
+                  <el-icon><WarnTriangleFilled /></el-icon>
+              </span>
+              
+            </template>
+            </el-table-column>
           <el-table-column
             prop="path"
             :label="$t('Name')"
@@ -99,7 +107,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column width="120" v-if="!isExecuted">
+          <el-table-column width="120" v-if="!isExecuted" >
             <template #default="scope">
               <el-button
                 link
@@ -1292,6 +1300,12 @@ defineExpose({ handleEditButton });
         color: #0070ee;
         cursor: pointer;
       }
+    }
+    .textNoExist{
+      color: red; 
+      margin-left: 12px; 
+      font-size: 18px; 
+      vertical-align: middle;
     }
   }
 
