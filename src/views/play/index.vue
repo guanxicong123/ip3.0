@@ -47,9 +47,10 @@
         </div>
         <div class="content-center">
           <p>
+            <!-- 会导致有延迟 -->
+            <!-- {{ form.song_name }} -->
             <!-- 使用当前正在执行任务的数组来显示播放媒体名称。socket使用task_status这个状态的信息 -->
-            {{ form.song_name }}
-            <!-- {{sessionStoreAll[playCenterData.TaskID]?.TaskShowInfo}} -->
+            {{sessionStoreAll[playCenterData.TaskID]?.TaskShowInfo}}
           </p>
           <div
             class="progress"
