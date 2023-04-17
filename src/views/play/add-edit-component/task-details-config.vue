@@ -744,8 +744,11 @@ const switchMedia = (TaskID: any, MusicNameOrMusicIndex: string) => {
   send(data);
 };
 
-const handelRowDblclick = (row: any) => {
-  handlePlayTask(row);
+const handelRowDblclick = (row: any, column:any) => {
+  // 双击非操作列，才发起任务
+  if(column.label){
+    handlePlayTask(row);
+  }
 };
 
 // 切换tabs
