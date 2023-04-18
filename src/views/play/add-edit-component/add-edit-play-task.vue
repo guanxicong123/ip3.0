@@ -99,7 +99,10 @@
         <div class="from-alert">
           <span>{{ $t("Play configuration") }}</span>
           <div class="play-task-configure-music" v-if="ruleForm.type === 10">
-            <span class="iconfont icon-delete" @click="deteleSelectMusic"></span>
+            <span
+              class="iconfont icon-delete"
+              @click="deteleSelectMusic"
+            ></span>
             <el-upload
               v-model:file-list="fileList"
               ref="uploadRef"
@@ -192,7 +195,9 @@
                 </span>
                 <span>
                   {{ $t("Selected groups") }}:
-                  <span class="head-add-color">{{ terminals_groups.length }}</span>
+                  <span class="head-add-color">{{
+                    terminals_groups.length
+                  }}</span>
                 </span>
               </div>
               <terminals-select-components
@@ -325,11 +330,12 @@ const ruleFormRef = ref<FormInstance>();
 // 验证
 const validateName = (rule: any, value: any, callback: any) => {
   ruleForm.name = value = useRegex.replaceEmojiSpaces(value);
-
   if (!useRegex.validateEmpty(value)) {
     return callback(new Error(proxy.$t("Please enter")));
   } else if (!useRegex.validateName(value)) {
-    return callback(new Error(proxy.$t("The name does not conform to the rule")));
+    return callback(
+      new Error(proxy.$t("The name does not conform to the rule"))
+    );
   }
   return callback();
 };
@@ -450,40 +456,15 @@ const submitTaskPlay = (formEl: FormInstance | undefined) => {
 
       let data = getBasicData();
       if (ruleForm.type === 10) {
-        createLocalAudio(data).then((result: any) => {
-          $useRouter.push({
-            name: "play",
-            query: result,
-          });
-        });
+        createLocalAudio(data,true)
       } else if (ruleForm.type === 11) {
-        createTxstPlay(data).then((result: any) => {
-          $useRouter.push({
-            name: "play",
-            query: result,
-          });
-        });
+        createTxstPlay(data,true)
       } else if (ruleForm.type === 1) {
-        createRemteTask(data).then((result: any) => {
-          $useRouter.push({
-            name: "play",
-            query: result,
-          });
-        });
+        createRemteTask(data,true)
       } else if (ruleForm.type === 12) {
-        createSoundSourceCollection(data).then((result: any) => {
-          $useRouter.push({
-            name: "play",
-            query: result,
-          });
-        });
+        createSoundSourceCollection(data,true)
       } else {
-        createQuickSou(data).then((result: any) => {
-          $useRouter.push({
-            name: "play",
-            query: result,
-          });
-        });
+        createQuickSou(data,true)
       }
     }
   });
@@ -513,32 +494,30 @@ const submitTask = (formEl: FormInstance | undefined) => {
       let data = getBasicData();
 
       if (ruleForm.type === 10) {
-        createLocalAudio(data);
+        createLocalAudio(data)
       } else if (ruleForm.type === 11) {
-        createTxstPlay(data);
+        createTxstPlay(data)
       } else if (ruleForm.type === 1) {
-        createRemteTask(data);
+        createRemteTask(data)
       } else if (ruleForm.type === 12) {
-        createSoundSourceCollection(data);
+        createSoundSourceCollection(data)
       } else {
-        createQuickSou(data);
+        createQuickSou(data)
       }
-      $useRouter.push({
-        name: "play",
-      });
     }
   });
 };
 const getBasicData = () => {
   let data = Object.assign(ruleForm, {
-    fast_terminals_id: executionregiontype.value !== 0 ? 0 : fast_terminals_id.value,
+    fast_terminals_id:
+      executionregiontype.value !== 0 ? 0 : fast_terminals_id.value,
     terminals: executionregiontype.value ? terminals.value : [],
     terminals_groups: executionregiontype.value ? terminals_groups.value : [],
   });
   return data;
 };
 // 快捷音源任务
-const createQuickSou = (data: any) => {
+const createQuickSou = (data: any,isPlay?: boolean) => {
   return new Promise((resolve, reject) => {
     if (!ruleForm.fast_sound_id)
       return proxy.$message({
@@ -557,7 +536,20 @@ const createQuickSou = (data: any) => {
         .then((result: any) => {
           if (result.result === 200) {
             resolve(result.data);
-            $useRouter.push("/play");
+            if(isPlay){
+              $useRouter.push({
+                name: "play",
+                query: result.data,
+              });
+            }else {
+              $useRouter.push("/play");
+            }
+          } else {
+            proxy.$message({
+              type: "error",
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              grouping: true,
+            });
           }
         });
     } else {
@@ -571,14 +563,27 @@ const createQuickSou = (data: any) => {
         .then((result: any) => {
           if (result.result === 200) {
             resolve(result.data);
-            $useRouter.push("/play");
+            if(isPlay){
+              $useRouter.push({
+                name: "play",
+                query: result.data,
+              });
+            }else {
+              $useRouter.push("/play");
+            }
+          } else {
+            proxy.$message({
+              type: "error",
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              grouping: true,
+            });
           }
         });
     }
   });
 };
 // 音乐播放任务
-const createLocalAudio = (data: any) => {
+const createLocalAudio = (data: any,isPlay?: boolean) => {
   return new Promise((resolve, reject) => {
     if (ruleForm.content.length === 0)
       return proxy.$message({
@@ -606,7 +611,20 @@ const createLocalAudio = (data: any) => {
         .then((result: any) => {
           if (result.result === 200) {
             resolve(result.data);
-            $useRouter.push("/play");
+            if(isPlay){
+              $useRouter.push({
+                name: "play",
+                query: result.data,
+              });
+            }else {
+              $useRouter.push("/play");
+            }
+          } else {
+            proxy.$message({
+              type: "error",
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              grouping: true,
+            });
           }
         });
     } else {
@@ -615,14 +633,27 @@ const createLocalAudio = (data: any) => {
         .then((result: any) => {
           if (result.result === 200) {
             resolve(result.data);
-            $useRouter.push("/play");
+            if(isPlay){
+              $useRouter.push({
+                name: "play",
+                query: result.data,
+              });
+            }else {
+              $useRouter.push("/play");
+            }
+          } else {
+            proxy.$message({
+              type: "error",
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              grouping: true,
+            });
           }
         });
     }
   });
 };
 // 远程播放
-const createRemteTask = (data: any) => {
+const createRemteTask = (data: any,isPlay?: boolean) => {
   return new Promise((resolve, reject) => {
     if (ruleForm.medias.length === 0 && ruleForm.medias_groups.length === 0)
       return proxy.$message({
@@ -651,7 +682,20 @@ const createRemteTask = (data: any) => {
         .then((result: any) => {
           if (result.result === 200) {
             resolve(result.data);
-            // $useRouter.push("/play");
+            if(isPlay){
+              $useRouter.push({
+                name: "play",
+                query: result.data,
+              });
+            }else {
+              $useRouter.push("/play");
+            }
+          } else {
+            proxy.$message({
+              type: "error",
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              grouping: true,
+            });
           }
         });
     } else {
@@ -665,14 +709,27 @@ const createRemteTask = (data: any) => {
         .then((result: any) => {
           if (result.result === 200) {
             resolve(result.data);
-            // $useRouter.push("/play");
+            if(isPlay){
+              $useRouter.push({
+                name: "play",
+                query: result.data,
+              });
+            }else {
+              $useRouter.push("/play");
+            }
+          } else {
+            proxy.$message({
+              type: "error",
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              grouping: true,
+            });
           }
         });
     }
   });
 };
 // 文本播放
-const createTxstPlay = (data: any) => {
+const createTxstPlay = (data: any, isPlay?: boolean) => {
   return new Promise((resolve, reject) => {
     if (tsctFormData.value.is_txt && tsctFormData.value.txtpath === "")
       return proxy.$message({
@@ -705,7 +762,20 @@ const createTxstPlay = (data: any) => {
         .then((result: any) => {
           if (result.result === 200) {
             resolve(result.data);
-            $useRouter.push("/play");
+            if(isPlay){
+              $useRouter.push({
+                name: "play",
+                query: result.data,
+              });
+            }else {
+              $useRouter.push("/play");
+            }
+          } else {
+            proxy.$message({
+              type: "error",
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              grouping: true,
+            });
           }
         });
     } else {
@@ -719,14 +789,27 @@ const createTxstPlay = (data: any) => {
         .then((result: any) => {
           if (result.result === 200) {
             resolve(result.data);
-            $useRouter.push("/play");
+            if(isPlay){
+              $useRouter.push({
+                name: "play",
+                query: result.data,
+              });
+            }else {
+              $useRouter.push("/play");
+            }
+          } else {
+            proxy.$message({
+              type: "error",
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              grouping: true,
+            });
           }
         });
     }
   });
 };
 // 音源采集
-const createSoundSourceCollection = (data: any) => {
+const createSoundSourceCollection = (data: any, isPlay?: boolean) => {
   return new Promise((resolve, reject) => {
     let fromData: any = {
       audioQuality: sourAcquisiFrom.value.audioQuality,
@@ -743,7 +826,10 @@ const createSoundSourceCollection = (data: any) => {
           message: proxy.$t("Please select a sound card"),
           grouping: true,
         });
-      if (sourAcquisiFrom.value.record && sourAcquisiFrom.value.recordpath === "")
+      if (
+        sourAcquisiFrom.value.record &&
+        sourAcquisiFrom.value.recordpath === ""
+      )
         return proxy.$message({
           type: "warning",
           message: proxy.$t("Please select the recording saving path"),
@@ -753,7 +839,10 @@ const createSoundSourceCollection = (data: any) => {
       fromData["record"] = sourAcquisiFrom.value.record;
       fromData["recordpath"] = sourAcquisiFrom.value.recordpath;
     } else {
-      if (sourAcquisiFrom.value.selectVal === "" || !sourAcquisiFrom.value.selectVal.id)
+      if (
+        sourAcquisiFrom.value.selectVal === "" ||
+        !sourAcquisiFrom.value.selectVal.id
+      )
         return proxy.$message({
           type: "warning",
           message: proxy.$t("Please select the acquisition terminal"),
@@ -783,14 +872,40 @@ const createSoundSourceCollection = (data: any) => {
         .then((result: any) => {
           if (result.result === 200) {
             resolve(result.data);
-            $useRouter.push("/play");
+            if(isPlay){
+              $useRouter.push({
+                name: "play",
+                query: result.data,
+              });
+            }else {
+              $useRouter.push("/play");
+            }
+          } else {
+            proxy.$message({
+              type: "error",
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              grouping: true,
+            });
           }
         });
     } else {
       proxy.$http1.post("/task", submitFrom).then((result: any) => {
         if (result.result === 200) {
           resolve(result.data);
-          $useRouter.push("/play");
+          if(isPlay){
+              $useRouter.push({
+                name: "play",
+                query: result.data,
+              });
+            }else {
+              $useRouter.push("/play");
+            }
+        } else {
+          proxy.$message({
+              type: "error",
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              grouping: true,
+            });
         }
       });
     }

@@ -1117,5 +1117,6 @@
   "This user cannot modify the username": "This user cannot modify the username",
   "terminal/username": "terminal/username",
   "The color should not be too light": "The color should not be too light",
-  "User name or pwd change": "Username or password has been modified, please log in again"
+  "User name or pwd change": "Username or password has been modified, please log in again",
+  "Task name already exists": "Task name already exists"
 }
