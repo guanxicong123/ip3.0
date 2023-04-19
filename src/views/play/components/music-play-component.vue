@@ -128,7 +128,7 @@ watch([tableData, props.fileList], () => {
   });
   duration.value = usePublicMethod.convertSongDuration(timeDuration);
 });
-watch([ruleForm, duration], () => {
+watch([ruleForm, duration], ([,],[,oldDuration]) => {
   let data;
   if (ruleForm.play_model !== 0 && ruleForm.type !== 1) {
     data = {
@@ -142,6 +142,10 @@ watch([ruleForm, duration], () => {
     };
   }
   emit("requestDispose", data);
+  // 判断当前显示时间是否与上一次媒体选中的时间一致，或者 是否是第一次进入添加任务界面。
+  if(ruleForm.life_time === oldDuration){
+      ruleForm.life_time = duration.value
+    }
 });
 
 const handleSelectionChange = (val: any) => {

@@ -116,7 +116,7 @@ const mediaGroupsNum = ref(0); //以选媒体文件夹数量
 const duration = ref(0); //持续时间
 const playmodelOptions = useFormatMap.playModelOption;
 
-watch([ruleForm, duration], () => {
+watch([ruleForm, duration], ([,],[,oldDuration]) => {
   let data: any = {
     play_model: ruleForm.play_model,
   };
@@ -124,13 +124,16 @@ watch([ruleForm, duration], () => {
     data["play_number"] = ruleForm.play_number;
   } else {
     data["life_time"] =
-      ruleForm.play_model === 0
+    ruleForm.play_model === 0
         ? usePublicMethod.convertSongDuration(duration.value)
         : ruleForm.life_time;
+    // 判断当前显示时间是否与上一次媒体选中的时间一致，或者 是否是第一次进入添加任务界面。
+    if(ruleForm.life_time === usePublicMethod.convertSongDuration(oldDuration)){
+      ruleForm.life_time = usePublicMethod.convertSongDuration(duration.value)
+    }
   }
   emit("requestDispose", data);
 });
-
 watch(
   () => props.soundSource,
   () => {
@@ -166,7 +169,7 @@ onMounted(() => {
     data = {
       play_model: ruleForm.play_model,
       life_time:
-        ruleForm.play_model === 0
+      ruleForm.play_model === 0
           ? usePublicMethod.convertSongDuration(duration.value)
           : ruleForm.life_time,
     };
