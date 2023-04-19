@@ -145,31 +145,7 @@ const requestFunction = (actionCode: string) => {
   baseParams.data = {};
   return send(baseParams);
 };
-// 发起远程音乐播放任务
-const startRemotePlay = (row: any, playMediaName?: string) => {
-  if (
-    getStore.usePlayStore().playTaskStaging.includes(row.TaskID) &&
-    row.RemoteType !== "manual_alarm"
-  ) {
-    const data = {
-      company: "BL",
-      actioncode: "c2ms_control_task",
-      token: "",
-      data: {
-        TaskID: row.TaskID,
-        ControlCode: "play",
-        ControlValue: playMediaName || "",
-      },
-      result: 0,
-      return_message: "",
-    };
-    send(data);
-    getStore.usePlayStore().changePlayTaskStaging({
-      key: "del",
-      value: row.TaskID,
-    });
-  }
-};
+
 // 登录
 const login = () => {
   const data = loginData;
