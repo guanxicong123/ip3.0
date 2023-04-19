@@ -547,7 +547,7 @@ const createQuickSou = (data: any,isPlay?: boolean) => {
           } else {
             proxy.$message({
               type: "error",
-              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Name already exists"):proxy.$t(result.data.message),
               grouping: true,
             });
           }
@@ -574,7 +574,7 @@ const createQuickSou = (data: any,isPlay?: boolean) => {
           } else {
             proxy.$message({
               type: "error",
-              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Name already exists"):proxy.$t(result.data.message),
               grouping: true,
             });
           }
@@ -622,7 +622,7 @@ const createLocalAudio = (data: any,isPlay?: boolean) => {
           } else {
             proxy.$message({
               type: "error",
-              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Name already exists"):proxy.$t(result.data.message),
               grouping: true,
             });
           }
@@ -644,7 +644,7 @@ const createLocalAudio = (data: any,isPlay?: boolean) => {
           } else {
             proxy.$message({
               type: "error",
-              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Name already exists"):proxy.$t(result.data.message),
               grouping: true,
             });
           }
@@ -693,7 +693,7 @@ const createRemteTask = (data: any,isPlay?: boolean) => {
           } else {
             proxy.$message({
               type: "error",
-              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Name already exists"):proxy.$t(result.data.message),
               grouping: true,
             });
           }
@@ -720,7 +720,7 @@ const createRemteTask = (data: any,isPlay?: boolean) => {
           } else {
             proxy.$message({
               type: "error",
-              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Name already exists"):proxy.$t(result.data.message),
               grouping: true,
             });
           }
@@ -773,7 +773,7 @@ const createTxstPlay = (data: any, isPlay?: boolean) => {
           } else {
             proxy.$message({
               type: "error",
-              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Name already exists"):proxy.$t(result.data.message),
               grouping: true,
             });
           }
@@ -800,7 +800,7 @@ const createTxstPlay = (data: any, isPlay?: boolean) => {
           } else {
             proxy.$message({
               type: "error",
-              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Name already exists"):proxy.$t(result.data.message),
               grouping: true,
             });
           }
@@ -883,7 +883,7 @@ const createSoundSourceCollection = (data: any, isPlay?: boolean) => {
           } else {
             proxy.$message({
               type: "error",
-              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Name already exists"):proxy.$t(result.data.message),
               grouping: true,
             });
           }
@@ -903,7 +903,7 @@ const createSoundSourceCollection = (data: any, isPlay?: boolean) => {
         } else {
           proxy.$message({
               type: "error",
-              message: result.data.message === '任务名称已存在.'?proxy.$t("Task name already exists"):proxy.$t(result.data.message),
+              message: result.data.message === '任务名称已存在.'?proxy.$t("Name already exists"):proxy.$t(result.data.message),
               grouping: true,
             });
         }
