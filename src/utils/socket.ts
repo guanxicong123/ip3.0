@@ -146,7 +146,7 @@ const requestFunction = (actionCode: string) => {
   return send(baseParams);
 };
 // 发起远程音乐播放任务
-const startRemotePlay = (row: any,playMediaName?:string) => {
+const startRemotePlay = (row: any, playMediaName?: string) => {
   if (
     getStore.usePlayStore().playTaskStaging.includes(row.TaskID) &&
     row.RemoteType !== "manual_alarm"
@@ -158,7 +158,7 @@ const startRemotePlay = (row: any,playMediaName?:string) => {
       data: {
         TaskID: row.TaskID,
         ControlCode: "play",
-        ControlValue: playMediaName || '',
+        ControlValue: playMediaName || "",
       },
       result: 0,
       return_message: "",
@@ -219,6 +219,13 @@ const handlerMsg = (msg: any) => {
     [
       "broadcast_studio_update",
       () => {
+        getStore.usePlayStore().setIsLatestTaskStatus(false);
+      },
+    ],
+    [
+      "system_priority_update",
+      () => {
+        getStore.useSystemStore().getPrioritySetting();
         getStore.usePlayStore().setIsLatestTaskStatus(false);
       },
     ],
