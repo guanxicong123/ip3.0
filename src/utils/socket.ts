@@ -1,6 +1,7 @@
 import { ElMessage, ElNotification, ElLoading } from "element-plus";
 import i18n from "@/utils/language";
 import router from "../router";
+import { Md5 } from "ts-md5";
 
 const $t: any = i18n.global;
 
@@ -148,7 +149,7 @@ const requestFunction = (actionCode: string) => {
 
 // 登录
 const login = () => {
-  const data = loginData;
+  const data = { ...loginData };
   const myDate = new Date();
   const a = myDate.getFullYear();
   const b = myDate.getMonth() + 1;
@@ -157,6 +158,9 @@ const login = () => {
   const e = myDate.getMinutes();
   const f = myDate.getSeconds();
   data.data.LoginTime = a + "-" + b + "-" + c + " " + d + ":" + e + ":" + f;
+  data.data.Password = Md5.hashStr(
+    Md5.hashStr(data.data.Password) + `${f}${c}${d}`
+  );
   send(data);
 };
 const handlerMsg = (msg: any) => {
