@@ -152,11 +152,11 @@ const login = () => {
   const data = { ...loginData };
   const myDate = new Date();
   const a = myDate.getFullYear();
-  const b = myDate.getMonth() + 1;
-  const c = myDate.getDate();
-  const d = myDate.getHours();
-  const e = myDate.getMinutes();
-  const f = myDate.getSeconds();
+  const b = (myDate.getMonth() + 1).toString().padStart(2, "0");
+  const c = myDate.getDate().toString().padStart(2, "0");
+  const d = myDate.getHours().toString().padStart(2, "0");
+  const e = myDate.getMinutes().toString().padStart(2, "0");
+  const f = myDate.getSeconds().toString().padStart(2, "0");
   data.data.LoginTime = a + "-" + b + "-" + c + " " + d + ":" + e + ":" + f;
   data.data.Password = Md5.hashStr(
     Md5.hashStr(data.data.Password) + `${f}${c}${d}`
