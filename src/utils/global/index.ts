@@ -311,6 +311,18 @@ const usePublicMethod = {
       fn();
     }, wait);
   },
+  throttle(fn: () => void, wait: number | undefined) {
+    return (function () {
+      if (!$timer) {
+        fn();
+      }
+      clearTimeout($timer);
+      $timer = setTimeout(() => {
+        clearTimeout($timer);
+        $timer = null;
+      }, wait);
+    })();
+  },
 };
 
 export default usePublicMethod;

@@ -592,6 +592,8 @@ const handleStopTask = (row: any) => {
 };
 // 暂停任务
 const handlePauseTask = (row: any) => {
+  console.log('暂停任务');
+  
   if (row.TaskID) {
     let data = {
       company: "BL",
@@ -610,98 +612,103 @@ const handlePauseTask = (row: any) => {
 };
 // 播放任务
 const handlePlayTask = (row: any, isOnlyPlay = false) => {
-  if (row.TaskID && !isOnlyPlay) {
-    // 当任务存在，而又是需要实现播放的任务
-    let data = {
-      company: "BL",
-      actioncode: "c2ms_control_task",
-      token: "",
-      data: {
-        TaskID: row.TaskID,
-        ControlCode: "resume", //resume
-        ControlValue: "",
-      },
-      result: 0,
-      return_message: "",
-    };
-    send(data);
-    return;
-  }
-  // 若传入的row中没有TaskID 而是任务列表中的row，判断任务是否在执行，
-  if (
-    isOnlyPlay &&
-    handleDecideStatus(row, Object.values(Object.values(session.allSessionObj)))
-  ) {
-    return;
-  }
-  // 远程任务
-  if (row.type < 10) {
-    proxy.$http
-      .get("/details/" + row.id, {
-        params: {
-          tag: "BroadcastingStudio",
-          withMedias: true,
-          withFastSound: true,
-          withFastTerminal: true,
-          withTerminal: true,
+  const func = () => {
+    if (row.TaskID && !isOnlyPlay) {
+      // 当任务存在，而又是需要实现播放的任务
+      let data = {
+        company: "BL",
+        actioncode: "c2ms_control_task",
+        token: "",
+        data: {
+          TaskID: row.TaskID,
+          ControlCode: "resume", //resume
+          ControlValue: "",
         },
-      })
-      .then((result: any) => {
-        let row = result.data;
-        let TaskProp: any = handleTaskAttribute(row);
-        if (row.terminalsIds.length === 0)
-          return proxy.$message({
-            type: "warning",
-            message: proxy.$t("No play terminal"),
-            grouping: true,
-          });
-        if (TaskProp?.TaskAudioType) {
-          let TaskID = usePublicMethod.generateUUID();
-          let TaskType = handleTaskTypeMap(row);
-          let data = {
-            company: "BL",
-            actioncode: "c2ms_create_server_task",
-            data: {
-              EndPointsAdditionalProp: {},
-              EndPointList: row.terminalsIds, //终端ID合集
-              TaskID: TaskID, //UUID
-              TaskName: row.name, //任务名称
-              Priority: row.priority, //优先级
-              Volume: row.volume, //音量
-              TaskType: TaskType, //任务类型
-              UserID: localStorage.get("LoginUserID"), // 操作用户id
-              TaskProp: TaskProp,
-            },
-          };
-          if (TaskType === 15) {
-            storePlay.changePlayTaskStaging({
-              key: "add",
-              value: TaskID,
-            });
-          }
-          send(data);
-        }
-      });
-  } else {
-    // 本地任务
-    let data = {
-      company: "BL",
-      actioncode: "c2ms_create_local_task",
-      data: {
-        TaskID: row.taskid,
-        FirstIndex: 0, // 固定打开第一首
-      },
-      result: 0,
-      return_message: "",
-    };
-    if (row.type === 10) {
-      storePlay.changePlayTaskStaging({
-        key: "add",
-        value: row.taskid,
-      });
+        result: 0,
+        return_message: "",
+      };
+      send(data);
+      return;
     }
-    send(data);
+    // 若传入的row中没有TaskID 而是任务列表中的row，判断任务是否在执行，
+    if (
+      isOnlyPlay &&
+      handleDecideStatus(row, Object.values(Object.values(session.allSessionObj)))
+    ) {
+      return;
+    }
+    // 远程任务
+    if (row.type < 10) {
+      proxy.$http
+        .get("/details/" + row.id, {
+          params: {
+            tag: "BroadcastingStudio",
+            withMedias: true,
+            withFastSound: true,
+            withFastTerminal: true,
+            withTerminal: true,
+          },
+        })
+        .then((result: any) => {
+          let row = result.data;
+          let TaskProp: any = handleTaskAttribute(row);
+          if (row.terminalsIds.length === 0)
+            return proxy.$message({
+              type: "warning",
+              message: proxy.$t("No play terminal"),
+              grouping: true,
+            });
+          if (TaskProp?.TaskAudioType) {
+            let TaskID = usePublicMethod.generateUUID();
+            let TaskType = handleTaskTypeMap(row);
+            let data = {
+              company: "BL",
+              actioncode: "c2ms_create_server_task",
+              data: {
+                EndPointsAdditionalProp: {},
+                EndPointList: row.terminalsIds, //终端ID合集
+                TaskID: TaskID, //UUID
+                TaskName: row.name, //任务名称
+                Priority: row.priority, //优先级
+                Volume: row.volume, //音量
+                TaskType: TaskType, //任务类型
+                UserID: localStorage.get("LoginUserID"), // 操作用户id
+                TaskProp: TaskProp,
+              },
+            };
+            if (TaskType === 15) {
+              storePlay.changePlayTaskStaging({
+                key: "add",
+                value: TaskID,
+              });
+            }
+            send(data);
+          }
+        });
+    } else {
+      // 本地任务
+      let data = {
+        company: "BL",
+        actioncode: "c2ms_create_local_task",
+        data: {
+          TaskID: row.taskid,
+          FirstIndex: 0, // 固定打开第一首
+        },
+        result: 0,
+        return_message: "",
+      };
+      if (row.type === 10) {
+        storePlay.changePlayTaskStaging({
+          key: "add",
+          value: row.taskid,
+        });
+      }
+      send(data);
+    }
   }
+  usePublicMethod.throttle(() => {
+      func();
+    },1000)
 };
 // 切换任务状态
 const handleSwitchTask = (row: any, type: string) => {
