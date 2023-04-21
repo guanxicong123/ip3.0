@@ -264,7 +264,7 @@ const form = reactive<any>({
   speaker_terminal: "", // 主讲终端
   speakerTerminalOptions: [],
   terminalStatusOptions: useFormatMap.terminalStatusOptions,
-  volume: sessionsData_NonAlarm.value[0]?.TaskVolume || 0, // 音量
+  volume: sessionsData_NonAlarm.value[0]?.TaskVolume || terminals.deviceStatusVolume || 0, // 音量
   view_value: "list",
   select_terminal: "3x6",
   loading: false, // 等待加载数据状态
@@ -565,7 +565,7 @@ const functronButtonTask = (type: number) => {
       });
     }
     // 监听任务只能为空闲终端,主讲终端与接收终端都嘚是空闲状态
-    if(allTerminalsObj.value[currentTableRow.EndPointID].Status !== 1 || allTerminalsObj.value[filter_initiator_terminals[0]].Status !== 1){
+    if(allTerminalsObj.value[currentTableRow.EndPointID]?.Status !== 1 || allTerminalsObj.value[filter_initiator_terminals[0]].Status !== 1){
       startButton.value.status = false;
       return proxy.$message({
         type:'warning',
@@ -851,6 +851,7 @@ const handleGetDefaultRouter = () => {
 };
 // 处理 音量的改变
 const hadnleChangeVolume = (volume:any)=>{
+  terminals.setDeviceStatusVolume(volume)
   if(sessionsData_NonAlarm.value.length){
     let data = {
       company: "BL",
@@ -917,7 +918,7 @@ watch(
 );
 // 任务复现时候，为声音重新赋值
 watch(sessionsData,(newVal:any)=>{
-  form.volume = newVal[0]?.TaskVolume || form.volume
+  form.volume = newVal[0]?.TaskVolume || terminals.deviceStatusVolume
 })
 
 // mounted 实例挂载完成后被调用
