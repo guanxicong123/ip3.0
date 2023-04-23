@@ -1117,5 +1117,6 @@
   "This user cannot modify the username": "该用户不能修改用户名",
   "terminal/username": "终端/用户名",
   "The color should not be too light": "颜色不能太浅",
-  "User name or pwd change": "用户名或密码已经被修改，请重新登录"
+  "User name or pwd change": "用户名或密码已经被修改，请重新登录",
+  "Account disabled": "账号已禁用"
 }
