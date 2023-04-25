@@ -710,6 +710,22 @@ const handleTabClick = (tab: TabsPaneContext) => {
     emit("requestType", tab.paneName);
     form.sound_source.type =
       tab.paneName != 4 ? Number(tab.paneName) : form.old_sound_source_data.type;
+    // 编辑时，切换快捷音源和音乐播放的持续时间显示
+    if (tab.paneName == 4) {
+      // 是否含有length字段
+      const isHasLength = Object.prototype.hasOwnProperty.call(
+        form.old_sound_source_data,
+        "length"
+      );
+      form.fase_life_time = usePublicMethod.convertSongDuration(
+        isHasLength
+          ? form.old_sound_source_data.length
+          : parentData.responseFastSoundSource.length
+      );
+    }
+    if (tab.paneName == 1) {
+      form.life_time = usePublicMethod.convertSongDuration(form.totalSecond);
+    }
   }
   if (tab.paneName !== 4) {
     emit("requestSoundSourceID", 0);
