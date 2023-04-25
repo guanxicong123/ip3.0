@@ -343,22 +343,6 @@ const rules = reactive({
   name: [{ validator: validateName, trigger: "blur" }],
 });
 
-watch(fileList, (newVal: any) => {
-  setTimeout(() => {
-    let dataPatch: any[] = ruleForm.content.map((item: any) => {
-      return item.path;
-    });
-    newVal.forEach((item: any) => {
-      if (!dataPatch.includes(item.raw.path)) {
-        ruleForm.content.push({
-          name: item.name,
-          path: item.raw.path,
-          time: item.time,
-        });
-      }
-    });
-  }, 300);
-});
 // 删除选中音频
 const deteleSelectMusic = () => {
   let dataPatch: any[] = musicSelect.value.map((item: any) => {
@@ -384,6 +368,8 @@ const deteleOneMusic = (row: any) => {
 const uploadChange: UploadProps["onChange"] = (uploadFile: any) => {
   getTimes(uploadFile);
 };
+// 时长返回后，再次触发
+const getTime = ref(0);
 // 获取文件时长
 const getTimes = (file: any) => {
   var content = file.raw;
@@ -392,11 +378,29 @@ const getTimes = (file: any) => {
   //经测试，发现audio也可获取视频的时长
   var audioElement = new Audio(url);
   file["time"] = 0;
-  audioElement.addEventListener("loadedmetadata", () => {
+  audioElement.addEventListener("durationchange", () => {
     let data = audioElement.duration;
     file["time"] = parseInt(data.toString());
+    getTime.value ++
   });
 };
+watch(getTime, () => {
+    const dataPatch: any= {}
+    ruleForm.content.map((item: any, index:number) => {
+      dataPatch[item.path] = index + 1 // 消除0的可能
+    })
+    fileList.value?.forEach((item: any) => {
+      if (!dataPatch[item.raw.path]) {
+        ruleForm.content.push({
+          name: item.name,
+          path: item.raw.path,
+          time: item.time,
+        });
+      } else {
+        ruleForm.content[dataPatch[item.raw.path] - 1].time = item.time
+      }
+    });
+});
 // 选择的快捷音源配置
 const requestSoundSource = (data: any) => {
   typePriorityNum.value = data.type;
