@@ -273,7 +273,7 @@
                       @click.stop="handleEditTask(scope.row)"
                     >
                       <template #icon>
-                        <i class="iconfont icon-edit" :title="$t('Edit')"></i>
+                        <i class="iconfont icon-edit " :class="{'disabled':handleDecideStatus(scope.row)}" :title="$t('Edit')"></i>
                       </template>
                     </el-button>
                     <el-button
