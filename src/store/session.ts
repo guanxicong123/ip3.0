@@ -10,8 +10,9 @@ interface SessionParams<T = any> {
   taskType: number;
   searchString: string;
   waitExecutedMap: any;
+  allLocalSessionsObj: any;
 }
-
+import { send } from "@/utils/socket";
 export const useSessionStore = defineStore({
   id: "session",
   state: (): SessionParams => {
@@ -27,6 +28,7 @@ export const useSessionStore = defineStore({
       taskType: 0, // 任务类型
       searchString: "", // 搜索字段
       waitExecutedMap: {}, // 待任务创建后触发的事件映射表
+      allLocalSessionsObj: {}, // 所有本地会话
     };
   },
   actions: {
@@ -35,6 +37,13 @@ export const useSessionStore = defineStore({
       for (let index = 0; index < data.length; index++) {
         const item = data[index];
         item.searchString = "";
+        // 声卡采集 & 音乐播放
+        if (
+          (item.TaskType === 15 && item.RemoteTaskID === 0) ||
+          item.TaskType === 13
+        ) {
+          this.allLocalSessionsObj[item.TaskID] = item;
+        }
         if (Array.isArray(item.EndPointList)) {
           item.EndPointListArray = item.EndPointList;
           item.searchString += item.TaskName;
@@ -46,7 +55,7 @@ export const useSessionStore = defineStore({
           item.EndPointListArray = [];
         }
         this.allSessionObj[item.TaskID] = item;
-        this.executedWaitEvent(item.TaskID)
+        this.executedWaitEvent(item.TaskID);
       }
     },
     // 设置任务类型
@@ -138,6 +147,9 @@ export const useSessionStore = defineStore({
       if (Object.prototype.hasOwnProperty.call(data, "TaskID")) {
         delete this.allSessionObj[data.TaskID];
       }
+      if (Object.prototype.hasOwnProperty.call(data, "TaskID")) {
+        delete this.allLocalSessionsObj[data.TaskID];
+      }
       this.onePageSession = this.onePageSession.filter((item) => {
         if (Object.prototype.hasOwnProperty.call(item, "TaskID")) {
           return data.TaskID !== item.TaskID;
@@ -158,23 +170,43 @@ export const useSessionStore = defineStore({
       this.onePageSession = [];
       this.allFilterSession = [];
       this.sessionsLocalKey = [];
+      this.allLocalSessionsObj = [];
     },
     // 执行 待执行事件
-    executedWaitEvent(TaskID : string) {
-      if(this.waitExecutedMap[TaskID]){
-        this.waitExecutedMap[TaskID].map((cb:any)=>{
-          cb()
-        })
-        delete this.waitExecutedMap[TaskID]
+    executedWaitEvent(TaskID: string) {
+      if (this.waitExecutedMap[TaskID]) {
+        this.waitExecutedMap[TaskID].map((cb: any) => {
+          cb();
+        });
+        delete this.waitExecutedMap[TaskID];
       }
     },
     // 添加 待执行事件
-    addWaitExecutionEvent(TaskID : string, cb : any){
-      const events = this.waitExecutedMap[TaskID] || []
-      events.push(cb)
-      this.waitExecutedMap[TaskID] = events
+    addWaitExecutionEvent(TaskID: string, cb: any) {
+      const events = this.waitExecutedMap[TaskID] || [];
+      events.push(cb);
+      this.waitExecutedMap[TaskID] = events;
     },
-    
-
+    stopLocalSessionTask() {
+      const data = {
+        company: "BL",
+        actioncode: "c2ms_stop_task",
+        token: "",
+        data: {
+          TaskID: "",
+        },
+        result: 0,
+        return_message: "",
+      };
+      Object.keys(this.allLocalSessionsObj).map((TaskID: string) => {
+        data.data.TaskID = TaskID;
+        send(data);
+      });
+      return new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        }, 500);
+      });
+    },
   },
 });

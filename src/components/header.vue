@@ -226,15 +226,6 @@ const handleSignOut = () => {
 };
 // 退出登录
 const handleLogOut = () => {
-  let data = {
-    company: "BL",
-    actioncode: "c2ms_user_logout",
-    token: "",
-    data: {},
-    result: 0,
-    return_message: "",
-  };
-  send(data);
   usePublicMethod.signOut();
 };
 // 获取账号信息

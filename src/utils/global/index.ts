@@ -1,9 +1,19 @@
 import router from "@/router";
-
+import { send } from "@/utils/socket";
 let $timer: any = null;
 const usePublicMethod = {
   // 退出登录
-  signOut() {
+  async signOut() {
+    const data = {
+      company: "BL",
+      actioncode: "c2ms_user_logout",
+      token: "",
+      data: {},
+      result: 0,
+      return_message: "",
+    };
+    await getStore.useSessionStore().stopLocalSessionTask();
+    send(data);
     router.push("/");
     localStorage.remove("userToken");
     localStorage.remove("tokenExpireMonitor");
