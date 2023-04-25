@@ -45,7 +45,6 @@ export const usePlayStore = defineStore({
     },
     setIsLatestTaskStatus(flog: boolean) {
       this.isLatestTaskStatus = flog;
-      console.log(this.isLatestTaskStatus, "不是最新的任务列表了");
     },
     setIsLatestTaskDetail(flog: boolean) {
       this.isLatestTaskDetail = flog;
