@@ -5,6 +5,7 @@ export interface playState {
   playTaskStaging: Array<any>;
   isLatestTaskStatus: boolean;
   isLatestTaskDetail: boolean;
+  changeTaskVolume: boolean;
 }
 export const usePlayStore = defineStore({
   id: "play_center",
@@ -15,6 +16,7 @@ export const usePlayStore = defineStore({
     playTaskStaging: [], //用于储存
     isLatestTaskStatus: true, // 当前是否为最新的任务列表
     isLatestTaskDetail: true, // 当前是否为最新的任务详情
+    changeTaskVolume: true, // 改变任务音量
   }),
   actions: {
     setPlayVoice(data: any) {
@@ -47,6 +49,9 @@ export const usePlayStore = defineStore({
     },
     setIsLatestTaskDetail(flog: boolean) {
       this.isLatestTaskDetail = flog;
+    },
+    setChangeTaskVolume(flog: boolean) {
+      this.changeTaskVolume = flog;
     },
   },
 });

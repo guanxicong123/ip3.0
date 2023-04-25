@@ -313,7 +313,7 @@
     <quick-terminal-dialog
       v-model:dialogVisible="terminaDialogVisible"
       :seleQuickTerminal="taskDataDetailed.fast_terminal"
-      @handleSelectedConfigure="handleSelectedConfigure"
+      @handleSelectedConfigure="handleSelectedTerminals"
     >
     </quick-terminal-dialog>
     <terminals-select-dialog
@@ -335,7 +335,8 @@ import terminalsSelectDialog from "../dialogComponents/terminals-select-dialog.v
 import { UploadProps } from "element-plus";
 import { send } from "@/utils/socket";
 import usePublicMethod from "@/utils/global/index";
-
+import {handleExecuteTaskTerminalsChange} from "../components/playUtil"
+import { log } from "console";
 // defineAsyncComponent 异步组件-懒加载子组件
 const acquisitionDeviceComponent = defineAsyncComponent(
   () => import("../components/acquisition-device-component.vue")
@@ -343,7 +344,7 @@ const acquisitionDeviceComponent = defineAsyncComponent(
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
-
+const emit = defineEmits(['changeTaskVolume'])
 const props: any = defineProps({
   selectTaskData: Object,
   playCenterData: Object,
@@ -402,6 +403,10 @@ const musicsNumber = computed(() => {
 const isLatestTaskDetail: any = computed(() => {
   return storePlay.isLatestTaskDetail;
 });
+// 改变任务音量
+const changeTaskVolume: any = computed(() => {
+  return storePlay.changeTaskVolume;
+});
 const allTerminalsObj: any = computed(() => {
   return getStore.useTerminalsStore().allTerminalsObj;
 });
@@ -442,9 +447,10 @@ const changeTerminalVolume = (data: any) => {
   };
   send(send_data);
 };
-const editTaskDetail = (taskDetail: any) => {
+// 处理改变当前任务任务音量
+const handleChangeTaskVolume = (taskDetail: any) => {
   // 1. 发一个改变任务音量，c2ms_set_task_volume ；在/play/index.vue 音量条改变就发送，
-  // 2. 发一个改变终端音量，c2ms_set_terminal_volume
+  // 2. 发一个改变终端音量，c2ms_set_terminal_volume(只是修改任务音量，既能修改终端音量，这个在分控端做了)
   let changeTerminalVolumeData = {
     EndPointID: taskTerminalAll.value.map((item: any) => {
       return item.id;
@@ -461,9 +467,9 @@ const editTaskDetail = (taskDetail: any) => {
     editRemteTask(taskDetail);
   }
 };
-watch(isLatestTaskDetail, (newVal: any) => {
+watch(changeTaskVolume, (newVal: any) => {
   if (!newVal) {
-    editTaskDetail(taskDataDetailed.value);
+    handleChangeTaskVolume(taskDataDetailed.value);
   }
 });
 watch(
@@ -762,20 +768,7 @@ const requestSoundSource = (data: any) => {
   ruleForm.fast_sound_id = data.id;
   delete soundSourceForm.value.id;
 };
-// 选择快捷终端配置
-const handleSelectedConfigure = (data: any) => {
-  taskDataDetailed.value.fast_terminals_id = data.id;
-  if (ruleForm.type < 10) {
-    handleRemoteTasks().then(() => {
-      handleChangeTaskTerminals();
-    });
-  } else {
-    handleLocalTaskTermina().then(() => {
-      handleChangeTaskTerminals();
-    });
-  }
-};
-//  选择的终端/终端分组
+//  选择的终端/终端分组、快捷终端
 const handleSelectedTerminals = (data: any) => {
   let putData = {
     terminals: data.terminals,
@@ -786,96 +779,56 @@ const handleSelectedTerminals = (data: any) => {
       };
     }),
   };
-  if (ruleForm.type >= 10) {
-    if (
-      activeName.value === "region" &&
-      taskDataDetailed.value.fast_terminals_id === 0
-    ) {
-      proxy.$http1
-        .put("/task/terminal/" + props.selectTaskData.id, {
-          terminals: putData.terminals,
-          terminals_groups: putData.terminals_groups,
-        })
-        .then((result: any) => {
-          if (result.result === 200) {
-            handleChangeTaskTerminals();
-          }
+  // 当选择快捷终端
+  if(activeName.value === "region"){
+    taskDataDetailed.value.fast_terminals_id = data.id;
+    // 当为本地任务的快捷终端
+    if(ruleForm.type >= 10){
+      handleLocalTaskFastTermina().then((res:any) => {
+        if(res.result === 200){
+          // 处理终端的增减
+          handleChangeTaskTerminals();
+        }
         });
       return;
     }
-  } else {
-    proxy.$http
-      .put("/broadcasting/" + taskDataDetailed.value.id, {
-        name: taskDataDetailed.value.name,
-        priority: taskDataDetailed.value.priority,
-        volume: taskDataDetailed.value.volume,
-        play_model: taskDataDetailed.value.play_model,
-        type: taskDataDetailed.value.type,
-        fast_sound_id: taskDataDetailed.value.fast_sound_id,
-        fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
-        terminals: putData.terminals,
-        terminals_groups: putData.terminals_groups,
-        sound_source: taskDataDetailed.value.sound_source,
-        medias: taskDataDetailed.value.medias,
-        medias_groups: taskDataDetailed.value.medias_groups,
-      })
-      .then((result: any) => {
-        if (result.result === 200) {
-          editStatus.value = false;
-          handleChangeTaskTerminals();
-        }
-      });
   }
+  proxy.$http
+    .put("/broadcasting/" + taskDataDetailed.value.id, {
+      name: taskDataDetailed.value.name,
+      priority: taskDataDetailed.value.priority,
+      volume: taskDataDetailed.value.volume,
+      play_model: taskDataDetailed.value.play_model,
+      type: taskDataDetailed.value.type,
+      fast_sound_id: taskDataDetailed.value.fast_sound_id,
+      fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
+      terminals: putData.terminals,
+      terminals_groups: putData.terminals_groups,
+      sound_source: taskDataDetailed.value.sound_source,
+      medias: taskDataDetailed.value.medias,
+      medias_groups: taskDataDetailed.value.medias_groups,
+    })
+    .then((result: any) => {
+      if (result.result === 200) {
+        editStatus.value = false;
+        handleChangeTaskTerminals();
+      }
+    });
 };
 // 改变任务终端
 const handleChangeTaskTerminals = () => {
+  // 旧的终端信息，获取新数据前
+  const oldTerminals = taskDataDetailed.value.terminalsIds;
   handleSelectionData(props.selectTaskData).then((result: any) => {
     if (props.playCenterData.TaskID) {
+      // 新的终端信息
       let newTerminals = result?.terminalsIds;
-      handleAllTerminals(newTerminals, props.playCenterData);
+      const {addTerminals} = handleExecuteTaskTerminalsChange(props.playCenterData.TaskID, result.volume, newTerminals, oldTerminals);
+      if(addTerminals){
+        emit('changeTaskVolume',props.currentVolume)
+      }
     }
   });
-};
-const handleAllTerminals = (newVal: any, oldVal: any) => {
-  let oldValData = oldVal.EndPointList.map((item: any) => {
-    return item.EndPointID;
-  });
-  // 新增数据
-  let addData = newVal.filter((item: any) => {
-    return !oldValData.includes(item);
-  });
-  // 删除数据
-  let delData = oldValData.filter((item: any) => {
-    return !newVal.includes(item);
-  });
-  if (addData.length > 0) {
-    let data = {
-      company: "BL",
-      actioncode: "c2ms_add_terminals_to_task",
-      token: "",
-      data: {
-        TaskID: props.playCenterData.TaskID,
-        EndPoints: addData,
-      },
-      result: 0,
-      return_message: "",
-    };
-    send(data);
-  }
-  if (delData.length > 0) {
-    let data = {
-      company: "BL",
-      actioncode: "c2ms_remove_terminals_from_task",
-      token: "",
-      data: {
-        TaskID: props.playCenterData.TaskID,
-        EndPoints: delData,
-      },
-      result: 0,
-      return_message: "",
-    };
-    send(data);
-  }
 };
 // 触发编辑
 const handleEditButton = () => {
@@ -893,12 +846,6 @@ const handleEditButton = () => {
     terminaSelectVisible.value = true;
     return;
   }
-  if (props.playCenterData.TaskID)
-    return proxy.$message({
-      type: "warning",
-      message: proxy.$t("Task is in progress"),
-      grouping: true,
-    });
   if (ruleForm.type === 10) {
     iconAdd.value.click();
   }
@@ -962,8 +909,11 @@ const handleEditSava = () => {
       });
   }
 };
+
 // 更新远程任务
 const handleRemoteTasks = () => {
+  console.log(props.selectTaskData,'更新远程任务');
+  
   return new Promise((resolve: any, reject: any) => {
     proxy.$http
       .put("/broadcasting/" + props.selectTaskData.id, {
@@ -989,22 +939,14 @@ const handleRemoteTasks = () => {
   });
 };
 // 更新本地任务（快捷终端修改）
-const handleLocalTaskTermina = () => {
-  return new Promise((resolve: any, reject: any) => {
-    proxy.$http1
+const handleLocalTaskFastTermina = () => {
+   return proxy.$http1
       .put(
         "/task",
         Object.assign(props.selectTaskData, {
           fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
         })
       )
-      .then((result: any) => {
-        if (result.result === 200) {
-          handleSelectionData(props.selectTaskData);
-        }
-        resolve();
-      });
-  });
 };
 // 更新本地任务（本地音频添加）
 const handleLocalTaskMusic = () => {

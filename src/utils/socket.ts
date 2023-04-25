@@ -299,7 +299,12 @@ const handlerMsg = (msg: any) => {
       getStore.usePlayStore().removeSubscriptionTask(msg.data);
       break;
     case "ms2c_set_task_volume": // 设置任务音量
-      getStore.usePlayStore().setIsLatestTaskDetail(false);
+      // getStore.usePlayStore().setIsLatestTaskDetail(false);
+      getStore.usePlayStore().setChangeTaskVolume(false);
+      break;
+    case "ms2c_add_terminals_to_task": // 设置终端音量
+      break;
+    case "ms2c_set_terminal_volume":
       break;
   }
 };

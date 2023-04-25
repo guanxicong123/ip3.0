@@ -301,6 +301,7 @@
           :selectTaskData="selectTaskData"
           :playCenterData="playCenterData"
           :currentVolume="form.volume"
+          @changeTaskVolume="handleVolumeTask"
         >
         </task-details-config>
       </div>
@@ -350,7 +351,7 @@ const playCenterShowData = computed(() => {
 // 播放器任务详情
 const playCenterData = computed(() => {
   if (playCenterShowData.value) {
-    return { ...selectTaskData.value, ...playCenterShowData.value };
+    return { ...selectTaskData.value, ...playCenterShowData.value};
   } else {
     return selectTaskData.value;
   }
@@ -592,8 +593,6 @@ const handleStopTask = (row: any) => {
 };
 // 暂停任务
 const handlePauseTask = (row: any) => {
-  console.log('暂停任务');
-  
   if (row.TaskID) {
     let data = {
       company: "BL",
@@ -895,11 +894,20 @@ const handleTaskAttribute = (row: any) => {
 };
 // 编辑播放任务
 const handleEditTask = (row: any) => {
+  const task = getCurrentPerformTask(row)
+  if(task){
+    return proxy.$message({
+      type: "warning",
+      message: proxy.$t("Task is in progress"),
+      grouping: true,
+    });
+  }
   $useRouter.push({
     path: "/play-task/" + row.id,
     query: {
       id: row.id,
       type: row.type,
+      taskId: task?.TaskID
     },
   });
 };

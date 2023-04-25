@@ -146,6 +146,7 @@
             'icon-volume-level-2': form.volume > 30 && form.volume < 61,
             'icon-volume-level-3': form.volume > 60 && form.volume < 101,
           }"
+          @click="form.volume = 0"
         ></i>
         <el-slider v-model="form.volume" @change="hadnleChangeVolume"/>
         <span>{{ form.volume }}</span>
@@ -579,6 +580,7 @@ const functronButtonTask = (type: number) => {
 };
 // 全区广播任务
 const regionalBroadcasting = (currentTableRow: any) => {
+  console.log(allTerminalsObj.value[currentTableRow.EndPointID],'allTerminalsObj[currentTableRow.EndPointID]');
   let data = terminalsStoreOnePage.value
     .filter((item: any) => {
       return item.Status !== 0 && item.EndPointID !== currentTableRow.EndPointID;
