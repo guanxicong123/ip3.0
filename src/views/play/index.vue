@@ -264,7 +264,7 @@
                       v-else
                     >
                       <template #icon>
-                        <i class="iconfont icon-play" :title="$t('Play')"></i>
+                        <i class="iconfont icon-play" :class="{'disabled':!isCanPlay(scope.row)}" :title="$t('Play')"></i>
                       </template>
                     </el-button>
                     <el-button
@@ -611,6 +611,22 @@ const handlePauseTask = (row: any) => {
 };
 // 播放任务
 const handlePlayTask = (row: any, isOnlyPlay = false) => {
+  if(row.medias_count === 0 || row.terminals_count === 0) {
+    if(row.medias_count === 0){
+      proxy.$message({
+          type: "warning",
+          message: proxy.$t("No sound source"),
+          grouping: true,
+        });
+    } else {
+      proxy.$message({
+          type: "warning",
+          message: proxy.$t("No terminal"),
+          grouping: true,
+        });
+    }
+    return;
+  } 
   const func = () => {
     if (row.TaskID && !isOnlyPlay) {
       // 当任务存在，而又是需要实现播放的任务
@@ -1004,10 +1020,37 @@ const getTaskAll = () => {
       }
       // 每次请求完最新的数据后，需要把全局的task状态设置为true
       storePlay.setIsLatestTaskStatus(true);
+      getCheckMedia()
       resolve(form.data);
     });
   });
 };
+// 是否可以播放
+const isCanPlay = (row: any) => {
+  if(row.medias_count > 0 && row.terminals_count > 0) {
+    return true;
+  } 
+  return false;
+}
+// 检测任务列表中的数据的媒体数量与终端数量
+const getCheckMedia = () => {
+  let count = Math.floor(form.data.length / 100);
+  for (let i = 0; i <= count; i++) {
+    let checkData = form.data.slice(i * 100,(i + 1) * 100).map((item:any)=>{
+      return item.id
+    })
+    proxy.$http.get('/broadcasting/check',{params: {
+      taskIds:checkData.join(','),
+      }}).then((res:any)=>{
+        if(res.result === 200){
+        res.data?.map((item:any,index:number)=>{
+          form.data[i * 100 + index].medias_count = item.medias_count
+          form.data[i * 100 + index].terminals_count = item.terminals_count
+        })
+      }
+    })
+  }
+}
 // 获取所有播放任务
 const getBroadcastingAll = () => {
   return new Promise((resolve, reject) => {
