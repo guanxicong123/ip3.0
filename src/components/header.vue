@@ -209,7 +209,17 @@ const handleMaxMin = () => {
   }
 };
 // 关闭
-const close = () => {
+const close = async () => {
+  const data = {
+      company: "BL",
+      actioncode: "c2ms_user_logout",
+      token: '',
+      data: {},
+      result: 0,
+      return_message: "",
+    };
+    await getStore.useSessionStore().stopLocalSessionTask();
+    send(data);
   window.electronAPI.send("close");
 };
 // 处理编辑账号名称弹窗的响应展示/关闭
