@@ -1,7 +1,8 @@
 "use strict";
 import path from "path";
-import { app, protocol, BrowserWindow, ipcMain, dialog, shell } from "electron";
+import { app, protocol, BrowserWindow, ipcMain, dialog } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
+import { startCarashReporter, printCrashLogPath } from "./crashReport";
 // import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 
 // TS接口-定义类型
@@ -24,7 +25,8 @@ const resetDownloadObj = () => {
     savedPath: "",
   };
 };
-
+// 开启崩溃日志收集
+startCarashReporter();
 const isDevelopment =
   process.env.NODE_ENV !== "production"
     ? "http://127.0.0.1:8010"
@@ -43,7 +45,7 @@ async function createWindow() {
     autoHideMenuBar: true, //是否隐藏菜单
     frame: false, //false为无边框窗口
     transparent: true, //使窗口 透明。 默认值为 false. 在Windows上，仅在无边框窗口下起作用。
-    icon: path.join(__dirname,'../public/icons/ip.ico'),
+    icon: path.join(__dirname, "../public/icons/ip.ico"),
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -54,6 +56,7 @@ async function createWindow() {
       webSecurity: false,
     },
   });
+  printCrashLogPath(win);
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
@@ -63,10 +66,11 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
   }
+
   // 定义calendar窗体
   let calendarWin: any = null;
   // 创建calendar窗口方法
-  const openCalendarWindow = (name:any) => {
+  const openCalendarWindow = (name: any) => {
     calendarWin = new BrowserWindow({
       width: 450,
       height: 260,
@@ -76,7 +80,7 @@ async function createWindow() {
       autoHideMenuBar: true, //是否隐藏菜单
       frame: false, //false为无边框窗口
       transparent: true, //使窗口 透明。 默认值为 false. 在Windows上，仅在无边框窗口下起作用。
-      icon: path.join(__dirname,'../public/icons/ip.ico'),
+      icon: path.join(__dirname, "../public/icons/ip.ico"),
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),
         webSecurity: false,
@@ -89,12 +93,11 @@ async function createWindow() {
     });
 
     calendarWin.on("imgUploadMsgFromMain", (event: any, message: any) => {
-      console.log(message)
-    })
-  }
-
-  ipcMain.on("register-window", (event:any,name) => {
-    if(calendarWin) return calendarWin.show()
+      console.log(message);
+    });
+  };
+  ipcMain.on("register-window", (event: any, name) => {
+    if (calendarWin) return calendarWin.show();
     openCalendarWindow(name);
   });
   // ipcMain 修改主进程，监听渲染进程的消息，并根据消息执行相应的动作
@@ -115,7 +118,7 @@ async function createWindow() {
     win.maximize();
   });
 
-   // close
+  // close
   ipcMain.on("register-close", () => {
     calendarWin.close();
   });
@@ -175,9 +178,9 @@ async function createWindow() {
       win.isMaximized()
     );
   });
-  ipcMain.on("register-success", ()=> {
-    win.webContents.send("register-success",1)
-  })
+  ipcMain.on("register-success", () => {
+    win.webContents.send("register-success", 1);
+  });
   // 监听渲染进程发出的download事件
   ipcMain.on("download", (evt, args) => {
     downloadObj.downloadPath = args.downloadPath;
@@ -294,7 +297,6 @@ app.on("window-all-closed", () => {
     app.quit();
   }
 });
-
 app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
@@ -315,7 +317,6 @@ app.on("ready", async () => {
   }
   createWindow();
 });
-
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === "win32") {

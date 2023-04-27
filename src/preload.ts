@@ -19,7 +19,7 @@ const validChannels = [
   "download-cancell",
   "download-failed",
   "register-close",
-  "register-success"
+  "register-success",
 ];
 contextBridge.exposeInMainWorld("electronAPI", {
   send: (channel: string, data?: any) => {
@@ -54,7 +54,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
     }
   },
   handleRegisterSuccess: (callback: any) => {
-    ipcRenderer.removeListener('register-success',callback)
-    ipcRenderer.on('register-success', callback)
-  }
+    ipcRenderer.removeListener("register-success", callback);
+    ipcRenderer.on("register-success", callback);
+  },
+});
+ipcRenderer.on("crash-file-path", (event, args) => {
+  console.log("渲染进程拿到数据 args");
+  console.warn("crash-file-path:", args);
 });
