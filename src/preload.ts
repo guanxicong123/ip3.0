@@ -59,6 +59,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
   },
 });
 ipcRenderer.on("crash-file-path", (event, args) => {
-  console.log("渲染进程拿到数据 args");
   console.warn("crash-file-path:", args);
 });
