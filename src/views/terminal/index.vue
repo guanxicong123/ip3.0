@@ -478,7 +478,7 @@ const functronButtonTask = (type: number) => {
   // 当前选中的主讲终端
   const currentTableRow = JSON.parse(localStorage.get("speakerTerminal")) || "";
   // 未选中主讲终端
-  if (!currentTableRow) {
+  if (!currentTableRow || !allTerminalsObj.value[currentTableRow.EndPointID]) {
     return proxy.$message({
       type:'warning',
       message:proxy.$t("Please select an idle speaker terminal"),
