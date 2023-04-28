@@ -311,6 +311,7 @@
     >
     </select-media-dialog>
     <quick-terminal-dialog
+      v-if="terminaDialogVisible"
       v-model:dialogVisible="terminaDialogVisible"
       :seleQuickTerminal="taskDataDetailed.fast_terminal"
       @handleSelectedConfigure="handleSelectedTerminals"
@@ -779,9 +780,14 @@ const handleSelectedTerminals = (data: any) => {
       };
     }),
   };
-  // 当选择快捷终端
+  // 当选择终端
   if(activeName.value === "region"){
-    taskDataDetailed.value.fast_terminals_id = data.id;
+    taskDataDetailed.value.fast_terminals_id = data.id || 0;
+    taskDataDetailed.value.terminals = putData.terminals;
+    taskDataDetailed.value.terminals_groups = putData.terminals_groups;
+    taskDataDetailed.value.terminalsIds = putData.terminals.map((item: any) => {
+      return item.terminals_id
+    });
     // 当为本地任务的快捷终端
     if(ruleForm.type >= 10){
       handleLocalTaskFastTermina().then((res:any) => {
@@ -814,6 +820,19 @@ const handleSelectedTerminals = (data: any) => {
         handleChangeTaskTerminals();
       }
     });
+};
+// 更新本地任务（快捷终端修改）
+const handleLocalTaskFastTermina = () => {
+   return proxy.$http1
+      .put(
+        "/task",
+        Object.assign(props.selectTaskData, {
+          fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
+          terminalsIds: taskDataDetailed.value.terminalsIds,
+          terminals: taskDataDetailed.value.terminals,
+          terminals_groups: taskDataDetailed.value.terminals_groups,
+        })
+      )
 };
 // 改变任务终端
 const handleChangeTaskTerminals = () => {
@@ -937,16 +956,6 @@ const handleRemoteTasks = () => {
         }
       });
   });
-};
-// 更新本地任务（快捷终端修改）
-const handleLocalTaskFastTermina = () => {
-   return proxy.$http1
-      .put(
-        "/task",
-        Object.assign(props.selectTaskData, {
-          fast_terminals_id: taskDataDetailed.value.fast_terminals_id,
-        })
-      )
 };
 // 更新本地任务（本地音频添加）
 const handleLocalTaskMusic = () => {
