@@ -374,6 +374,7 @@ const formatData = () => {
   system_configs.value.EnabledTerminalOffRingfAlert
     ? reminder_configuration.value.push("4")
     : "";
+  reminder_configuration.value = Array.from(new Set(reminder_configuration.value))
 };
 // 功能管理配置
 const saveSet = () => {
