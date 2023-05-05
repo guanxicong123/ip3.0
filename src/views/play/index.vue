@@ -1135,7 +1135,6 @@ const filterData = () => {
 watch(
   remoteTaskDisplay,
   (newVal) => {
-    newVal &&
       getTaskAll().then((formData: any) => {
         if (formData.length > 0) {
           handleSelectionClick(formData[0]);
