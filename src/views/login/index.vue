@@ -147,7 +147,7 @@
         {{ $t("Sign in") }}
       </el-button>
     </div>
-    <div class="broadcast-login-edition">V3.0.4</div>
+    <div class="broadcast-login-edition">V3.0.5</div>
   </div>
 </template>
 
@@ -283,8 +283,15 @@ const submit = () => {
 const openRegisterWindow = ()=>{
   window.electronAPI.send("register-window",'register');
 }
+// 拦截F11事件
+const onF11Event = (event:any)=>{
+  if(event.code === 'F11'){
+    event.preventDefault()
+  }
+}
 // mounted 实例挂载完成后被调用
 onMounted(() => {
+  window.addEventListener('keydown', onF11Event);
   gitRegisterStatus().then((res:any) => {
     // 未注册且不是重新登录，弹出【试用注册引导窗】
     if(!res.isRegister && !isLoginStatus.value){
@@ -302,7 +309,10 @@ onMounted(() => {
   // 获取机器码
   systemStore.getProductKey();
 });
-
+// 离开登录页面后，取消F11监听事件
+onUnmounted(()=>{
+  window.removeEventListener('keydown',onF11Event);
+})
 onBeforeUnmount(() => {
   if (isWebsocekt) {
     localStorage.set("serverIP", modelRef.server_ip_address);

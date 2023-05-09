@@ -178,6 +178,34 @@ async function createWindow() {
       win.isMaximized()
     );
   });
+  // 窗口F11的监听事件
+  // 保存全屏之前的窗口大小
+  const F11Size = {
+    width: 0,
+    height: 0,
+  };
+  // 仅适用与F11全屏操作，
+  // 当前是否为全屏状态
+  let winIsFullScreenFlog = false;
+  win.on("enter-full-screen", () => {
+    winIsFullScreenFlog = !winIsFullScreenFlog;
+    if (winIsFullScreenFlog) {
+      F11Size.width = win.getSize()[0];
+      F11Size.height = win.getSize()[1];
+    }
+    setTimeout(() => {
+      if (!winIsFullScreenFlog) {
+        win.setSimpleFullScreen(false);
+      }
+    }, 500);
+  });
+  // 通过win.setSimpleFullScreen(false)，可触发这个事件
+  win.on("leave-full-screen", () => {
+    setTimeout(() => {
+      win.setSize(F11Size.width, F11Size.height);
+      win.center();
+    });
+  });
   ipcMain.on("register-success", () => {
     win.webContents.send("register-success", 1);
   });

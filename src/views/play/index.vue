@@ -1134,7 +1134,7 @@ const filterData = () => {
 // 根据权限，再去获取任务列表数据
 watch(
   remoteTaskDisplay,
-  (newVal) => {
+  () => {
       getTaskAll().then((formData: any) => {
         if (formData.length > 0) {
           handleSelectionClick(formData[0]);
