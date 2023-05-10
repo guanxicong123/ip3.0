@@ -335,6 +335,8 @@ const getTerminalGroupAll = () => {
 
 // 处理右键事件
 const handleContextMenu = (row:any,event:any)=>{
+  // 采集终端不能作为主讲终端
+  if(row.EndPointType === 3) return 
   rightclickInfo.value = {
     position: {
       x: event.clientX,

@@ -138,7 +138,6 @@ i
 import {
   ClickOutside as vClickOutside,
   ElTable,
-  ElMessage,
 } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
 import useCommonTable from "@/utils/global/common_table_search";
@@ -166,7 +165,10 @@ const terminalsStoreTotal = computed(() => {
   return terminals.allFilterTerminals.length;
 });
 const terminalsStoreOnePage = computed(() => {
-  return terminals.onePageTerminals;
+  // 过滤采集终端
+  return terminals.onePageTerminals.filter((item:{EndPointType:number})=>{
+    return item.EndPointType !== 3
+  });
 });
 
 const form = reactive<any>({
@@ -202,6 +204,7 @@ const handleRowClick = (row: any) => {
   const data = {
     EndPointID: row.EndPointID,
     EndPointName: row.EndPointName,
+    EndPointType: row.EndPointType,
   };
   form.currentSelectedName = row.EndPointName;
   localStorage.set("speakerTerminal", JSON.stringify(data));
@@ -287,6 +290,8 @@ defineExpose({
 onMounted(() => {
   // 刷新页面时，获取下当前选中表格行
   const currentTableRow = localStorage.get("speakerTerminal") || "";
+  // 采集终端 type = 3 不能作为主讲终端
+  if(JSON.parse(currentTableRow).EndPointType === 3) return 
   if (currentTableRow) {
     form.currentTableRow = JSON.parse(currentTableRow);
     form.currentSelectedName = form.currentTableRow.EndPointName;

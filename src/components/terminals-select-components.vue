@@ -758,6 +758,7 @@ const handleGetAllTerminals = () => {
         relayServers: true,
         withGroups: true,
         terminals_type: 0,
+        filter_type: 3
       },
     })
     .then((result: { result: number; data: any[] }) => {
