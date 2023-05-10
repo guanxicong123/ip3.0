@@ -42,6 +42,7 @@ const registerWebSocket = async () => {
         login();
       }
       loadingInstance?.close();
+      loadingInstance = null;
     };
     //WebSocket通知
     socket.onmessage = ({ data }: any) => {
@@ -289,9 +290,10 @@ const handlerMsg = (msg: any) => {
     case "ms2c_control_task": // 播放中心任务状态改变
       break;
     case "cs2ms_net_reconnect": // 服务器重连
+      loadingInstance?.close();
+      loadingInstance = null;
       getStore.useSessionStore().clearSession();
       getStore.useTerminalsStore().clearTerminals();
-      loadingInstance?.close();
       initRequest();
       break;
     case "ms2c_stop_task":
