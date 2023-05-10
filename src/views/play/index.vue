@@ -341,10 +341,10 @@ const playStatusData: any = ref({});
 const playCenterShowData = computed(() => {
   return form.sessionsData.filter((item: any) => {
     if (selectTaskData.value?.type < 10) {
-      return item.RemoteTaskID === selectTaskData.value.id;
+      return item.RemoteTaskID === selectTaskData.value.id && item.SubTaskTypeName === 'remote_play';
     }
     if (selectTaskData.value?.type >= 10) {
-      return item.TaskID === selectTaskData.value.taskid;
+      return item.TaskID === selectTaskData.value.taskid &&  item.SubTaskTypeName === 'custorm_task';
     }
   })[0];
 });
