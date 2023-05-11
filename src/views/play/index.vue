@@ -344,7 +344,8 @@ const playCenterShowData = computed(() => {
       return item.RemoteTaskID === selectTaskData.value.id && item.SubTaskTypeName === 'remote_play';
     }
     if (selectTaskData.value?.type >= 10) {
-      return item.TaskID === selectTaskData.value.taskid &&  item.SubTaskTypeName === 'custorm_task';
+      // 本地任务的SubTaskTypeName 为空
+      return item.TaskID === selectTaskData.value.taskid;
     }
   })[0];
 });
@@ -1020,7 +1021,6 @@ const getTaskAll = () => {
       }
       // 每次请求完最新的数据后，需要把全局的task状态设置为true
       storePlay.setIsLatestTaskStatus(true);
-      getCheckMedia()
       resolve(form.data);
     });
   });
@@ -1033,25 +1033,32 @@ const isCanPlay = (row: any) => {
   return false;
 }
 // 检测任务列表中的数据的媒体数量与终端数量
-const getCheckMedia = () => {
-  let count = Math.floor(form.data.length / 100);
-  for (let i = 0; i <= count; i++) {
-    let checkData = form.data.slice(i * 100,(i + 1) * 100).map((item:any)=>{
-      return item.id
-    })
-    proxy.$http.get('/broadcasting/check',{params: {
-      taskIds:checkData.join(','),
-      }}).then((res:any)=>{
-        if(res.result === 200){
-        res.data?.map((item:any,index:number)=>{
-          form.data[i * 100 + index].medias_count = item.medias_count
-          form.data[i * 100 + index].terminals_count = item.terminals_count
-        })
-      }
-    })
-  }
+const getCheckMedia = (remoteData:any[]) => {
+  return new Promise((resolve) => {
+    let count = Math.floor(remoteData.length / 100);
+    let returnCount = -1
+    for (let i = 0; i <= count; i++) {
+      let checkData = remoteData.slice(i * 100,(i + 1) * 100).map((item:any)=>{
+        return item.id
+      })
+      proxy.$http.get('/broadcasting/check',{params: {
+        taskIds:checkData.join(','),
+        }}).then((res:any)=>{
+          if(res.result === 200){
+          res.data?.map((item:any,index:number)=>{
+            remoteData[i * 100 + index].medias_count = item.medias_count
+            remoteData[i * 100 + index].terminals_count = item.terminals_count
+          })
+          returnCount++
+          if(returnCount === count){
+            resolve(remoteData)
+          }
+        }
+      })
+    }
+  })
 }
-// 获取所有播放任务
+// 获取所有远程播放任务
 const getBroadcastingAll = () => {
   return new Promise((resolve, reject) => {
     if (!systemStore.functional_configs.remoteTaskDisplay) return resolve([]);
@@ -1065,7 +1072,7 @@ const getBroadcastingAll = () => {
         let data = restlu.data.filter((item: { type: number }) => {
           return item.type === 1 || item.type === 4;
         });
-        resolve(data);
+        getCheckMedia(data).then((remoteData) => resolve(remoteData))
       });
   });
 };
@@ -1081,6 +1088,11 @@ const getTaskLocalAll = () => {
       })
       .then((restlu: any) => {
         if (Array.isArray(restlu.data)) {
+          restlu.data.map((item:any)=>{
+            item.medias_count = item.content? item.content.length || 1 : 0
+            item.content = item.content? item.content:[]
+            item.terminals_count = item.terminalsIds?.length || 0
+          })
           resolve(restlu.data);
         } else {
           resolve([]);
@@ -1088,17 +1100,6 @@ const getTaskLocalAll = () => {
       });
   });
 };
-// 获取所有系统优先级
-// const getPrioritySetting = () => {
-//   return new Promise((resolve, reject) => {
-//     proxy.$http.get("/priority-setting").then((restlu: any) => {
-//       restlu.data.forEach((item: { task_type: any; priority: any }) => {
-//         priorityData.set(item.task_type, item.priority);
-//       });
-//       resolve(restlu.data);
-//     })
-//   });
-// };
 const formatTooltip = (seconds: number) => {
   if (seconds) {
     let data = seconds;
@@ -1172,6 +1173,7 @@ const getCurrentPerformTask = (row: any) => {
   // 远程任务
   if (row.type < 10) {
     return form.sessionsData.find((item: any) => {
+      if(item.RemoteTaskID === row.id)
       return item.RemoteTaskID === row.id;
     });
   }

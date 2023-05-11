@@ -337,7 +337,6 @@ import { UploadProps } from "element-plus";
 import { send } from "@/utils/socket";
 import usePublicMethod from "@/utils/global/index";
 import {handleExecuteTaskTerminalsChange} from "../components/playUtil"
-import { log } from "console";
 // defineAsyncComponent 异步组件-懒加载子组件
 const acquisitionDeviceComponent = defineAsyncComponent(
   () => import("../components/acquisition-device-component.vue")
@@ -931,8 +930,6 @@ const handleEditSava = () => {
 
 // 更新远程任务
 const handleRemoteTasks = () => {
-  console.log(props.selectTaskData,'更新远程任务');
-  
   return new Promise((resolve: any, reject: any) => {
     proxy.$http
       .put("/broadcasting/" + props.selectTaskData.id, {
@@ -1095,6 +1092,8 @@ const handleDelete = (row: any) => {
           ruleForm.data.map((item:any,index:number)=>{
             item.index = index
           })
+          // 触发重新请求任务列表
+          storePlay.setIsLatestTaskStatus(false);
         }
       });
     return;
@@ -1130,42 +1129,43 @@ const handleSelectionData = (row: any) => {
             withFastTerminal: true,
           },
         })
-        .then((restlu: any) => {
-          taskDataDetailed.value = restlu.data;
-          const terminals = restlu.data.terminals ? restlu.data.terminals : [];
-          const terminals_groups = restlu.data.terminals_groups
-            ? restlu.data.terminals_groups
+        .then((result: any) => {
+          taskDataDetailed.value = result.data
+          const terminals = result.data.terminals ? result.data.terminals : [];
+          const terminals_groups = result.data.terminals_groups
+            ? result.data.terminals_groups
             : [];
           taskTerminalAll.value = [...terminals_groups, ...terminals];
-          if (restlu.data.fast_terminals_id) {
+          if (result.data.fast_terminals_id) {
             getFastTerminals().then((data: any) => {
               taskDataDetailed.value["fast_terminal"] = data.filter(
                 (item: { id: any }) => {
-                  return item.id === restlu.data.fast_terminals_id;
+                  return item.id === result.data.fast_terminals_id;
                 }
               )[0];
             });
           }
-          resolve(restlu.data);
+          resolve(result.data);
         });
     } else {
-      proxy.$http1.get("/task/" + row.id).then((restlu: any) => {
-        taskDataDetailed.value = restlu.data;
-        if (restlu.data.fast_terminals_id) {
+      proxy.$http1.get("/task/" + row.id).then((result: any) => {
+        result.data.content = result.data.content || []
+        taskDataDetailed.value = result.data
+        if (result.data.fast_terminals_id) {
           getFastTerminals().then((data: any) => {
             taskDataDetailed.value["fast_terminal"] = data.filter(
               (item: { id: any }) => {
-                return item.id === restlu.data.fast_terminals_id;
+                return item.id === result.data.fast_terminals_id;
               }
             )[0];
           });
         }
-        const terminals = restlu.data.terminals ? restlu.data.terminals : [];
-        const terminals_groups = restlu.data.terminals_groups
-          ? restlu.data.terminals_groups
+        const terminals = result.data.terminals ? result.data.terminals : [];
+        const terminals_groups = result.data.terminals_groups
+          ? result.data.terminals_groups
           : [];
         taskTerminalAll.value = [...terminals_groups, ...terminals];
-        resolve(restlu.data);
+        resolve(result.data);
       });
     }
   });

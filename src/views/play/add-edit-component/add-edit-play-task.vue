@@ -348,7 +348,7 @@ const deteleSelectMusic = () => {
   let dataPatch: any[] = musicSelect.value.map((item: any) => {
     return item.path;
   });
-  ruleForm.content = ruleForm.content.filter((item: any) => {
+  ruleForm.content = ruleForm.content?.filter((item: any) => {
     return dataPatch.includes(item.path) === false;
   });
   fileList.value = fileList.value?.filter((item: any) => {
@@ -959,7 +959,7 @@ const getLocalTask = (row: any) => {
       ruleForm.type = 12;
     }
     if (ruleForm.type === 10) {
-      ruleForm.content = result.data.content;
+      ruleForm.content = result.data.content || [];
       requestMusicConfig.value = {
         life_time: result.data.life_time,
         play_model: result.data.play_model,
