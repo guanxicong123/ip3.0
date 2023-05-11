@@ -199,10 +199,17 @@ watch(
       id: newVal.fast_sound_id,
     });
     duration.value = ruleForm?.life_time;
-    seleQuickMusic.value = newVal?.fast_sound;
+    if (props.selectTaskData?.fast_sound) {
+      seleQuickMusic.value = props.selectTaskData.fast_sound;
+    }else {
+      seleQuickMusic.value = {
+        name:'',
+        id: ''
+      }
+    }
     ruleForm.radioVal = props.selectTaskData.sound_source?.life_time ? 1 : 2;
   }
-);
+,{immediate:true});
 watch(seleQuickMusic, (newVal) => {
   ruleForm.id = newVal?.id;
 });
@@ -249,6 +256,7 @@ const handleSelectedConfigure = (item: any) => {
   }
   ruleForm.type = item.type;
   seleQuickMusic.value = item;
+  
 };
 
 // mounted 实例挂载完成后被调用
@@ -258,9 +266,7 @@ onMounted(() => {
       id: props.selectTaskData.fast_sound_id,
     });
     duration.value = ruleForm.life_time;
-    if (props.selectTaskData?.fast_sound) {
-      seleQuickMusic.value = props.selectTaskData.fast_sound;
-    }
+    
     ruleForm.radioVal = props.selectTaskData.sound_source?.life_time ? 1 : 2;
   }
 });
