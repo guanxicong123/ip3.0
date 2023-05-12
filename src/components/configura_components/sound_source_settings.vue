@@ -24,7 +24,12 @@
           </el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane :label="$t('Intercom')" :name="7" lazy v-if="config.isSelectIntercom">
+      <el-tab-pane
+        :label="$t('Intercom')"
+        :name="7"
+        lazy
+        v-if="config.isSelectIntercom"
+      >
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <el-form-item :label="$t('Intercom equipment')">
@@ -36,7 +41,12 @@
           </el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane :label="$t('Monitor')" :name="8" lazy v-if="config.isSelectMonitor">
+      <el-tab-pane
+        :label="$t('Monitor')"
+        :name="8"
+        lazy
+        v-if="config.isSelectMonitor"
+      >
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <el-form-item :label="$t('Monitoring equipment')">
@@ -56,7 +66,10 @@
         </template>
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item :label="$t('Fast sound source')" prop="sound_source_name">
+            <el-form-item
+              :label="$t('Fast sound source')"
+              prop="sound_source_name"
+            >
               <div class="com-add-select-components">
                 <el-input
                   v-model="form.sound_source_name"
@@ -84,7 +97,10 @@
           >
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
               <el-form-item :label="$t('Play mode')" prop="play_model">
-                <el-select v-model="form.play_model" @change="handleSelectedConfigure">
+                <el-select
+                  v-model="form.play_model"
+                  @change="handleSelectedConfigure"
+                >
                   <el-option
                     v-for="(item, keys) in config.setMusicPlayModelOption"
                     :key="keys"
@@ -94,12 +110,21 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="form.play_model === 0">
+            <el-col
+              :xs="12"
+              :sm="8"
+              :md="8"
+              :lg="8"
+              :xl="6"
+              v-if="form.play_model === 0"
+            >
               <el-form-item label="&nbsp;" prop="fase_life_time">
                 <span>{{ $t("Duration") }} : {{ form.fase_life_time }}</span>
               </el-form-item>
             </el-col>
-            <template v-if="config.musicPlayModelRandomConfig && form.play_model !== 0">
+            <template
+              v-if="config.musicPlayModelRandomConfig && form.play_model !== 0"
+            >
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <el-radio
                   v-model="form.play_type"
@@ -128,6 +153,16 @@
                       ></i>
                     </div> -->
                   </div>
+                  <el-tooltip
+                    effect="dark"
+                    :content="$t('Duration prompt')"
+                    placement="right-start"
+                  >
+                    <i
+                      class="iconfont icon-gray-item theme"
+                      style="top: -30px"
+                    ></i>
+                  </el-tooltip>
                 </el-form-item>
               </el-col>
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
@@ -168,8 +203,14 @@
               :xl="6"
               v-if="config.soundSourceQuality"
             >
-              <el-form-item :label="$t('Acquisition sound quality')" prop="sound_quality">
-                <el-select v-model="form.sound_quality" @change="handleSelectedConfigure">
+              <el-form-item
+                :label="$t('Acquisition sound quality')"
+                prop="sound_quality"
+              >
+                <el-select
+                  v-model="form.sound_quality"
+                  @change="handleSelectedConfigure"
+                >
                   <el-option
                     v-for="(item, keys) in config.setSoundQualityOption"
                     :key="keys"
@@ -264,12 +305,21 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="form.play_model === 0">
+            <el-col
+              :xs="12"
+              :sm="8"
+              :md="8"
+              :lg="8"
+              :xl="6"
+              v-if="form.play_model === 0"
+            >
               <el-form-item label="&nbsp;" prop="life_time">
                 <span>{{ $t("Duration") }} : {{ form.life_time }}</span>
               </el-form-item>
             </el-col>
-            <template v-if="config.musicPlayModelRandomConfig && form.play_model !== 0">
+            <template
+              v-if="config.musicPlayModelRandomConfig && form.play_model !== 0"
+            >
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <el-radio
                   v-model="form.play_type"
@@ -298,6 +348,16 @@
                       ></i>
                     </div>
                   </div>
+                  <el-tooltip
+                    effect="dark"
+                    :content="$t('Duration prompt')"
+                    placement="right-start"
+                  >
+                    <i
+                      class="iconfont icon-gray-item theme"
+                      style="top: -30px"
+                    ></i>
+                  </el-tooltip>
                 </el-form-item>
               </el-col>
               <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
@@ -348,8 +408,14 @@
             :xl="6"
             v-if="config.soundSourceQuality"
           >
-            <el-form-item :label="$t('Acquisition sound quality')" prop="sound_quality">
-              <el-select v-model="form.sound_quality" @change="handleSelectedConfigure">
+            <el-form-item
+              :label="$t('Acquisition sound quality')"
+              prop="sound_quality"
+            >
+              <el-select
+                v-model="form.sound_quality"
+                @change="handleSelectedConfigure"
+              >
                 <el-option
                   v-for="(item, keys) in config.setSoundQualityOption"
                   :key="keys"
@@ -398,10 +464,19 @@
           </el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane :label="$t('Text play')" :name="5" lazy v-if="config.isSelectTextPlay">
+      <el-tab-pane
+        :label="$t('Text play')"
+        :name="5"
+        lazy
+        v-if="config.isSelectTextPlay"
+      >
         <el-row :gutter="60">
           <el-col :span="24">
-            <el-form-item :label="$t('Text content')" prop="txt" style="width: 100%">
+            <el-form-item
+              :label="$t('Text content')"
+              prop="txt"
+              style="width: 100%"
+            >
               <el-input
                 v-model="form.txt"
                 :autosize="{ minRows: 5 }"
@@ -427,7 +502,10 @@
             </el-form-item>
           </el-col>
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item :label="$t('Display Properties')" prop="led_display_cfg_id">
+            <el-form-item
+              :label="$t('Display Properties')"
+              prop="led_display_cfg_id"
+            >
               <el-select
                 v-model="form.led_display_cfg_id"
                 @change="handleSelectedConfigure"
@@ -442,7 +520,10 @@
             </el-form-item>
           </el-col>
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item :label="$t('Number of broadcasts')" prop="broadcast_number">
+            <el-form-item
+              :label="$t('Number of broadcasts')"
+              prop="broadcast_number"
+            >
               <el-input-number
                 v-model="form.broadcast_number"
                 :min="0"
@@ -466,7 +547,10 @@
           <template v-if="form.is_play">
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
               <el-form-item :label="$t('Play voice')" prop="sound">
-                <el-select v-model="form.sound" @change="handleSelectedConfigure">
+                <el-select
+                  v-model="form.sound"
+                  @change="handleSelectedConfigure"
+                >
                   <el-option
                     v-for="(item, keys) in playVoiceOption"
                     :key="keys"
@@ -478,7 +562,10 @@
             </el-col>
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
               <el-form-item :label="$t('Play speech speed')" prop="speed">
-                <el-select v-model="form.speed" @change="changeTextPlayEstimatedTime">
+                <el-select
+                  v-model="form.speed"
+                  @change="changeTextPlayEstimatedTime"
+                >
                   <el-option
                     v-for="item in playSpeedOption"
                     :key="item"
@@ -709,7 +796,9 @@ const handleTabClick = (tab: TabsPaneContext) => {
   } else {
     emit("requestType", tab.paneName);
     form.sound_source.type =
-      tab.paneName != 4 ? Number(tab.paneName) : form.old_sound_source_data.type;
+      tab.paneName != 4
+        ? Number(tab.paneName)
+        : form.old_sound_source_data.type;
     // 编辑时，切换快捷音源和音乐播放的持续时间显示
     if (tab.paneName == 4) {
       // 是否含有length字段
@@ -898,8 +987,24 @@ watch(
     TTSStore.value,
   ],
   (
-    [newType, newMedia, newGroups, newSoundSource, newFastSoundSource, newMode, newTTS],
-    [oldType, oldMedia, oldGroups, oldSoundSource, oldFastSoundSource, oldMode, oldTTS]
+    [
+      newType,
+      newMedia,
+      newGroups,
+      newSoundSource,
+      newFastSoundSource,
+      newMode,
+      newTTS,
+    ],
+    [
+      oldType,
+      oldMedia,
+      oldGroups,
+      oldSoundSource,
+      oldFastSoundSource,
+      oldMode,
+      oldTTS,
+    ]
   ) => {
     // 编辑回传的音源类型
     if (newType != oldType) {
@@ -976,7 +1081,10 @@ watch(
     // 界面模式
     if (newMode != oldMode) {
       form.view_mode = newMode?.view_mode;
-      if (newMode?.view_mode == 2 && !form.notLimitedMode.includes($useRoute.name)) {
+      if (
+        newMode?.view_mode == 2 &&
+        !form.notLimitedMode.includes($useRoute.name)
+      ) {
         emit("requestSoundSourceID", 0);
         if (form.activeName == 1 || form.activeName == 23) {
           form.activeName = 4;
@@ -1001,7 +1109,10 @@ watch(
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   // 更新插件配置
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
   // 设置默认activeName
   if (parentData.responseActiveName) {
     form.activeName = parentData.responseActiveName;
