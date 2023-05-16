@@ -30,6 +30,7 @@
 </template>
 
 <script lang="ts" setup>
+const { proxy } = useCurrentInstance.useCurrentInstance();
 const props: any = defineProps({
   dialogVisible: Boolean,
   taskDataDetailed: Object,
@@ -52,6 +53,14 @@ const requestGroups = (data: any) => {
 };
 
 const handleSubmit = () => {
+  // 必须选中终端，才能提交并关闭弹窗
+  if(terminals.value.length === 0 && terminals_groups.value.length === 0){
+    return proxy.$message({
+      type: "warning",
+      message: proxy.$t("Please select a terminal or group"),
+      grouping: true,
+    });
+  }
   emit("handleSelectedTerminals", {
     terminals: terminals.value,
     terminals_groups: terminals_groups.value,
