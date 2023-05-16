@@ -27,7 +27,8 @@
         <div class="com-button">
           <i
             class="iconfont icon-edit1"
-            @click="handleEditButton"
+            :class="{'icon-disabled': activeName === 'configure' && isExecuted}"
+            @click="handleEditButton(!(activeName === 'configure' && isExecuted))"
             v-if="!editStatus"
           ></i>
           <i class="iconfont icon-save" @click="handleEditSava" v-else></i>
@@ -287,7 +288,7 @@
       v-model:file-list="fileList"
       ref="uploadRef"
       class="upload-demo"
-      accept=".mp3"
+      accept="audio/mpeg,audio/mp3,audio/ogg,audio/wav,audio/aac,audio/flac,audio/amr,audio/opus,audio/vnd.dlna.adts"
       action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
       :multiple="true"
       :auto-upload="false"
@@ -768,8 +769,11 @@ const requestSoundSource = (data: any) => {
   ruleForm.fast_sound_id = data.id;
   delete soundSourceForm.value.id;
 };
+// 选择之前的终端、当前任务就的终端
+let oldTerminals:any[]
 //  选择的终端/终端分组、快捷终端
 const handleSelectedTerminals = (data: any) => {
+  oldTerminals = taskDataDetailed.value.terminals
   let putData = {
     terminals: data.terminals,
     terminals_groups: data.terminals_groups.map((item: any) => {
@@ -836,12 +840,12 @@ const handleLocalTaskFastTermina = () => {
 // 改变任务终端
 const handleChangeTaskTerminals = () => {
   // 旧的终端信息，获取新数据前
-  const oldTerminals = taskDataDetailed.value.terminalsIds;
+  const oldTerminalsIds = oldTerminals.map(item => item.id);
   handleSelectionData(props.selectTaskData).then((result: any) => {
     if (props.playCenterData.TaskID) {
       // 新的终端信息
       let newTerminals = result?.terminalsIds;
-      const {addTerminals} = handleExecuteTaskTerminalsChange(props.playCenterData.TaskID, result.volume, newTerminals, oldTerminals);
+      const {addTerminals} = handleExecuteTaskTerminalsChange(props.playCenterData.TaskID, result.volume, newTerminals, oldTerminalsIds);
       if(addTerminals){
         emit('changeTaskVolume',props.currentVolume)
       }
@@ -849,7 +853,10 @@ const handleChangeTaskTerminals = () => {
   });
 };
 // 触发编辑
-const handleEditButton = () => {
+const handleEditButton = (isCanEdit = true) => {
+  if(!isCanEdit){
+    return
+  }
   if (
     activeName.value === "region" &&
     taskDataDetailed.value.fast_terminals_id !== 0

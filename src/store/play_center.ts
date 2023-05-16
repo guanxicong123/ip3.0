@@ -27,9 +27,10 @@ export const usePlayStore = defineStore({
     },
     setPlayTaskStatus(data: any) {
       // 把所有的订阅任务 的进度条信息存储
-      data.forEach((task: any) => {
+      for (let i = 0; i < data.length; i++) {
+        const task = data[i];
         this.allPlaySubscriptionTaskMap[task.TaskID] = task;
-      });
+      }
     },
     removeSubscriptionTask(data: any) {
       delete this.allPlaySubscriptionTaskMap[data.TaskID];

@@ -107,7 +107,7 @@
               v-model:file-list="fileList"
               ref="uploadRef"
               class="upload-demo"
-              accept=".mp3"
+              accept="audio/mpeg,audio/mp3,audio/ogg,audio/wav,audio/aac,audio/flac,audio/amr,audio/opus,audio/vnd.dlna.adts"
               action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
               :multiple="true"
               :auto-upload="false"
