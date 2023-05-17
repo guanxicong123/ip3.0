@@ -84,10 +84,11 @@
                       :label="item.label"
                       :value="item.value"
                       :disabled="
-                        ($useRoute.query?.type > 10 && item.type !== 2) ||
+                        ($useRoute.query?.type >= 10 && item.type !== 2) ||
                         ($useRoute.query?.type < 10 && item.type !== 1)
                       "
-                    />
+                    ></el-option>
+
                   </el-select>
                 </el-form-item>
               </el-col>
