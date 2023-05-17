@@ -571,7 +571,7 @@ const handleDecideStatus = (row: any, sessions?: any) => {
 const handleStopTask = (row: any) => {
   let key;
   form.sessionsData.some((item: any) => {
-    if (item.RemoteTaskID === row.id) {
+    if (item.RemoteTaskID === row.id  && item.SubTaskTypeName == "remote_play") {
       key = item.TaskID;
       return true;
     }
