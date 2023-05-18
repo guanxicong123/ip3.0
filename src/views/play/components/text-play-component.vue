@@ -128,6 +128,7 @@
               <el-input-number
                 v-model="ruleForm.repeattime"
                 :min="1"
+                :max="100"
                 controls-position="right"
                 maxlength="4"
                 :disabled="!props.isEdit"
