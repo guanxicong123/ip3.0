@@ -46,7 +46,7 @@
           />
         </div>
         <div class="content-center">
-          <p>
+          <p class="media-name">
             <!-- 会导致有延迟 -->
             <!-- {{ form.song_name }} -->
             <!-- 使用当前正在执行任务的数组来显示播放媒体名称。socket使用task_status这个状态的信息 -->
@@ -83,8 +83,8 @@
           ></i>
           <i
             class="iconfont"
-            :class="playModeIcon.get(form.play_model)?.icon"
-            :title="playModeIcon.get(form.play_model)?.title"
+            :class="playModeIcon.get(selectTaskData.sound_source?.play_model)?.icon"
+            :title="playModeIcon.get(selectTaskData.sound_source?.play_model)?.title"
             @click="handleSwitchTask(playCenterData, 'play_mode')"
           >
           </i>
@@ -137,7 +137,7 @@
             </el-slider>
           </el-popover>
         </div>
-        <div class="content-bottom theme com-show-button" v-else>
+        <div class="content-bottom theme com-show-button"  v-else>
           <i
             class="iconfont"
             :class="playCenterData.TaskID ? 'icon-end' : 'icon-play'"
@@ -335,6 +335,7 @@ const remoteTaskDisplay: any = computed(() => {
 const sessionStoreAll = computed(() => {
   return session.allSessionObj;
 });
+
 // 当前任务播放状态
 const playStatusData: any = ref({});
 // 获取当前显示任务的执行数据
@@ -1314,7 +1315,8 @@ onMounted(() => {
       }
 
       .content-center {
-        p {
+        height: 150px;
+        p.media-name {
           max-width: 380px;
           padding: 2vh 10px;
           margin: auto;
@@ -1324,12 +1326,13 @@ onMounted(() => {
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          height: 50px;
         }
 
         .progress {
           width: 360px;
           margin: 4vh auto 2vh;
-
+          height: 64px;
           :deep(.el-progress__text) {
             display: none;
           }
@@ -1365,7 +1368,6 @@ onMounted(() => {
         }
       }
       .com-show-button {
-        padding-top: calc(64px + 4vh + 2vh);
         .icon-end {
           font-size: 46px;
         }
