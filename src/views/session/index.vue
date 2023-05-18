@@ -129,7 +129,7 @@
               <div class="com-table-task-volume">
                 <el-input-number
                   v-model="scope.row.TaskVolume"
-                  :min="1"
+                  :min="0"
                   :max="100"
                   controls-position="right"
                   size="small"
