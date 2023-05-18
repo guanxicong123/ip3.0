@@ -178,10 +178,7 @@ const viewGroupInfo = (item: {
 }) => {
   show_group_info.value = true;
   group_title.value = item.name;
-  form.table_data = item.terminals.map((terminal: any) => {
-    terminal.call_code = item.call_code;
-    return terminal;
-  });
+  form.table_data = item.terminals
 };
 // 处理全选
 const handleCheckedAll = () => {
