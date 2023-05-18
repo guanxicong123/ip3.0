@@ -239,7 +239,7 @@ const sessionsData_NonAlarm:any = computed(() => {
 })
 const sessionsData: any = computed(() => {
   return Object.values(session.allSessionObj).filter((item: any) => {
-    if ([4, 5,17].includes(item.TaskType) && isClientSendTask(item)) {
+    if ([3, 4, 5,17].includes(item.TaskType) && isClientSendTask(item)) {
       return item;
     }
     if (
