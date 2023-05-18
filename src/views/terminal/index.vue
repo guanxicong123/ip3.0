@@ -566,7 +566,7 @@ const functronButtonTask = (type: number) => {
       });
     }
     // 监听任务只能为空闲终端,主讲终端与接收终端都嘚是空闲状态
-    if(allTerminalsObj.value[currentTableRow.EndPointID]?.Status !== 1 || allTerminalsObj.value[filter_initiator_terminals[0]].Status !== 1){
+    if(allTerminalsObj.value[currentTableRow.EndPointID]?.Status !== 1 || allTerminalsObj.value[filter_initiator_terminals[0]]?.Status !== 1){
       startButton.value.status = false;
       return proxy.$message({
         type:'warning',
@@ -580,7 +580,6 @@ const functronButtonTask = (type: number) => {
 };
 // 全区广播任务
 const regionalBroadcasting = (currentTableRow: any) => {
-  console.log(allTerminalsObj.value[currentTableRow.EndPointID],'allTerminalsObj[currentTableRow.EndPointID]');
   let data = terminalsStoreOnePage.value
     .filter((item: any) => {
       return item.Status !== 0 && item.EndPointID !== currentTableRow.EndPointID;

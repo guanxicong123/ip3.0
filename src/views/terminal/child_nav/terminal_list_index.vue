@@ -192,6 +192,7 @@ interface User {
   id: number;
   name: string;
   EndPointType: number;
+  EndPointID:number
 }
 
 const form = reactive<any>({
@@ -239,8 +240,8 @@ const handleClickGroup = (val: any) => {
 const handleSelectionChange = (val: User[]) => {
   let ids: number[] = [];
   multipleSelection.value = val;
-  multipleSelection.value.map((item) => {
-    ids.push(item.id);
+  multipleSelection.value.forEach((item:{EndPointID:number}) => {
+    ids.push(item.EndPointID);
   });
   updateCheckedTerminals(ids);
 };
