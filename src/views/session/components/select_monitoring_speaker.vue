@@ -173,7 +173,7 @@ const form = reactive<any>({
   selectStatusType: -1,
   data: [],
   currentPage: 1,
-  pageSize: 20,
+  pageSize: 5,
   total: 0,
   orderColumn: "Status",
   orderType: "desc",
@@ -217,6 +217,9 @@ const handleRowClick = (row: any) => {
 const handleRowClassName = (row: { row: any }) => {
   if (row.row.EndPointID === form.currentTableRow.EndPointID) {
     return "com-select-bg";
+  }
+  if (row.row.Status !== 1 && row.row.Status !== 2 || row.row.Disable) {
+    return "com-disable-select-bg";
   }
 };
 // 序号
