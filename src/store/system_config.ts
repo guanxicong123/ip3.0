@@ -180,14 +180,17 @@ export const useSystemStore = defineStore({
     },
     // 获取机器码
     getProductKey() {
-      return new Promise((resolve,reject)=>{
-          $http1.get("/register").then((result: any) => {
+      return new Promise((resolve, reject) => {
+        $http1.get("/register").then((result: any) => {
           if (result.result === 200) {
-            resolve(result.data.ProductKey || "14827-67853-39229-50676-09802-52491-53438")
-          }else {
-            reject()
+            resolve(
+              result.data.ProductKey ||
+                "14827-67853-39229-50676-09802-52491-53438"
+            );
+          } else {
+            reject();
           }
-        })
+        });
       });
     },
     // 获取所有系统优先级
