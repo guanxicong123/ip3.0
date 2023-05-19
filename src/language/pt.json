@@ -975,7 +975,7 @@
   "Zoom in one level": "放大一级",
   "Reduce one level": "缩小一级",
   "Delete tag": "删除标记",
-  "Enter keyword search": "输入关键字搜索",
+  "Enter location search": "输入地点搜索",
   "The listening terminal must be idle": "监听终端必须是空闲的状态",
   "Click the task monitoring prompt": "正等待服务器响应上次操作，请稍后再操作",
   "Backup save path prompt": "备份保存路径不能选择含有中文，请重新选择",
