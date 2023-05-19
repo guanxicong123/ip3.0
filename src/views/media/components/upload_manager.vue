@@ -159,8 +159,8 @@ const form = reactive<any>({
   files: [], // 上传文件数据
   md5Finish: 0,
   accept:
-    "audio/mpeg,audio/mp3,audio/ogg,audio/wav,audio/aac,audio/flac,audio/opus,audio/vnd.dlna.adts", // 表单的accept属性, MIME type
-  extensions: "mpeg,mp3,ogg,wav,aac,flac,opus,vnd.dlna.adts", // 允许上传的文件后缀
+    "audio/mp3,audio/ogg,audio/wav,.aac,audio/flac,audio/amr,audio/opus,audio/vnd.dlna.adts", // 表单的accept属性, MIME type
+  extensions: "mp3,ogg,wav,aac,flac,opus,vnd.dlna.adts", // 允许上传的文件后缀
   hasUploadError: false,
   headers: {
     authorization: localStorage.get("userToken"),
