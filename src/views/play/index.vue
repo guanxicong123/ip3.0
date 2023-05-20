@@ -1092,6 +1092,12 @@ const getTaskLocalAll = () => {
           restlu.data.map((item:any)=>{
             item.medias_count = item.content? item.content.length || 1 : 0
             item.content = item.content? item.content:[]
+            item.content.map((contentItem:any)=>{
+              // 本地文件不存在
+              if(!contentItem.isexist){
+                item.medias_count --
+              }
+            })
             item.terminals_count = item.terminalsIds?.length || 0
           })
           resolve(restlu.data);
