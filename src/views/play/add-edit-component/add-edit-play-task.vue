@@ -247,6 +247,7 @@ import textPlayComponent from "../components/text-play-component.vue";
 import sourceAcquisitionComponent from "../components/source-acquisition-component.vue";
 import quickTerminalDialog from "@/components/quick-terminal-dialog.vue";
 import { onBeforeRouteLeave } from "vue-router";
+import {getAudioFileTime} from "../components/playUtil"
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
@@ -365,27 +366,15 @@ const deteleOneMusic = (row: any) => {
     return item.raw.path !== row.path;
   });
 };
-// 选中文件时触发
-const uploadChange: UploadProps["onChange"] = (uploadFile: any) => {
-  getTimes(uploadFile);
-};
 // 时长返回后，再次触发
 const getTime = ref(0);
-// 获取文件时长
-const getTimes = (file: any) => {
-  // 这里的file只能拿到size等信息，无法拿到时长等
-  var content = file.raw;
-  //获取录音时长
-  var url = URL.createObjectURL(content);
-  //经测试，发现audio也可获取视频的时长
-  var audioElement = new Audio(url);
-  file["time"] = 0;
-  audioElement.addEventListener("durationchange", () => {
-    let data = audioElement.duration;
-    file["time"] = parseInt(data.toString());
+// 选中文件时触发
+const uploadChange: UploadProps["onChange"] = (uploadFile: any) => {
+  uploadFile = getAudioFileTime(uploadFile, ()=>{
     getTime.value++;
-  });
+  })
 };
+
 watch(getTime, () => {
   const dataPatch: any = {};
   ruleForm.content.map((item: any, index: number) => {
