@@ -1118,5 +1118,6 @@
   "terminal/username": "terminal/username",
   "The color should not be too light": "The color should not be too light",
   "User name or pwd change": "Username or password has been modified, please log in again",
-  "Account disabled": "Account disabled"
+  "Account disabled": "Account disabled",
+  "The confirmation password does not match the new password": "The confirmation password does not match the new password"
 }

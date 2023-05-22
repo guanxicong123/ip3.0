@@ -169,7 +169,7 @@ const validateConfirmPassword = (rule: any, value: any, callback: any) => {
     return callback(new Error(proxy.$t("User password placeholder")));
   } else if (value !== form.password) {
     return callback(
-      new Error(proxy.$t("Confirmation password verification prompt"))
+      new Error(proxy.$t("The confirmation password does not match the new password"))
     );
   } else {
     callback();

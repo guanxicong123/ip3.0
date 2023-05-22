@@ -1118,5 +1118,6 @@
   "terminal/username": "终端/用户名",
   "The color should not be too light": "颜色不能太浅",
   "User name or pwd change": "用户名或密码已经被修改，请重新登录",
-  "Account disabled": "账号已禁用"
+  "Account disabled": "账号已禁用",
+  "The confirmation password does not match the new password": "确认密码与新密码不一致"
 }
