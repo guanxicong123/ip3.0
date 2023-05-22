@@ -197,7 +197,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
         confirm_password: form.confirm_password,
       })
         .then((result) => {
-          if (result.result?.id) {
+          if (result.data?.id) {
             emit("show", false);
             ElMessage({
               type: "success",
@@ -208,7 +208,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
           } else {
             ElMessage({
               type: "error",
-              message: result.result?.message,
+              message: result.data?.message,
               grouping: true,
             });
           }

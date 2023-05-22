@@ -121,7 +121,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
         name: form.name,
       })
         .then((result) => {
-          if (result.result?.id) {
+          if (result.data?.id) {
             emit("show", false);
             ElMessage({
               type: "success",
