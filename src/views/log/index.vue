@@ -44,6 +44,7 @@
             class="iconfont icon-clear-log"
             :title="$t('Clear log')"
             @click="clearAllLog(form.activeName)"
+            v-if="userStore?.type == 0"
           ></i>
           <i
             class="iconfont icon-export"
