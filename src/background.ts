@@ -41,7 +41,7 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 320,
     height: 530,
-    resizable: true, //窗口是否可以由用户手动调整大小的属性
+    resizable: false, //窗口是否可以由用户手动调整大小的属性
     autoHideMenuBar: true, //是否隐藏菜单
     frame: false, //false为无边框窗口
     transparent: true, //使窗口 透明。 默认值为 false. 在Windows上，仅在无边框窗口下起作用。
@@ -154,10 +154,10 @@ async function createWindow() {
    * setMinimumSize：将窗口的最小大小设置为width和height。
    */
   ipcMain.on("login-window", () => {
-    win.setMinimumSize(320, 530);
     win.setSize(320, 530);
+    win.setMinimumSize(320, 530);
     win.center();
-    win.setResizable(true);
+    win.setResizable(false);
   });
   ipcMain.on("main-window", (e, value) => {
     // 渲染进程传值，设置记住的宽高
