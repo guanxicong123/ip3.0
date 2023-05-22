@@ -9,7 +9,7 @@ export class SystemService {
     });
   }
 
-  static async putLanguage(params: any): Promise<any> {
+  static async putLanguage(params: { lang: string }): Promise<any> {
     return $http("/language/default", {
       method: "put",
       responseType: "json",

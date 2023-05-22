@@ -1,3 +1,4 @@
+import { SystemService } from "@/utils/api/language";
 export const useLanguageStore = defineStore({
   id: "language",
   state: () => {
@@ -19,7 +20,8 @@ export const useLanguageStore = defineStore({
     },
     // 单独更新当前选中语言
     updateCurrentLanguage(language: string) {
-      this.language.language = language
+      this.language.language = language;
+      SystemService.putLanguage({ lang: language });
       localStorage.set("lang", language);
     },
   },
