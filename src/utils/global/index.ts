@@ -15,14 +15,20 @@ const usePublicMethod = {
     await getStore.useSessionStore().stopLocalSessionTask();
     send(data);
     router.push("/");
+    this.clearData();
+    getStore.useUploadStore().updateShowUploadManager(false);
+    window.electronAPI.send("login-window");
+  },
+  // 退出前需要清空的值
+  clearData() {
     localStorage.remove("userToken");
     localStorage.remove("tokenExpireMonitor");
+    // 清空监听影响的值
+    localStorage.remove("monitoringSpeaker");
     getStore.useUserStore().clearUser();
     getStore.useTerminalsStore().clearTerminals();
     getStore.useSessionStore().clearSession();
     getStore.useTTSStore().clearTTS();
-    getStore.useUploadStore().updateShowUploadManager(false);
-    window.electronAPI.send("login-window");
   },
   // 设置一小时刷新一次token
   setTokenMonitorTime() {

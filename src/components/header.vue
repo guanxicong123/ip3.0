@@ -220,6 +220,7 @@ const close = async () => {
     };
     await getStore.useSessionStore().stopLocalSessionTask();
     send(data);
+  usePublicMethod.clearData()
   window.electronAPI.send("close");
 };
 // 处理编辑账号名称弹窗的响应展示/关闭
