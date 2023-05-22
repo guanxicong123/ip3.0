@@ -1091,7 +1091,7 @@ const getTaskLocalAll = () => {
         if (Array.isArray(restlu.data)) {
           restlu.data.map((item:any)=>{
             item.medias_count = item.content? item.content.length || 1 : 0
-            item.content = item.content? item.content:[]
+            item.content = item.content? Array.isArray(item.content)?item.content:[item.content]:[]
             item.content.map((contentItem:any)=>{
               // 本地文件不存在
               if(!contentItem.isexist){
