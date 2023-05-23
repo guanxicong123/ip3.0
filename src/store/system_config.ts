@@ -153,13 +153,25 @@ export const useSystemStore = defineStore({
               };
               // 基本配置：如主讲终端、主题等
               this.basic_configs = {
-                MainEndpointID: data.MainEndpointID,
+                MainEndpoint: data.MainEndpoint,
                 Theme: data.Theme,
                 Language: data.Language,
                 DisplayType: data.DisplayType,
                 ListDisplaySize: data.ListDisplaySize,
                 ID: data.ID,
               };
+              console.log(data.MainEndpoint, "data.MainEndpoint");
+
+              const mainEndpointInfo = {
+                EndPointID: data.MainEndpoint?.ID,
+                EndPointName: data.MainEndpoint?.Name,
+                EndPointType: data.MainEndpoint?.Type,
+                EndPointIp: data.MainEndpoint?.IpAddress,
+              };
+              localStorage.set(
+                "speakerTerminal",
+                JSON.stringify(mainEndpointInfo)
+              );
               // 模块分页
               this.pageSize = {
                 Terminal_PageSize: data.Terminal_PageSize,

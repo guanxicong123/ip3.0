@@ -152,6 +152,7 @@ const props = defineProps({
   }
 })
 
+const systemStore = getStore.useSystemStore();
 const user = getStore.useUserStore();
 const terminals = getStore.useTerminalsStore();
 // 计算属性 computed
@@ -170,6 +171,10 @@ const terminalsStoreOnePage = computed(() => {
     return item.EndPointType !== 3
   });
 });
+const basic_configs = computed(() => {
+  return systemStore.basic_configs;
+});
+
 
 const form = reactive<any>({
   search: "",
@@ -202,12 +207,15 @@ const onClickOutside = () => {
 const handleRowClick = (row: any) => {
   form.currentTableRow = row;
   const data = {
-    EndPointID: row.EndPointID,
-    EndPointName: row.EndPointName,
-    EndPointType: row.EndPointType,
+    ID: row.EndPointID,
+    Name: row.EndPointName,
+    Type: row.EndPointType,
+    IPAddress:row.EndPointIP
   };
   form.currentSelectedName = row.EndPointName;
   localStorage.set("speakerTerminal", JSON.stringify(data));
+  proxy.$http1
+    .put("/config/" + basic_configs.value.ID, {MainEndpoint:data})
   unref(popoverRef).hide?.()
 };
 // 当前选中高亮
