@@ -154,10 +154,10 @@ async function createWindow() {
    * setMinimumSize：将窗口的最小大小设置为width和height。
    */
   ipcMain.on("login-window", () => {
-    win.setSize(320, 530);
     win.setMinimumSize(320, 530);
-    win.center();
     win.setResizable(false);
+    win.setSize(320, 530);
+    win.center();
   });
   ipcMain.on("set-login-window-size", () => {
     win.setSize(320, 530);
