@@ -128,17 +128,18 @@ i
         </div>
       </div>
     </el-popover>
-    <el-button ref="viewRef" v-click-outside="onClickOutside" :disabled="sessionsData.length !== 0">
+    <el-button
+      ref="viewRef"
+      v-click-outside="onClickOutside"
+      :disabled="sessionsData.length !== 0"
+    >
       {{ form.currentSelectedName }}
     </el-button>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {
-  ClickOutside as vClickOutside,
-  ElTable,
-} from "element-plus";
+import { ClickOutside as vClickOutside, ElTable } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
 import useCommonTable from "@/utils/global/common_table_search";
 
@@ -146,11 +147,11 @@ import useCommonTable from "@/utils/global/common_table_search";
 const { proxy } = useCurrentInstance.useCurrentInstance();
 
 const props = defineProps({
-  sessionsData:{
-    type:Array,
-    default:()=>[]
-  }
-})
+  sessionsData: {
+    type: Array,
+    default: () => [],
+  },
+});
 
 const systemStore = getStore.useSystemStore();
 const user = getStore.useUserStore();
@@ -167,14 +168,13 @@ const terminalsStoreTotal = computed(() => {
 });
 const terminalsStoreOnePage = computed(() => {
   // 过滤采集终端
-  return terminals.onePageTerminals.filter((item:{EndPointType:number})=>{
-    return item.EndPointType !== 3
+  return terminals.onePageTerminals.filter((item: { EndPointType: number }) => {
+    return item.EndPointType !== 3;
   });
 });
 const basic_configs = computed(() => {
   return systemStore.basic_configs;
 });
-
 
 const form = reactive<any>({
   search: "",
@@ -207,16 +207,17 @@ const onClickOutside = () => {
 const handleRowClick = (row: any) => {
   form.currentTableRow = row;
   const data = {
-    ID: row.EndPointID,
-    Name: row.EndPointName,
-    Type: row.EndPointType,
-    IPAddress:row.EndPointIP
+    id: row.EndPointID,
+    name: row.EndPointName,
+    type: row.EndPointType,
+    ip_address: row.EndPointIP,
   };
   form.currentSelectedName = row.EndPointName;
   localStorage.set("speakerTerminal", JSON.stringify(data));
-  proxy.$http1
-    .put("/config/" + basic_configs.value.ID, {MainEndpoint:data})
-  unref(popoverRef).hide?.()
+  proxy.$http1.put("/config/" + basic_configs.value.ID, {
+    MainEndpointInfo: JSON.stringify(data),
+  });
+  unref(popoverRef).hide?.();
 };
 // 当前选中高亮
 const handleRowClassName = (row: { row: any }) => {
@@ -292,17 +293,18 @@ watch(
 );
 // 暴露方法
 defineExpose({
-  handleRowClick
+  handleRowClick,
 });
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   // 刷新页面时，获取下当前选中表格行
   const currentTableRow = localStorage.get("speakerTerminal") || "";
   // 采集终端 type = 3 不能作为主讲终端
-  if(JSON.parse(currentTableRow).EndPointType === 3) return 
+  if (JSON.parse(currentTableRow).EndPointType === 3) return;
   if (currentTableRow) {
     form.currentTableRow = JSON.parse(currentTableRow);
-    form.currentSelectedName = form.currentTableRow.EndPointName;
+    form.currentSelectedName =
+      form.currentTableRow.EndPointName || proxy.$t("Please select a terminal");
   }
   handleGetOnePageData();
 });

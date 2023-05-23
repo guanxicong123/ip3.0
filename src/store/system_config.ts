@@ -153,20 +153,18 @@ export const useSystemStore = defineStore({
               };
               // 基本配置：如主讲终端、主题等
               this.basic_configs = {
-                MainEndpoint: data.MainEndpoint,
+                MainEndpoint: data.MainTerminal,
                 Theme: data.Theme,
                 Language: data.Language,
                 DisplayType: data.DisplayType,
                 ListDisplaySize: data.ListDisplaySize,
                 ID: data.ID,
               };
-              console.log(data.MainEndpoint, "data.MainEndpoint");
-
               const mainEndpointInfo = {
-                EndPointID: data.MainEndpoint?.ID,
-                EndPointName: data.MainEndpoint?.Name,
-                EndPointType: data.MainEndpoint?.Type,
-                EndPointIp: data.MainEndpoint?.IpAddress,
+                EndPointID: data.MainTerminal?.id,
+                EndPointName: data.MainTerminal?.name,
+                EndPointType: data.MainTerminal?.type,
+                EndPointIp: data.MainTerminal?.ip_address,
               };
               localStorage.set(
                 "speakerTerminal",
