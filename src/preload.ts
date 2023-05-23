@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 const validChannels = [
   "login-window",
+  "set-login-window-size",
   "main-window",
   "resize",
   "setFullScreen",

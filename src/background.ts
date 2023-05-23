@@ -159,6 +159,10 @@ async function createWindow() {
     win.center();
     win.setResizable(false);
   });
+  ipcMain.on("set-login-window-size", () => {
+    win.setSize(320, 530);
+    win.center();
+  });
   ipcMain.on("main-window", (e, value) => {
     // 渲染进程传值，设置记住的宽高
     const isTrue = value && (value.width || value.height);

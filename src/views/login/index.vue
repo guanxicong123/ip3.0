@@ -309,6 +309,8 @@ onMounted(() => {
   // 获取机器码
   systemStore.getProductKey();
 });
+// 设置登录页面的大小
+window.electronAPI.send("set-login-window-size");
 // 离开登录页面后，取消F11监听事件
 onUnmounted(()=>{
   window.removeEventListener('keydown',onF11Event);
