@@ -1006,13 +1006,17 @@ const getServeTask = (row: any) => {
 // 获取所有系统优先级
 const getPrioritySetting = () => {
   return new Promise((resolve, reject) => {
-    proxy.$http.get("/priority-setting").then((restlu: any) => {
-      let mapData = new Map();
-      restlu.data.forEach((item: { task_type: number; priority: number }) => {
-        mapData.set(item.task_type, item.priority);
-      });
-      priorityData.value = mapData;
-      resolve(restlu.data);
+    proxy.$http.get("/priority-setting").then((res: any) => {
+      if(res.result === 200) {
+        let mapData = new Map();
+        res.data.forEach((item: { task_type: number; priority: number }) => {
+          mapData.set(item.task_type, item.priority);
+        });
+        priorityData.value = mapData;
+        resolve(res.data);
+      }else {
+        reject()
+      }
     });
   });
 };
