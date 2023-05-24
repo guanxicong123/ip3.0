@@ -213,7 +213,16 @@ const handleRowClick = (row: any) => {
     ip_address: row.EndPointIP,
   };
   form.currentSelectedName = row.EndPointName;
-  localStorage.set("speakerTerminal", JSON.stringify(data));
+  // 前端存储字段与后端的不一样
+  localStorage.set(
+    "speakerTerminal",
+    JSON.stringify({
+      EndPointID: row.EndPointID,
+      EndPointName: row.EndPointName,
+      EndPointType: row.EndPointType,
+      EndPointIP: row.EndPointIP,
+    })
+  );
   proxy.$http1.put("/config/" + basic_configs.value.ID, {
     MainEndpointInfo: JSON.stringify(data),
   });
