@@ -881,6 +881,7 @@ const handleRequestConfigure = (data: any) => {
   form.sound_source.name = data.name;
   form.sound_source.type = data.type;
   form.sound_source_name = data.name;
+  form.sound_source_type = data.type;
   form.fase_life_time = usePublicMethod.convertSongDuration(data.length);
   emit("requestSoundSourceID", form.sound_source.id);
   emit("requestSoundSourceType", form.sound_source.type);
@@ -1009,7 +1010,6 @@ watch(
     // 编辑回传的音源类型
     if (newType != oldType) {
       form.activeName = newType == 2 || newType == 3 ? 23 : newType;
-      form.sound_source.type = newType;
       emit("requestType", newType);
     }
     // 编辑回传的音乐播放数据
@@ -1073,6 +1073,7 @@ watch(
       form.sound_source.name = newFastSoundSource.name;
       form.sound_source.type = newFastSoundSource.type;
       form.sound_source_name = newFastSoundSource.name;
+      form.sound_source_type = newFastSoundSource.type;
       form.fase_life_time = usePublicMethod.convertSongDuration(
         newFastSoundSource.length
       );
