@@ -307,11 +307,11 @@ defineExpose({
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   // 刷新页面时，获取下当前选中表格行
-  const currentTableRow = localStorage.get("speakerTerminal") || "";
+  const currentTableRow = JSON.parse(localStorage.get("speakerTerminal")) || {};
   // 采集终端 type = 3 不能作为主讲终端
-  if (JSON.parse(currentTableRow).EndPointType === 3) return;
+  if (currentTableRow.EndPointType === 3) return;
   if (currentTableRow) {
-    form.currentTableRow = JSON.parse(currentTableRow);
+    form.currentTableRow = currentTableRow;
     form.currentSelectedName =
       form.currentTableRow.EndPointName || proxy.$t("Please select a terminal");
   }
