@@ -53,5 +53,9 @@
     "unplugin-icons": "^0.14.3",
     "unplugin-vue-components": "^0.19.6",
     "vue-cli-plugin-electron-builder": "^3.0.0-alpha.4"
+  },
+  "volta": {
+    "node": "16.16.0",
+    "yarn": "1.22.1"
   }
 }
