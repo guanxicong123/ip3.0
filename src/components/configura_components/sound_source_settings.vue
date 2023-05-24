@@ -801,6 +801,7 @@ const handleTabClick = (tab: TabsPaneContext) => {
         : form.old_sound_source_data.type;
     // 编辑时，切换快捷音源和音乐播放的持续时间显示
     if (tab.paneName == 4) {
+      emit("requestSoundSourceID", form.old_sound_source_data.id);
       // 是否含有length字段
       const isHasLength = Object.prototype.hasOwnProperty.call(
         form.old_sound_source_data,
@@ -1077,7 +1078,7 @@ watch(
       form.fase_life_time = usePublicMethod.convertSongDuration(
         newFastSoundSource.length
       );
-      form.old_sound_source_data.type = newFastSoundSource.type;
+      form.old_sound_source_data = form.sound_source;
     }
     // 界面模式
     if (newMode != oldMode) {
