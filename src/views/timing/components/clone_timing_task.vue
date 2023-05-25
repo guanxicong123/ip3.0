@@ -73,7 +73,9 @@
     </div>
     <template #footer>
       <div class="com-dialog-footer">
-        <el-button plain @click="emit('show', false)">{{ $t("Cancel") }}</el-button>
+        <el-button plain @click="emit('show', false)">{{
+          $t("Cancel")
+        }}</el-button>
         <el-button type="primary" @click="handleSubmitFormSave(ruleFormRef)">
           {{ $t("Save") }}
         </el-button>
@@ -113,9 +115,9 @@ const validateName = (rule: any, value: any, callback: any) => {
   if (!useRegex.validateEmpty(value)) {
     return callback(new Error(proxy.$t("Please enter")));
   } else if (!useRegex.validateName(value)) {
-    return callback(new Error(proxy.$t("The name does not conform to the rule")));
-  } else {
-    callback();
+    return callback(
+      new Error(proxy.$t("The name does not conform to the rule"))
+    );
   }
   ValidatorService.postValidator({
     rule: { name: "require|unique:timing_tasks" },
@@ -142,7 +144,9 @@ const validateEmpty = (rule: any, value: any, callback: any) => {
 // 表单验证规则
 const rules = reactive({
   name: [{ validator: validateName, trigger: "blur", required: true }],
-  execute_time: [{ validator: validateEmpty, trigger: "change", required: true }],
+  execute_time: [
+    { validator: validateEmpty, trigger: "change", required: true },
+  ],
   end_time: [{ validator: validateEmpty, trigger: "blur", required: true }],
 });
 // 处理提交保存
@@ -152,7 +156,9 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
   await formEl.validate((valid, fields) => {
     if (valid) {
       let start =
-        parentData.editInfor?.[0].type !== 3 ? form.execute_time : form.end_time[0];
+        parentData.editInfor?.[0].type !== 3
+          ? form.execute_time
+          : form.end_time[0];
       let end = parentData.editInfor?.[0].type !== 3 ? "" : form.end_time[1];
       let ids: any[] = [];
       parentData.editInfor.forEach((item: { id: any }) => ids.push(item.id));
@@ -165,7 +171,9 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
             form.loading = false;
             return ElMessage({
               type: "error",
-              message: proxy.$t("The end time must be greater than the start time"),
+              message: proxy.$t(
+                "The end time must be greater than the start time"
+              ),
               grouping: true,
             });
           }
