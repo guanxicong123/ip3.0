@@ -186,7 +186,7 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
         end_time: end,
       })
         .then((result) => {
-          if (result.data) {
+          if (result.data?.id) {
             ElMessage({
               type: "success",
               message: proxy.$t("Cloning succeeded"),
