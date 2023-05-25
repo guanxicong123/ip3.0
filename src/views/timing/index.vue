@@ -481,6 +481,7 @@ const handleGetOnePageData = async () => {
     orderColumn: form.orderColumn,
     orderType: form.orderType,
     withLight: true,
+    withFastSound: true,
   })
     .then((result) => {
       if (result.data.data) {
