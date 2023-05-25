@@ -15,7 +15,10 @@
         </template>
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item :label="$t('Fast terminal')" prop="quick_terminal.name">
+            <el-form-item
+              :label="$t('Fast terminal')"
+              prop="quick_terminal.name"
+            >
               <div class="com-add-select-components">
                 <el-input
                   v-model="form.quick_terminal.name"
@@ -34,7 +37,7 @@
           </el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane :label="$t('Terminal selection')" :name="2" v-if="form.view_mode == 1">
+      <el-tab-pane :label="$t('Terminal selection')" :name="2">
         <el-checkbox
           v-if="config.isSelectOpenTerminalVolume"
           v-model="form.open_terminal_volume"
@@ -121,7 +124,6 @@ const userStore = computed(() => {
 
 const form = reactive({
   activeName: 1,
-  view_mode: 1, // 1:经典模式，2:简约模式
   quickDialogVisible: false, // 选择快捷终端弹窗
   quick_terminal: {
     id: 0,
@@ -181,7 +183,6 @@ const handleSetEditData = () => {
     form.activeName = 1;
     handleRequestConfigure(parentData?.responseQuickTerminals);
   }
-  console.log(form.terminals, parentData, "999");
   if (
     parentData?.responseTerminals?.length > 0 ||
     parentData?.responseGroups?.length > 0
@@ -196,24 +197,6 @@ const handleSetEditData = () => {
   emit("requestType", form.activeName);
 };
 
-// 监听变化
-watch(
-  userStore.value?.user?.users_config,
-  (newMode) => {
-    // 界面模式
-    form.view_mode = newMode?.view_mode;
-    if (form.activeName == 2 && form.view_mode == 2) {
-      form.activeName = 1;
-      emit("requestType", form.activeName);
-      emit("requestQuickTerminals", 0);
-    }
-  },
-  {
-    // 设置首次进入执行方法 immediate
-    // immediate: true,
-    deep: true,
-  }
-);
 watch(
   () => {
     return parentData?.showSearch;
@@ -232,7 +215,6 @@ watch(
   () => {
     form.activeName = 2;
     form.terminals = parentData?.responseTerminals;
-    console.log(form.terminals);
     emit("requestType", form.activeName);
   },
   {
@@ -287,9 +269,11 @@ watch(
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
+  config = Object.assign(
+    config,
+    parentData.myConfig ? parentData.myConfig : {}
+  );
   myConfigTerminal.selectAmplifier = config.selectAmplifier;
-  form.view_mode = userStore.value?.user?.users_config?.view_mode;
   setTimeout(() => {
     handleSetEditData();
   }, 500);

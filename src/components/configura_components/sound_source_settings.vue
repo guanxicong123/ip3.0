@@ -264,10 +264,7 @@
         :label="$t('Music play')"
         :name="1"
         lazy
-        v-if="
-          config.isSelectMusicPlay &&
-          (form.view_mode == 1 || form.notLimitedMode.includes($useRoute.name))
-        "
+        v-if="config.isSelectMusicPlay"
       >
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
@@ -389,7 +386,7 @@
         :label="$t('Sound source acquisition')"
         :name="23"
         lazy
-        v-if="config.isSelectSoundSource && form.view_mode == 1"
+        v-if="config.isSelectSoundSource"
       >
         <select-sound-source-collection-radios
           style="height: 380px; margin: 1px 0 26px"
@@ -697,7 +694,6 @@ const TTSStore = computed(() => {
 
 const form = reactive<any>({
   activeName: 4,
-  view_mode: 1, // 1:经典模式，2:简约模式
   soundSourceDialogVisible: false, // 选择快捷音源弹窗
   mediaDialogVisible: false, // 选择音乐文件弹窗
   sound_source: {
@@ -733,7 +729,6 @@ const form = reactive<any>({
   selectedMediaName: "", // 已选媒体名称
   selectedGroupsName: "", // 已选媒体文件夹名称
   totalSecond: 0, // 选择媒体的总时长
-  notLimitedMode: ["new_edit_quick_partition_task"], // 不受界面模式限制展示音乐播放的路由名称
 });
 // 插件配置
 let config = reactive<any>({
@@ -1080,21 +1075,6 @@ watch(
       );
       form.old_sound_source_data = form.sound_source;
     }
-    // 界面模式
-    if (newMode != oldMode) {
-      form.view_mode = newMode?.view_mode;
-      if (
-        newMode?.view_mode == 2 &&
-        !form.notLimitedMode.includes($useRoute.name)
-      ) {
-        emit("requestSoundSourceID", 0);
-        if (form.activeName == 1 || form.activeName == 23) {
-          form.activeName = 4;
-          form.sound_source.type = form.activeName;
-          emit("requestType", form.activeName);
-        }
-      }
-    }
     // 播放语音
     if (newTTS != oldTTS) {
       playVoiceOption.value = newTTS;
@@ -1137,7 +1117,6 @@ onMounted(() => {
     form.sound = playVoiceOption.value[0].name;
   }
   getAllDisplayAttribute();
-  form.view_mode = userStore.value?.user?.users_config?.view_mode;
 });
 </script>
 

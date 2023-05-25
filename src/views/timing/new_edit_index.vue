@@ -6,7 +6,11 @@
 -->
 <template>
   <div class="com-index">
-    <div class="com-main" v-loading="form.loading" element-loading-text="Loading...">
+    <div
+      class="com-main"
+      v-loading="form.loading"
+      element-loading-text="Loading..."
+    >
       <div class="com-table">
         <el-scrollbar>
           <el-form
@@ -154,7 +158,10 @@
                     (form.type > 1 && form.type < 4)
                   "
                 >
-                  <el-form-item :label="$t('Execution time')" prop="execute_time">
+                  <el-form-item
+                    :label="$t('Execution time')"
+                    prop="execute_time"
+                  >
                     <el-time-picker
                       v-model="ruleForm.execute_time"
                       format="HH:mm:ss"
@@ -167,7 +174,10 @@
               </el-row>
               <el-row
                 :gutter="60"
-                v-if="form.type === 1 || (form.type === 4 && form.fast_sound_type === 1)"
+                v-if="
+                  form.type === 1 ||
+                  (form.type === 4 && form.fast_sound_type === 1)
+                "
               >
                 <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                   <el-form-item
@@ -201,7 +211,8 @@
                           type="primary"
                           text
                           @click="
-                            form.isShowAdvancedVisible = !form.isShowAdvancedVisible
+                            form.isShowAdvancedVisible =
+                              !form.isShowAdvancedVisible
                           "
                         >
                           {{ $t("Senior") }}>>
@@ -228,7 +239,9 @@
                             />
                           </el-form-item>
                           <el-form-item
-                            :label="$t('Interval time') + '(' + $t('Minute') + ')'"
+                            :label="
+                              $t('Interval time') + '(' + $t('Minute') + ')'
+                            "
                             prop="interval_time"
                           >
                             <el-input-number
@@ -244,7 +257,8 @@
                           <el-button
                             plain
                             @click="
-                              form.isShowAdvancedVisible = !form.isShowAdvancedVisible
+                              form.isShowAdvancedVisible =
+                                !form.isShowAdvancedVisible
                             "
                           >
                             {{ $t("Close") }}
@@ -268,7 +282,10 @@
                   <div class="com-ir-bg custom-execute-time">
                     <el-scrollbar>
                       <ul>
-                        <li v-for="(item, index) in form.executionTimeData" :key="index">
+                        <li
+                          v-for="(item, index) in form.executionTimeData"
+                          :key="index"
+                        >
                           <el-time-picker
                             v-model="item.value"
                             format="HH:mm:ss"
@@ -281,7 +298,10 @@
                             class="delete-time"
                             @click="handleDeleteExecutionTime(index)"
                           >
-                            <i class="iconfont icon-delete" :title="$t('Delete')"></i>
+                            <i
+                              class="iconfont icon-delete"
+                              :title="$t('Delete')"
+                            ></i>
                           </span>
                         </li>
                       </ul>
@@ -295,7 +315,9 @@
                 <div class="com-breadcrumb">
                   <span class="strong">{{ $t("Sound source setting") }}</span>
                   <span class="red">*&nbsp;</span>
-                  <span class="tips">( {{ $t("Audio source saving prompt") }} )</span>
+                  <span class="tips"
+                    >( {{ $t("Audio source saving prompt") }} )</span
+                  >
                 </div>
                 <div class="com-button"></div>
               </div>
@@ -320,7 +342,9 @@
                 <div class="com-breadcrumb">
                   <span class="strong">{{ $t("Date setting") }}</span>
                   <span class="red">*&nbsp;</span>
-                  <span class="tips">( {{ $t("Audio source saving prompt") }} )</span>
+                  <span class="tips"
+                    >( {{ $t("Audio source saving prompt") }} )</span
+                  >
                 </div>
                 <div class="com-button"></div>
               </div>
@@ -348,7 +372,9 @@
                     <template v-if="form.terminalSettingsType === 2">
                       &nbsp;&nbsp;{{ $t("Selected terminal") }} :
                       <span class="theme">{{ form.terminals.length }}</span>
-                      <template v-if="systemStore.functional_configs.GroupDisplay">
+                      <template
+                        v-if="systemStore.functional_configs.GroupDisplay"
+                      >
                         &nbsp;&nbsp;{{ $t("Selected groups") }} :
                         <span class="theme">
                           {{ form.terminals_groups.length }}
@@ -479,7 +505,9 @@ const disabledStartDate = (time: { getTime: () => number }) => {
 const disabledEndDate = (time: { getTime: () => number }) => {
   let beginEndDate = ruleForm.start_date;
   if (beginEndDate) {
-    return time.getTime() < usePublicMethod.dateConversionToTimestamp(beginEndDate);
+    return (
+      time.getTime() < usePublicMethod.dateConversionToTimestamp(beginEndDate)
+    );
   }
 };
 // 路由
@@ -493,7 +521,9 @@ const validateName = (rule: any, value: any, callback: any) => {
   if (!useRegex.validateEmpty(value)) {
     return callback(new Error(proxy.$t("Please enter")));
   } else if (!useRegex.validateName(value)) {
-    return callback(new Error(proxy.$t("The name does not conform to the rule")));
+    return callback(
+      new Error(proxy.$t("The name does not conform to the rule"))
+    );
   } else if (form.old_name === value) {
     return callback();
   }
@@ -523,7 +553,9 @@ const validateEmpty = (rule: any, value: any, callback: any) => {
 const rules = reactive({
   name: [{ validator: validateName, trigger: "blur", required: true }],
   start_date: [{ validator: validateEmpty, trigger: "blur", required: true }],
-  execute_time: [{ validator: validateEmpty, trigger: "change", required: true }],
+  execute_time: [
+    { validator: validateEmpty, trigger: "change", required: true },
+  ],
 });
 // 处理音源设置返回的数据
 const handleRequestSoundType = (data: number) => {
@@ -661,9 +693,11 @@ const handleUnique = (arr: any[]) => {
 };
 // 处理删除多选执行时间
 const handleDeleteExecutionTime = (row: number) => {
-  form.executionTimeData = form.executionTimeData.filter((val: any, key: number) => {
-    return row !== key;
-  });
+  form.executionTimeData = form.executionTimeData.filter(
+    (val: any, key: number) => {
+      return row !== key;
+    }
+  );
   form.multiple_execute_time =
     form.executionTimeData.length > 0 ? form.executionTimeData[0].value : "";
 };
@@ -680,8 +714,10 @@ const batchAddExecutionTime = () => {
   for (let i = 0; i <= num; i++) {
     let d = new Date(start + interval * i);
     let hour = d.getHours() < 10 ? "0" + d.getHours() : "" + d.getHours();
-    let minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : "" + d.getMinutes();
-    let seconds = d.getSeconds() < 10 ? "0" + d.getSeconds() : "" + d.getSeconds();
+    let minutes =
+      d.getMinutes() < 10 ? "0" + d.getMinutes() : "" + d.getMinutes();
+    let seconds =
+      d.getSeconds() < 10 ? "0" + d.getSeconds() : "" + d.getSeconds();
     let time = hour + ":" + minutes + ":" + seconds;
     form.executionTimeData.push({
       value: time,
@@ -715,7 +751,9 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
       let isQuick = form.type == 4 && ruleForm.fast_sound_id == 0;
       // 音源设置 - 音乐播放
       let isMusic =
-        form.type === 1 && form.medias.length < 1 && form.medias_groups.length < 1;
+        form.type === 1 &&
+        form.medias.length < 1 &&
+        form.medias_groups.length < 1;
       // 音源设置 - 音源采集
       let isSound =
         (form.type === 2 && !form.sound_source.sound_card) ||
@@ -725,25 +763,33 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
         return handleReturnError(proxy.$t("Please select a sound source"));
       }
       // 重复日期
-      if (form.request_weeks.length < 1 && form.request_assign_dates.length < 1) {
+      if (
+        form.request_weeks.length < 1 &&
+        form.request_assign_dates.length < 1
+      ) {
         return handleReturnError(proxy.$t("Please select a duplicate date"));
       }
       // 终端或分组
       if (form.terminalSettingsType === 2) {
         if (form.terminals.length < 1 && form.terminals_groups.length < 1) {
-          return handleReturnError(proxy.$t("Please select a terminal or group"));
+          return handleReturnError(
+            proxy.$t("Please select a terminal or group")
+          );
         }
       } else {
         // 快捷终端
         if (ruleForm.fast_terminals_id < 1) {
-          return handleReturnError(proxy.$t("Please select a shortcut terminal"));
+          return handleReturnError(
+            proxy.$t("Please select a shortcut terminal")
+          );
         }
       }
       // 音源采集时，判断结束时间是否大于执行时间
       if (
         form.type === 2 ||
         form.type === 3 ||
-        (form.type === 4 && (form.sound_source.type == 2 || form.sound_source.type == 3))
+        (form.type === 4 &&
+          (form.sound_source.type == 2 || form.sound_source.type == 3))
       ) {
         const start_time = ruleForm.execute_time.replace(/:/g, "");
         const end_time = form.sound_source.end_time.replace(/:/g, "");
@@ -761,7 +807,6 @@ const handleSubmitFormSave = async (formEl: FormInstance | undefined) => {
         });
         ruleForm.execute_time = time.toString();
       }
-
       if (form.id > 0) {
         TasksService.putTasks(
           Object.assign(ruleForm, {
@@ -889,8 +934,8 @@ const handleGetEditData = async () => {
         }
         if (result.data.fast_terminals_id > 0) {
           form.quick_terminal = {
-            id: result.data.fast_terminal?.id,
-            name: result.data.fast_terminal?.name,
+            id: result.data.fast_terminals?.id,
+            name: result.data.fast_terminals?.name,
           };
         }
       } else {
@@ -933,7 +978,10 @@ const getAllLED = async () => {
   await LEDService.getAllLED({})
     .then((result) => {
       if (result.data) {
-        form.ledData = [...[{ id: 0, name: proxy.$t("Please select") }], ...result.data];
+        form.ledData = [
+          ...[{ id: 0, name: proxy.$t("Please select") }],
+          ...result.data,
+        ];
       } else {
         ElMessage({
           type: "error",
