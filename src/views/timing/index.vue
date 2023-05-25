@@ -205,24 +205,12 @@
             show-overflow-tooltip
           >
             <template #default="scope">
-              <!-- 只有音乐播放 -->
-              <span
-                v-if="
-                  scope.row.type == 1 ||
-                  (scope.row.type === 4 && scope.row.sound_source.type === 1)
-                "
-              >
-                <template v-if="scope.row.sound_source?.life_time">
+              <template v-if="scope.row.sound_source?.life_time">
                   {{ scope.row.sound_source.life_time }}
                 </template>
                 <template v-if="scope.row.sound_source?.play_number">
                   {{ scope.row.sound_source.play_number }} {{ $t("Songs") }}
                 </template>
-              </span>
-              <span v-else-if="scope.row.type == 23">
-                {{ scope.row.sound_source.life_time }}
-              </span>
-              <span v-else>--</span>
             </template>
           </el-table-column>
           <el-table-column
