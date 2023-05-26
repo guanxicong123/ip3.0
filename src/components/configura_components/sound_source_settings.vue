@@ -609,12 +609,8 @@ const parentData = defineProps([
 ]);
 
 const systemStore = getStore.useSystemStore();
-const user = getStore.useUserStore();
 const TTS = getStore.useTTSStore();
 // 计算属性 computed
-const userStore = computed(() => {
-  return user.user;
-});
 const TTSStore = computed(() => {
   return TTS.allTTS;
 });
@@ -675,8 +671,6 @@ let config = reactive<any>({
   setMusicPlayModelOption: useFormatMap.playModelOption, // 设置音乐播放-播放模式选项类型
   setSoundQualityOption: useFormatMap.qualityOption, // 采集音质选项
 });
-// 路由
-const $useRoute = useRoute();
 // 显示属性
 const ledDisplayOption = ref<any[]>([]);
 // 播放语音
@@ -905,12 +899,11 @@ watch(
     parentData.responseGroups,
     parentData.responseSoundSource,
     parentData.responseFastSoundSource,
-    userStore.value?.user?.users_config,
     TTSStore.value,
   ],
   (
-    [newType, newMedia, newGroups, newSoundSource, newFastSoundSource, newMode, newTTS],
-    [oldType, oldMedia, oldGroups, oldSoundSource, oldFastSoundSource, oldMode, oldTTS]
+    [newType, newMedia, newGroups, newSoundSource, newFastSoundSource, newTTS],
+    [oldType, oldMedia, oldGroups, oldSoundSource, oldFastSoundSource, oldTTS]
   ) => {
     // 编辑回传的音源类型
     if (newType != oldType) {
