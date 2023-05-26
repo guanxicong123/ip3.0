@@ -50,7 +50,7 @@
             <!-- 会导致有延迟 -->
             <!-- {{ form.song_name }} -->
             <!-- 使用当前正在执行任务的数组来显示播放媒体名称。socket使用task_status这个状态的信息 -->
-            {{sessionStoreAll[playCenterData.TaskID]?.TaskShowInfo}}
+            {{ sessionStoreAll[playCenterData.TaskID]?.TaskShowInfo }}
           </p>
           <div
             class="progress"
@@ -83,8 +83,12 @@
           ></i>
           <i
             class="iconfont"
-            :class="playModeIcon.get(selectTaskData.sound_source?.play_model)?.icon"
-            :title="playModeIcon.get(selectTaskData.sound_source?.play_model)?.title"
+            :class="
+              playModeIcon.get(selectTaskData.sound_source?.play_model)?.icon
+            "
+            :title="
+              playModeIcon.get(selectTaskData.sound_source?.play_model)?.title
+            "
             @click="handleSwitchTask(playCenterData, 'play_mode')"
           >
           </i>
@@ -137,7 +141,7 @@
             </el-slider>
           </el-popover>
         </div>
-        <div class="content-bottom theme com-show-button"  v-else>
+        <div class="content-bottom theme com-show-button" v-else>
           <i
             class="iconfont"
             :class="playCenterData.TaskID ? 'icon-end' : 'icon-play'"
@@ -264,7 +268,11 @@
                       v-else
                     >
                       <template #icon>
-                        <i class="iconfont icon-play" :class="{'disabled':!isCanPlay(scope.row)}" :title="$t('Play')"></i>
+                        <i
+                          class="iconfont icon-play"
+                          :class="{ disabled: !isCanPlay(scope.row) }"
+                          :title="$t('Play')"
+                        ></i>
                       </template>
                     </el-button>
                     <el-button
@@ -273,7 +281,11 @@
                       @click.stop="handleEditTask(scope.row)"
                     >
                       <template #icon>
-                        <i class="iconfont icon-edit " :class="{'disabled':handleDecideStatus(scope.row)}" :title="$t('Edit')"></i>
+                        <i
+                          class="iconfont icon-edit"
+                          :class="{ disabled: handleDecideStatus(scope.row) }"
+                          :title="$t('Edit')"
+                        ></i>
                       </template>
                     </el-button>
                     <el-button
@@ -342,7 +354,10 @@ const playStatusData: any = ref({});
 const playCenterShowData = computed(() => {
   return form.sessionsData.filter((item: any) => {
     if (selectTaskData.value?.type < 10) {
-      return item.RemoteTaskID === selectTaskData.value.id && item.SubTaskTypeName === 'remote_play';
+      return (
+        item.RemoteTaskID === selectTaskData.value.id &&
+        item.SubTaskTypeName === "remote_play"
+      );
     }
     if (selectTaskData.value?.type >= 10) {
       // 本地任务的SubTaskTypeName 为空
@@ -353,7 +368,7 @@ const playCenterShowData = computed(() => {
 // 播放器任务详情
 const playCenterData = computed(() => {
   if (playCenterShowData.value) {
-    return { ...selectTaskData.value, ...playCenterShowData.value};
+    return { ...selectTaskData.value, ...playCenterShowData.value };
   } else {
     return selectTaskData.value;
   }
@@ -572,7 +587,7 @@ const handleDecideStatus = (row: any, sessions?: any) => {
 const handleStopTask = (row: any) => {
   let key;
   form.sessionsData.some((item: any) => {
-    if (item.RemoteTaskID === row.id  && item.SubTaskTypeName == "remote_play") {
+    if (item.RemoteTaskID === row.id && item.SubTaskTypeName == "remote_play") {
       key = item.TaskID;
       return true;
     }
@@ -613,22 +628,22 @@ const handlePauseTask = (row: any) => {
 };
 // 播放任务
 const handlePlayTask = (row: any, isOnlyPlay = false) => {
-  if(row.medias_count === 0 || row.terminals_count === 0) {
-    if(row.medias_count === 0){
+  if (row.medias_count === 0 || row.terminals_count === 0) {
+    if (row.medias_count === 0) {
       proxy.$message({
-          type: "warning",
-          message: proxy.$t("No sound source"),
-          grouping: true,
-        });
+        type: "warning",
+        message: proxy.$t("No sound source"),
+        grouping: true,
+      });
     } else {
       proxy.$message({
-          type: "warning",
-          message: proxy.$t("No terminal"),
-          grouping: true,
-        });
+        type: "warning",
+        message: proxy.$t("No terminal"),
+        grouping: true,
+      });
     }
     return;
-  } 
+  }
   const func = () => {
     if (row.TaskID && !isOnlyPlay) {
       // 当任务存在，而又是需要实现播放的任务
@@ -650,7 +665,10 @@ const handlePlayTask = (row: any, isOnlyPlay = false) => {
     // 若传入的row中没有TaskID 而是任务列表中的row，判断任务是否在执行，
     if (
       isOnlyPlay &&
-      handleDecideStatus(row, Object.values(Object.values(session.allSessionObj)))
+      handleDecideStatus(
+        row,
+        Object.values(Object.values(session.allSessionObj))
+      )
     ) {
       return;
     }
@@ -722,10 +740,10 @@ const handlePlayTask = (row: any, isOnlyPlay = false) => {
       }
       send(data);
     }
-  }
+  };
   usePublicMethod.throttle(() => {
-      func();
-    },1000)
+    func();
+  }, 1000);
 };
 // 切换任务状态
 const handleSwitchTask = (row: any, type: string) => {
@@ -912,8 +930,8 @@ const handleTaskAttribute = (row: any) => {
 };
 // 编辑播放任务
 const handleEditTask = (row: any) => {
-  const task = getCurrentPerformTask(row)
-  if(task){
+  const task = getCurrentPerformTask(row);
+  if (task) {
     return proxy.$message({
       type: "warning",
       message: proxy.$t("Task is in progress"),
@@ -925,7 +943,7 @@ const handleEditTask = (row: any) => {
     query: {
       id: row.id,
       type: row.type,
-      taskId: task?.TaskID
+      taskId: task?.TaskID,
     },
   });
 };
@@ -1028,37 +1046,44 @@ const getTaskAll = () => {
 };
 // 是否可以播放
 const isCanPlay = (row: any) => {
-  if(row.medias_count > 0 && row.terminals_count > 0) {
+  if (row.medias_count > 0 && row.terminals_count > 0) {
     return true;
-  } 
+  }
   return false;
-}
+};
 // 检测任务列表中的数据的媒体数量与终端数量
-const getCheckMedia = (remoteData:any[]) => {
+const getCheckMedia = (remoteData: any[]) => {
   return new Promise((resolve) => {
     let count = Math.floor(remoteData.length / 100);
-    let returnCount = -1
+    let returnCount = -1;
     for (let i = 0; i <= count; i++) {
-      let checkData = remoteData.slice(i * 100,(i + 1) * 100).map((item:any)=>{
-        return item.id
-      })
-      proxy.$http.get('/broadcasting/check',{params: {
-        taskIds:checkData.join(','),
-        }}).then((res:any)=>{
-          if(res.result === 200){
-          res.data?.map((item:any,index:number)=>{
-            remoteData[i * 100 + index].medias_count = item.medias_count
-            remoteData[i * 100 + index].terminals_count = item.terminals_count
-          })
-          returnCount++
-          if(returnCount === count){
-            resolve(remoteData)
+      let checkData = remoteData
+        .slice(i * 100, (i + 1) * 100)
+        .map((item: any) => {
+          return item.id;
+        });
+      proxy.$http
+        .get("/broadcasting/check", {
+          params: {
+            taskIds: checkData.join(","),
+          },
+        })
+        .then((res: any) => {
+          if (res.result === 200) {
+            res.data?.map((item: any, index: number) => {
+              remoteData[i * 100 + index].medias_count = item.medias_count;
+              remoteData[i * 100 + index].terminals_count =
+                item.terminals_count;
+            });
+            returnCount++;
+            if (returnCount === count) {
+              resolve(remoteData);
+            }
           }
-        }
-      })
+        });
     }
-  })
-}
+  });
+};
 // 获取所有远程播放任务
 const getBroadcastingAll = () => {
   return new Promise((resolve, reject) => {
@@ -1073,7 +1098,7 @@ const getBroadcastingAll = () => {
         let data = restlu.data.filter((item: { type: number }) => {
           return item.type === 1 || item.type === 4;
         });
-        getCheckMedia(data).then((remoteData) => resolve(remoteData))
+        getCheckMedia(data).then((remoteData) => resolve(remoteData));
       });
   });
 };
@@ -1089,17 +1114,24 @@ const getTaskLocalAll = () => {
       })
       .then((restlu: any) => {
         if (Array.isArray(restlu.data)) {
-          restlu.data.map((item:any)=>{
-            item.medias_count = item.content? item.content.length || 1 : 0
-            item.content = item.content? Array.isArray(item.content)?item.content:[item.content]:[]
-            item.content.map((contentItem:any)=>{
+          restlu.data.map((item: any) => {
+            item.content = item.content
+              ? Array.isArray(item.content)
+                ? item.content
+                : [item.content]
+              : [];
+
+            item.medias_count = item.content.length;
+            item.content.map((contentItem: any) => {
               // 本地文件不存在
-              if(!contentItem.isexist){
-                item.medias_count --
+              if (contentItem.isexist === false) {
+                item.medias_count--;
               }
-            })
-            item.terminals_count = item.terminalsIds?.length || 0
-          })
+            });
+            item.terminals_count = item.terminalsIds?.length || 0;
+          });
+          console.log(restlu.data, "restlu.data");
+
           resolve(restlu.data);
         } else {
           resolve([]);
@@ -1143,12 +1175,12 @@ const filterData = () => {
 watch(
   remoteTaskDisplay,
   () => {
-      getTaskAll().then((formData: any) => {
-        if (formData.length > 0) {
-          handleSelectionClick(formData[0]);
-          multipleTableRef.value?.setCurrentRow(formData[0]);
-        }
-      });
+    getTaskAll().then((formData: any) => {
+      if (formData.length > 0) {
+        handleSelectionClick(formData[0]);
+        multipleTableRef.value?.setCurrentRow(formData[0]);
+      }
+    });
   },
   { immediate: true }
 );
@@ -1180,8 +1212,7 @@ const getCurrentPerformTask = (row: any) => {
   // 远程任务
   if (row.type < 10) {
     return form.sessionsData.find((item: any) => {
-      if(item.RemoteTaskID === row.id)
-      return item.RemoteTaskID === row.id;
+      if (item.RemoteTaskID === row.id) return item.RemoteTaskID === row.id;
     });
   }
   // 本地任务
