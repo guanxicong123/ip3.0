@@ -188,14 +188,17 @@ async function createWindow() {
     width: 0,
     height: 0,
   };
+  // 防止用户快速点击F11,
+  let setPrevSize = 0;
   // 仅适用与F11全屏操作，
   // 当前是否为全屏状态
   let winIsFullScreenFlog = false;
   win.on("enter-full-screen", () => {
     winIsFullScreenFlog = !winIsFullScreenFlog;
-    if (winIsFullScreenFlog) {
+    if (winIsFullScreenFlog && setPrevSize === 0) {
       F11Size.width = win.getSize()[0];
       F11Size.height = win.getSize()[1];
+      setPrevSize = 1;
     }
     setTimeout(() => {
       if (!winIsFullScreenFlog) {
@@ -208,6 +211,7 @@ async function createWindow() {
     setTimeout(() => {
       win.setSize(F11Size.width, F11Size.height);
       win.center();
+      setPrevSize = 0;
     });
   });
   ipcMain.on("register-success", () => {
