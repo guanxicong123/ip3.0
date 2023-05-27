@@ -158,9 +158,10 @@ const form = reactive<any>({
   url: "",
   files: [], // 上传文件数据
   md5Finish: 0,
-  accept:
-    "audio/mp3,audio/ogg,audio/wav,.aac,audio/flac,audio/amr,audio/opus,audio/vnd.dlna.adts", // 表单的accept属性, MIME type
-  extensions: "mp3,ogg,wav,aac,flac,opus,vnd.dlna.adts", // 允许上传的文件后缀
+  filterAccept:
+    "audio/mpeg,audio/mp3,audio/ogg,audio/wav,audio/aac,audio/flac,audio/amr,audio/opus,audio/vnd.dlna.adts",
+  accept: "audio/mp3,audio/wav,audio/flac", // 表单的accept属性, MIME type， 设置自定义文件格式
+  extensions: "mpeg,mp3,ogg,wav,aac,flac,amr,opus,adts", // 设置插件允许上传的文件格式
   hasUploadError: false,
   headers: {
     authorization: localStorage.get("userToken"),
@@ -275,8 +276,8 @@ const inputFilter = (
         form.isDuplicateName = true;
       }
     });
-    // 过滤不符合要求的文件（大于500MB和非 form.accept 包含的格式）
-    if (form.isFileLarge || form.accept.split(",").indexOf(newFile.type) < 0) {
+    // 过滤不符合要求的文件（大于500MB和非 form.filterAccept 包含的格式）
+    if (form.isFileLarge || form.filterAccept.split(",").indexOf(newFile.type) < 0) {
       ElMessage({
         type: "error",
         message: proxy.$t("Upload filter type prompt"),
