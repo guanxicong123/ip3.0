@@ -493,17 +493,9 @@ watch(
     }
     if (newShowManager != oldShowManager) {
       handleClose();
-      if (newShowManager) {
-        // 当没有选中的媒体文件夹并且只有一个文件夹数据时，默认选中第一个
-        if (
-          !Object.prototype.hasOwnProperty.call(form.currentSelected, "id") &&
-          form.groupData.length == 1
-        ) {
-          handleClick(form.groupData[0]);
-        } else {
-          handleClick(newSelected);
-        }
-      }
+    }
+    if (newSelected != oldSelected) {
+      handleClick(newSelected);
     }
   },
   {
