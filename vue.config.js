@@ -91,8 +91,9 @@ module.exports = defineConfig({
               ],
             },
           ],
-          homepage:"https://www.itc-pa.cn/"
         },
+        // 在linux环境下打包需要，win下打包会报错
+        // homepage:"https://www.itc-pa.cn/"
       },
     },
   },
