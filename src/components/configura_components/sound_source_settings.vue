@@ -811,7 +811,10 @@ const handleSelectedConfigure = () => {
   if (form.sound_source.type === 1) {
     sound_source = {
       play_model: form.play_model,
-      life_time: form.activeName == 4 ? form.fase_life_time : form.life_time,
+      life_time:
+        form.activeName == 4 && form.play_model === 0
+          ? form.fase_life_time
+          : form.life_time,
       play_number: form.play_number,
       play_type: form.play_type,
       type: form.sound_source.type,
