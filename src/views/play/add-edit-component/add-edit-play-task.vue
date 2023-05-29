@@ -88,7 +88,6 @@
                         ($useRoute.query?.type < 10 && item.type !== 1)
                       "
                     ></el-option>
-
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -247,7 +246,7 @@ import textPlayComponent from "../components/text-play-component.vue";
 import sourceAcquisitionComponent from "../components/source-acquisition-component.vue";
 import quickTerminalDialog from "@/components/quick-terminal-dialog.vue";
 import { onBeforeRouteLeave } from "vue-router";
-import {getAudioFileTime} from "../components/playUtil"
+import { getAudioFileTime } from "../components/playUtil";
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
@@ -370,9 +369,9 @@ const deteleOneMusic = (row: any) => {
 const getTime = ref(0);
 // 选中文件时触发
 const uploadChange: UploadProps["onChange"] = (uploadFile: any) => {
-  uploadFile = getAudioFileTime(uploadFile, ()=>{
+  uploadFile = getAudioFileTime(uploadFile, () => {
     getTime.value++;
-  })
+  });
 };
 
 watch(getTime, () => {
@@ -1007,15 +1006,15 @@ const getServeTask = (row: any) => {
 const getPrioritySetting = () => {
   return new Promise((resolve, reject) => {
     proxy.$http.get("/priority-setting").then((res: any) => {
-      if(res.result === 200) {
+      if (res.result === 200) {
         let mapData = new Map();
         res.data.forEach((item: { task_type: number; priority: number }) => {
           mapData.set(item.task_type, item.priority);
         });
         priorityData.value = mapData;
         resolve(res.data);
-      }else {
-        reject()
+      } else {
+        reject();
       }
     });
   });

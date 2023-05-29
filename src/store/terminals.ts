@@ -22,6 +22,7 @@ interface TerminalsParams<T = any> {
   alarmTerminalShow: boolean;
   manualAlarmTerminal: Array<any>;
   deviceStatusVolume: number;
+  terminalGroupsUpdate: boolean;
 }
 import $http from "@/utils/axios/local_index";
 export const useTerminalsStore = defineStore({
@@ -51,6 +52,7 @@ export const useTerminalsStore = defineStore({
       manualAlarmTerminal: [], // 人工报警信息
       alarmTerminalShow: false, // 报警终端弹窗显示
       deviceStatusVolume: 0, // 设备状态模块右下角的声音
+      terminalGroupsUpdate: false, // 更新终端分组列表
     };
   },
   actions: {
@@ -346,6 +348,10 @@ export const useTerminalsStore = defineStore({
     // 改变设备状态的声音
     setDeviceStatusVolume(volume: number) {
       this.deviceStatusVolume = volume;
+    },
+    // 更新终端分组
+    updateTerminalGroups(flog: boolean) {
+      this.terminalGroupsUpdate = flog;
     },
   },
 });

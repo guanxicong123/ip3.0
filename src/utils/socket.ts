@@ -223,6 +223,12 @@ const handlerMsg = (msg: any) => {
         }
       },
     ],
+    [
+      "terminal_group_info_update", // 终端分组更新
+      () => {
+        getStore.useTerminalsStore().updateTerminalGroups(true);
+      },
+    ],
   ]);
   if (msg.result !== 200) {
     // 登录失败
