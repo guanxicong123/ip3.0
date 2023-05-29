@@ -83,7 +83,15 @@ module.exports = defineConfig({
         linux: {
           // linux
           icon: "./icon/icon",
-          target: "deb",
+          target: [
+            {
+              target: "deb", // 使用deb打成安装包
+              arch: [
+                "x64", //64位
+              ],
+            },
+          ],
+          homepage:"https://www.itc-pa.cn/"
         },
       },
     },

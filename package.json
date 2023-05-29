@@ -1,6 +1,6 @@
 {
-  "name": "ip3.0-electron",
-  "version": "3.0.0",
+  "name": "ip-broadcast",
+  "version": "3.0.6",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
