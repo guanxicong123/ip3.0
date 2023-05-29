@@ -147,7 +147,7 @@
         {{ $t("Sign in") }}
       </el-button>
     </div>
-    <div class="broadcast-login-edition">V3.0.5</div>
+    <div class="broadcast-login-edition">V3.0.6</div>
   </div>
 </template>
 
