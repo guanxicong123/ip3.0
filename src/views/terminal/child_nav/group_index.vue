@@ -103,6 +103,10 @@ const userStore = computed(() => {
 const terminalsStoreAll = computed(() => {
   return terminals.allTerminalsObj;
 });
+// 终端分组需要更新
+const terminalGroupsUpdate = computed(() => {
+  return terminals.terminalGroupsUpdate;
+});
 const groupStoreSearch = computed(() => {
   return terminals.searchGroupString;
 });
@@ -178,7 +182,7 @@ const viewGroupInfo = (item: {
 }) => {
   show_group_info.value = true;
   group_title.value = item.name;
-  form.table_data = item.terminals
+  form.table_data = item.terminals;
 };
 // 处理全选
 const handleCheckedAll = () => {
@@ -235,18 +239,18 @@ const setGroupStatus = (groupData: Array<any>) => {
   return groupData.map((item: any) => {
     let groupStatus = 0;
     let priority = 0;
-    if(item.terminals.length > 0){
+    if (item.terminals.length > 0) {
       item.terminals.forEach((terminal: { id: number }) => {
         let newPriority =
           groupStatusMap.get(terminalsStoreAll.value[terminal.id]?.Status) || 0;
         if (newPriority > priority) {
-          priority = newPriority
+          priority = newPriority;
           groupStatus = terminalsStoreAll.value[terminal.id]?.Status;
         }
       });
-    } 
+    }
     item.status = groupStatus;
-    return item
+    return item;
   });
 };
 // 处理获取一页数据
@@ -273,6 +277,7 @@ const handleGetOnePageData = () => {
           grouping: true,
         });
       }
+      getStore.useTerminalsStore().updateTerminalGroups(false);
     })
     .catch((error) => {
       console.log(error);
@@ -288,7 +293,7 @@ onBeforeRouteLeave((to, from) => {
 // 监听变化
 watch(
   () => [groupStoreSearch.value, checked_all.value],
-  ([ newSearch, newCheck], [oldAll, oldSearch, oldCheck]) => {
+  ([newSearch, newCheck], [oldAll, oldSearch, oldCheck]) => {
     // 搜索数据
     if (newSearch != oldSearch) {
       form.search = newSearch;
@@ -316,6 +321,10 @@ watch(
   },
   { deep: true }
 );
+// 监听终端分组是否需要更新
+watch(terminalGroupsUpdate, () => {
+  if (terminalGroupsUpdate) handleGetOnePageData();
+});
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   handleGetOnePageData();
