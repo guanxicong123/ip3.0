@@ -15,10 +15,7 @@
         </template>
         <el-row :gutter="60">
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <el-form-item
-              :label="$t('Fast terminal')"
-              prop="quick_terminal.name"
-            >
+            <el-form-item :label="$t('Fast terminal')" prop="quick_terminal.name">
               <div class="com-add-select-components">
                 <el-input
                   v-model="form.quick_terminal.name"
@@ -254,11 +251,9 @@ watch(
   }
 );
 watch(
-  () => {
-    return parentData.responseOpenVolume;
-  },
-  () => {
-    form.open_terminal_volume = true;
+  () => [parentData.responseOpenVolume],
+  ([newData], [oldData]) => {
+    form.open_terminal_volume = newData == 1 ? true : false;
   },
   {
     // 初始化立即执行
@@ -269,10 +264,7 @@ watch(
 
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  config = Object.assign(
-    config,
-    parentData.myConfig ? parentData.myConfig : {}
-  );
+  config = Object.assign(config, parentData.myConfig ? parentData.myConfig : {});
   myConfigTerminal.selectAmplifier = config.selectAmplifier;
   setTimeout(() => {
     handleSetEditData();
