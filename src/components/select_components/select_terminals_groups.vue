@@ -632,11 +632,8 @@ const handleUpdateSelectedTerminals = () => {
       request.name = item.name;
       request.type = item.type;
       selectedName += item.name + ",";
-      // 开启修改终端音量
-      if (parentData.openTerminalsVolume) {
-        request[config.terminalsColumnVolume] = item[config.terminalsColumnVolume];
-        request.is_lock = item.is_lock;
-      }
+      request[config.terminalsColumnVolume] = item[config.terminalsColumnVolume];
+      request.is_lock = parentData.openTerminalsVolume ? 1 : 0;
       request[config.terminalsRequestColumnName] = item[config.terminalsColumnName];
 
       if (config.selectAmplifier) {
@@ -1057,6 +1054,7 @@ const handleSetShowColumn = (openTerminalsVolume: boolean) => {
     config,
     openTerminalsVolume ? changeTerminalsVolumeConfig : defaultConfig
   );
+  handleUpdateSelectedTerminals();
 };
 // 数组对象去重
 const handleUnique = (arr: any[]) => {
@@ -1073,14 +1071,12 @@ watch(
     parentData.responseTerminals,
     parentData.responseGroups,
     parentData.showSearch,
-    parentData.openTerminalsVolume,
     parentData.changeTerminalsVolume,
   ],
   (
-    [newExcludeTerminals, newTerminals, newGroups, newSearch, newOpenVolume, newVolume],
-    [oldExcludeTerminals, oldTerminals, oldGroups, oldSearch, oldOpenVolume, oldVolume]
+    [newExcludeTerminals, newTerminals, newGroups, newSearch, newVolume],
+    [oldExcludeTerminals, oldTerminals, oldGroups, oldSearch, oldVolume]
   ) => {
-    handleSetShowColumn(newOpenVolume);
     // 开启并修改终端音量
     if (parentData.openTerminalsVolume && newVolume != oldVolume) {
       setChangeTerminalsVolume(newVolume);
@@ -1103,6 +1099,13 @@ watch(
     // 设置首次进入执行方法 immediate
     // immediate: true,
     deep: true,
+  }
+);
+
+watch(
+  () => [parentData.openTerminalsVolume],
+  ([newOpenVolume], [oldOpenVolume]) => {
+    handleSetShowColumn(newOpenVolume);
   }
 );
 
