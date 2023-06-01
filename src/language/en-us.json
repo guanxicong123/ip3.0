@@ -1121,5 +1121,13 @@
   "The color should not be too light": "The color should not be too light",
   "User name or pwd change": "Username or password has been modified, please log in again",
   "Account disabled": "Account disabled",
-  "The confirmation password does not match the new password": "The confirmation password does not match the new password"
+  "The confirmation password does not match the new password": "The confirmation password does not match the new password",
+  "Connection status": "Connection status",
+  "Connected": "Connected",
+  "Not connected": "Not connected",
+  "Restart system prompt": "The operating system on which the installation service is about to be restarted, Whether to continue or not?",
+  "Service network attention tip 1": "1. When the service is multi-network card and is connected, you can use the IP address of the multi-network card to log in;",
+  "Service network attention tip 2": "2. To modify the new IP address, you need to re-enter the IP address to access and log in.",
+  "Please enter a unique code": "Please enter a unique code",
+  "Unique code prompt description": "The unique code corresponding to the device can be searched in the IP configuration tool"
 }
