@@ -1121,5 +1121,13 @@
   "The color should not be too light": "颜色不能太浅",
   "User name or pwd change": "用户名或密码已经被修改，请重新登录",
   "Account disabled": "账号已禁用",
-  "The confirmation password does not match the new password": "确认密码与新密码不一致"
+  "The confirmation password does not match the new password": "确认密码与新密码不一致",
+  "Connection status": "连接状态",
+  "Connected": "已连接",
+  "Not connected": "未连接",
+  "Restart system prompt": "即将重启安装服务的操作系统，是否继续？",
+  "Service network attention tip 1": "1. 当服务为多网卡且是已连接状态，可使用多网卡的IP地址进行访问登录；",
+  "Service network attention tip 2": "2. 修改新的IP地址需要重新输入IP地址进行访问登录。",
+  "Please enter a unique code": "请输入唯一码",
+  "Unique code prompt description": "IP配置工具中可搜索到设备对应的唯一码"
 }
