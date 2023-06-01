@@ -498,7 +498,7 @@ const isExecuted = computed(() => {
   return (
     Object.keys(sessionStoreAll.value).findIndex((taskId: any) => {
       if (
-        sessionStoreAll.value[taskId].RemoteTaskID === taskDataDetailed.value.id
+        sessionStoreAll.value[taskId].RemoteTaskID === taskDataDetailed.value.id && taskDataDetailed.value.type < 10
       ) {
         // 添加当前正在执行的任务的【播放媒体名称】 与 【执行任务ID】
         taskDataDetailed.value.TaskShowInfo =
