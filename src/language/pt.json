@@ -1129,5 +1129,6 @@
   "Service network attention tip 1": "1. 当服务为多网卡且是已连接状态，可使用多网卡的IP地址进行访问登录；",
   "Service network attention tip 2": "2. 修改新的IP地址需要重新输入IP地址进行访问登录。",
   "Please enter a unique code": "请输入唯一码",
-  "Unique code prompt description": "IP配置工具中可搜索到设备对应的唯一码"
+  "Unique code prompt description": "IP配置工具中可搜索到设备对应的唯一码",
+  "Show only terminals groups with call codes": " ( 仅展示有呼叫编码的终端/分组 )"
 }
