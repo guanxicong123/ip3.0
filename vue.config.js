@@ -18,16 +18,10 @@ module.exports = defineConfig({
       preload: "src/preload.ts",
       customFileProtocol: "./", //打包后iconfont路径指向
       builderOptions: {
-        extraResources: [
-          {
-            from: "../public/renderer/*", // 项目资源
-            to: "../renderer", // 打包后输出到resources目录下
-          },
-        ],
         // options placed here will be merged with default configuration and passed to electron-builder
         productName: "ip-broadcast", //项目名，也是生成的安装文件名，即ip-broadcast.exe
         appId: "com.example.ip-broadcast",
-        copyright: "Copyright © 2023", //版权信息
+        copyright: "itc © 2023", //版权信息
         // 设置用户可选择安装目录
         nsis: {
           // "oneClick" : false,// 是否一键安装
@@ -82,15 +76,13 @@ module.exports = defineConfig({
         },
         linux: {
           // linux
-          icon: "./icon/icon",
+          icon: "./src/assets/images/logo-linux.png",
           target: [
             {
               target: "deb", // 使用deb打成安装包
-              arch: [
-                "x64", //64位
-              ],
             },
           ],
+          category:"Development",
         },
         // 在linux环境下打包需要，win下打包会报错
         // homepage:"https://www.itc-pa.cn/"

@@ -2,6 +2,22 @@
   "name": "ip-broadcast",
   "version": "3.0.6",
   "private": true,
+  "description": "ip广播3.0",
+  "homepage": "https://www.itc.vip/",
+  "asar": false,
+  "author": {
+    "name": "itc",
+    "email": "xxx"
+  },
+  "license": "CC0-1.0",
+  "repository": "/IPBroadCastV3.0/IPBroadCastWeb-Electron",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -10,25 +26,6 @@
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
-  },
-  "win": {
-    "icon": "public/icons/ip.ico",
-    "target": [
-      {
-        "target": "nsis"
-      }
-    ]
-  },
-  "linux": {
-    "icon": "./icon/icon",
-    "target": [
-      {
-        "target": "deb",
-        "arch": [
-          "x64"
-        ]
-      }
-    ]
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.4",
