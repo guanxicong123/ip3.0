@@ -17,8 +17,16 @@
           row-class-name="com-table-list"
         >
           <el-table-column type="index" width="60" label="No." />
-          <el-table-column prop="name" :label="$t('File name')" show-overflow-tooltip />
-          <el-table-column prop="time" :label="$t('File duration')" show-overflow-tooltip>
+          <el-table-column
+            prop="name"
+            :label="$t('File name')"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="time"
+            :label="$t('File duration')"
+            show-overflow-tooltip
+          >
             <template #default="scope">
               {{ usePublicMethod.convertSongDuration(scope.row.time) }}
             </template>
@@ -37,7 +45,11 @@
         </el-table>
       </div>
     </div>
-    <el-form :model="ruleForm" label-position="top" class="play-task-form-inline">
+    <el-form
+      :model="ruleForm"
+      label-position="top"
+      class="play-task-form-inline"
+    >
       <el-row :gutter="80">
         <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
           <el-form-item :label="$t('Play mode')">
@@ -51,12 +63,26 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.play_model === 0">
+        <el-col
+          :xs="12"
+          :sm="8"
+          :md="8"
+          :lg="8"
+          :xl="6"
+          v-if="ruleForm.play_model === 0"
+        >
           <el-form-item :label="$t('Duration')">
             {{ duration }}
           </el-form-item>
         </el-col>
-        <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.play_model !== 0">
+        <el-col
+          :xs="12"
+          :sm="8"
+          :md="8"
+          :lg="8"
+          :xl="6"
+          v-if="ruleForm.play_model !== 0"
+        >
           <el-form-item>
             <el-radio
               v-model="ruleForm.type"
@@ -74,7 +100,14 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" v-if="ruleForm.play_model !== 0">
+        <el-col
+          :xs="12"
+          :sm="8"
+          :md="8"
+          :lg="8"
+          :xl="6"
+          v-if="ruleForm.play_model !== 0"
+        >
           <el-form-item>
             <el-radio
               v-model="ruleForm.type"
@@ -107,7 +140,11 @@ const props = defineProps({
   fileList: Array,
   requestConfig: Object,
 });
-const emit = defineEmits(["update:musicSelect", "requestDispose", "deteleOneMusic"]);
+const emit = defineEmits([
+  "update:musicSelect",
+  "requestDispose",
+  "deteleOneMusic",
+]);
 const ruleForm = reactive({
   play_model: 0, //播放模式
   life_time: "00:00:00", //持续时间
@@ -121,32 +158,41 @@ const tableData = computed(() => {
   return props.fileList;
 });
 
-watch([tableData, props.fileList], () => {
-  let timeDuration = 0;
-  tableData.value?.forEach((item: any) => {
-    timeDuration += Number(item.time);
-  });
-  duration.value = usePublicMethod.convertSongDuration(timeDuration);
-});
-watch([ruleForm, duration], ([,],[,oldDuration]) => {
-  let data;
-  if (ruleForm.play_model !== 0 && ruleForm.type !== 1) {
-    data = {
-      play_model: ruleForm.play_model,
-      play_number: ruleForm.play_number,
-    };
-  } else {
-    data = {
-      play_model: ruleForm.play_model,
-      life_time: ruleForm.play_model === 0 ? duration.value : ruleForm.life_time,
-    };
-  }
-  emit("requestDispose", data);
-  // 判断当前显示时间是否与上一次媒体选中的时间一致，或者 是否是第一次进入添加任务界面。
-  if(ruleForm.life_time === oldDuration){
-      ruleForm.life_time = duration.value
+watch(
+  [tableData, props.fileList],
+  () => {
+    let timeDuration = 0;
+    tableData.value?.forEach((item: any) => {
+      timeDuration += Number(item.time);
+    });
+    duration.value = usePublicMethod.convertSongDuration(timeDuration);
+  },
+  { deep: true }
+);
+watch(
+  [ruleForm, duration],
+  ([,], [, oldDuration]) => {
+    let data;
+    if (ruleForm.play_model !== 0 && ruleForm.type !== 1) {
+      data = {
+        play_model: ruleForm.play_model,
+        play_number: ruleForm.play_number,
+      };
+    } else {
+      data = {
+        play_model: ruleForm.play_model,
+        life_time:
+          ruleForm.play_model === 0 ? duration.value : ruleForm.life_time,
+      };
     }
-});
+    emit("requestDispose", data);
+    // 判断当前显示时间是否与上一次媒体选中的时间一致，或者 是否是第一次进入添加任务界面。
+    if (ruleForm.life_time === oldDuration) {
+      ruleForm.life_time = duration.value;
+    }
+  },
+  { deep: true }
+);
 
 const handleSelectionChange = (val: any) => {
   val.forEach((item: { name: any }) => {
@@ -171,7 +217,9 @@ onMounted(() => {
     );
 
     ruleForm.play_model = props.requestConfig.play_model || 0;
-    ruleForm.life_time = hasLifeTime ? props.requestConfig.life_time : "00:00:00";
+    ruleForm.life_time = hasLifeTime
+      ? props.requestConfig.life_time
+      : "00:00:00";
     ruleForm.play_number = hasPlayNumber ? props.requestConfig.play_number : 1;
     duration.value = hasLifeTime ? props.requestConfig.life_time : "00:00:00";
 
