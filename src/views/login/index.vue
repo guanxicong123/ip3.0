@@ -25,7 +25,11 @@
         </el-icon>
       </div>
       <div class="login-header-logo">
-        <img class="logo-imag" src="@/assets/images/logo-login.png" alt="logo" />
+        <img
+          class="logo-imag"
+          src="@/assets/images/logo-login.png"
+          alt="logo"
+        />
         <h2>{{ $t("IP network broadcasting") }}</h2>
       </div>
       <svg viewBox="0 0 120 16" class="svg">
@@ -138,7 +142,10 @@
         {{ $t("Term of validity") }} :&nbsp;
         {{ usePublicMethod.specifyDate(registerStatus?.freeTime) }}
       </span>
-      <span v-if="registerStatus?.isRegister && registerStatus?.freeTime < 0" class="register-lifespan">
+      <span
+        v-if="registerStatus?.isRegister && registerStatus?.freeTime < 0"
+        class="register-lifespan"
+      >
         {{ $t("Term of validity") }} : 0000-00-00
       </span>
     </div>
@@ -190,7 +197,9 @@ watch(
 );
 // 处理改变端口验证
 const handleProtValidator = () => {
-  modelRef.port = useRegex.replaceEmojiSpaces(modelRef.port).replace(/\b(0+)/gi, "");
+  modelRef.port = useRegex
+    .replaceEmojiSpaces(modelRef.port)
+    .replace(/\b(0+)/gi, "");
   if (Number(modelRef.port) <= 0) {
     modelRef.port = "1";
   }
@@ -208,14 +217,14 @@ const close = () => {
   window.electronAPI.send("close");
 };
 //是否重新登录
-const isLoginStatus = computed(()=>{
-  return getStore.useAppStore().is_login_status !== 0
-})
+const isLoginStatus = computed(() => {
+  return getStore.useAppStore().is_login_status !== 0;
+});
 // 注册触发事件
 window.electronAPI.handleRegisterSuccess((event: any, value: any) => {
   ElMessage({
     type: "success",
-    message:proxy.$t("Register succeeded"),
+    message: proxy.$t("Register succeeded"),
     grouping: true,
   });
   gitRegisterStatus();
@@ -226,7 +235,7 @@ const gitRegisterStatus = () => {
     proxy.$http1.get("/register").then((result: any) => {
       if (result.result === 200) {
         registerStatus.value = result.data;
-        store.updateRegisterDetail(result.data)
+        store.updateRegisterDetail(result.data);
         resolve(result.data);
       }
     });
@@ -236,31 +245,32 @@ const gitRegisterStatus = () => {
 const submit = () => {
   // 登录前，把http的baseURL改为以最新的登录的ip地址进行请求
   localStorage.set("serverIP", modelRef.server_ip_address);
-  $http.defaults.baseURL =  "http://" + localStorage.get("serverIP") + ":81/api/v29+"
+  $http.defaults.baseURL =
+    "http://" + localStorage.get("serverIP") + ":81/api/v29+";
   if (!registerStatus.value?.isRegister && registerStatus.value?.freeTime === 0)
     return proxy.$message({
-      type:'warning',
-      message:proxy.$t("Unregistered"),
-      grouping:true
-    })
+      type: "warning",
+      message: proxy.$t("Unregistered"),
+      grouping: true,
+    });
   if (!modelRef.name)
     return proxy.$message({
-      type:'warning',
-      message:proxy.$t("Please enter the account number"),
-      grouping:true
-    })
+      type: "warning",
+      message: proxy.$t("Please enter the account number"),
+      grouping: true,
+    });
   if (!modelRef.password)
     return proxy.$message({
-      type:'warning',
-      message:proxy.$t("Please input a password"),
-      grouping:true
-    })
+      type: "warning",
+      message: proxy.$t("Please input a password"),
+      grouping: true,
+    });
   if (!modelRef.server_ip_address)
     return proxy.$message({
-      type:'warning',
-      message:proxy.$t("Please enter the server address"),
-      grouping:true
-    })
+      type: "warning",
+      message: proxy.$t("Please enter the server address"),
+      grouping: true,
+    });
   let data = {
     company: "BL",
     actioncode: "c2ms_user_login",
@@ -280,21 +290,21 @@ const submit = () => {
   socketLogin(data);
   localStorage.set("username", modelRef.name);
 };
-const openRegisterWindow = ()=>{
-  window.electronAPI.send("register-window",'register');
-}
+const openRegisterWindow = () => {
+  window.electronAPI.send("register-window", "register");
+};
 // 拦截F11事件
-const onF11Event = (event:any)=>{
-  if(event.code === 'F11'){
-    event.preventDefault()
+const onF11Event = (event: any) => {
+  if (event.code === "F11") {
+    event.preventDefault();
   }
-}
+};
 // mounted 实例挂载完成后被调用
 onMounted(() => {
-  window.addEventListener('keydown', onF11Event);
-  gitRegisterStatus().then((res:any) => {
+  window.addEventListener("keydown", onF11Event);
+  gitRegisterStatus().then((res: any) => {
     // 未注册且不是重新登录，弹出【试用注册引导窗】
-    if(!res.isRegister && !isLoginStatus.value){
+    if (!res.isRegister && !isLoginStatus.value) {
       window.electronAPI.send("register-window");
     }
   });
@@ -312,9 +322,9 @@ onMounted(() => {
 // 设置登录页面的大小
 window.electronAPI.send("set-login-window-size");
 // 离开登录页面后，取消F11监听事件
-onUnmounted(()=>{
-  window.removeEventListener('keydown',onF11Event);
-})
+onUnmounted(() => {
+  window.removeEventListener("keydown", onF11Event);
+});
 onBeforeUnmount(() => {
   if (isWebsocekt) {
     localStorage.set("serverIP", modelRef.server_ip_address);
@@ -335,6 +345,7 @@ onBeforeUnmount(() => {
   background-color: $c-fff;
   border-radius: 8px;
   box-sizing: border-box;
+  border-color: #e8e8e8;
   box-shadow: 1px 12px 48px 16px rgb(0 0 0 / 5%), 1px 9px 28px 0 rgb(0 0 0 / 6%),
     1px 6px 6px -8px rgb(0 0 0 / 10%);
 
@@ -437,7 +448,8 @@ onBeforeUnmount(() => {
         height: 28px;
         border-bottom: 1px solid #ddd;
         border-radius: 0;
-        box-shadow: 0 0 0 0 var(--el-input-border-color, var(--el-border-color)) inset;
+        box-shadow: 0 0 0 0 var(--el-input-border-color, var(--el-border-color))
+          inset;
       }
     }
 
