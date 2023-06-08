@@ -83,12 +83,8 @@
           ></i>
           <i
             class="iconfont"
-            :class="
-              playModeIcon.get(selectTaskData.sound_source?.play_model)?.icon
-            "
-            :title="
-              playModeIcon.get(selectTaskData.sound_source?.play_model)?.title
-            "
+            :class="playModeIcon.get(form.play_model)?.icon || 'icon-list-play'"
+            :title="playModeIcon.get(form.play_model)?.title"
             @click="handleSwitchTask(playCenterData, 'play_mode')"
           >
           </i>
