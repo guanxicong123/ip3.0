@@ -25,6 +25,7 @@ interface TerminalsParams<T = any> {
   terminalGroupsUpdate: boolean;
 }
 import $http from "@/utils/axios/local_index";
+import { usePlayStore } from "./play_center";
 export const useTerminalsStore = defineStore({
   id: "terminals",
   state: (): TerminalsParams => {
@@ -273,6 +274,10 @@ export const useTerminalsStore = defineStore({
       this.allFilterTerminals = this.allFilterTerminals.filter((item) => {
         return !data.includes(item.EndPointID);
       });
+      // 更新列表
+      usePlayStore().setIsLatestTaskStatus(false);
+      // 更新详情
+      usePlayStore().setIsLatestTaskDetail(false);
     },
     // 清除终端数据
     clearTerminals() {

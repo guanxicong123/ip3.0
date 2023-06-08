@@ -1253,8 +1253,8 @@ watch(playCenterData, (newVal, oldVal) => {
 });
 
 // 当task信息在其他端 更新的时候，需要重新请求task的数据
-watch(isLatestTaskStatus, () => {
-  getTaskAll();
+watch(isLatestTaskStatus, (flog: boolean) => {
+  !flog && getTaskAll();
 });
 // 保存当前的query，为了提前清除掉route上的query，不然清除query会刷新一次页面，导致表格选中效果消失
 let currentQuery: any = {};
