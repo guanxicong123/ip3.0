@@ -25,12 +25,22 @@
     >
       <el-table-column
         property="EndPointName"
-        :label="parentData.alarmDialog?$t('terminal/username'):$t('Terminal')"
+        :label="
+          parentData.alarmDialog ? $t('terminal/username') : $t('Terminal')
+        "
         width="150"
         sortable
       />
-      <el-table-column property="EndPointIP" :label="$t('IP address')" width="200" />
-      <el-table-column property="OfflineTime" :label="$t('Offline time')" sortable />
+      <el-table-column
+        property="EndPointIP"
+        :label="$t('IP address')"
+        width="200"
+      />
+      <el-table-column
+        property="OfflineTime"
+        :label="parentData.alarmDialog ? $t('Alarm time') : $t('Offline time')"
+        sortable
+      />
     </el-table>
   </el-dialog>
 </template>
@@ -40,7 +50,7 @@ const parentData = defineProps({
   dialogVisible: Boolean,
   dialogTitle: String,
   dialogAlertData: Array,
-  alarmDialog:Boolean,
+  alarmDialog: Boolean,
 });
 const parentEmit = defineEmits(["update:dialogVisible", "requestDispose"]);
 
@@ -56,9 +66,13 @@ watch(
 const handleSortChange = (row: { prop: any; order: string | string[] }) => {
   if (row.prop == "name") {
     if (row.order === "descending") {
-      tableData.value.sort((a: any, b: any) => b.name.localeCompare(a.name, "zh"));
+      tableData.value.sort((a: any, b: any) =>
+        b.name.localeCompare(a.name, "zh")
+      );
     } else if (row.order === "ascending") {
-      tableData.value.sort((a: any, b: any) => a.name.localeCompare(b.name, "zh"));
+      tableData.value.sort((a: any, b: any) =>
+        a.name.localeCompare(b.name, "zh")
+      );
     }
   }
 };
