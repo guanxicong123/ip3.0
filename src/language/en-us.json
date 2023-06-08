@@ -1130,5 +1130,6 @@
   "Service network attention tip 2": "2. To modify the new IP address, you need to re-enter the IP address to access and log in.",
   "Please enter a unique code": "Please enter a unique code",
   "Unique code prompt description": "The unique code corresponding to the device can be searched in the IP configuration tool",
-  "Show only terminals groups with call codes": "(Show only terminals/groups with call codes)"
+  "Show only terminals groups with call codes": "(Show only terminals/groups with call codes)",
+  "Alarm time": "Alarm time"
 }
