@@ -26,9 +26,13 @@
         :rules="rules"
         status-icon
         scroll-to-error
+        @submit.prevent
       >
         <el-form-item :label="$t('Attribute')" prop="is_public" required>
-          <el-radio-group v-model="ruleForm.is_public" class="radio-group-inline">
+          <el-radio-group
+            v-model="ruleForm.is_public"
+            class="radio-group-inline"
+          >
             <el-radio :label="0">{{ $t("Private resources") }}</el-radio>
             <el-radio :label="1">{{ $t("Public resources") }}</el-radio>
           </el-radio-group>
@@ -96,7 +100,9 @@ const validateName = (rule: any, value: any, callback: any) => {
   if (!useRegex.validateEmpty(value)) {
     return callback(new Error(proxy.$t("Please enter")));
   } else if (!useRegex.validateName(value)) {
-    return callback(new Error(proxy.$t("The name does not conform to the rule")));
+    return callback(
+      new Error(proxy.$t("The name does not conform to the rule"))
+    );
   } else if (form.old_name === value) {
     return callback();
   }
