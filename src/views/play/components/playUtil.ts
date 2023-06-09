@@ -99,7 +99,7 @@ export const getAudioFileTime = (
       audioCtx.decodeAudioData(arrBuffer, function (audioBuffer) {
         // audioBuffer就是AudioBuffer
         const data = audioBuffer.duration;
-        file["time"] = Math.ceil(parseFloat(data.toString()));
+        file["time"] = Math.floor(parseFloat(data.toString()));
         callback?.();
         reader = null;
       });
@@ -111,7 +111,7 @@ export const getAudioFileTime = (
     const audioElement: any = new Audio(url);
     audioElement.addEventListener("durationchange", () => {
       const data = audioElement.duration;
-      file["time"] = Math.ceil(parseFloat(data.toString()));
+      file["time"] = Math.floor(parseFloat(data.toString()));
       callback?.();
     });
   }
