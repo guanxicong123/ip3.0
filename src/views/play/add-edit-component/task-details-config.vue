@@ -221,7 +221,7 @@
               <div class="tabel-data-popover">
                 <div class="tabel-data-popover-content">
                   <span>
-                    {{ scope.row.name }}
+                    {{ scope.row.name ? scope.row.name : "-" }}
                   </span>
                   <view-components-popover
                     v-if="scope.row.terminals_groups_id"
@@ -237,11 +237,7 @@
             show-overflow-tooltip
           >
             <template #default="scope">
-              {{
-                scope.row.hasOwnProperty("ip_address")
-                  ? scope.row.ip_address
-                  : "-"
-              }}
+              {{ scope.row.ip_address ? scope.row.ip_address : "-" }}
             </template>
           </el-table-column>
           <el-table-column
@@ -252,7 +248,8 @@
             <template #default="scope">
               {{
                 scope.row.hasOwnProperty("terminals_id")
-                  ? allTerminalsObj[scope.row.terminals_id]?.Volume
+                  ? allTerminalsObj[scope.row.terminals_id]?.Volume ||
+                    scope.row.default_volume
                   : "-"
               }}
             </template>
@@ -261,7 +258,7 @@
             <template #default="scope">
               {{
                 scope.row.hasOwnProperty("terminals_id")
-                  ? formatterTerminalsType(scope.row)
+                  ? formatterTerminalsType(scope.row) || "-"
                   : $t("Group")
               }}
             </template>
@@ -347,6 +344,7 @@ import { UploadProps } from "element-plus";
 import { send } from "@/utils/socket";
 import usePublicMethod from "@/utils/global/index";
 import { handleExecuteTaskTerminalsChange } from "../components/playUtil";
+import { getAudioFileTime } from "../components/playUtil";
 // defineAsyncComponent 异步组件-懒加载子组件
 const acquisitionDeviceComponent = defineAsyncComponent(
   () => import("../components/acquisition-device-component.vue")
@@ -696,7 +694,7 @@ const createExecutedTask = (row: any, playMediaName: string) => {
     // 创建成功后，订阅任务
     session.addWaitExecutionEvent(TaskID, () => {
       // 创建成功后，播放的媒体名称
-      switchMedia(TaskID, playMediaName);
+      playRemoteMedia(TaskID, playMediaName);
       // 订阅任务
       // subscribeTask({ TaskID });
     });
@@ -759,6 +757,22 @@ const switchMedia = (TaskID: any, MusicNameOrMusicIndex: string) => {
       TaskID: TaskID,
       ControlCode: "play",
       ControlValue: String(MusicNameOrMusicIndex),
+    },
+    result: 0,
+    return_message: "",
+  };
+  send(data);
+};
+// 开始播放远程任务
+const playRemoteMedia = (TaskID: any, MusicName: string) => {
+  let data = {
+    company: "BL",
+    actioncode: "c2ms_control_task",
+    token: "",
+    data: {
+      TaskID: TaskID,
+      ControlCode: "play",
+      ControlValue: String(MusicName),
     },
     result: 0,
     return_message: "",
@@ -1039,25 +1053,24 @@ const uploadMedia = (data: any) => {
       }
     });
 };
+// 时长返回后，再次触发
+const getTime = ref(0);
+let uploadFileTitle = 0;
 // 选中文件时触发
 const uploadChange: UploadProps["onChange"] = (
   uploadFile: any,
   uploadFiles: any
 ) => {
-  getTimes(uploadFile);
-  usePublicMethod.debounce(handleLocalTaskMusic, 500);
-};
-// 获取文件时长
-const getTimes = (file: any) => {
-  var content = file.raw;
-  //获取录音时长
-  var url = URL.createObjectURL(content);
-  //经测试，发现audio也可获取视频的时长
-  var audioElement = new Audio(url);
-  file["time"] = 0;
-  audioElement.addEventListener("loadedmetadata", () => {
-    let data = audioElement.duration;
-    file["time"] = parseInt(data.toString());
+  uploadFileTitle = uploadFiles.length;
+  uploadFile = getAudioFileTime(uploadFile, () => {
+    getTime.value++;
+    if (uploadFileTitle === getTime.value) {
+      getTime.value = 0;
+      // 下一次宏任务再执行，防止有一些堆存储命令没有执行完
+      setTimeout(() => {
+        handleLocalTaskMusic();
+      });
+    }
   });
 };
 // 上移

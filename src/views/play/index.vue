@@ -714,6 +714,10 @@ const handlePlayTask = (row: any, isOnlyPlay = false) => {
               });
             }
             send(data);
+            session.addWaitExecutionEvent(TaskID, () => {
+              // 创建成功后，播放的媒体名称
+              playRemoteMedia(TaskID);
+            });
           }
         });
     } else {
@@ -740,6 +744,22 @@ const handlePlayTask = (row: any, isOnlyPlay = false) => {
   usePublicMethod.throttle(() => {
     func();
   }, 1000);
+};
+// 开始播放远程任务
+const playRemoteMedia = (TaskID: any) => {
+  let data = {
+    company: "BL",
+    actioncode: "c2ms_control_task",
+    token: "",
+    data: {
+      TaskID: TaskID,
+      ControlCode: "play",
+      ControlValue: "",
+    },
+    result: 0,
+    return_message: "",
+  };
+  send(data);
 };
 // 切换任务状态
 const handleSwitchTask = (row: any, type: string) => {
