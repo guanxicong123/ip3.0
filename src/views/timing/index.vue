@@ -206,11 +206,11 @@
           >
             <template #default="scope">
               <template v-if="scope.row.sound_source?.life_time">
-                  {{ scope.row.sound_source.life_time }}
-                </template>
-                <template v-if="scope.row.sound_source?.play_number">
-                  {{ scope.row.sound_source.play_number }} {{ $t("Songs") }}
-                </template>
+                {{ scope.row.sound_source.life_time }}
+              </template>
+              <template v-if="scope.row.sound_source?.play_number">
+                {{ scope.row.sound_source.play_number }} {{ $t("Songs") }}
+              </template>
             </template>
           </el-table-column>
           <el-table-column
@@ -287,8 +287,9 @@
                     scope.row.fast_sound?.fast_source?.terminals_name
                   "
                   v-if="
-                    scope.row.fast_sound?.fast_source?.sound_card ||
-                    scope.row.fast_sound?.fast_source?.terminals_name
+                    scope.row.fast_sound?.type != 1 &&
+                    (scope.row.fast_sound?.fast_source?.sound_card ||
+                      scope.row.fast_sound?.fast_source?.terminals_name)
                   "
                 >
                   <template #reference>
