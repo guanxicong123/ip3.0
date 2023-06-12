@@ -53,7 +53,10 @@
           >
             {{ $t("Select all") }}
           </el-checkbox>
-          <el-checkbox-group v-model="form.log_type" @change="handleCheckedChange">
+          <el-checkbox-group
+            v-model="form.log_type"
+            @change="handleCheckedChange"
+          >
             <el-checkbox
               v-for="item in logTypeOptions"
               :key="item.label"
@@ -206,21 +209,22 @@ const handleExportLog = async (formEl: FormInstance | undefined) => {
       });
       let params = {
         end_date: form.log_date[1],
-        start: form.log_date[0],
+        start_date: form.log_date[0],
         logs_type: logs_type,
       };
       ExportLogService.exprtLog(params)
         .then((result) => {
-          const isHasURL = Object.prototype.hasOwnProperty.call(result.data, "url");
+          const isHasURL = Object.prototype.hasOwnProperty.call(
+            result.data,
+            "url"
+          );
           const serverIP = localStorage.get("serverIP");
           if (isHasURL) {
             let src = result.data.url;
             const index = src.lastIndexOf("/");
             const fileName = src.substring(index + 1, src.length);
-            const url = "http://" + serverIP + ":81/excel/" + fileName;
-            console.log(url, fileName);
             window.electronAPI.send("download", {
-              downloadPath: url, // 下载链接
+              downloadPath: src, // 下载链接
               fileName: fileName, // 下载文件名，需要包含后缀名
             });
           } else {
@@ -261,34 +265,42 @@ watch(
     deep: true,
   }
 );
-
+const downProgressCb = (event: any, data: any) => {
+  console.log(data);
+};
+const downDoneCb = (event: any, data: any) => {
+  let message = proxy.$t("Download succeeded");
+  ElMessage({
+    type: "success",
+    message: message,
+    grouping: true,
+  });
+  emit("show", false);
+  console.log(data);
+};
+const downFailedCb = (event: any, data: any) => {
+  console.log(data);
+  let message = proxy.$t("Download failed");
+  ElMessage({
+    type: "error",
+    message: message,
+    grouping: true,
+  });
+  console.log(data);
+};
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   // 下载正在进行中
-  window.electronAPI.on("download-progress", (event: any, data: any) => {
-    console.log(data);
-  });
+  window.electronAPI.on("download-progress", downProgressCb);
   // 下载成功
-  window.electronAPI.on("download-done", (event: any, data: any) => {
-    let message = proxy.$t("Download succeeded");
-    ElMessage({
-      type: "success",
-      message: message,
-      grouping: true,
-    });
-    emit("show", false);
-    console.log(data);
-  });
+  window.electronAPI.on("download-done", downDoneCb);
   // 下载失败
-  window.electronAPI.on("download-failed", (event: any, data: any) => {
-    let message = proxy.$t("Download failed");
-    ElMessage({
-      type: "error",
-      message: message,
-      grouping: true,
-    });
-    console.log(data);
-  });
+  window.electronAPI.on("download-failed", downFailedCb);
+});
+onUnmounted(() => {
+  window.electronAPI.removeAllListeners("download-done");
+  window.electronAPI.removeAllListeners("download-failed");
+  window.electronAPI.removeAllListeners("download-progress");
 });
 </script>
 

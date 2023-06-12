@@ -93,7 +93,10 @@
               </el-select>
             </template>
             <template v-if="form.activeName == '1'">
-              <el-select v-model="form.selectPlatformType" @change="handlePlatformChange">
+              <el-select
+                v-model="form.selectPlatformType"
+                @change="handlePlatformChange"
+              >
                 <el-option
                   v-for="item in platformTypeOptions"
                   :key="item.value"
@@ -143,7 +146,10 @@
               />
             </template>
             <template v-if="form.activeName == '3'">
-              <el-select v-model="form.selectTaskType" @change="handleTaskTypeChange">
+              <el-select
+                v-model="form.selectTaskType"
+                @change="handleTaskTypeChange"
+              >
                 <el-option
                   v-for="item in taskTypeOptions"
                   :key="item.value"
@@ -218,7 +224,10 @@
           >
             {{ $t("Reset") }}
           </el-button>
-          <el-button round @click="form.isAdvancedSearch = !form.isAdvancedSearch">
+          <el-button
+            round
+            @click="form.isAdvancedSearch = !form.isAdvancedSearch"
+          >
             {{ $t("Close") }}
           </el-button>
         </div>
@@ -249,7 +258,10 @@
       </div>
     </div>
     <!-- 导出日志 -->
-    <export-log :isShow="form.logDialogVisible" @show="handleLogDialogVisible" />
+    <export-log
+      :isShow="form.logDialogVisible"
+      @show="handleLogDialogVisible"
+    />
   </div>
 </template>
 
@@ -263,10 +275,14 @@ import $http from "@/utils/axios/index";
 const systemLog = defineAsyncComponent(() => import("./system/index.vue"));
 const terminalLog = defineAsyncComponent(() => import("./terminal/index.vue"));
 const taskLog = defineAsyncComponent(() => import("./task/index.vue"));
-const broadcastLog = defineAsyncComponent(() => import("./broadcast/index.vue"));
+const broadcastLog = defineAsyncComponent(
+  () => import("./broadcast/index.vue")
+);
 const intercomLog = defineAsyncComponent(() => import("./intercom/index.vue"));
 const ttsLog = defineAsyncComponent(() => import("./tts/index.vue"));
-const exportLog = defineAsyncComponent(() => import("./components/export_log.vue"));
+const exportLog = defineAsyncComponent(
+  () => import("./components/export_log.vue")
+);
 
 // 全局属性
 const { proxy } = useCurrentInstance.useCurrentInstance();
@@ -509,7 +525,8 @@ const handleAdvancedSearch = (name: string) => {
     broadcastRef.value.search.search_level = form.selectLogType;
     broadcastRef.value.search.search_life_time = form.search_date_time;
     broadcastRef.value.search.status = form.selectTaskOperationType;
-    broadcastRef.value.search.search_launch_terminal = form.search_launch_terminal;
+    broadcastRef.value.search.search_launch_terminal =
+      form.search_launch_terminal;
     broadcastRef.value.search.search_join_terminal = form.search_join_terminal;
     broadcastRef.value.handleDefaultGet();
   }
@@ -517,7 +534,8 @@ const handleAdvancedSearch = (name: string) => {
     intercomRef.value.search.search_level = form.selectLogType;
     intercomRef.value.search.search_life_time = form.search_date_time;
     intercomRef.value.search.status = form.selectTaskOperationType;
-    intercomRef.value.search.search_launch_terminal = form.search_launch_terminal;
+    intercomRef.value.search.search_launch_terminal =
+      form.search_launch_terminal;
     intercomRef.value.search.search_join_terminal = form.search_join_terminal;
     intercomRef.value.handleDefaultGet();
   }
@@ -533,35 +551,61 @@ const handleAdvancedReset = (name: string) => {
   if (name == "1") {
     form.selectUserType = systemRef.value.search.search_users_ids = -1;
     form.selectLogType = systemRef.value.search.search_level = 0;
-    form.selectPlatformType = form.search_ip_address = form.search_description = systemRef.value.search.search_platform = systemRef.value.search.search_ip_address = systemRef.value.search.search_description =
-      "";
+    form.selectPlatformType =
+      form.search_ip_address =
+      form.search_description =
+      systemRef.value.search.search_platform =
+      systemRef.value.search.search_ip_address =
+      systemRef.value.search.search_description =
+        "";
     systemRef.value.handleReset();
   }
   if (name == "2") {
-    form.selectLogType = form.selectTerminalsType = terminalRef.value.search.search_level = terminalRef.value.search.search_terminals_type = 0;
+    form.selectLogType =
+      form.selectTerminalsType =
+      terminalRef.value.search.search_level =
+      terminalRef.value.search.search_terminals_type =
+        0;
     form.selectTerminalStatusType = terminalRef.value.search.status = -1;
     form.search_terminals = terminalRef.value.search.search_terminals = "";
     terminalRef.value.handleDefaultGet();
   }
   if (name == "3") {
-    form.selectLogType = form.selectTaskType = taskRef.value.search.search_level = taskRef.value.search.type = 0;
+    form.selectLogType =
+      form.selectTaskType =
+      taskRef.value.search.search_level =
+      taskRef.value.search.type =
+        0;
     form.selectUserType = taskRef.value.search.search_users_ids = -1;
-    form.search_tasks_name = form.search_date_time = taskRef.value.search.search_tasks_name = taskRef.value.search.search_life_time =
-      "";
+    form.search_tasks_name =
+      form.search_date_time =
+      taskRef.value.search.search_tasks_name =
+      taskRef.value.search.search_life_time =
+        "";
     taskRef.value.handleDefaultGet();
   }
   if (name == "4") {
     form.selectLogType = broadcastRef.value.search.search_level = 0;
     form.selectTaskOperationType = broadcastRef.value.search.status = -1;
-    form.search_launch_terminal = form.search_date_time = form.search_join_terminal = broadcastRef.value.search.search_life_time = broadcastRef.value.search.search_join_terminal = broadcastRef.value.search.search_launch_terminal =
-      "";
+    form.search_launch_terminal =
+      form.search_date_time =
+      form.search_join_terminal =
+      broadcastRef.value.search.search_life_time =
+      broadcastRef.value.search.search_join_terminal =
+      broadcastRef.value.search.search_launch_terminal =
+        "";
     broadcastRef.value.handleDefaultGet();
   }
   if (name == "5") {
     form.selectLogType = intercomRef.value.search.search_level = 0;
     form.selectTaskOperationType = intercomRef.value.search.status = -1;
-    form.search_launch_terminal = form.search_date_time = form.search_join_terminal = intercomRef.value.search.search_life_time = intercomRef.value.search.search_join_terminal = intercomRef.value.search.search_launch_terminal =
-      "";
+    form.search_launch_terminal =
+      form.search_date_time =
+      form.search_join_terminal =
+      intercomRef.value.search.search_life_time =
+      intercomRef.value.search.search_join_terminal =
+      intercomRef.value.search.search_launch_terminal =
+        "";
     intercomRef.value.handleDefaultGet();
   }
   if (name == "6") {
@@ -781,7 +825,11 @@ const handleSeatchButton = (name: string) => {
       }
       break;
     case "6":
-      if (form.selectLogType == 0 && form.selectUserType == -1 && form.search_txt == "") {
+      if (
+        form.selectLogType == 0 &&
+        form.selectUserType == -1 &&
+        form.search_txt == ""
+      ) {
         disable = true;
       }
       break;
@@ -794,7 +842,10 @@ const handleAllUsersData = async () => {
   await UsersService.getAllUsers({})
     .then((result) => {
       if (result.data) {
-        form.userOptions = [...[{ id: -1, name: proxy.$t("All users") }], ...result.data];
+        form.userOptions = [
+          ...[{ id: -1, name: proxy.$t("All users") }],
+          ...result.data,
+        ];
       } else {
         ElMessage({
           type: "error",

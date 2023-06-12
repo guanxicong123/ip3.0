@@ -62,7 +62,11 @@
                   v-for="item in form.folderData"
                   :key="item.id"
                   @click.stop="handleClickFolder(item)"
-                  :class="form.currentFolder.id == item.id ? 'theme com-select-bg' : ''"
+                  :class="
+                    form.currentFolder.id == item.id
+                      ? 'theme com-select-bg'
+                      : ''
+                  "
                 >
                   <div class="nav-one">
                     <i class="iconfont icon-folder"></i>
@@ -87,7 +91,9 @@
                       <i
                         class="iconfont icon-edit"
                         :title="$t('Edit')"
-                        v-if="item.id > 2 && userStore?.user.id == item.users_id"
+                        v-if="
+                          item.id > 2 && userStore?.user.id == item.users_id
+                        "
                         @click.stop="handleEdit(item)"
                       ></i>
                       <i
@@ -114,7 +120,10 @@
                     </span>
                   </div>
                   <el-tag v-if="item.id > 2">
-                    <i :title="$t('Create user')" class="iconfont icon-gray-user"></i>
+                    <i
+                      :title="$t('Create user')"
+                      class="iconfont icon-gray-user"
+                    ></i>
                     {{ item.user?.name }}
                   </el-tag>
                 </li>
@@ -145,7 +154,12 @@
                 @keyup.enter="
                   useCommonTable.handleKeyupEnter(form.search, handleDefaultGet)
                 "
-                @change="useCommonTable.handleKeyupDelete(form.search, handleDefaultGet)"
+                @change="
+                  useCommonTable.handleKeyupDelete(
+                    form.search,
+                    handleDefaultGet
+                  )
+                "
               />
               <el-button
                 :icon="Search"
@@ -236,7 +250,10 @@
                     @click="handleDownloadOneFile(scope.row)"
                   >
                     <template #icon>
-                      <i class="iconfont icon-download" :title="$t('Download')"></i>
+                      <i
+                        class="iconfont icon-download"
+                        :title="$t('Download')"
+                      ></i>
                     </template>
                   </el-button>
                   <el-button
@@ -456,7 +473,8 @@ const handleReset = () => {
 // 处理排序
 const handleSortChange = (row: { prop: any; order: string | string[] }) => {
   form.orderColumn = row.prop;
-  form.orderType = !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
+  form.orderType =
+    !row.order || row.order?.indexOf("desc") >= 0 ? "desc" : "asc";
   handleDefaultGet();
 };
 // 处理XXX条/页更改
@@ -507,11 +525,13 @@ const handleDelete = (type: string, row: any) => {
             if (form.currentFolder.id === 0) {
               handleGetAllBellsGroups();
             } else {
-              form.folderData.some((item: { id: number; medias_count: number }) => {
-                if (item.id == form.currentFolder.id) {
-                  return (item.medias_count -= ids.length);
+              form.folderData.some(
+                (item: { id: number; medias_count: number }) => {
+                  if (item.id == form.currentFolder.id) {
+                    return (item.medias_count -= ids.length);
+                  }
                 }
-              });
+              );
               form.folderData[0].medias_count -= ids.length;
               form.allSongsTotal -= ids.length;
             }
@@ -615,7 +635,10 @@ const handleDownloadOneFile = (item: { id: number; name: string }) => {
   MeidaService.getDownloadOneMeida(item.id)
     .then((result) => {
       form.downloading = false;
-      const isHasURL = Object.prototype.hasOwnProperty.call(result?.data, "url");
+      const isHasURL = Object.prototype.hasOwnProperty.call(
+        result?.data,
+        "url"
+      );
       if (isHasURL) {
         const serverIP = localStorage.get("serverIP");
         const url = "http://" + serverIP + ":81" + result.data.url;
@@ -651,7 +674,10 @@ const handlePackageDownloadFile = () => {
   })
     .then((result) => {
       form.downloading = false;
-      const isHasURL = Object.prototype.hasOwnProperty.call(result?.data, "url");
+      const isHasURL = Object.prototype.hasOwnProperty.call(
+        result?.data,
+        "url"
+      );
       if (isHasURL) {
         const serverIP = localStorage.get("serverIP");
         const url = "http://" + serverIP + ":81" + result.data.url;
@@ -712,7 +738,6 @@ watch(
 onBeforeRouteLeave(() => {
   localStorage.remove("folder");
 });
-
 // mounted 实例挂载完成后被调用
 onMounted(() => {
   handleGetAllBellsGroups();
@@ -741,6 +766,11 @@ onMounted(() => {
     });
     console.log(data);
   });
+});
+onUnmounted(() => {
+  window.electronAPI.removeAllListeners("download-done");
+  window.electronAPI.removeAllListeners("download-failed");
+  window.electronAPI.removeAllListeners("download-progress");
 });
 </script>
 
